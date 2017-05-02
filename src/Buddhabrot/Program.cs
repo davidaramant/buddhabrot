@@ -42,6 +42,14 @@ namespace Buddhabrot
 
                 Edges.EdgeVisualizer.Render(edgesFilePath, imageFilePath);
             }
+
+            [ArgActionMethod, ArgDescription("Finds and renders the edge areas.")]
+            public void FindAndVisualizeEdges(
+                [ArgDescription("The path for the resulting edges file."), ArgRequired] string edgesFilePath)
+            {
+                FindEdges(edgesFilePath);
+                VisualizeEdges(edgesFilePath,null);
+            }
         }
     }
 }

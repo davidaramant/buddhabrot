@@ -63,6 +63,7 @@ namespace Buddhabrot.Edges
 
             return
                 Enumerable.Range(0, numberOfStrips).
+                AsParallel().
                 SelectMany(stripIndex => FindEdgeAreasInStrip(viewPort, resolution, iterationRange, stripIndex));
         }
 

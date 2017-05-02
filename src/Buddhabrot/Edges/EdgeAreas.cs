@@ -76,10 +76,13 @@ namespace Buddhabrot.Edges
                 writer.Write(gridResolution.Height);
                 WriteArea(viewPort);
 
+                int count = 0;
                 foreach (var area in areas)
                 {
+                    count++;
                     WriteEdgeArea(area);
                 }
+                Log.Info($"Wrote {count} edge areas.");
             }
         }
 

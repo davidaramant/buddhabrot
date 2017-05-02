@@ -19,7 +19,7 @@ namespace Buddhabrot.Edges
             foreach (var location in edgeAreas.GetAreaLocations())
             {
                 // the grid locations are based on the real axis
-                image.SetPixel(location.X, halfHeight - location.Y, Color.Black);
+                image.SetPixel(location.X, halfHeight - location.Y-1, Color.Black);
                 image.SetPixel(location.X, location.Y + halfHeight, Color.Black);
             }
             image.Save(imageFilePath);

@@ -5,6 +5,11 @@
         /// <summary>
         /// Does a fast check to see if a complex number lies within one of the larger bulbs of the Mandelbrot set.
         /// </summary>
+        public static bool IsInsideBulbs(float real, float imag) => IsInsideBulbs(new FComplex(real, imag));
+
+        /// <summary>
+        /// Does a fast check to see if a complex number lies within one of the larger bulbs of the Mandelbrot set.
+        /// </summary>
         public static bool IsInsideBulbs(FComplex number)
         {
             return
@@ -32,7 +37,7 @@
         static bool IsInsideCircle(FComplex center, float radius, FComplex number)
         {
             var translated = new FComplex(
-                real: number.Real - center.Real, 
+                real: number.Real - center.Real,
                 imag: number.Imag - center.Imag);
 
             return (translated.Real * translated.Real + translated.Imag * translated.Imag) <= (radius * radius);

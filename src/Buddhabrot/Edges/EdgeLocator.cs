@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Buddhabrot.Core;
 using log4net;
 using System.Drawing;
 using System.Numerics;
 using Buddhabrot.Kernels;
+using Humanizer;
 
 namespace Buddhabrot.Edges
 {
@@ -45,11 +47,16 @@ namespace Buddhabrot.Edges
             Log.Info($"Saving edges to: {outputFilePath}");
             Log.Info($"Iteration count: {iterationRange}");
 
+            var timer = Stopwatch.StartNew();
+
             EdgeAreas.Write(
                 outputFilePath,
                 gridResolution,
                 viewPort,
                 GetEdgeAreas(targetViewPort, targetResolution, iterationRange));
+
+            timer.Stop();
+            Log.Info($"Took {timer.Elapsed.Humanize(2)} to find edges.");
         }
 
         private static IEnumerable<EdgeArea> GetEdgeAreas(ComplexArea viewPort, Size resolution, IterationRange iterationRange)
@@ -116,16 +123,21 @@ namespace Buddhabrot.Edges
                 {
                     reals[rowIndex] = realValue;
                     imags[rowIndex] = GetImagValue(rowIndex);
+
+                    rightColumnIsInSet[rowIndex] = MandelbulbChecker.IsInsideBulbs(reals[rowIndex], imags[rowIndex]);
                 }
 
-                var vReals = new Vector<float>(reals);
-                var vImags = new Vector<float>(imags);
-
-                var vIterations = VectorKernel.IteratePoints(vReals, vImags, iterationRange.ExclusiveMax);
-
-                for (int i = 0; i < vectorSize; i++)
+                if (rightColumnIsInSet.Any(definitivelyInSet => !definitivelyInSet))
                 {
-                    rightColumnIsInSet[i] = vIterations[i] == iterationRange.ExclusiveMax;
+                    var vReals = new Vector<float>(reals);
+                    var vImags = new Vector<float>(imags);
+
+                    var vIterations = VectorKernel.IteratePoints(vReals, vImags, iterationRange.ExclusiveMax);
+
+                    for (int i = 0; i < vectorSize; i++)
+                    {
+                        rightColumnIsInSet[i] = vIterations[i] == iterationRange.ExclusiveMax;
+                    }
                 }
             }
 

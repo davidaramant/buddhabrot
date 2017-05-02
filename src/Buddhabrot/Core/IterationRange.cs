@@ -11,10 +11,10 @@
             ExclusiveMax = exclusiveMax;
         }
 
-        public bool IsInside(int escapeTime) => 
-            escapeTime >= InclusiveMin && 
+        public bool IsInside(int escapeTime) =>
+            escapeTime >= InclusiveMin &&
             escapeTime < ExclusiveMax;
 
-        public override string ToString() => $"[{InclusiveMin:N0},{ExclusiveMax:N0})";
+        public override string ToString() => $"[{InclusiveMin:N0}, {ExclusiveMax:N0})";
     }
 }

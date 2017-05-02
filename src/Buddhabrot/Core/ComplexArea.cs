@@ -1,11 +1,11 @@
 ﻿namespace Buddhabrot.Core
 {
-    public sealed class FloatArea
+    public sealed class ComplexArea
     {
-        public FloatRange RealRange { get; }
-        public FloatRange ImagRange { get; }
+        public Range RealRange { get; }
+        public Range ImagRange { get; }
 
-        public FloatArea(FloatRange realRange, FloatRange imagRange)
+        public ComplexArea(Range realRange, Range imagRange)
         {
             RealRange = realRange;
             ImagRange = imagRange;

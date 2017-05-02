@@ -45,8 +45,10 @@ namespace Buddhabrot.Edges
             Log.Info($"Saving edges to: {outputFilePath}");
             Log.Info($"Iteration count: {iterationRange}");
 
-            EdgeAreaList.SaveAreas(
+            EdgeAreas.Write(
                 outputFilePath, 
+                gridResolution,
+                viewPort,
                 GetEdgeAreas(targetViewPort, targetResolution, iterationRange));
         }
 

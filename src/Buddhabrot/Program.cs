@@ -27,7 +27,14 @@ namespace Buddhabrot
                     new Size(32, 32), //Constant.EdgeGridResolution,
                     new IterationRange(0, 1000) // Constant.IterationRange
                 );
+            }
 
+            [ArgActionMethod, ArgDescription("Renders the edge areas to an image.")]
+            public void VisualizeEdges(
+                [ArgDescription("Edges file."), ArgRequired] string edgesFilePath,
+                [ArgDescription("Output image (optional).  Defaults to 'edges.png'")] string imageFilePath = "edges.png")
+            {
+                Edges.EdgeVisualizer.Render(edgesFilePath, imageFilePath);
             }
         }
     }

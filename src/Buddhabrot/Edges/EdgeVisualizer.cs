@@ -18,7 +18,7 @@ namespace Buddhabrot.Edges
             var halfHeight = edgeAreas.GridResolution.Height / 2;
             foreach (var location in edgeAreas.GetAreaLocations())
             {
-                // the grid locations are based on the real axis
+                // the grid locations are relative to the the real axis on the positive side
                 image.SetPixel(location.X, halfHeight - location.Y-1, Color.Black);
                 image.SetPixel(location.X, location.Y + halfHeight, Color.Black);
             }

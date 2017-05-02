@@ -28,9 +28,9 @@ namespace Buddhabrot.Edges
             {
                 throw new ArgumentException($"The imaginary range of the viewport must be centered around the real axis.");
             }
-            if (gridResolution.Height % 16 != 0)
+            if (gridResolution.Height % 2 != 0)
             {
-                throw new ArgumentException($"The vertical resolution of the grid must be divisible by 16.");
+                throw new ArgumentException($"The vertical resolution of the grid must be divisible by 2.");
             }
 
             // Divide the view port / resolution in half since the set is symmetrical across the real axis
@@ -46,13 +46,13 @@ namespace Buddhabrot.Edges
             Log.Info($"Iteration count: {iterationRange}");
 
             EdgeAreas.Write(
-                outputFilePath, 
+                outputFilePath,
                 gridResolution,
                 viewPort,
                 GetEdgeAreas(targetViewPort, targetResolution, iterationRange));
         }
 
-        private static IEnumerable<ComplexArea> GetEdgeAreas(ComplexArea viewPort, Size resolution, IterationRange iterationRange)
+        private static IEnumerable<EdgeArea> GetEdgeAreas(ComplexArea viewPort, Size resolution, IterationRange iterationRange)
         {
             var vectorSize = Vector<float>.Count;
 
@@ -82,7 +82,7 @@ namespace Buddhabrot.Edges
         /// It gets a bit confusing because I interpret the grid to be defined by the points in the resolution.
         /// In other words, there are (width-1) by (height-1) areas.
         /// </remarks>
-        private static IEnumerable<ComplexArea> FindEdgeAreasInStrip(
+        private static IEnumerable<EdgeArea> FindEdgeAreasInStrip(
             ComplexArea viewPort,
             Size resolution,
             IterationRange iterationRange,
@@ -159,9 +159,10 @@ namespace Buddhabrot.Edges
                         leftTopCorner: leftColumnIsInSet[areaIndex + 1],
                         rightTopCorner: rightColumnIsInSet[areaIndex + 1]))
                     {
-                        yield return new ComplexArea(
+                        yield return new EdgeArea(new ComplexArea(
                             realRange: new Range(GetRealValue(rightColumnIndex - 1), GetRealValue(rightColumnIndex)),
-                            imagRange: new Range(GetImagValue(areaIndex), GetImagValue(areaIndex + 1)));
+                            imagRange: new Range(GetImagValue(areaIndex), GetImagValue(areaIndex + 1))),
+                            new Point(rightColumnIndex - 1, stripIndex * areasInStripColumn + areaIndex));
                     }
                 }
 

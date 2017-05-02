@@ -2,26 +2,35 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Buddhabrot.Core;
+using log4net;
 
 namespace Buddhabrot.Edges
 {
     public sealed class EdgeAreas
     {
+        private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeLocator));
+
         private const string HeaderText = "Float Areas V1.0";
         // A sixteen byte magic header value
         private static readonly byte[] MagicBytes = Encoding.ASCII.GetBytes(HeaderText);
 
         public Size GridResolution { get; }
         public ComplexArea ViewPort { get; }
-        private readonly List<ComplexArea> _areas;
+        private readonly List<EdgeArea> _areas;
         public int AreaCount => _areas.Count;
+
+        public IEnumerable<Point> GetAreaLocations()
+        {
+            return _areas.Select(a => a.GridLocation);
+        }
 
         private EdgeAreas(
             Size gridResolution,
             ComplexArea viewPort,
-            List<ComplexArea> areas)
+            List<EdgeArea> areas)
         {
             GridResolution = gridResolution;
             ViewPort = viewPort;
@@ -33,7 +42,7 @@ namespace Buddhabrot.Edges
             string filePath,
             Size gridResolution,
             ComplexArea viewPort,
-            IEnumerable<ComplexArea> areas)
+            IEnumerable<EdgeArea> areas)
         {
             if (File.Exists(filePath))
             {
@@ -56,13 +65,20 @@ namespace Buddhabrot.Edges
                     WriteRange(area.ImagRange);
                 }
 
+                void WriteEdgeArea(EdgeArea edgeArea)
+                {
+                    WriteArea(edgeArea.Area);
+                    writer.Write(edgeArea.GridLocation.X);
+                    writer.Write(edgeArea.GridLocation.Y);
+                }
+
                 writer.Write(gridResolution.Width);
                 writer.Write(gridResolution.Height);
                 WriteArea(viewPort);
 
                 foreach (var area in areas)
                 {
-                    WriteArea(area);
+                    WriteEdgeArea(area);
                 }
             }
         }
@@ -78,14 +94,14 @@ namespace Buddhabrot.Edges
 
                 using (var reader = new BinaryReader(stream))
                 {
-                    Range ReadRange()
+                    Range ReadRange() => new Range(reader.ReadSingle(), reader.ReadSingle());
+                    ComplexArea ReadArea() => new ComplexArea(ReadRange(), ReadRange());
+                    EdgeArea ReadEdgeArea()
                     {
-                        return new Range(reader.ReadSingle(), reader.ReadSingle());
-                    }
-
-                    ComplexArea ReadArea()
-                    {
-                        return new ComplexArea(ReadRange(), ReadRange());
+                        var area = ReadArea();
+                        var x = reader.ReadInt32();
+                        var y = reader.ReadInt32();
+                        return new EdgeArea(area, new Point(x, y));
                     }
 
                     var width = reader.ReadInt32();
@@ -93,12 +109,14 @@ namespace Buddhabrot.Edges
 
                     var viewPort = ReadArea();
 
-                    var edgeAreas = new List<ComplexArea>();
+                    var edgeAreas = new List<EdgeArea>();
 
                     while (stream.Position < stream.Length)
                     {
-                        edgeAreas.Add(ReadArea());
+                        edgeAreas.Add(ReadEdgeArea());
                     }
+
+                    Log.Info($"Loaded edges with resolution ({width:N0}x{height:N0}), view port {viewPort}, and {edgeAreas.Count} edge areas.");
 
                     return new EdgeAreas(
                         new Size(width, height),

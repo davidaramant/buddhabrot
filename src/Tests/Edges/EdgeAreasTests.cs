@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.IO;
+using System.Linq;
 using Buddhabrot.Core;
 using Buddhabrot.Edges;
 using NUnit.Framework;
@@ -16,13 +17,14 @@ namespace Tests.Edges
             try
             {
                 ComplexArea CreateArea(int value) => new ComplexArea(new Range(value, value + 1), new Range(value + 2, value + 3));
+                EdgeArea CreateEdgeArea(int value, int x, int y) => new EdgeArea(CreateArea(value), new Point(x, y));
 
                 var size = new Size(1, 2);
                 var viewPort = CreateArea(1);
                 var edgeAreas = new[]
                 {
-                    CreateArea(10),
-                    CreateArea(20),
+                    CreateEdgeArea(10,0,1),
+                    CreateEdgeArea(20,2,3),
                 };
 
                 EdgeAreas.Write(filePath, size, viewPort, edgeAreas);
@@ -44,7 +46,9 @@ namespace Tests.Edges
                 Assert.That(roundTripped.GridResolution, Is.EqualTo(size), "Did not round-trip grid resolution.");
                 AreasAreEqual(roundTripped.ViewPort, viewPort);
                 // If the view port was saved/loaded correctly, the edges are too.  Just check the number.
-                Assert.That(roundTripped.AreaCount,Is.EqualTo(edgeAreas.Length),"Did not round-trip the edge areas");
+                Assert.That(roundTripped.AreaCount, Is.EqualTo(edgeAreas.Length), "Did not round-trip the edge areas");
+                Assert.That(roundTripped.GetAreaLocations().ToArray(), Is.EqualTo(edgeAreas.Select(ea => ea.GridLocation).ToArray()), 
+                    "Did not round-trip the area locations.");
             }
             finally
             {

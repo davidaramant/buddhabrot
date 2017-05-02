@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using Buddhabrot.Core;
+﻿using System.IO;
 using PowerArgs;
 
 namespace Buddhabrot
@@ -22,18 +21,25 @@ namespace Buddhabrot
             public void FindEdges([ArgDescription("The path for the resulting edges file."), ArgRequired] string outputFilePath)
             {
                 Edges.EdgeLocator.FindEdges(
-                    System.IO.Path.GetFullPath(outputFilePath),
+                    Path.GetFullPath(outputFilePath),
                     Constant.RenderingArea,
-                    new Size(32, 32), //Constant.EdgeGridResolution,
-                    new IterationRange(0, 1000) // Constant.IterationRange
+                    Constant.EdgeGridResolution,
+                    Constant.IterationRange
                 );
             }
 
             [ArgActionMethod, ArgDescription("Renders the edge areas to an image.")]
             public void VisualizeEdges(
                 [ArgDescription("Edges file."), ArgRequired] string edgesFilePath,
-                [ArgDescription("Output image (optional).  Defaults to 'edges.png'")] string imageFilePath = "edges.png")
+                [ArgDescription("Output image (optional).  Defaults to a PNG file based on the edges file name/location.")] string imageFilePath)
             {
+                if (string.IsNullOrWhiteSpace(imageFilePath))
+                {
+                    imageFilePath = Path.Combine(
+                        Path.GetDirectoryName(edgesFilePath),
+                        Path.GetFileNameWithoutExtension(edgesFilePath) + ".png");
+                }
+
                 Edges.EdgeVisualizer.Render(edgesFilePath, imageFilePath);
             }
         }

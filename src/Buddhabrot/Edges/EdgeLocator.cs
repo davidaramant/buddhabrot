@@ -132,11 +132,24 @@ namespace Buddhabrot.Edges
                     var vReals = new Vector<float>(reals);
                     var vImags = new Vector<float>(imags);
 
-                    var vIterations = VectorKernel.IteratePoints(vReals, vImags, iterationRange.ExclusiveMax);
+                    // Do a quick check with a low bailout to see if all the points are outside the set
+                    const int quickBailout = 500;
+                    var vIterations = VectorKernel.IteratePoints(vReals, vImags, quickBailout);
 
-                    for (int i = 0; i < vectorSize; i++)
+                    void CopyResults(int max)
                     {
-                        rightColumnIsInSet[i] = vIterations[i] == iterationRange.ExclusiveMax;
+                        for (int i = 0; i < vectorSize; i++)
+                        {
+                            rightColumnIsInSet[i] = vIterations[i] == max;
+                        }
+                    }
+
+                    CopyResults(quickBailout);
+                    if (rightColumnIsInSet.Any(inSet => inSet))
+                    {
+                        vIterations = VectorKernel.IteratePoints(vReals, vImags, iterationRange.ExclusiveMax);
+
+                        CopyResults(iterationRange.ExclusiveMax);
                     }
                 }
             }

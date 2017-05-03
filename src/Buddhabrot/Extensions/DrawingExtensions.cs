@@ -12,15 +12,9 @@ namespace Buddhabrot.Extensions
                 p.Y >= 0 && p.Y < size.Height;
         }
 
-        public static IEnumerable<Point> GetAllPoints(this Size resolution)
+        public static Point OffsetBy(this Point p, int xDelta, int yDelta)
         {
-            for (int y = 0; y < resolution.Height; y++)
-            {
-                for (int x = 0; x < resolution.Width; x++)
-                {
-                    yield return new Point(x, y);
-                }
-            }
+            return new Point(p.X + xDelta, p.Y + yDelta);
         }
     }
 }

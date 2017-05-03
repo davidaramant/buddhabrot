@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Buddhabrot.Core;
+using Buddhabrot.Extensions;
 using log4net;
 
 namespace Buddhabrot.Edges
@@ -22,11 +23,6 @@ namespace Buddhabrot.Edges
         private readonly List<EdgeArea> _areas;
         public int AreaCount => _areas.Count;
 
-        public IEnumerable<Point> GetAreaLocations()
-        {
-            return _areas.Select(a => a.GridLocation);
-        }
-
         private EdgeAreas(
             Size gridResolution,
             ComplexArea viewPort,
@@ -37,6 +33,75 @@ namespace Buddhabrot.Edges
             _areas = areas;
         }
 
+        public IEnumerable<Point> GetAreaLocations()
+        {
+            foreach (var area in _areas)
+            {
+                for (int i = 0; i < area.Length; i++)
+                {
+                    yield return area.GridLocation.OffsetBy(i, 0);
+                }
+            }
+        }
+
+        public EdgeAreas Compress()
+        {
+            var compressedAreas = new List<EdgeArea>();
+
+            foreach (var row in _areas.GroupBy(ea => ea.GridLocation.Y).OrderBy(row => row.Key))
+            {
+                EdgeArea start = null;
+                EdgeArea end = null;
+                int length = 0;
+
+                foreach (var edge in row.OrderBy(ea => ea.GridLocation.X))
+                {
+                    if (start == null)
+                    {
+                        start = edge;
+                        end = edge;
+                        length = 1;
+                    }
+                    else if (start.GridLocation.X + length == edge.GridLocation.X)
+                    {
+                        end = edge;
+                        length++;
+                    }
+                    else
+                    {
+                        compressedAreas.Add(new EdgeArea(
+                            new ComplexArea(
+                                new Range(start.Area.RealRange.InclusiveMin, end.Area.RealRange.ExclusiveMax),
+                                start.Area.ImagRange),
+                            start.GridLocation,
+                            EncodingDirection.East,
+                            length));
+
+                        start = edge;
+                        end = edge;
+                        length = 1;
+                    }
+                }
+
+                if (start != null && end != null)
+                {
+                    compressedAreas.Add(new EdgeArea(
+                        new ComplexArea(
+                            new Range(start.Area.RealRange.InclusiveMin, end.Area.RealRange.ExclusiveMax),
+                            start.Area.ImagRange),
+                        start.GridLocation,
+                        EncodingDirection.East,
+                        length));
+                }
+            }
+
+            return new EdgeAreas(GridResolution, ViewPort, compressedAreas);
+        }
+
+        public void Write(string filePath)
+        {
+            Write(filePath, GridResolution, ViewPort, _areas);
+        }
 
         public static void Write(
             string filePath,

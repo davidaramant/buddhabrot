@@ -79,8 +79,8 @@ namespace Buddhabrot.Edges
                 secondaryDimension: ea => ea.GridLocation.Y,
                 sizeCreator: width => new Size(width, 1));
 
-            Log.Info($"Compressed {areas.Count} areas into {verticallyCompressed.Count} vertical areas " +
-                     $"and {horizontallyCompressed.Count} horizonal areas.");
+            Log.Info($"Compressed {areas.Count:N0} areas into {verticallyCompressed.Count:N0} vertical areas " +
+                     $"and {horizontallyCompressed.Count:N0} horizonal areas.");
 
             return horizontallyCompressed.Count < verticallyCompressed.Count
                 ? horizontallyCompressed
@@ -166,7 +166,7 @@ namespace Buddhabrot.Edges
                     count++;
                     writer.WriteEdgeArea(area);
                 }
-                Log.Info($"Wrote {count} edge areas.");
+                Log.Info($"Wrote {count:N0} edge areas.");
             }
         }
 
@@ -191,7 +191,7 @@ namespace Buddhabrot.Edges
                         edgeAreas.Add(reader.ReadEdgeArea());
                     }
 
-                    Log.Info($"Loaded edges with resolution ({size.Width:N0}x{size.Height:N0}), view port {viewPort}, and {edgeAreas.Count} edge areas.");
+                    Log.Info($"Loaded edges with resolution ({size.Width:N0}x{size.Height:N0}), view port {viewPort}, and {edgeAreas.Count:N0} edge areas.");
 
                     return new EdgeAreas(
                         size,

@@ -35,6 +35,10 @@ namespace Buddhabrot.Edges
                 throw new ArgumentException($"The vertical resolution of the grid must be divisible by 2.");
             }
 
+            Log.Info($"Looking for {gridResolution.Width}x{gridResolution.Height} areas in {viewPort}");
+            Log.Info($"Saving edges to: {outputFilePath}");
+            Log.Info($"Iteration count: {iterationRange}");
+
             // Divide the view port / resolution in half since the set is symmetrical across the real axis
 
             var targetViewPort = new ComplexArea(
@@ -42,10 +46,6 @@ namespace Buddhabrot.Edges
                 imagRange: new Range(0, viewPort.ImagRange.ExclusiveMax));
 
             var targetResolution = new Size(width: gridResolution.Width, height: gridResolution.Height / 2);
-
-            Log.Info($"Looking for {targetResolution.Width}x{targetResolution.Height} areas in {targetViewPort}");
-            Log.Info($"Saving edges to: {outputFilePath}");
-            Log.Info($"Iteration count: {iterationRange}");
 
             var timer = Stopwatch.StartNew();
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Drawing;
+using System.IO;
 using PowerArgs;
 
 namespace Buddhabrot
@@ -18,12 +19,14 @@ namespace Buddhabrot
             public bool Help { get; set; }
 
             [ArgActionMethod, ArgDescription("Finds the border regions of the Mandelbrot set.")]
-            public void FindEdges([ArgDescription("The path for the resulting edges file."), ArgRequired] string outputFilePath)
+            public void FindEdges(
+                [ArgDescription("The path for the resulting edges file."), ArgRequired] string outputFilePath,
+                [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution)
             {
                 Edges.EdgeLocator.FindEdges(
                     Path.GetFullPath(outputFilePath),
                     Constant.RenderingArea,
-                    Constant.EdgeGridResolution,
+                    new Size(resolution, resolution),
                     Constant.IterationRange
                 );
             }
@@ -41,9 +44,10 @@ namespace Buddhabrot
 
             [ArgActionMethod, ArgDescription("Finds and renders the edge areas.")]
             public void FindAndVisualizeEdges(
-                [ArgDescription("The path for the resulting edges file."), ArgRequired] string edgesFilePath)
+                [ArgDescription("The path for the resulting edges file."), ArgRequired] string edgesFilePath,
+                [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution)
             {
-                FindEdges(edgesFilePath);
+                FindEdges(edgesFilePath, resolution);
                 VisualizeEdges(edgesFilePath);
             }
 

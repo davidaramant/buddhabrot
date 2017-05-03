@@ -70,6 +70,8 @@ namespace Buddhabrot.Edges
                     WriteArea(edgeArea.Area);
                     writer.Write(edgeArea.GridLocation.X);
                     writer.Write(edgeArea.GridLocation.Y);
+                    writer.Write((int)edgeArea.EncodingDirection);
+                    writer.Write(edgeArea.Length);
                 }
 
                 writer.Write(gridResolution.Width);
@@ -104,7 +106,10 @@ namespace Buddhabrot.Edges
                         var area = ReadArea();
                         var x = reader.ReadInt32();
                         var y = reader.ReadInt32();
-                        return new EdgeArea(area, new Point(x, y));
+                        var direction = (EncodingDirection)reader.ReadInt32();
+                        var length = reader.ReadInt32();
+
+                        return new EdgeArea(area, new Point(x, y), direction, length);
                     }
 
                     var width = reader.ReadInt32();

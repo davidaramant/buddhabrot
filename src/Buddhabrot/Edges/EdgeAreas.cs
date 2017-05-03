@@ -63,28 +63,39 @@ namespace Buddhabrot.Edges
             return new EdgeAreas(
                 GridResolution,
                 ViewPort,
-                GetAreaLocations().Select(location => new EdgeArea(location)).ToList());
+                CompressAreas(GetAreaLocations().Select(location => new EdgeArea(location)).ToList()));
         }
 
         private static List<EdgeArea> CompressAreas(List<EdgeArea> areas)
         {
-            var verticallyCompressed = CompressAreas(
-                areas,
-                compressionDimension: ea => ea.GridLocation.Y,
-                secondaryDimension: ea => ea.GridLocation.X,
-                sizeCreator: height => new Size(1, height));
-            var horizontallyCompressed = CompressAreas(
-                areas,
-                compressionDimension: ea => ea.GridLocation.X,
-                secondaryDimension: ea => ea.GridLocation.Y,
-                sizeCreator: width => new Size(width, 1));
+            Log.Info($"Compressing {areas.Count:N0} areas...");
 
-            Log.Info($"Compressed {areas.Count:N0} areas into {verticallyCompressed.Count:N0} vertical areas " +
-                     $"and {horizontallyCompressed.Count:N0} horizonal areas.");
+            List<EdgeArea> CompressVertically(List<EdgeArea> inputAreas)
+            {
+                return CompressAreas(
+                    inputAreas,
+                    compressionDimension: ea => ea.GridLocation.Y,
+                    secondaryDimension: ea => ea.GridLocation.X,
+                    sizeCreator: height => new Size(1, height));
+            }
+            List<EdgeArea> CompressHorizontally(List<EdgeArea> inputAreas)
+            {
+                return CompressAreas(
+                    inputAreas,
+                    compressionDimension: ea => ea.GridLocation.X,
+                    secondaryDimension: ea => ea.GridLocation.Y,
+                    sizeCreator: width => new Size(width, 1));
+            }
 
-            return horizontallyCompressed.Count < verticallyCompressed.Count
-                ? horizontallyCompressed
-                : verticallyCompressed;
+            var vhCompressed = CompressHorizontally(CompressVertically(areas));
+            var hvCompressed = CompressVertically(CompressHorizontally(areas));
+
+            Log.Info($"Compressed vertically, then horizontally: {vhCompressed.Count:N0} areas");
+            Log.Info($"Compressed hoizontally, then vertically: {hvCompressed.Count:N0} areas");
+
+            return hvCompressed.Count < vhCompressed.Count
+                ? hvCompressed
+                : vhCompressed;
         }
 
         /// <summary>
@@ -103,9 +114,9 @@ namespace Buddhabrot.Edges
             Func<EdgeArea, int> secondaryDimension,
             Func<int, Size> sizeCreator)
         {
-            var compressedAreas = new List<EdgeArea>();
+            var compressedAreas = areas.Where(ea => ea.Dimensions.Area() > 1).ToList();
 
-            foreach (var slice in areas.GroupBy(secondaryDimension).OrderBy(group => group.Key))
+            foreach (var slice in areas.Where(ea => ea.Dimensions.Area() == 1).GroupBy(secondaryDimension).OrderBy(group => group.Key))
             {
                 EdgeArea start = null;
                 EdgeArea end = null;

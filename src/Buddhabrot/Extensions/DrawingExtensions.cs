@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Buddhabrot.Extensions
 {
@@ -12,9 +11,9 @@ namespace Buddhabrot.Extensions
                 p.Y >= 0 && p.Y < size.Height;
         }
 
-        public static Point OffsetBy(this Point p, int xDelta, int yDelta)
-        {
-            return new Point(p.X + xDelta, p.Y + yDelta);
-        }
+        public static Point OffsetBy(this Point p, int xDelta, int yDelta) => 
+            new Point(p.X + xDelta, p.Y + yDelta);
+
+        public static int Area(this Size s) => s.Width * s.Height;
     }
 }

@@ -37,9 +37,12 @@ namespace Buddhabrot.Edges
         {
             foreach (var area in _areas)
             {
-                for (int i = 0; i < area.Length; i++)
+                for (int yDelta = 0; yDelta < area.Dimensions.Height; yDelta++)
                 {
-                    yield return area.GridLocation.OffsetBy(i, 0);
+                    for (int xDelta = 0; xDelta < area.Dimensions.Width; xDelta++)
+                    {
+                        yield return area.GridLocation.OffsetBy(xDelta, yDelta);
+                    }
                 }
             }
         }
@@ -48,50 +51,42 @@ namespace Buddhabrot.Edges
         {
             var compressedAreas = new List<EdgeArea>();
 
-            foreach (var row in _areas.GroupBy(ea => ea.GridLocation.Y).OrderBy(row => row.Key))
+            foreach (var col in _areas.GroupBy(ea => ea.GridLocation.X).OrderBy(col => col.Key))
             {
                 EdgeArea start = null;
                 EdgeArea end = null;
-                int length = 0;
+                int height = 0;
 
-                foreach (var edge in row.OrderBy(ea => ea.GridLocation.X))
+                foreach (var edge in col.OrderBy(ea => ea.GridLocation.Y))
                 {
                     if (start == null)
                     {
                         start = edge;
                         end = edge;
-                        length = 1;
+                        height = 1;
                     }
-                    else if (start.GridLocation.X + length == edge.GridLocation.X)
+                    else if (start.GridLocation.Y + height == edge.GridLocation.Y)
                     {
                         end = edge;
-                        length++;
+                        height++;
                     }
                     else
                     {
                         compressedAreas.Add(new EdgeArea(
-                            new ComplexArea(
-                                new Range(start.Area.RealRange.InclusiveMin, end.Area.RealRange.ExclusiveMax),
-                                start.Area.ImagRange),
                             start.GridLocation,
-                            EncodingDirection.East,
-                            length));
+                            new Size(1, height)));
 
                         start = edge;
                         end = edge;
-                        length = 1;
+                        height = 1;
                     }
                 }
 
                 if (start != null && end != null)
                 {
                     compressedAreas.Add(new EdgeArea(
-                        new ComplexArea(
-                            new Range(start.Area.RealRange.InclusiveMin, end.Area.RealRange.ExclusiveMax),
-                            start.Area.ImagRange),
                         start.GridLocation,
-                        EncodingDirection.East,
-                        length));
+                        new Size(1, height)));
                 }
             }
 
@@ -118,36 +113,14 @@ namespace Buddhabrot.Edges
             using (var stream = new FileStream(filePath, FileMode.Append))
             using (var writer = new BinaryWriter(stream))
             {
-                void WriteRange(Range range)
-                {
-                    writer.Write(range.InclusiveMin);
-                    writer.Write(range.ExclusiveMax);
-                }
-
-                void WriteArea(ComplexArea area)
-                {
-                    WriteRange(area.RealRange);
-                    WriteRange(area.ImagRange);
-                }
-
-                void WriteEdgeArea(EdgeArea edgeArea)
-                {
-                    WriteArea(edgeArea.Area);
-                    writer.Write(edgeArea.GridLocation.X);
-                    writer.Write(edgeArea.GridLocation.Y);
-                    writer.Write((int)edgeArea.EncodingDirection);
-                    writer.Write(edgeArea.Length);
-                }
-
-                writer.Write(gridResolution.Width);
-                writer.Write(gridResolution.Height);
-                WriteArea(viewPort);
+                writer.WriteSize(gridResolution);
+                writer.WriteComplexArea(viewPort);
 
                 int count = 0;
                 foreach (var area in areas)
                 {
                     count++;
-                    WriteEdgeArea(area);
+                    writer.WriteEdgeArea(area);
                 }
                 Log.Info($"Wrote {count} edge areas.");
             }
@@ -164,35 +137,20 @@ namespace Buddhabrot.Edges
 
                 using (var reader = new BinaryReader(stream))
                 {
-                    Range ReadRange() => new Range(reader.ReadSingle(), reader.ReadSingle());
-                    ComplexArea ReadArea() => new ComplexArea(ReadRange(), ReadRange());
-                    EdgeArea ReadEdgeArea()
-                    {
-                        var area = ReadArea();
-                        var x = reader.ReadInt32();
-                        var y = reader.ReadInt32();
-                        var direction = (EncodingDirection)reader.ReadInt32();
-                        var length = reader.ReadInt32();
-
-                        return new EdgeArea(area, new Point(x, y), direction, length);
-                    }
-
-                    var width = reader.ReadInt32();
-                    var height = reader.ReadInt32();
-
-                    var viewPort = ReadArea();
+                    var size = reader.ReadSize();
+                    var viewPort = reader.ReadComplexArea();
 
                     var edgeAreas = new List<EdgeArea>();
 
                     while (stream.Position < stream.Length)
                     {
-                        edgeAreas.Add(ReadEdgeArea());
+                        edgeAreas.Add(reader.ReadEdgeArea());
                     }
 
-                    Log.Info($"Loaded edges with resolution ({width:N0}x{height:N0}), view port {viewPort}, and {edgeAreas.Count} edge areas.");
+                    Log.Info($"Loaded edges with resolution ({size.Width:N0}x{size.Height:N0}), view port {viewPort}, and {edgeAreas.Count} edge areas.");
 
                     return new EdgeAreas(
-                        new Size(width, height),
+                        size,
                         viewPort,
                         edgeAreas);
                 }

@@ -1,26 +1,20 @@
 ﻿using System.Drawing;
-using Buddhabrot.Core;
 
 namespace Buddhabrot.Edges
 {
     public sealed class EdgeArea
     {
-        public ComplexArea Area { get; }
         public Point GridLocation { get; }
-        public int Length { get; }
-        public EncodingDirection EncodingDirection { get; }
+        public Size Dimensions { get; }
 
-        public EdgeArea(ComplexArea area, Point gridLocation) :
-            this(area, gridLocation, EncodingDirection.None, 1)
-        {
+        public EdgeArea(Point location) : this(location, new Size(1, 1))
+        {           
         }
 
-        public EdgeArea(ComplexArea area, Point gridLocation, EncodingDirection encodingDirection, int length)
+        public EdgeArea(Point location, Size dimensions)
         {
-            Area = area;
-            GridLocation = gridLocation;
-            EncodingDirection = encodingDirection;
-            Length = length;
+            GridLocation = location;
+            Dimensions = dimensions;
         }
     }
 }

@@ -185,10 +185,7 @@ namespace Buddhabrot.Edges
                         leftTopCorner: leftColumnIsInSet[areaIndex + 1],
                         rightTopCorner: rightColumnIsInSet[areaIndex + 1]))
                     {
-                        yield return new EdgeArea(new ComplexArea(
-                            realRange: new Range(GetRealValue(rightColumnIndex - 1), GetRealValue(rightColumnIndex)),
-                            imagRange: new Range(GetImagValue(areaIndex), GetImagValue(areaIndex + 1))),
-                            new Point(rightColumnIndex - 1, stripIndex * areasInStripColumn + areaIndex));
+                        yield return new EdgeArea(new Point(rightColumnIndex - 1, stripIndex * areasInStripColumn + areaIndex));
                     }
                 }
 

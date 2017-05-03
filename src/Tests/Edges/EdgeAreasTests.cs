@@ -27,7 +27,8 @@ namespace Tests.Edges
                     CreateEdgeArea(2,3),
                 };
 
-                EdgeAreas.Write(filePath, size, viewPort, edgeAreas);
+                var areas = EdgeAreas.CreateCompressed(size, viewPort, edgeAreas);
+                areas.Write(filePath);
 
                 var roundTripped = EdgeAreas.Load(filePath);
 
@@ -46,7 +47,7 @@ namespace Tests.Edges
                 Assert.That(roundTripped.GridResolution, Is.EqualTo(size), "Did not round-trip grid resolution.");
                 AreasAreEqual(roundTripped.ViewPort, viewPort);
                 Assert.That(roundTripped.AreaCount, Is.EqualTo(edgeAreas.Length), "Did not round-trip the edge areas");
-                Assert.That(roundTripped.GetAreaLocations().ToArray(), Is.EqualTo(edgeAreas.Select(ea => ea.GridLocation).ToArray()), 
+                Assert.That(roundTripped.GetAreaLocations().ToArray(), Is.EqualTo(edgeAreas.Select(ea => ea.GridLocation).ToArray()),
                     "Did not round-trip the area locations.");
             }
             finally

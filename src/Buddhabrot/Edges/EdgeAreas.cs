@@ -23,6 +23,15 @@ namespace Buddhabrot.Edges
         private readonly List<EdgeArea> _areas;
         public int AreaCount => _areas.Count;
 
+        public static EdgeAreas CreateCompressed(
+            Size gridResolution,
+            ComplexArea viewPort,
+            IEnumerable<EdgeArea> areas)
+        {
+            var compressedAreas = CompressAreas(areas.ToList());
+            return new EdgeAreas(gridResolution, viewPort, compressedAreas);
+        }
+
         private EdgeAreas(
             Size gridResolution,
             ComplexArea viewPort,
@@ -47,38 +56,56 @@ namespace Buddhabrot.Edges
             }
         }
 
-        public EdgeAreas Compress()
+        public EdgeAreas CreateCompressedVersion()
         {
-            var verticallyCompressed = CompressAreas(
-                    compressionDimension: ea => ea.GridLocation.Y,
-                    secondaryDimension: ea => ea.GridLocation.X,
-                    sizeCreator: height => new Size(1, height));
-            var horizontallyCompressed = CompressAreas(
-                    compressionDimension: ea => ea.GridLocation.X,
-                    secondaryDimension: ea => ea.GridLocation.Y,
-                    sizeCreator: width => new Size(width, 1));
-
+            // Guard against re-compressing the areas by expanding them.
+            // In case a fancier compression algorithm gets put in, this can be used to re-compress an old file.
             return new EdgeAreas(
                 GridResolution,
                 ViewPort,
-                horizontallyCompressed.Count < verticallyCompressed.Count ? horizontallyCompressed : verticallyCompressed);
+                GetAreaLocations().Select(location => new EdgeArea(location)).ToList());
+        }
+
+        private static List<EdgeArea> CompressAreas(List<EdgeArea> areas)
+        {
+            var verticallyCompressed = CompressAreas(
+                areas,
+                compressionDimension: ea => ea.GridLocation.Y,
+                secondaryDimension: ea => ea.GridLocation.X,
+                sizeCreator: height => new Size(1, height));
+            var horizontallyCompressed = CompressAreas(
+                areas,
+                compressionDimension: ea => ea.GridLocation.X,
+                secondaryDimension: ea => ea.GridLocation.Y,
+                sizeCreator: width => new Size(width, 1));
+
+            Log.Info($"Compressed {areas.Count} areas into {verticallyCompressed.Count} vertical areas " +
+                     $"and {horizontallyCompressed.Count} horizonal areas.");
+
+            return horizontallyCompressed.Count < verticallyCompressed.Count
+                ? horizontallyCompressed
+                : verticallyCompressed;
         }
 
         /// <summary>
         /// Compresses the areas using run-length encoding.
         /// </summary>
+        /// <param name="areas">The areas.</param>
         /// <param name="compressionDimension">Which dimension to perform RLE on.</param>
         /// <param name="secondaryDimension">The secondary dimension.</param>
         /// <param name="sizeCreator">How to turn the scalar length into a size.</param>
-        /// <returns>Compressed areas.</returns>
-        private List<EdgeArea> CompressAreas(
+        /// <returns>
+        /// Compressed areas.
+        /// </returns>
+        private static List<EdgeArea> CompressAreas(
+            List<EdgeArea> areas,
             Func<EdgeArea, int> compressionDimension,
             Func<EdgeArea, int> secondaryDimension,
             Func<int, Size> sizeCreator)
         {
             var compressedAreas = new List<EdgeArea>();
 
-            foreach (var slice in _areas.GroupBy(secondaryDimension).OrderBy(group => group.Key))
+            foreach (var slice in areas.GroupBy(secondaryDimension).OrderBy(group => group.Key))
             {
                 EdgeArea start = null;
                 EdgeArea end = null;
@@ -121,15 +148,6 @@ namespace Buddhabrot.Edges
 
         public void Write(string filePath)
         {
-            Write(filePath, GridResolution, ViewPort, _areas);
-        }
-
-        public static void Write(
-            string filePath,
-            Size gridResolution,
-            ComplexArea viewPort,
-            IEnumerable<EdgeArea> areas)
-        {
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
@@ -139,11 +157,11 @@ namespace Buddhabrot.Edges
             using (var stream = new FileStream(filePath, FileMode.Append))
             using (var writer = new BinaryWriter(stream))
             {
-                writer.WriteSize(gridResolution);
-                writer.WriteComplexArea(viewPort);
+                writer.WriteSize(GridResolution);
+                writer.WriteComplexArea(ViewPort);
 
                 int count = 0;
-                foreach (var area in areas)
+                foreach (var area in _areas)
                 {
                     count++;
                     writer.WriteEdgeArea(area);

@@ -53,7 +53,7 @@ namespace Buddhabrot
                 [ArgDescription("Output edges file."), ArgRequired] string outputEdgesFilePath)
             {
                 var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
-                var compressedAreas = areas.Compress();
+                var compressedAreas = areas.CreateCompressedVersion();
                 compressedAreas.Write(outputEdgesFilePath);
             }
         }

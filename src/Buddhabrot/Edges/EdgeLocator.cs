@@ -49,11 +49,11 @@ namespace Buddhabrot.Edges
 
             var timer = Stopwatch.StartNew();
 
-            EdgeAreas.Write(
-                outputFilePath,
+            var areas = EdgeAreas.CreateCompressed(
                 gridResolution,
                 viewPort,
                 GetEdgeAreas(targetViewPort, targetResolution, iterationRange));
+            areas.Write(outputFilePath);
 
             timer.Stop();
             Log.Info($"Took {timer.Elapsed.Humanize(2)} to find edges.");

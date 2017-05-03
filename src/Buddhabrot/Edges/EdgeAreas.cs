@@ -49,36 +49,63 @@ namespace Buddhabrot.Edges
 
         public EdgeAreas Compress()
         {
+            var verticallyCompressed = CompressAreas(
+                    compressionDimension: ea => ea.GridLocation.Y,
+                    secondaryDimension: ea => ea.GridLocation.X,
+                    sizeCreator: height => new Size(1, height));
+            var horizontallyCompressed = CompressAreas(
+                    compressionDimension: ea => ea.GridLocation.X,
+                    secondaryDimension: ea => ea.GridLocation.Y,
+                    sizeCreator: width => new Size(width, 1));
+
+            return new EdgeAreas(
+                GridResolution,
+                ViewPort,
+                horizontallyCompressed.Count < verticallyCompressed.Count ? horizontallyCompressed : verticallyCompressed);
+        }
+
+        /// <summary>
+        /// Compresses the areas using run-length encoding.
+        /// </summary>
+        /// <param name="compressionDimension">Which dimension to perform RLE on.</param>
+        /// <param name="secondaryDimension">The secondary dimension.</param>
+        /// <param name="sizeCreator">How to turn the scalar length into a size.</param>
+        /// <returns>Compressed areas.</returns>
+        private List<EdgeArea> CompressAreas(
+            Func<EdgeArea, int> compressionDimension,
+            Func<EdgeArea, int> secondaryDimension,
+            Func<int, Size> sizeCreator)
+        {
             var compressedAreas = new List<EdgeArea>();
 
-            foreach (var col in _areas.GroupBy(ea => ea.GridLocation.X).OrderBy(col => col.Key))
+            foreach (var slice in _areas.GroupBy(secondaryDimension).OrderBy(group => group.Key))
             {
                 EdgeArea start = null;
                 EdgeArea end = null;
-                int height = 0;
+                int length = 0;
 
-                foreach (var edge in col.OrderBy(ea => ea.GridLocation.Y))
+                foreach (var edge in slice.OrderBy(compressionDimension))
                 {
                     if (start == null)
                     {
                         start = edge;
                         end = edge;
-                        height = 1;
+                        length = 1;
                     }
-                    else if (start.GridLocation.Y + height == edge.GridLocation.Y)
+                    else if (compressionDimension(start) + length == compressionDimension(edge))
                     {
                         end = edge;
-                        height++;
+                        length++;
                     }
                     else
                     {
                         compressedAreas.Add(new EdgeArea(
                             start.GridLocation,
-                            new Size(1, height)));
+                            sizeCreator(length)));
 
                         start = edge;
                         end = edge;
-                        height = 1;
+                        length = 1;
                     }
                 }
 
@@ -86,11 +113,10 @@ namespace Buddhabrot.Edges
                 {
                     compressedAreas.Add(new EdgeArea(
                         start.GridLocation,
-                        new Size(1, height)));
+                        sizeCreator(length)));
                 }
             }
-
-            return new EdgeAreas(GridResolution, ViewPort, compressedAreas);
+            return compressedAreas;
         }
 
         public void Write(string filePath)

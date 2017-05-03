@@ -56,6 +56,29 @@ namespace Buddhabrot.Edges
             }
         }
 
+        /// <summary>
+        /// Gets the complex areas, repeated by how large they are.
+        /// </summary>
+        /// <returns>An array of complex areas.  References to areas that are larger than a single square are repeated.</returns>
+        public ComplexArea[] GetDistributedComplexAreas()
+        {
+            float realIncrement = ViewPort.RealRange.Magnitude / (GridResolution.Width - 1);
+            float imagIncrement = ViewPort.ImagRange.Magnitude / (GridResolution.Height - 1);
+
+            float GetRealValue(int x) => ViewPort.RealRange.InclusiveMin + x * realIncrement;
+            float GetImagValue(int y) => ViewPort.ImagRange.InclusiveMin + y * imagIncrement;
+
+            return _areas.SelectMany(ea =>
+                {
+                    var area = new ComplexArea(
+                        realRange: new Range(GetRealValue(ea.GridLocation.X), GetRealValue(ea.GridLocation.X + ea.Dimensions.Width)),
+                        imagRange: new Range(GetImagValue(ea.GridLocation.Y), GetImagValue(ea.GridLocation.Y + ea.Dimensions.Height)));
+
+                    return Enumerable.Repeat(area, ea.Dimensions.Area());
+                })
+                .ToArray();
+        }
+
         public EdgeAreas CreateCompressedVersion()
         {
             // Guard against re-compressing the areas by expanding them.

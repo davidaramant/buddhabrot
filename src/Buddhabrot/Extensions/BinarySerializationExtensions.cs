@@ -45,5 +45,13 @@ namespace Buddhabrot.Extensions
         }
 
         public static EdgeArea ReadEdgeArea(this BinaryReader reader) => new EdgeArea(reader.ReadPoint(), reader.ReadSize());
+
+        public static void WriteComplex(this BinaryWriter writer, FComplex complex)
+        {
+            writer.Write(complex.Real);
+            writer.Write(complex.Imag);
+        }
+
+        public static FComplex ReadComplex(this BinaryReader reader) => new FComplex(reader.ReadSingle(), reader.ReadSingle());
     }
 }

@@ -28,17 +28,13 @@ namespace Buddhabrot
                 );
             }
 
-            [ArgActionMethod, ArgDescription("Renders the edge areas to an image.")]
+            [ArgActionMethod, ArgDescription("Renders the edge areas to an image.  The image location/name will be based on the edge file.")]
             public void VisualizeEdges(
-                [ArgDescription("Edges file."), ArgRequired] string edgesFilePath,
-                [ArgDescription("Output image (optional).  Defaults to a PNG file based on the edges file name/location.")] string imageFilePath)
+                [ArgDescription("Edges file."), ArgRequired] string edgesFilePath)
             {
-                if (string.IsNullOrWhiteSpace(imageFilePath))
-                {
-                    imageFilePath = Path.Combine(
-                        Path.GetDirectoryName(edgesFilePath),
-                        Path.GetFileNameWithoutExtension(edgesFilePath) + ".png");
-                }
+                var imageFilePath = Path.Combine(
+                    Path.GetDirectoryName(edgesFilePath),
+                    Path.GetFileNameWithoutExtension(edgesFilePath) + ".png");
 
                 Edges.EdgeVisualizer.Render(edgesFilePath, imageFilePath);
             }
@@ -48,7 +44,7 @@ namespace Buddhabrot
                 [ArgDescription("The path for the resulting edges file."), ArgRequired] string edgesFilePath)
             {
                 FindEdges(edgesFilePath);
-                VisualizeEdges(edgesFilePath,null);
+                VisualizeEdges(edgesFilePath);
             }
         }
     }

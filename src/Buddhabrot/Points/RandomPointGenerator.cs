@@ -28,9 +28,17 @@ namespace Buddhabrot.Points
                     float GetRandomInRange(Range range) =>
                         range.Magnitude * (float)_random.NextDouble() + range.InclusiveMin;
 
+                    var imag = GetRandomInRange(area.ImagRange);
+
+                    // The areas are only on the positive side of the real axis, so we have to randomly move them down
+                    if (_random.Next(2) % 2 == 0)
+                    {
+                        imag = -imag;
+                    }
+
                     point = new FComplex(
                         GetRandomInRange(area.RealRange),
-                        GetRandomInRange(area.ImagRange));
+                        imag);
                 } while (MandelbulbChecker.IsInsideBulbs(point));
                 yield return point;
             }

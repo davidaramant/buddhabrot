@@ -19,7 +19,7 @@ namespace Buddhabrot.Edges
             string outputFilePath,
             ComplexArea viewPort,
             Size gridResolution,
-            IterationRange iterationRange)
+            IntRange iterationRange)
         {
             // Assumptions for this class
             if (Vector<float>.Count != 8 || Vector<int>.Count != 8)
@@ -43,7 +43,7 @@ namespace Buddhabrot.Edges
 
             var targetViewPort = new ComplexArea(
                 realRange: viewPort.RealRange,
-                imagRange: new Range(0, viewPort.ImagRange.ExclusiveMax));
+                imagRange: new FloatRange(0, viewPort.ImagRange.ExclusiveMax));
 
             var targetResolution = new Size(width: gridResolution.Width, height: gridResolution.Height / 2);
 
@@ -59,7 +59,7 @@ namespace Buddhabrot.Edges
             Log.Info($"Took {timer.Elapsed.Humanize(2)} to find edges.");
         }
 
-        private static IEnumerable<EdgeArea> GetEdgeAreas(ComplexArea viewPort, Size resolution, IterationRange iterationRange)
+        private static IEnumerable<EdgeArea> GetEdgeAreas(ComplexArea viewPort, Size resolution, IntRange iterationRange)
         {
             var vectorSize = Vector<float>.Count;
 
@@ -93,7 +93,7 @@ namespace Buddhabrot.Edges
         private static IEnumerable<EdgeArea> FindEdgeAreasInStrip(
             ComplexArea viewPort,
             Size resolution,
-            IterationRange iterationRange,
+            IntRange iterationRange,
             int stripIndex)
         {
             var vectorSize = Vector<float>.Count;
@@ -147,9 +147,9 @@ namespace Buddhabrot.Edges
                     CopyResults(quickBailout);
                     if (rightColumnIsInSet.Any(inSet => inSet))
                     {
-                        vIterations = VectorKernel.IteratePoints(vReals, vImags, iterationRange.ExclusiveMax);
+                        vIterations = VectorKernel.IteratePoints(vReals, vImags, iterationRange.Max);
 
-                        CopyResults(iterationRange.ExclusiveMax);
+                        CopyResults(iterationRange.Max);
                     }
                 }
             }

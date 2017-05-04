@@ -7,13 +7,13 @@ namespace Buddhabrot.Extensions
 {
     public static class BinarySerializationExtensions
     {
-        public static void WriteRange(this BinaryWriter writer, Range range)
+        public static void WriteRange(this BinaryWriter writer, FloatRange range)
         {
             writer.Write(range.InclusiveMin);
             writer.Write(range.ExclusiveMax);
         }
 
-        public static Range ReadRange(this BinaryReader reader) => new Range(reader.ReadSingle(), reader.ReadSingle());
+        public static FloatRange ReadRange(this BinaryReader reader) => new FloatRange(reader.ReadSingle(), reader.ReadSingle());
 
         public static void WriteComplexArea(this BinaryWriter writer, ComplexArea area)
         {

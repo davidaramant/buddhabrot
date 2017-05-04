@@ -2,10 +2,10 @@
 {
     public sealed class ComplexArea
     {
-        public Range RealRange { get; }
-        public Range ImagRange { get; }
+        public FloatRange RealRange { get; }
+        public FloatRange ImagRange { get; }
 
-        public ComplexArea(Range realRange, Range imagRange)
+        public ComplexArea(FloatRange realRange, FloatRange imagRange)
         {
             RealRange = realRange;
             ImagRange = imagRange;

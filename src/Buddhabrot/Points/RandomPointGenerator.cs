@@ -25,7 +25,7 @@ namespace Buddhabrot.Points
                     var areaIndex = _random.Next(_areas.Length);
                     var area = _areas[areaIndex];
 
-                    float GetRandomInRange(Range range) =>
+                    float GetRandomInRange(FloatRange range) =>
                         range.Magnitude * (float)_random.NextDouble() + range.InclusiveMin;
 
                     var imag = GetRandomInRange(area.ImagRange);

@@ -2,14 +2,14 @@
 
 namespace Buddhabrot.Core
 {
-    public sealed class Range
+    public sealed class FloatRange
     {
         public float InclusiveMin { get; }
         public float ExclusiveMax { get; }
 
         public float Magnitude => Math.Abs(ExclusiveMax - InclusiveMin);
 
-        public Range(float inclusiveMin, float exclusiveMax)
+        public FloatRange(float inclusiveMin, float exclusiveMax)
         {
             InclusiveMin = inclusiveMin;
             ExclusiveMax = exclusiveMax;

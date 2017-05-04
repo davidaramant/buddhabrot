@@ -71,8 +71,8 @@ namespace Buddhabrot.Edges
             return _areas.SelectMany(ea =>
                 {
                     var area = new ComplexArea(
-                        realRange: new Range(GetRealValue(ea.GridLocation.X), GetRealValue(ea.GridLocation.X + ea.Dimensions.Width)),
-                        imagRange: new Range(GetImagValue(ea.GridLocation.Y), GetImagValue(ea.GridLocation.Y + ea.Dimensions.Height)));
+                        realRange: new FloatRange(GetRealValue(ea.GridLocation.X), GetRealValue(ea.GridLocation.X + ea.Dimensions.Width)),
+                        imagRange: new FloatRange(GetImagValue(ea.GridLocation.Y), GetImagValue(ea.GridLocation.Y + ea.Dimensions.Height)));
 
                     return Enumerable.Repeat(area, ea.Dimensions.Area());
                 })

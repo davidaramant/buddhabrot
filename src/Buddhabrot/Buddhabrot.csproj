@@ -55,8 +55,8 @@
   <ItemGroup>
     <Compile Include="Core\FComplex.cs" />
     <Compile Include="Core\ComplexArea.cs" />
-    <Compile Include="Core\Range.cs" />
-    <Compile Include="Core\IterationRange.cs" />
+    <Compile Include="Core\FloatRange.cs" />
+    <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
     <Compile Include="Edges\EdgeArea.cs" />
     <Compile Include="Edges\EdgeAreas.cs" />

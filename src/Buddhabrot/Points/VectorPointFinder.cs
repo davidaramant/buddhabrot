@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,62 +14,105 @@ namespace Buddhabrot.Points
     sealed class VectorPointFinder : PointFinder
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(VectorPointFinder));
-        private const int BatchSize = 2048;
+
+        private const int TrialSize = 5;
+        private int _trialNumber = 1;
+        private readonly double[] _trialSpeeds = new double[TrialSize];
+
+        enum Mutation
+        {
+            Smaller,
+            Larger
+        }
+
+        private int _batchSize = 256;
+        private double _lastSpeed = 0;
+        private Mutation _lastMutation = Mutation.Larger;
+        private readonly IntRange _batchRange = new IntRange(8, 2048, stepSize: 8, maxIsExclusive: false);
 
         private int VectorCapacity => Vector<float>.Count;
 
         public VectorPointFinder(
             RandomPointGenerator numberGenerator,
-            IterationRange iterationRange,
+            IntRange iterationRange,
             string outputDirectory) :
             base(numberGenerator, iterationRange, outputDirectory)
         {
         }
 
-        protected override void IteratePoints(CancellationToken token)
+        protected override void IteratePointBatch(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
-            {
-                var timer = Stopwatch.StartNew();
-                var points = NumberGenerator.GetPoints(BatchSize);
+            var timer = Stopwatch.StartNew();
+            var points = NumberGenerator.GetPoints(_batchSize);
 
-                Parallel.ForEach(
-                    VectorBatch(points),
-                    (batch, loopState) =>
+            Parallel.ForEach(
+                VectorBatch(points),
+                (batch, loopState) =>
+                {
+                    if (token.IsCancellationRequested || loopState.ShouldExitCurrentIteration)
                     {
-                        if (token.IsCancellationRequested || loopState.ShouldExitCurrentIteration)
+                        loopState.Stop();
+                        return;
+                    }
+
+                    var realBatch = new float[VectorCapacity];
+                    var imagBatch = new float[VectorCapacity];
+
+                    for (int i = 0; i < VectorCapacity; i++)
+                    {
+                        realBatch[i] = batch[i].Real;
+                        imagBatch[i] = batch[i].Imag;
+                    }
+
+                    var cReal = new Vector<float>(realBatch);
+                    var cImag = new Vector<float>(imagBatch);
+
+                    var vIterations = VectorKernel.IteratePoints(cReal, cImag, IterationRange.Max);
+
+                    for (int i = 0; i < VectorCapacity; i++)
+                    {
+                        if (IterationRange.IsInside(vIterations[i]))
                         {
-                            loopState.Stop();
-                            return;
+                            PointWriter.Save(batch[i]);
                         }
+                    }
+                });
 
-                        var realBatch = new float[VectorCapacity];
-                        var imagBatch = new float[VectorCapacity];
+            timer.Stop();
+            var pointsPerSecond = _batchSize / timer.Elapsed.TotalSeconds;
+            Log.Info($"Processed {pointsPerSecond:N1} pts/s.");
 
-                        for (int i = 0; i < VectorCapacity; i++)
-                        {
-                            realBatch[i] = batch[i].Real;
-                            imagBatch[i] = batch[i].Imag;
-                        }
+            _trialSpeeds[_trialNumber - 1] = pointsPerSecond;
 
-                        var cReal = new Vector<float>(realBatch);
-                        var cImag = new Vector<float>(imagBatch);
-
-                        var vIterations = VectorKernel.IteratePoints(cReal, cImag, IterationRange.ExclusiveMax);
-
-                        for (int i = 0; i < VectorCapacity; i++)
-                        {
-                            if (IterationRange.IsInside(vIterations[i]))
-                            {
-                                PointWriter.Save(batch[i]);
-                            }
-                        }
-                    });
-
-                timer.Stop();
-                Log.Info($"Processed {BatchSize / timer.Elapsed.TotalSeconds:N1} points/second.");
+            if (_trialNumber < TrialSize)
+            {
+                _trialNumber++;
             }
-            Log.Info("Exiting gracefully");
+            else
+            {
+                var trialAverage = _trialSpeeds.Average();
+                var faster = trialAverage > _lastSpeed;
+
+                Log.Info($"Trial average: {trialAverage:N1} pts/s, previously {_lastSpeed:N1} pts/s.");
+
+                var newMutation = _lastMutation;
+
+                if (!faster)
+                {
+                    newMutation = _lastMutation == Mutation.Larger ? Mutation.Smaller : Mutation.Larger;
+                }
+
+                _batchSize =
+                    newMutation == Mutation.Larger
+                        ? Math.Min(_batchRange.Max, _batchSize + _batchRange.StepSize)
+                        : Math.Max(_batchRange.Min, _batchSize - _batchRange.StepSize);
+
+                _lastMutation = newMutation;
+                _lastSpeed = trialAverage;
+                _trialNumber = 1;
+
+                Log.Info($"Making batch {newMutation} to {_batchSize}");
+            }
         }
 
         private IEnumerable<FComplex[]> VectorBatch(IEnumerable<FComplex> pointSequence)

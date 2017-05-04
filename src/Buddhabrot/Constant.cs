@@ -4,9 +4,9 @@ namespace Buddhabrot
 {
     static class Constant
     {
-        public static readonly IterationRange IterationRange = new IterationRange(20_000_000, 30_000_000);
+        public static readonly IntRange IterationRange = new IntRange(20_000_000, 30_000_000);
         public static readonly ComplexArea RenderingArea = new ComplexArea(
-            realRange: new Range(-1.45f, 0.75f),
-            imagRange: new Range(-1.1f, 1.1f));
+            realRange: new FloatRange(-1.45f, 0.75f),
+            imagRange: new FloatRange(-1.1f, 1.1f));
     }
 }

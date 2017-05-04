@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Buddhabrot.Kernels
+namespace Buddhabrot.IterationKernels
 {
     static class VectorKernel
     {

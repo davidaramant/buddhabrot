@@ -1,5 +1,7 @@
 ﻿using System.Drawing;
 using System.IO;
+using System.Threading;
+using Buddhabrot.Points;
 using PowerArgs;
 
 namespace Buddhabrot
@@ -33,7 +35,7 @@ namespace Buddhabrot
 
             [ArgActionMethod, ArgDescription("Renders the edge areas to an image.  The image location/name will be based on the edge file.")]
             public void VisualizeEdges(
-                [ArgDescription("Edges file."), ArgRequired] string edgesFilePath)
+                [ArgDescription("Edges file."), ArgRequired, ArgExistingFile] string edgesFilePath)
             {
                 var imageFilePath = Path.Combine(
                     Path.GetDirectoryName(edgesFilePath),
@@ -53,12 +55,40 @@ namespace Buddhabrot
 
             [ArgActionMethod, ArgDescription("Combines adjacent edge areas.")]
             public void CompressEdges(
-                [ArgDescription("Input edges file."), ArgRequired] string inputEdgesFilePath,
+                [ArgDescription("Input edges file."), ArgRequired, ArgExistingFile] string inputEdgesFilePath,
                 [ArgDescription("Output edges file."), ArgRequired] string outputEdgesFilePath)
             {
                 var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
                 var compressedAreas = areas.CreateCompressedVersion();
                 compressedAreas.Write(outputEdgesFilePath);
+            }
+
+            [ArgActionMethod, ArgDescription("Finds points.")]
+            public void FindPoints(
+                [ArgDescription("Input edges file."), ArgRequired, ArgExistingFile] string inputEdgesFilePath,
+                [ArgDescription("Output directory."), ArgRequired] string outputDirectory)
+            {
+                System.Console.WriteLine("Press Ctrl-C to exit...");
+
+                if (!Directory.Exists(outputDirectory))
+                {
+                    Directory.CreateDirectory(outputDirectory);
+                }
+
+                var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
+                var randomNumbers = new RandomPointGenerator(areas.GetDistributedComplexAreas());
+
+                var finder = new VectorPointFinder(randomNumbers, Constant.IterationRange, outputDirectory);
+
+                var cts = new CancellationTokenSource();
+
+                System.Console.CancelKeyPress += (s, e) =>
+                {
+                    e.Cancel = true;
+                    cts.Cancel();
+                };
+
+                finder.Start(cts.Token).Wait();
             }
         }
     }

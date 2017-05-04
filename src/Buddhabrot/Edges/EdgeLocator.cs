@@ -6,7 +6,7 @@ using Buddhabrot.Core;
 using log4net;
 using System.Drawing;
 using System.Numerics;
-using Buddhabrot.Kernels;
+using Buddhabrot.IterationKernels;
 using Humanizer;
 
 namespace Buddhabrot.Edges

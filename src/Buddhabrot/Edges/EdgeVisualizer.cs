@@ -6,7 +6,7 @@ namespace Buddhabrot.Edges
 {
     static class EdgeVisualizer
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeLocator));
+        private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeVisualizer));
 
         public static void Render(string edgesFilePath, string imageFilePath)
         {

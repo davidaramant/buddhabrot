@@ -12,7 +12,7 @@ namespace Buddhabrot.Edges
 {
     public sealed class EdgeAreas
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeLocator));
+        private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeAreas));
 
         private const string HeaderText = "Float Areas V1.0";
         // A sixteen byte magic header value

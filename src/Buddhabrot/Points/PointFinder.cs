@@ -6,7 +6,7 @@ using log4net;
 
 namespace Buddhabrot.Points
 {
-    abstract class PointFinder
+    abstract class PointFinder : IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(PointFinder));
         protected RandomPointGenerator NumberGenerator { get; }
@@ -44,5 +44,15 @@ namespace Buddhabrot.Points
 
 
         protected abstract void IteratePointBatch(CancellationToken token);
+
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

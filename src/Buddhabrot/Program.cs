@@ -78,17 +78,20 @@ namespace Buddhabrot
                 var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
                 var randomNumbers = new RandomPointGenerator(areas.GetDistributedComplexAreas());
 
-                var finder = new VectorPointFinder(randomNumbers, Constant.IterationRange, outputDirectory);
 
-                var cts = new CancellationTokenSource();
+                    var cts = new CancellationTokenSource();
 
                 System.Console.CancelKeyPress += (s, e) =>
                 {
                     e.Cancel = true;
                     cts.Cancel();
+                    System.Console.WriteLine("Cancelation requested...");
                 };
 
-                finder.Start(cts.Token).Wait();
+                using (var finder = new IntelOpenCLPointFinder(randomNumbers, Constant.IterationRange, outputDirectory))
+                {
+                    finder.Start(cts.Token).Wait();
+                }
             }
         }
     }

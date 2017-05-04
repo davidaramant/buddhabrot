@@ -18,7 +18,7 @@ namespace Buddhabrot.Points
         private const int BatchSize = 8192;
 
         private readonly DisposeStack _disposeStack = new DisposeStack();
-        private readonly Device[] devices;
+        private readonly Device[] _devices;
         private readonly NOpenCL.Program _program;
         private readonly Context _context;
 
@@ -37,11 +37,11 @@ namespace Buddhabrot.Points
             var cpuDevice = platform.GetDevices(DeviceType.Cpu).Single();
             var gpuDevice = platform.GetDevices(DeviceType.Gpu).Single();
 
-            devices = new[] { cpuDevice, gpuDevice };
+            _devices = new[] { cpuDevice, gpuDevice };
 
-            _disposeStack.AddMultiple(devices);
+            _disposeStack.AddMultiple(_devices);
 
-            _context = _disposeStack.Add(Context.Create(devices));
+            _context = _disposeStack.Add(Context.Create(_devices));
             _program = _disposeStack.Add(_context.CreateProgramWithSource(OpenCLKernelSource.Read()));
             _program.Build();
         }
@@ -99,11 +99,11 @@ namespace Buddhabrot.Points
                         SplitBuffer(iterationsBuffer, cpuBatchSize, gpuBatchSize)
                     };
 
-                    var commandQueues = new CommandQueue[devices.Length];
-                    var enqueueEvents = new Event[devices.Length];
-                    for (int deviceIndex = 0; deviceIndex < devices.Length; deviceIndex++)
+                    var commandQueues = new CommandQueue[_devices.Length];
+                    var enqueueEvents = new Event[_devices.Length];
+                    for (int deviceIndex = 0; deviceIndex < _devices.Length; deviceIndex++)
                     {
-                        var device = devices[deviceIndex];
+                        var device = _devices[deviceIndex];
                         commandQueues[deviceIndex] = _context.CreateCommandQueue(device);
 
                         var kernel = localStack.Add(_program.CreateKernel("iterate_points"));
@@ -123,7 +123,7 @@ namespace Buddhabrot.Points
 
                     Event.WaitAll(enqueueEvents);
 
-                    for (int deviceIndex = 0; deviceIndex < devices.Length; deviceIndex++)
+                    for (int deviceIndex = 0; deviceIndex < _devices.Length; deviceIndex++)
                     {
                         using (commandQueues[deviceIndex].EnqueueReadBuffer(
                             iterationsSubBuffers[deviceIndex],

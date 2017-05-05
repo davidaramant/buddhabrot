@@ -20,7 +20,7 @@ namespace Buddhabrot.Points
         {
             NumberGenerator = numberGenerator;
             IterationRange = iterationRange;
-            PointWriter = new PointWriter(outputDirectory);
+            PointWriter = new PointWriter(System.IO.Path.Combine(outputDirectory,$"points{DateTime.Now:yyyyMMdd-HHmmss}"));
         }
 
         public Task Start(CancellationToken token)

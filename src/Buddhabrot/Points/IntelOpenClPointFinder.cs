@@ -26,6 +26,10 @@ namespace Buddhabrot.Points
         private readonly float[] _cImags = new float[BatchSize];
         private readonly int[] _iterations = new int[BatchSize];
 
+        private ulong _pointsChecked = 0;
+        private const int ReportingBatchFrequency = 10;
+        private int _batchCount = 0;
+
         public IntelOpenCLPointFinder(
             RandomPointGenerator numberGenerator,
             IntRange iterationRange,
@@ -147,8 +151,18 @@ namespace Buddhabrot.Points
                 }
             }
             timer.Stop();
-            var pointsPerSecond = BatchSize / timer.Elapsed.TotalSeconds;
-            Log.Info($"Processed {pointsPerSecond:N1} pts/s.");
+
+            _pointsChecked += BatchSize;
+
+            _batchCount++;
+
+            if (_batchCount == ReportingBatchFrequency)
+            {
+                _batchCount = 0;
+                var pointsPerSecond = BatchSize / timer.Elapsed.TotalSeconds;
+                Log.Info($"Processed {pointsPerSecond:N1} pts/s.");
+                Log.Info($"Total points checked: {_pointsChecked:N0}");
+            }
         }
 
         private Buffer CreateBuffer(IntPtr ptr, MemoryFlags accessFlags)
@@ -163,6 +177,7 @@ namespace Buddhabrot.Points
         {
             if (disposing)
             {
+                Log.Info($"Total points checked: {_pointsChecked:N0}");
                 _disposeStack.Dispose();
             }
 

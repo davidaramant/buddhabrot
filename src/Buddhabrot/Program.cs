@@ -79,13 +79,15 @@ namespace Buddhabrot
                 var randomNumbers = new RandomPointGenerator(areas.GetDistributedComplexAreas());
 
 
-                    var cts = new CancellationTokenSource();
-
+                var cts = new CancellationTokenSource();
                 System.Console.CancelKeyPress += (s, e) =>
                 {
-                    e.Cancel = true;
-                    cts.Cancel();
-                    System.Console.WriteLine("Cancelation requested...");
+                    if (!cts.IsCancellationRequested)
+                    {
+                        e.Cancel = true;
+                        cts.Cancel();
+                        System.Console.WriteLine("Cancelation requested...");
+                    }
                 };
 
                 using (var finder = new IntelOpenCLPointFinder(randomNumbers, Constant.IterationRange, outputDirectory))

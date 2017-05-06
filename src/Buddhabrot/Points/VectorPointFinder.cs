@@ -35,8 +35,9 @@ namespace Buddhabrot.Points
         public VectorPointFinder(
             RandomPointGenerator numberGenerator,
             IntRange iterationRange,
-            string outputDirectory) :
-            base(numberGenerator, iterationRange, outputDirectory)
+            string outputDirectory,
+            PointStatistics statistics) :
+            base(numberGenerator, iterationRange, outputDirectory, statistics)
         {
         }
 
@@ -79,6 +80,9 @@ namespace Buddhabrot.Points
                 });
 
             timer.Stop();
+
+            Statistics.AddPointCount(_batchSize);
+
             var pointsPerSecond = _batchSize / timer.Elapsed.TotalSeconds;
             Log.Info($"Processed {pointsPerSecond:N1} pts/s.");
 

@@ -75,24 +75,26 @@ namespace Buddhabrot
                     Directory.CreateDirectory(outputDirectory);
                 }
 
-                var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
-                var randomNumbers = new RandomPointGenerator(areas.GetDistributedComplexAreas());
-
-
-                var cts = new CancellationTokenSource();
-                System.Console.CancelKeyPress += (s, e) =>
+                using (var statistics = new PointStatistics())
                 {
-                    if (!cts.IsCancellationRequested)
+                    var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
+                    var randomNumbers = new RandomPointGenerator(areas.GetDistributedComplexAreas());
+
+                    var cts = new CancellationTokenSource();
+                    System.Console.CancelKeyPress += (s, e) =>
                     {
-                        e.Cancel = true;
-                        cts.Cancel();
-                        System.Console.WriteLine("Cancelation requested...");
-                    }
-                };
+                        if (!cts.IsCancellationRequested)
+                        {
+                            e.Cancel = true;
+                            cts.Cancel();
+                            System.Console.WriteLine("Cancelation requested...");
+                        }
+                    };
 
-                using (var finder = new IntelOpenCLPointFinder(randomNumbers, Constant.IterationRange, outputDirectory))
-                {
-                    finder.Start(cts.Token).Wait();
+                    using (var finder = new IntelOpenCLPointFinder(randomNumbers, Constant.IterationRange, outputDirectory, statistics))
+                    {
+                        finder.Start(cts.Token).Wait();
+                    }
                 }
             }
         }

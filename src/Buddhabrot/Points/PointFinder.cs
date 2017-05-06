@@ -12,14 +12,17 @@ namespace Buddhabrot.Points
         protected RandomPointGenerator NumberGenerator { get; }
         protected IntRange IterationRange { get; }
         protected PointWriter PointWriter { get; }
+        protected PointStatistics Statistics { get; }
 
         protected PointFinder(
             RandomPointGenerator numberGenerator,
             IntRange iterationRange,
-            string outputDirectory)
+            string outputDirectory, 
+            PointStatistics statistics)
         {
             NumberGenerator = numberGenerator;
             IterationRange = iterationRange;
+            Statistics = statistics;
             PointWriter = new PointWriter(System.IO.Path.Combine(outputDirectory,$"points{DateTime.Now:yyyyMMdd-HHmmss}"));
         }
 

@@ -4,9 +4,11 @@ using Buddhabrot.Utility;
 using log4net;
 using NOpenCL;
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Buffer = NOpenCL.Buffer;
 
 namespace Buddhabrot.Points
@@ -141,13 +143,16 @@ namespace Buddhabrot.Points
                         commandQueues[deviceIndex].Finish();
                     }
 
-                    for (int i = 0; i < BatchSize; i++)
+                    Parallel.ForEach(Partitioner.Create(0, BatchSize), (range, loopState) =>
                     {
-                        if (IterationRange.IsInside(_iterations[i]))
+                        for (int i = range.Item1; i < range.Item2; i++)
                         {
-                            PointWriter.Save(new FComplex(_cReals[i], _cImags[i]));
+                            if (IterationRange.IsInside(_iterations[i]))
+                            {
+                                PointWriter.Save(new FComplex(_cReals[i], _cImags[i]));
+                            }
                         }
-                    }
+                    });
                 }
             }
             timer.Stop();

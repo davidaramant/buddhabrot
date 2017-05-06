@@ -13,9 +13,9 @@ using Buffer = NOpenCL.Buffer;
 
 namespace Buddhabrot.Points
 {
-    sealed class IntelOpenCLPointFinder : PointFinder
+    sealed class IntelHeterogeneousOpenCLPointFinder : PointFinder
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(IntelOpenCLPointFinder));
+        private static readonly ILog Log = LogManager.GetLogger(nameof(IntelHeterogeneousOpenCLPointFinder));
 
         private const int BatchSize = 8192;
 
@@ -28,7 +28,7 @@ namespace Buddhabrot.Points
         private readonly float[] _cImags = new float[BatchSize];
         private readonly int[] _iterations = new int[BatchSize];
 
-        public IntelOpenCLPointFinder(
+        public IntelHeterogeneousOpenCLPointFinder(
             RandomPointGenerator numberGenerator,
             IntRange iterationRange,
             string outputDirectory,

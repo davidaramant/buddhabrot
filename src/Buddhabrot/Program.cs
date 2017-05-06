@@ -91,7 +91,7 @@ namespace Buddhabrot
                         }
                     };
 
-                    using (var finder = new VectorPointFinder(randomNumbers, Constant.IterationRange, outputDirectory, statistics))
+                    using (var finder = new IntelGpuOpenCLPointFinder(randomNumbers, Constant.IterationRange, outputDirectory, statistics))
                     {
                         finder.Start(cts.Token).Wait();
                     }

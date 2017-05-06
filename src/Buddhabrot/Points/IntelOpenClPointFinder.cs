@@ -32,7 +32,7 @@ namespace Buddhabrot.Points
             RandomPointGenerator numberGenerator,
             IntRange iterationRange,
             string outputDirectory,
-            PointStatistics statistics) :
+            PointFinderStatistics statistics) :
             base(numberGenerator, iterationRange, outputDirectory, statistics)
         {
             var platform = Platform.GetPlatforms()[0];

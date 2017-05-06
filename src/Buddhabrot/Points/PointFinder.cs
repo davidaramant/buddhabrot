@@ -12,13 +12,13 @@ namespace Buddhabrot.Points
         protected RandomPointGenerator NumberGenerator { get; }
         protected IntRange IterationRange { get; }
         protected PointWriter PointWriter { get; }
-        protected PointStatistics Statistics { get; }
+        protected PointFinderStatistics Statistics { get; }
 
         protected PointFinder(
             RandomPointGenerator numberGenerator,
             IntRange iterationRange,
             string outputDirectory, 
-            PointStatistics statistics)
+            PointFinderStatistics statistics)
         {
             NumberGenerator = numberGenerator;
             IterationRange = iterationRange;

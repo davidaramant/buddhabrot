@@ -25,7 +25,7 @@ namespace Buddhabrot.Points
             Larger
         }
 
-        private int _batchSize = 256;
+        private int _batchSize = 512;
         private double _lastSpeed = 0;
         private Mutation _lastMutation = Mutation.Larger;
         private readonly IntRange _batchRange = new IntRange(8, 2048, stepSize: 8, maxIsExclusive: false);
@@ -36,7 +36,7 @@ namespace Buddhabrot.Points
             RandomPointGenerator numberGenerator,
             IntRange iterationRange,
             string outputDirectory,
-            PointStatistics statistics) :
+            PointFinderStatistics statistics) :
             base(numberGenerator, iterationRange, outputDirectory, statistics)
         {
         }
@@ -84,7 +84,7 @@ namespace Buddhabrot.Points
             Statistics.AddPointCount(_batchSize);
 
             var pointsPerSecond = _batchSize / timer.Elapsed.TotalSeconds;
-            Log.Info($"Processed {pointsPerSecond:N1} pts/s.");
+            //Log.Info($"Processed {pointsPerSecond:N1} pts/s.");
 
             _trialSpeeds[_trialNumber - 1] = pointsPerSecond;
 

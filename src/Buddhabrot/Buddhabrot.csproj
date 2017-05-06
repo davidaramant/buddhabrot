@@ -75,7 +75,7 @@
     <Compile Include="Images\FastImage.cs" />
     <Compile Include="IterationKernels\OpenCLKernelSource.cs" />
     <Compile Include="IterationKernels\VectorKernel.cs" />
-    <Compile Include="Points\PointStatistics.cs" />
+    <Compile Include="Points\PointFinderStatistics.cs" />
     <Compile Include="Points\IntelOpenClPointFinder.cs" />
     <Compile Include="Points\PointFinder.cs" />
     <Compile Include="Points\PointWriter.cs" />

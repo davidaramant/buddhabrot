@@ -75,7 +75,7 @@ namespace Buddhabrot
                     Directory.CreateDirectory(outputDirectory);
                 }
 
-                using (var statistics = new PointStatistics())
+                using (var statistics = new PointFinderStatistics())
                 {
                     var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
                     var randomNumbers = new RandomPointGenerator(areas.GetDistributedComplexAreas());
@@ -91,7 +91,7 @@ namespace Buddhabrot
                         }
                     };
 
-                    using (var finder = new IntelOpenCLPointFinder(randomNumbers, Constant.IterationRange, outputDirectory, statistics))
+                    using (var finder = new VectorPointFinder(randomNumbers, Constant.IterationRange, outputDirectory, statistics))
                     {
                         finder.Start(cts.Token).Wait();
                     }

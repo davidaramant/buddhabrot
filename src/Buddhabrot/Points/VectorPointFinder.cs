@@ -15,20 +15,7 @@ namespace Buddhabrot.Points
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(VectorPointFinder));
 
-        private const int TrialSize = 5;
-        private int _trialNumber = 1;
-        private readonly double[] _trialSpeeds = new double[TrialSize];
-
-        enum Mutation
-        {
-            Smaller,
-            Larger
-        }
-
-        private int _batchSize = 512;
-        private double _lastSpeed = 0;
-        private Mutation _lastMutation = Mutation.Larger;
-        private readonly IntRange _batchRange = new IntRange(8, 2048, stepSize: 8, maxIsExclusive: false);
+        private const int BatchSize = 512;
 
         private int VectorCapacity => Vector<float>.Count;
 
@@ -43,8 +30,7 @@ namespace Buddhabrot.Points
 
         protected override void IteratePointBatch(CancellationToken token)
         {
-            var timer = Stopwatch.StartNew();
-            var points = NumberGenerator.GetPoints(_batchSize);
+            var points = NumberGenerator.GetPoints(BatchSize);
 
             Parallel.ForEach(
                 VectorBatch(points),
@@ -79,44 +65,7 @@ namespace Buddhabrot.Points
                     }
                 });
 
-            timer.Stop();
-
-            Statistics.AddPointCount(_batchSize);
-
-            var pointsPerSecond = _batchSize / timer.Elapsed.TotalSeconds;
-            //Log.Info($"Processed {pointsPerSecond:N1} pts/s.");
-
-            _trialSpeeds[_trialNumber - 1] = pointsPerSecond;
-
-            if (_trialNumber < TrialSize)
-            {
-                _trialNumber++;
-            }
-            else
-            {
-                var trialAverage = _trialSpeeds.Average();
-                var faster = trialAverage > _lastSpeed;
-
-                Log.Info($"Trial average: {trialAverage:N1} pts/s, previously {_lastSpeed:N1} pts/s.");
-
-                var newMutation = _lastMutation;
-
-                if (!faster)
-                {
-                    newMutation = _lastMutation == Mutation.Larger ? Mutation.Smaller : Mutation.Larger;
-                }
-
-                _batchSize =
-                    newMutation == Mutation.Larger
-                        ? Math.Min(_batchRange.Max, _batchSize + _batchRange.StepSize)
-                        : Math.Max(_batchRange.Min, _batchSize - _batchRange.StepSize);
-
-                _lastMutation = newMutation;
-                _lastSpeed = trialAverage;
-                _trialNumber = 1;
-
-                Log.Info($"Making batch {newMutation} to {_batchSize}");
-            }
+            Statistics.AddPointCount(BatchSize);
         }
 
         private IEnumerable<FComplex[]> VectorBatch(IEnumerable<FComplex> pointSequence)

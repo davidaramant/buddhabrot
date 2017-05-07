@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Buddhabrot.Points;
 using PowerArgs;
 
@@ -93,9 +94,10 @@ namespace Buddhabrot
                         }
                     };
 
-                    using (var finder = new IntelGpuOpenCLPointFinder(randomNumbers, Constant.IterationRange, writer, statistics))
+                    using (var finder1 = new VectorPointFinder(randomNumbers, Constant.IterationRange, writer, statistics))
+                    using (var finder2 = new IntelGpuOpenCLPointFinder(randomNumbers, Constant.IterationRange, writer, statistics))
                     {
-                        finder.Start(cts.Token).Wait();
+                        Task.WaitAll(finder1.Start(cts.Token), finder2.Start(cts.Token));
                     }
                 }
             }

@@ -31,9 +31,9 @@ namespace Buddhabrot.Points
         public IntelHeterogeneousOpenCLPointFinder(
             RandomPointGenerator numberGenerator,
             IntRange iterationRange,
-            string outputDirectory,
+            PointWriter writer,
             PointFinderStatistics statistics) :
-            base(numberGenerator, iterationRange, outputDirectory, statistics)
+            base(numberGenerator, iterationRange, writer, statistics)
         {
             var platform = Platform.GetPlatforms()[0];
 

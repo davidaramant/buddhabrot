@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Threading;
 using Buddhabrot.Points;
@@ -79,6 +80,7 @@ namespace Buddhabrot
                 {
                     var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
                     var randomNumbers = new RandomPointGenerator(areas.GetDistributedComplexAreas());
+                    var writer = new PointWriter(Path.Combine(outputDirectory, $"points{DateTime.Now:yyyyMMdd-HHmmss}"));
 
                     var cts = new CancellationTokenSource();
                     System.Console.CancelKeyPress += (s, e) =>
@@ -91,7 +93,7 @@ namespace Buddhabrot
                         }
                     };
 
-                    using (var finder = new IntelGpuOpenCLPointFinder(randomNumbers, Constant.IterationRange, outputDirectory, statistics))
+                    using (var finder = new IntelGpuOpenCLPointFinder(randomNumbers, Constant.IterationRange, writer, statistics))
                     {
                         finder.Start(cts.Token).Wait();
                     }

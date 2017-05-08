@@ -11,7 +11,7 @@ using log4net;
 
 namespace Buddhabrot.Points
 {
-    sealed class VectorPointFinder : PointFinder
+    sealed class VectorPointFinder : LegacyPointFinder
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(VectorPointFinder));
 

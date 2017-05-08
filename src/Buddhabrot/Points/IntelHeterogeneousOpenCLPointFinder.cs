@@ -13,7 +13,7 @@ using Buffer = NOpenCL.Buffer;
 
 namespace Buddhabrot.Points
 {
-    sealed class IntelHeterogeneousOpenCLPointFinder : PointFinder
+    sealed class IntelHeterogeneousOpenCLPointFinder : LegacyPointFinder
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(IntelHeterogeneousOpenCLPointFinder));
 

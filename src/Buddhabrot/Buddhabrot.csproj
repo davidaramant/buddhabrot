@@ -84,7 +84,7 @@
     <Compile Include="Points\IntelGpuOpenCLPointFinder.cs" />
     <Compile Include="Points\PointFinderStatistics.cs" />
     <Compile Include="Points\IntelHeterogeneousOpenCLPointFinder.cs" />
-    <Compile Include="Points\PointFinder.cs" />
+    <Compile Include="Points\LegacyPointFinder.cs" />
     <Compile Include="Points\PointWriter.cs" />
     <Compile Include="Points\RandomPointGenerator.cs" />
     <Compile Include="Points\VectorPointFinder.cs" />

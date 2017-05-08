@@ -6,15 +6,15 @@ using log4net;
 
 namespace Buddhabrot.Points
 {
-    abstract class PointFinder : IDisposable
+    abstract class LegacyPointFinder : IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(PointFinder));
+        private static readonly ILog Log = LogManager.GetLogger(nameof(LegacyPointFinder));
         protected RandomPointGenerator NumberGenerator { get; }
         protected IntRange IterationRange { get; }
         protected PointWriter PointWriter { get; }
         protected PointFinderStatistics Statistics { get; }
 
-        protected PointFinder(
+        protected LegacyPointFinder(
             RandomPointGenerator numberGenerator,
             IntRange iterationRange,
             PointWriter writer, 

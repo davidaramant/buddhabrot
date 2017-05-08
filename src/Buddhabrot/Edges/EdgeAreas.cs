@@ -67,8 +67,6 @@ namespace Buddhabrot.Edges
             _areasPosition = areaStream.Position;
         }
 
-        public IEnumerable<Point> GetAreaLocations() => GetAreas().Select(ea => ea.GridLocation);
-
         public IEnumerable<EdgeArea> GetAreas()
         {
             _areaStream.Position = _areasPosition;
@@ -77,6 +75,55 @@ namespace Buddhabrot.Edges
                 while (_areaStream.Position < _areaStream.Length)
                 {
                     yield return reader.ReadEdgeArea();
+                }
+            }
+        }
+
+        public IEnumerable<Point> GetAreaLocations() => GetAreas().Select(ea => ea.GridLocation);
+
+        public IEnumerable<PointPair> GetPointPairs()
+        {
+            float realIncrement = ViewPort.RealRange.Magnitude / (GridResolution.Width - 1);
+            float imagIncrement = ViewPort.ImagRange.Magnitude / (GridResolution.Height - 1);
+
+            float GetRealValue(int x) => ViewPort.RealRange.InclusiveMin + x * realIncrement;
+            float GetImagValue(int y) => ViewPort.ImagRange.InclusiveMin + y * imagIncrement;
+
+            FComplex GetPoint(Point location, Corners corner)
+            {
+                switch (corner)
+                {
+                    case Corners.BottomLeft:
+                        return new FComplex(
+                            GetRealValue(location.X),
+                            GetImagValue(location.Y));
+                    case Corners.BottomRight:
+                        return new FComplex(
+                            GetRealValue(location.X + 1),
+                            GetImagValue(location.Y));
+                    case Corners.TopLeft:
+                        return new FComplex(
+                            GetRealValue(location.X),
+                            GetImagValue(location.Y + 1));
+                    case Corners.TopRight:
+                        return new FComplex(
+                            GetRealValue(location.X + 1),
+                            GetImagValue(location.Y + 1));
+                    default:
+                        throw new ArgumentException();
+                }
+            };
+
+            foreach (var edge in GetAreas())
+            {
+                foreach (var cornerInSet in edge.GetCornersInSet())
+                {
+                    foreach (var cornerNotInSet in edge.GetCornersNotInSet())
+                    {
+                        yield return new PointPair(
+                            inSet: GetPoint(edge.GridLocation, cornerInSet), 
+                            notInSet: GetPoint(edge.GridLocation, cornerNotInSet));
+                    }
                 }
             }
         }

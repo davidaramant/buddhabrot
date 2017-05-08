@@ -40,6 +40,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\FComplexTests.cs" />
     <Compile Include="Edges\EdgeAreasTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

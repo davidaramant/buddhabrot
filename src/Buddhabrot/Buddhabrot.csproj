@@ -79,6 +79,7 @@
     <Compile Include="IterationKernels\IKernel.cs" />
     <Compile Include="IterationKernels\IPointBatch.cs" />
     <Compile Include="IterationKernels\IPointBatchResults.cs" />
+    <Compile Include="IterationKernels\NoResults.cs" />
     <Compile Include="IterationKernels\OpenCLKernelSource.cs" />
     <Compile Include="IterationKernels\VectorKernel.cs" />
     <Compile Include="Points\IntelGpuOpenCLPointFinder.cs" />

@@ -36,7 +36,7 @@ namespace Buddhabrot
             }
 
             [ArgActionMethod, ArgDescription("Renders the edge areas to an image.  The image location/name will be based on the edge file.")]
-            public void VisualizeEdges(
+            public void PlotEdges(
                 [ArgDescription("Edges file."), ArgRequired, ArgExistingFile] string edgesFilePath)
             {
                 var imageFilePath = Path.Combine(
@@ -47,12 +47,12 @@ namespace Buddhabrot
             }
 
             [ArgActionMethod, ArgDescription("Finds and renders the edge areas.")]
-            public void FindAndVisualizeEdges(
+            public void FindAndPlotEdges(
                 [ArgDescription("The path for the resulting edges file."), ArgRequired] string edgesFilePath,
                 [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution)
             {
                 FindEdges(edgesFilePath, resolution);
-                VisualizeEdges(edgesFilePath);
+                PlotEdges(edgesFilePath);
             }
 
             [ArgActionMethod, ArgDescription("Combines adjacent edge areas.")]

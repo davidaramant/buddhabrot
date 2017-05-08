@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Buddhabrot.Edges
 {
@@ -13,5 +14,28 @@ namespace Buddhabrot.Edges
             CornersInSet = cornersInSet;
         }
 
+        public IEnumerable<Corners> GetCornersInSet()
+        {
+            if (CornersInSet.HasFlag(Corners.TopRight))
+                yield return Corners.TopRight;
+            if (CornersInSet.HasFlag(Corners.TopLeft))
+                yield return Corners.TopLeft;
+            if (CornersInSet.HasFlag(Corners.BottomRight))
+                yield return Corners.BottomRight;
+            if (CornersInSet.HasFlag(Corners.BottomLeft))
+                yield return Corners.BottomLeft;
+        }
+
+        public IEnumerable<Corners> GetCornersNotInSet()
+        {
+            if (!CornersInSet.HasFlag(Corners.TopRight))
+                yield return Corners.TopRight;
+            if (!CornersInSet.HasFlag(Corners.TopLeft))
+                yield return Corners.TopLeft;
+            if (!CornersInSet.HasFlag(Corners.BottomRight))
+                yield return Corners.BottomRight;
+            if (!CornersInSet.HasFlag(Corners.BottomLeft))
+                yield return Corners.BottomLeft;
+        }
     }
 }

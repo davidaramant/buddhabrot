@@ -15,12 +15,10 @@ namespace Buddhabrot.Edges
             var edgeAreas = EdgeAreas.Load(edgesFilePath);
             var image = new FastImage(edgeAreas.GridResolution);
             image.Fill(Color.White);
-            var halfHeight = edgeAreas.GridResolution.Height / 2;
             foreach (var location in edgeAreas.GetAreaLocations())
             {
                 // the grid locations are relative to the the real axis on the positive side
-                image.SetPixel(location.X, halfHeight - location.Y-1, Color.Black);
-                image.SetPixel(location.X, location.Y + halfHeight, Color.Black);
+                image.SetPixel(location.X, edgeAreas.GridResolution.Height - location.Y - 1, Color.Black);
             }
             image.Save(imageFilePath);
         }

@@ -24,13 +24,13 @@ namespace Buddhabrot
 
             [ArgActionMethod, ArgDescription("Finds the border regions of the Mandelbrot set.")]
             public void FindEdges(
-                [ArgDescription("The path for the resulting edges file."), ArgRequired] string outputFilePath,
-                [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution)
+                [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
+                [ArgDescription("The directory for the resulting edges file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
             {
                 Edges.EdgeLocator.FindEdges(
-                    Path.GetFullPath(outputFilePath),
+                    Path.Combine(outputPath, $"edges{resolution}"),
                     Constant.RenderingArea,
-                    new Size(resolution, resolution),
+                    resolution,
                     Constant.IterationRange
                 );
             }
@@ -48,11 +48,11 @@ namespace Buddhabrot
 
             [ArgActionMethod, ArgDescription("Finds and renders the edge areas.")]
             public void FindAndPlotEdges(
-                [ArgDescription("The path for the resulting edges file."), ArgRequired] string edgesFilePath,
-                [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution)
+                [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
+                [ArgDescription("The directory for the resulting edges file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
             {
-                FindEdges(edgesFilePath, resolution);
-                PlotEdges(edgesFilePath);
+                FindEdges(resolution, outputPath);
+                PlotEdges(Path.Combine(outputPath, $"edges{resolution}"));
             }
 
             [ArgActionMethod, ArgDescription("Combines adjacent edge areas.")]
@@ -68,7 +68,7 @@ namespace Buddhabrot
             [ArgActionMethod, ArgDescription("Finds points.")]
             public void FindPoints(
                 [ArgDescription("Input edges file."), ArgRequired, ArgExistingFile] string inputEdgesFilePath,
-                [ArgDescription("Output directory."), ArgRequired] string outputDirectory)
+                [ArgDescription("Output directory."), ArgDefaultValue(".")] string outputDirectory)
             {
                 System.Console.WriteLine("Press Ctrl-C to exit...");
 

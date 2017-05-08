@@ -18,7 +18,7 @@ namespace Buddhabrot.Edges
         public static void FindEdges(
             string outputFilePath,
             ComplexArea viewPort,
-            Size gridResolution,
+            int gridResolution,
             IntRange iterationRange)
         {
             // Assumptions for this class
@@ -30,12 +30,12 @@ namespace Buddhabrot.Edges
             {
                 throw new ArgumentException($"The imaginary range of the viewport must be centered around the real axis.");
             }
-            if (gridResolution.Height % 2 != 0)
+            if (gridResolution % 2 != 0)
             {
                 throw new ArgumentException($"The vertical resolution of the grid must be divisible by 2.");
             }
 
-            Log.Info($"Looking for {gridResolution.Width}x{gridResolution.Height} areas in {viewPort}");
+            Log.Info($"Looking for {gridResolution}x{gridResolution / 2} areas in {viewPort}");
             Log.Info($"Saving edges to: {outputFilePath}");
             Log.Info($"Iteration count: {iterationRange}");
 
@@ -45,12 +45,12 @@ namespace Buddhabrot.Edges
                 realRange: viewPort.RealRange,
                 imagRange: new FloatRange(0, viewPort.ImagRange.ExclusiveMax));
 
-            var targetResolution = new Size(width: gridResolution.Width, height: gridResolution.Height / 2);
+            var targetResolution = new Size(width: gridResolution, height: gridResolution / 2);
 
             var timer = Stopwatch.StartNew();
 
             var areas = EdgeAreas.CreateCompressed(
-                gridResolution,
+                targetResolution,
                 viewPort,
                 GetEdgeAreas(targetViewPort, targetResolution, iterationRange));
             areas.Write(outputFilePath);

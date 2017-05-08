@@ -35,10 +35,6 @@ namespace Buddhabrot.Edges
                 throw new ArgumentException($"The vertical resolution of the grid must be divisible by 2.");
             }
 
-            Log.Info($"Looking for {gridResolution}x{gridResolution / 2} areas in {viewPort}");
-            Log.Info($"Saving edges to: {outputFilePath}");
-            Log.Info($"Iteration count: {iterationRange}");
-
             // Divide the view port / resolution in half since the set is symmetrical across the real axis
 
             var targetViewPort = new ComplexArea(
@@ -47,13 +43,17 @@ namespace Buddhabrot.Edges
 
             var targetResolution = new Size(width: gridResolution, height: gridResolution / 2);
 
+            Log.Info($"Looking for {targetResolution.Width}x{targetResolution.Height} areas in {targetViewPort}");
+            Log.Info($"Saving edges to: {outputFilePath}");
+            Log.Info($"Iteration count: {iterationRange}");
+
             var timer = Stopwatch.StartNew();
 
-            var areas = EdgeAreas.CreateCompressed(
+            EdgeAreas.Write(
                 targetResolution,
-                viewPort,
-                GetEdgeAreas(targetViewPort, targetResolution, iterationRange));
-            areas.Write(outputFilePath);
+                targetViewPort,
+                GetEdgeAreas(targetViewPort, targetResolution, iterationRange),
+                outputFilePath);
 
             timer.Stop();
             Log.Info($"Took {timer.Elapsed.Humanize(2)} to find edges.");
@@ -168,24 +168,20 @@ namespace Buddhabrot.Edges
             {
                 IterateRightColumn(rightColumnIndex);
 
-                bool IsEdgeArea(bool leftBottomCorner, bool rightBottomCorner, bool leftTopCorner, bool rightTopCorner)
-                {
-                    return
-                        leftBottomCorner != rightBottomCorner ||
-                        rightBottomCorner != leftTopCorner ||
-                        leftTopCorner != rightTopCorner;
-                }
-
                 // Iterate the areas bottom to top
                 for (int areaIndex = 0; areaIndex < areasInBatch; areaIndex++)
                 {
-                    if (IsEdgeArea(
-                        leftBottomCorner: leftColumnIsInSet[areaIndex],
-                        rightBottomCorner: rightColumnIsInSet[areaIndex],
-                        leftTopCorner: leftColumnIsInSet[areaIndex + 1],
-                        rightTopCorner: rightColumnIsInSet[areaIndex + 1]))
+                    var cornersInSet =
+                        (leftColumnIsInSet[areaIndex] ? Corners.BottomLeft : Corners.None)|
+                        (rightColumnIsInSet[areaIndex] ? Corners.BottomRight : Corners.None)|
+                        (leftColumnIsInSet[areaIndex + 1] ? Corners.TopLeft : Corners.None) |
+                        (rightColumnIsInSet[areaIndex + 1] ? Corners.TopRight : Corners.None);
+
+                    if (cornersInSet != Corners.None && cornersInSet != Corners.All)
                     {
-                        yield return new EdgeArea(new Point(rightColumnIndex - 1, stripIndex * areasInStripColumn + areaIndex));
+                        yield return new EdgeArea(
+                            new Point(rightColumnIndex - 1, stripIndex * areasInStripColumn + areaIndex),
+                            cornersInSet);
                     }
                 }
 

@@ -17,7 +17,7 @@ namespace Tests.Edges
             try
             {
                 ComplexArea CreateArea(int value) => new ComplexArea(new FloatRange(value, value + 1), new FloatRange(value + 2, value + 3));
-                EdgeArea CreateEdgeArea(int x, int y) => new EdgeArea(new Point(x, y));
+                EdgeArea CreateEdgeArea(int x, int y) => new EdgeArea(new Point(x, y),Corners.BottomRight);
 
                 var size = new Size(1, 2);
                 var viewPort = CreateArea(1);
@@ -27,28 +27,32 @@ namespace Tests.Edges
                     CreateEdgeArea(2,3),
                 };
 
-                var areas = EdgeAreas.CreateCompressed(size, viewPort, edgeAreas);
-                areas.Write(filePath);
+                EdgeAreas.Write(size, viewPort, edgeAreas, filePath);
 
-                var roundTripped = EdgeAreas.Load(filePath);
-
-                void RangesAreEqual(FloatRange actual, FloatRange expected, string name)
+                using (var roundTripped = EdgeAreas.Load(filePath))
                 {
-                    Assert.That(actual.InclusiveMin, Is.EqualTo(expected.InclusiveMin).Within(0.0000001f), $"{name} range minimum was different.");
-                    Assert.That(actual.ExclusiveMax, Is.EqualTo(expected.ExclusiveMax).Within(0.0000001f), $"{name} range maximum was different.");
-                }
+                    void RangesAreEqual(FloatRange actual, FloatRange expected, string name)
+                    {
+                        Assert.That(actual.InclusiveMin, Is.EqualTo(expected.InclusiveMin).Within(0.0000001f),
+                            $"{name} range minimum was different.");
+                        Assert.That(actual.ExclusiveMax, Is.EqualTo(expected.ExclusiveMax).Within(0.0000001f),
+                            $"{name} range maximum was different.");
+                    }
 
-                void AreasAreEqual(ComplexArea actual, ComplexArea expected)
-                {
-                    RangesAreEqual(actual.RealRange, expected.RealRange, "Real");
-                    RangesAreEqual(actual.ImagRange, expected.ImagRange, "Imag");
-                }
+                    void AreasAreEqual(ComplexArea actual, ComplexArea expected)
+                    {
+                        RangesAreEqual(actual.RealRange, expected.RealRange, "Real");
+                        RangesAreEqual(actual.ImagRange, expected.ImagRange, "Imag");
+                    }
 
-                Assert.That(roundTripped.GridResolution, Is.EqualTo(size), "Did not round-trip grid resolution.");
-                AreasAreEqual(roundTripped.ViewPort, viewPort);
-                Assert.That(roundTripped.AreaCount, Is.EqualTo(edgeAreas.Length), "Did not round-trip the edge areas");
-                Assert.That(roundTripped.GetAreaLocations().ToArray(), Is.EqualTo(edgeAreas.Select(ea => ea.GridLocation).ToArray()),
-                    "Did not round-trip the area locations.");
+                    Assert.That(roundTripped.GridResolution, Is.EqualTo(size), "Did not round-trip grid resolution.");
+                    AreasAreEqual(roundTripped.ViewPort, viewPort);
+                    Assert.That(roundTripped.AreaCount, Is.EqualTo(edgeAreas.Length),
+                        "Did not round-trip the edge areas");
+                    Assert.That(roundTripped.GetAreaLocations().ToArray(),
+                        Is.EqualTo(edgeAreas.Select(ea => ea.GridLocation).ToArray()),
+                        "Did not round-trip the area locations.");
+                }
             }
             finally
             {

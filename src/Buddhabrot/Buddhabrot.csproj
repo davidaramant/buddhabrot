@@ -66,7 +66,10 @@
     <Compile Include="Core\FloatRange.cs" />
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
+    <Compile Include="Edges\Corners.cs" />
+    <Compile Include="Edges\EdgeAreaLegacy.cs" />
     <Compile Include="Edges\EdgeArea.cs" />
+    <Compile Include="Edges\EdgeAreasLegacy.cs" />
     <Compile Include="Edges\EdgeAreas.cs" />
     <Compile Include="Edges\EdgeLocator.cs" />
     <Compile Include="Edges\EdgeVisualizer.cs" />

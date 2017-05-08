@@ -5,16 +5,13 @@ namespace Buddhabrot.Edges
     public sealed class EdgeArea
     {
         public Point GridLocation { get; }
-        public Size Dimensions { get; }
+        public Corners CornersInSet { get; }
 
-        public EdgeArea(Point location) : this(location, new Size(1, 1))
-        {           
-        }
-
-        public EdgeArea(Point location, Size dimensions)
+        public EdgeArea(Point location, Corners cornersInSet)
         {
             GridLocation = location;
-            Dimensions = dimensions;
+            CornersInSet = cornersInSet;
         }
+
     }
 }

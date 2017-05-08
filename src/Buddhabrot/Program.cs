@@ -60,7 +60,7 @@ namespace Buddhabrot
                 [ArgDescription("Input edges file."), ArgRequired, ArgExistingFile] string inputEdgesFilePath,
                 [ArgDescription("Output edges file."), ArgRequired] string outputEdgesFilePath)
             {
-                var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
+                var areas = Edges.EdgeAreasLegacy.Load(inputEdgesFilePath);
                 var compressedAreas = areas.CreateCompressedVersion();
                 compressedAreas.Write(outputEdgesFilePath);
             }
@@ -79,7 +79,7 @@ namespace Buddhabrot
 
                 using (var statistics = new PointFinderStatistics())
                 {
-                    var areas = Edges.EdgeAreas.Load(inputEdgesFilePath);
+                    var areas = Edges.EdgeAreasLegacy.Load(inputEdgesFilePath);
                     var randomNumbers = new RandomPointGenerator(areas.GetDistributedComplexAreas());
                     var writer = new PointWriter(Path.Combine(outputDirectory, $"points{DateTime.Now:yyyyMMdd-HHmmss}"));
 

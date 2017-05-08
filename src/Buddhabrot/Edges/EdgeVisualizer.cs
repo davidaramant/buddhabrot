@@ -12,15 +12,19 @@ namespace Buddhabrot.Edges
         {
             Log.Info($"Loading file: {edgesFilePath}, output image: {imageFilePath}");
 
-            var edgeAreas = EdgeAreas.Load(edgesFilePath);
-            var image = new FastImage(edgeAreas.GridResolution);
-            image.Fill(Color.White);
-            foreach (var location in edgeAreas.GetAreaLocations())
+            using (var edgeAreas = EdgeAreas.Load(edgesFilePath))
             {
-                // the grid locations are relative to the the real axis on the positive side
-                image.SetPixel(location.X, edgeAreas.GridResolution.Height - location.Y - 1, Color.Black);
+                var image = new FastImage(edgeAreas.GridResolution);
+
+                image.Fill(Color.White);
+                foreach (var location in edgeAreas.GetAreaLocations())
+                {
+                    // the grid locations are relative to the the real axis on the positive side
+                    image.SetPixel(location.X, edgeAreas.GridResolution.Height - location.Y - 1, Color.Black);
+                }
+                image.Save(imageFilePath);
             }
-            image.Save(imageFilePath);
         }
     }
 }
+

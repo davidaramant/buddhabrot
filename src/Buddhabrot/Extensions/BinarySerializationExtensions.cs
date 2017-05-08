@@ -38,13 +38,21 @@ namespace Buddhabrot.Extensions
 
         public static Point ReadPoint(this BinaryReader reader) => new Point(reader.ReadInt32(), reader.ReadInt32());
 
-        public static void WriteEdgeArea(this BinaryWriter writer, EdgeArea edgeArea)
+        public static void WriteEdgeArea(this BinaryWriter writer, EdgeAreaLegacy edgeAreaLegacy)
         {
-            writer.WritePoint(edgeArea.GridLocation);
-            writer.WriteSize(edgeArea.Dimensions);
+            writer.WritePoint(edgeAreaLegacy.GridLocation);
+            writer.WriteSize(edgeAreaLegacy.Dimensions);
         }
 
-        public static EdgeArea ReadEdgeArea(this BinaryReader reader) => new EdgeArea(reader.ReadPoint(), reader.ReadSize());
+        public static EdgeAreaLegacy ReadEdgeAreaLegacy(this BinaryReader reader) => new EdgeAreaLegacy(reader.ReadPoint(), reader.ReadSize());
+
+        public static void WriteEdgeAreaLegacy(this BinaryWriter writer, EdgeArea edgeArea)
+        {
+            writer.WritePoint(edgeArea.GridLocation);
+            writer.Write((byte)edgeArea.CornersInSet);
+        }
+
+        public static EdgeArea ReadEdgeArea(this BinaryReader reader) => new EdgeArea(reader.ReadPoint(), (Corners)reader.ReadByte());
 
         public static void WriteComplex(this BinaryWriter writer, FComplex complex)
         {

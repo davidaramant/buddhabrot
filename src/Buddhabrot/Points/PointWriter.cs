@@ -10,6 +10,7 @@ namespace Buddhabrot.Points
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(PointWriter));
 
+        private readonly object _fileLock = new object();
         private readonly string _filePath;
 
         public PointWriter(string filePath)
@@ -19,26 +20,32 @@ namespace Buddhabrot.Points
 
         public void Save(FComplex point)
         {
-            using (var stream = File.Open(_filePath, FileMode.Append))
-            using (var writer = new BinaryWriter(stream))
+            lock (_fileLock)
             {
-                writer.WriteComplex(point);
-                Log.Info("Wrote a point!");
+                using (var stream = File.Open(_filePath, FileMode.Append))
+                using (var writer = new BinaryWriter(stream))
+                {
+                    writer.WriteComplex(point);
+                    Log.Info("Wrote a point!");
+                }
             }
         }
 
         public void Save(IEnumerable<FComplex> points)
         {
-            using (var stream = File.Open(_filePath, FileMode.Append))
-            using (var writer = new BinaryWriter(stream))
+            lock (_fileLock)
             {
-                int count = 0;
-                foreach (var point in points)
+                using (var stream = File.Open(_filePath, FileMode.Append))
+                using (var writer = new BinaryWriter(stream))
                 {
-                    writer.WriteComplex(point);
-                    count++;
+                    int count = 0;
+                    foreach (var point in points)
+                    {
+                        writer.WriteComplex(point);
+                        count++;
+                    }
+                    Log.Info($"Wrote {count} points!");
                 }
-                Log.Info($"Wrote {count} points!");
             }
         }
     }

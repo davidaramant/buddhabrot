@@ -37,5 +37,7 @@ namespace Buddhabrot.Edges
             if (!CornersInSet.HasFlag(Corners.BottomLeft))
                 yield return Corners.BottomLeft;
         }
+
+        public override string ToString() => $"Location: {GridLocation}, Corners in Set: {CornersInSet}";
     }
 }

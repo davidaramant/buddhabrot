@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -15,13 +16,18 @@ namespace Buddhabrot.Edges
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeAreas));
 
-        private const string HeaderText = "Edge Areas V1.00";
+        private const string HeaderText = "Edge Areas V2.00";
         // A sixteen byte magic header value
         private static readonly byte[] MagicBytes = Encoding.ASCII.GetBytes(HeaderText);
 
         public Size GridResolution { get; }
         public ComplexArea ViewPort { get; }
         public int AreaCount { get; }
+
+        /// <summary>
+        /// Gets the count of point pairs that cross the set boundary.
+        /// </summary>
+        public int IntersectionCount { get; }
 
         private readonly Stream _areaStream;
         private readonly long _areasPosition;
@@ -43,9 +49,11 @@ namespace Buddhabrot.Edges
 
                     var size = reader.ReadSize();
                     var viewPort = reader.ReadComplexArea();
-                    var count = reader.ReadInt32();
-                    Log.Info($"Loaded edges with resolution ({size.Width:N0}x{size.Height:N0}), view port {viewPort}, and {count:N0} edge areas.");
-                    return new EdgeAreas(size, viewPort, count, stream);
+                    var areaCount = reader.ReadInt32();
+                    var intersectionCount = reader.ReadInt32();
+                    Log.Info($"Loaded edges with resolution ({size.Width:N0}x{size.Height:N0}), " +
+                             $"view port {viewPort}, {areaCount:N0} edge areas, and {intersectionCount:N0} intersections.");
+                    return new EdgeAreas(size, viewPort, areaCount, intersectionCount, stream);
                 }
             }
             catch (Exception)
@@ -59,11 +67,13 @@ namespace Buddhabrot.Edges
             Size gridResolution,
             ComplexArea viewPort,
             int areaCount,
+            int intersectionCount,
             Stream areaStream)
         {
             GridResolution = gridResolution;
             ViewPort = viewPort;
             AreaCount = areaCount;
+            IntersectionCount = intersectionCount;
             _areaStream = areaStream;
             _areasPosition = areaStream.Position;
         }
@@ -122,7 +132,7 @@ namespace Buddhabrot.Edges
                     foreach (var cornerNotInSet in edge.GetCornersNotInSet())
                     {
                         yield return new PointPair(
-                            inSet: GetPoint(edge.GridLocation, cornerInSet), 
+                            inSet: GetPoint(edge.GridLocation, cornerInSet),
                             notInSet: GetPoint(edge.GridLocation, cornerNotInSet));
                     }
                 }
@@ -150,18 +160,33 @@ namespace Buddhabrot.Edges
                     writer.WriteComplexArea(viewPort);
 
                     long countPosition = stream.Position;
-                    stream.Position += sizeof(int);
+                    stream.Position += 2 * sizeof(int);
 
-                    int count = 0;
+                    int areaCount = 0;
+                    int intersectionCount = 0;
                     foreach (var area in areas)
                     {
-                        count++;
+                        switch (area.GetCornersInSet().Count())
+                        {
+                            case 1:
+                            case 3:
+                                intersectionCount += 3;
+                                break;
+                            case 2:
+                                intersectionCount += 4;
+                                break;
+                            default:
+                                throw new InvalidOperationException("Unexpected number of corners: " + area);
+                        }
+
+                        areaCount++;
                         writer.WriteEdgeAreaLegacy(area);
                     }
-                    Log.Info($"Wrote {count:N0} edge areas.");
+                    Log.Info($"Wrote {areaCount:N0} edge areas ({intersectionCount} intersections).");
 
                     stream.Position = countPosition;
-                    writer.Write(count);
+                    writer.Write(areaCount);
+                    writer.Write(intersectionCount);
                 }
             }
         }

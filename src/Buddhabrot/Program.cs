@@ -46,6 +46,17 @@ namespace Buddhabrot
                 Edges.EdgeVisualizer.Render(edgesFilePath, imageFilePath);
             }
 
+            [ArgActionMethod, ArgDescription("Renders the edge areas with corners highlighted to an image.  The image location/name will be based on the edge file.")]
+            public void PlotCorners(
+                [ArgDescription("Edges file."), ArgRequired, ArgExistingFile] string edgesFilePath)
+            {
+                var imageFilePath = Path.Combine(
+                    Path.GetDirectoryName(edgesFilePath),
+                    Path.GetFileNameWithoutExtension(edgesFilePath) + ".corners.png");
+
+                Edges.CornerVisualizer.Render(edgesFilePath, imageFilePath);
+            }
+
             [ArgActionMethod, ArgDescription("Finds and renders the edge areas.")]
             public void FindAndPlotEdges(
                 [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,

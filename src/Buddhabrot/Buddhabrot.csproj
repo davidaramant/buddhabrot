@@ -67,6 +67,7 @@
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
     <Compile Include="Edges\Corners.cs" />
+    <Compile Include="Edges\CornerVisualizer.cs" />
     <Compile Include="Edges\EdgeAreaLegacy.cs" />
     <Compile Include="Edges\EdgeArea.cs" />
     <Compile Include="Edges\EdgeAreasLegacy.cs" />

@@ -11,9 +11,12 @@ namespace Buddhabrot.Extensions
                 p.Y >= 0 && p.Y < size.Height;
         }
 
-        public static Point OffsetBy(this Point p, int xDelta, int yDelta) => 
+        public static Point OffsetBy(this Point p, int xDelta, int yDelta) =>
             new Point(p.X + xDelta, p.Y + yDelta);
 
         public static int Area(this Size s) => s.Width * s.Height;
+
+        public static Size MultiplyBy(this Size size, int scale) => 
+            new Size(size.Width * scale, size.Height * scale);
     }
 }

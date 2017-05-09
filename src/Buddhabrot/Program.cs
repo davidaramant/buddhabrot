@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Buddhabrot.IterationKernels;
 using Buddhabrot.Points;
 using PowerArgs;
 
@@ -93,6 +95,32 @@ namespace Buddhabrot
                     };
 
                     finder.Start(cts.Token).Wait();
+                }
+            }
+
+            [ArgActionMethod, ArgDescription("Validates that the points escape in the range.")]
+            public void ValidatePoints(
+                [ArgDescription("Input points file."), ArgRequired, ArgExistingFile] string inputPointsFile)
+            {
+                var cts = new CancellationTokenSource();
+                using (var kernel = new VectorKernel())
+                {
+                    var batch = kernel.GetBatch();
+                    int count = 0;
+                    foreach (var point in PointReader.ReadPoints(inputPointsFile).Take(batch.Capacity))
+                    {
+
+                        Console.WriteLine($"{count} = Point: {point}");
+
+                        batch.AddPoint(point);
+                        count++;
+                    }
+
+                    var results = batch.ComputeIterations(cts.Token);
+                    for (int i = 0; i < results.Count; i++)
+                    {
+                        Console.WriteLine($"{i} = Point: {results.GetPoint(i)}, iterations: {results.GetIteration(i):N0}");
+                    }
                 }
             }
         }

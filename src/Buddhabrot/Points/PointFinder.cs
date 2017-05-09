@@ -40,13 +40,23 @@ namespace Buddhabrot.Points
                     {
                         var workBatch = new WorkBatch(_worker.GetBatch);
 
+                        const int batchFrequency = 50;
+                        int batchNumber = 0;
+
                         while (!token.IsCancellationRequested)
                         {
+                            batchNumber++;
                             workBatch.Reset();
+
+                            Log.Debug($"Starting batch {batchNumber}");
 
                             foreach (var workItem in workRemaining.Take(workBatch.Capacity))
                             {
                                 workBatch.Add(workItem);
+                                if ( batchNumber % batchFrequency == 0)
+                                {
+                                    Log.Debug($"{workItem} => {(workItem.InSet - workItem.NotInSet).Magnitude}");
+                                }
                             }
 
                             if (workBatch.Count == 0)
@@ -57,9 +67,13 @@ namespace Buddhabrot.Points
 
                             workBatch.Compute(token);
 
-
                             IEnumerable<PointPair> ProcessResult(PointPair pair, Complex middle, long iterations)
                             {
+                                if (batchNumber % batchFrequency == 0)
+                                {
+                                    Log.Debug($"Iterations: {iterations:N0}");
+                                }
+
                                 if (Constant.IterationRange.IsInside(iterations))
                                 {
                                     _writer.Save(middle);
@@ -84,7 +98,7 @@ namespace Buddhabrot.Points
 
                             workRemaining.AddAdditional(
                                 workBatch.GetResults().
-                                AsParallel().
+                                //AsParallel().
                                 SelectMany(result => ProcessResult(result.pair, result.middle, result.iterations)));
 
                             _statistics.AddPointCount(workBatch.Count);

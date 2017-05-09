@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Buddhabrot.Edges;
+using log4net;
 
 namespace Buddhabrot.Points
 {
@@ -10,6 +11,8 @@ namespace Buddhabrot.Points
     /// </summary>
     public sealed class WorkRemaining
     {
+        private static readonly ILog Log = LogManager.GetLogger(nameof(WorkRemaining));
+
         private readonly IEnumerable<PointPair> _pairSequence;
 
         // Stacks are fast since they are array based
@@ -40,7 +43,7 @@ namespace Buddhabrot.Points
 
             if (remaining > 0)
             {
-                foreach (var pair in _pairSequence.Take(batchSize))
+                foreach (var pair in _pairSequence.Take(remaining))
                 {
                     yield return pair;
                 }

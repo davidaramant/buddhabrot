@@ -40,6 +40,18 @@ namespace Tests.Points
             Assert.That(dataReturned,Is.EqualTo(expected));
         }
 
+        [Test]
+        public void ShouldTakeLessThanTotal()
+        {
+            var work = new WorkRemaining(GetPointSequence(5));
+            work.AddAdditional(GetPointSequence(3));
+
+            var dataReturned = work.Take(4).Select(pair => (int)pair.InSet.Real).ToArray();
+            var expected = Enumerable.Repeat(3, 3).Concat(Enumerable.Repeat(5, 1)).ToArray();
+
+            Assert.That(dataReturned, Is.EqualTo(expected));
+        }
+
         private static IEnumerable<PointPair> GetPointSequence(int size) =>
             Enumerable.Repeat(size, size).
             Select(i => new PointPair(new FComplex(i, i), new FComplex(i, i)));

@@ -17,6 +17,9 @@ namespace Buddhabrot.Points
         private IPointBatch _batch;
         private IPointBatchResults _results;
 
+        public int Count => _batch?.Count ?? 0;
+        public int Capacity => _batch?.Capacity ?? 0;
+
         public WorkBatch(Func<IPointBatch> batchGetter)
         {
             _batchGetter = batchGetter;

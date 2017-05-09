@@ -5,12 +5,18 @@ using Buddhabrot.Edges;
 
 namespace Buddhabrot.Points
 {
-    public sealed class WorkSequence
+    /// <summary>
+    /// Keeps track of remaining work in an undefined order.
+    /// </summary>
+    public sealed class WorkRemaining
     {
         private readonly IEnumerable<PointPair> _pairSequence;
+
+        // Stacks are fast since they are array based
+        // The order of the work is irrelevant, so the LIFO behavior doesn't matter
         private readonly Stack<PointPair> _addedWorkBuffer = new Stack<PointPair>();
 
-        public WorkSequence(IEnumerable<PointPair> pairSequence)
+        public WorkRemaining(IEnumerable<PointPair> pairSequence)
         {
             _pairSequence = pairSequence;
         }

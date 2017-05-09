@@ -8,13 +8,13 @@ using NUnit.Framework;
 namespace Tests.Points
 {
     [TestFixture]
-    public sealed class WorkSequenceTests
+    public sealed class WorkRemainingTests
     {
         [Test]
         public void ShouldReturnFromSequenceIfNoAdditionalItems()
         {
             const int size = 5;
-            var work = new WorkSequence(GetPointSequence(size));
+            var work = new WorkRemaining(GetPointSequence(size));
 
             Assert.That(work.Take(size).Count(), Is.EqualTo(size));
         }
@@ -23,7 +23,7 @@ namespace Tests.Points
         public void ShouldReturnAsMuchDataAsAvailable()
         {
             const int size = 5;
-            var work = new WorkSequence(GetPointSequence(size));
+            var work = new WorkRemaining(GetPointSequence(size));
 
             Assert.That(work.Take(10 * size).Count(), Is.EqualTo(size));
         }
@@ -31,7 +31,7 @@ namespace Tests.Points
         [Test]
         public void ShouldReturnFromBufferBeforeSequence()
         {
-            var work = new WorkSequence(GetPointSequence(5));
+            var work = new WorkRemaining(GetPointSequence(5));
             work.AddAdditional(GetPointSequence(3));
 
             var dataReturned = work.Take(8).Select(pair => (int) pair.InSet.Real).ToArray();

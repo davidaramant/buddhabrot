@@ -24,5 +24,7 @@ namespace Buddhabrot.Edges
         {
             return a + 0.5f * (b - a);
         }
+
+        public override string ToString() => $"(In Set: {InSet}, Not in Set: {NotInSet})";
     }
 }

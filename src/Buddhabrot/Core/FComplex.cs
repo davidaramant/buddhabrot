@@ -13,5 +13,7 @@
             Real = real;
             Imag = imag;
         }
+
+        public override string ToString() => $"{Real} + {Imag}i";
     }
 }

@@ -1,5 +1,5 @@
-﻿using System.Threading;
-using Buddhabrot.Core;
+﻿using System.Numerics;
+using System.Threading;
 
 namespace Buddhabrot.IterationKernels
 {
@@ -22,7 +22,7 @@ namespace Buddhabrot.IterationKernels
         /// <returns>
         /// The index it was added to.
         /// </returns>
-        int AddPoint(FComplex c);
+        int AddPoint(Complex c);
 
         /// <summary>
         /// Computes the iterations.

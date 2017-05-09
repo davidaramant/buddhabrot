@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.IO;
+using System.Numerics;
 using Buddhabrot.Core;
 using Buddhabrot.Edges;
 
@@ -7,13 +8,13 @@ namespace Buddhabrot.Extensions
 {
     public static class BinarySerializationExtensions
     {
-        public static void WriteRange(this BinaryWriter writer, FloatRange range)
+        public static void WriteRange(this BinaryWriter writer, DoubleRange range)
         {
             writer.Write(range.InclusiveMin);
             writer.Write(range.ExclusiveMax);
         }
 
-        public static FloatRange ReadRange(this BinaryReader reader) => new FloatRange(reader.ReadSingle(), reader.ReadSingle());
+        public static DoubleRange ReadRange(this BinaryReader reader) => new DoubleRange(reader.ReadDouble(), reader.ReadDouble());
 
         public static void WriteComplexArea(this BinaryWriter writer, ComplexArea area)
         {
@@ -38,14 +39,6 @@ namespace Buddhabrot.Extensions
 
         public static Point ReadPoint(this BinaryReader reader) => new Point(reader.ReadInt32(), reader.ReadInt32());
 
-        public static void WriteEdgeArea(this BinaryWriter writer, EdgeAreaLegacy edgeAreaLegacy)
-        {
-            writer.WritePoint(edgeAreaLegacy.GridLocation);
-            writer.WriteSize(edgeAreaLegacy.Dimensions);
-        }
-
-        public static EdgeAreaLegacy ReadEdgeAreaLegacy(this BinaryReader reader) => new EdgeAreaLegacy(reader.ReadPoint(), reader.ReadSize());
-
         public static void WriteEdgeAreaLegacy(this BinaryWriter writer, EdgeArea edgeArea)
         {
             writer.WritePoint(edgeArea.GridLocation);
@@ -54,12 +47,12 @@ namespace Buddhabrot.Extensions
 
         public static EdgeArea ReadEdgeArea(this BinaryReader reader) => new EdgeArea(reader.ReadPoint(), (Corners)reader.ReadByte());
 
-        public static void WriteComplex(this BinaryWriter writer, FComplex complex)
+        public static void WriteComplex(this BinaryWriter writer, Complex complex)
         {
             writer.Write(complex.Real);
-            writer.Write(complex.Imag);
+            writer.Write(complex.Imaginary);
         }
 
-        public static FComplex ReadComplex(this BinaryReader reader) => new FComplex(reader.ReadSingle(), reader.ReadSingle());
+        public static Complex ReadComplex(this BinaryReader reader) => new Complex(reader.ReadDouble(), reader.ReadDouble());
     }
 }

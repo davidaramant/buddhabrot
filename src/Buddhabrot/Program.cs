@@ -66,16 +66,6 @@ namespace Buddhabrot
                 PlotEdges(Path.Combine(outputPath, $"edges{resolution}"));
             }
 
-            [ArgActionMethod, ArgDescription("Combines adjacent edge areas.")]
-            public void CompressEdges(
-                [ArgDescription("Input edges file."), ArgRequired, ArgExistingFile] string inputEdgesFilePath,
-                [ArgDescription("Output edges file."), ArgRequired] string outputEdgesFilePath)
-            {
-                var areas = Edges.EdgeAreasLegacy.Load(inputEdgesFilePath);
-                var compressedAreas = areas.CreateCompressedVersion();
-                compressedAreas.Write(outputEdgesFilePath);
-            }
-
             [ArgActionMethod, ArgDescription("Finds points.")]
             public void FindPoints(
                 [ArgDescription("Input edges file."), ArgRequired, ArgExistingFile] string inputEdgesFilePath,

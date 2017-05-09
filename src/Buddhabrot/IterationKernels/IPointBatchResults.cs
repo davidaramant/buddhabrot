@@ -1,4 +1,4 @@
-﻿using Buddhabrot.Core;
+﻿using System.Numerics;
 
 namespace Buddhabrot.IterationKernels
 {
@@ -14,13 +14,13 @@ namespace Buddhabrot.IterationKernels
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The point.</returns>
-        FComplex GetPoint(int index);
+        Complex GetPoint(int index);
 
         /// <summary>
         /// Gets the iteration count for the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The iteration count.</returns>
-        int GetIteration(int index);
+        long GetIteration(int index);
     }
 }

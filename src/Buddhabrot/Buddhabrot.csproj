@@ -61,16 +61,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\FComplex.cs" />
     <Compile Include="Core\ComplexArea.cs" />
-    <Compile Include="Core\FloatRange.cs" />
+    <Compile Include="Core\DoubleRange.cs" />
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
     <Compile Include="Edges\Corners.cs" />
     <Compile Include="Edges\CornerVisualizer.cs" />
-    <Compile Include="Edges\EdgeAreaLegacy.cs" />
     <Compile Include="Edges\EdgeArea.cs" />
-    <Compile Include="Edges\EdgeAreasLegacy.cs" />
     <Compile Include="Edges\EdgeAreas.cs" />
     <Compile Include="Edges\EdgeLocator.cs" />
     <Compile Include="Edges\EdgeVisualizer.cs" />
@@ -81,17 +78,11 @@
     <Compile Include="IterationKernels\IKernel.cs" />
     <Compile Include="IterationKernels\IPointBatch.cs" />
     <Compile Include="IterationKernels\IPointBatchResults.cs" />
-    <Compile Include="IterationKernels\NoResults.cs" />
     <Compile Include="IterationKernels\OpenCLKernelSource.cs" />
     <Compile Include="IterationKernels\VectorKernel.cs" />
-    <Compile Include="Points\IntelGpuOpenCLPointFinder.cs" />
     <Compile Include="Points\PointFinder.cs" />
     <Compile Include="Points\PointFinderStatistics.cs" />
-    <Compile Include="Points\IntelHeterogeneousOpenCLPointFinder.cs" />
-    <Compile Include="Points\LegacyPointFinder.cs" />
     <Compile Include="Points\PointWriter.cs" />
-    <Compile Include="Points\RandomPointGenerator.cs" />
-    <Compile Include="Points\VectorPointFinder.cs" />
     <Compile Include="Points\WorkBatch.cs" />
     <Compile Include="Points\WorkRemaining.cs" />
     <Compile Include="Program.cs" />

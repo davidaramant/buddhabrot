@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using Buddhabrot.Core;
 using Buddhabrot.Edges;
 using Buddhabrot.IterationKernels;
 using log4net;
@@ -62,9 +62,9 @@ namespace Buddhabrot.Points
                             workBatch.Compute(token);
 
                             int numMax = 0;
-                            int iterationTotal = 0;
+                            long iterationTotal = 0;
 
-                            IEnumerable<PointPair> ProcessResult(PointPair pair, FComplex middle, int iterations)
+                            IEnumerable<PointPair> ProcessResult(PointPair pair, Complex middle, long iterations)
                             {
                                 if (Constant.IterationRange.IsInside(iterations))
                                 {

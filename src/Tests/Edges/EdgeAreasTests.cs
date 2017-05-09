@@ -16,7 +16,7 @@ namespace Tests.Edges
             var filePath = Path.GetTempFileName();
             try
             {
-                ComplexArea CreateArea(int value) => new ComplexArea(new FloatRange(value, value + 1), new FloatRange(value + 2, value + 3));
+                ComplexArea CreateArea(int value) => new ComplexArea(new DoubleRange(value, value + 1), new DoubleRange(value + 2, value + 3));
                 EdgeArea CreateEdgeArea(int x, int y) => new EdgeArea(new Point(x, y),Corners.BottomRight);
 
                 var size = new Size(1, 2);
@@ -31,7 +31,7 @@ namespace Tests.Edges
 
                 using (var roundTripped = EdgeAreas.Load(filePath))
                 {
-                    void RangesAreEqual(FloatRange actual, FloatRange expected, string name)
+                    void RangesAreEqual(DoubleRange actual, DoubleRange expected, string name)
                     {
                         Assert.That(actual.InclusiveMin, Is.EqualTo(expected.InclusiveMin).Within(0.0000001f),
                             $"{name} range minimum was different.");

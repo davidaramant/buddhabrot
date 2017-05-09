@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using Buddhabrot.Core;
 
 namespace Buddhabrot.IterationKernels
 {
@@ -19,18 +18,18 @@ namespace Buddhabrot.IterationKernels
 
         private sealed class PointBatch : IPointBatch, IPointBatchResults
         {
-            private readonly float[] _cReals;
-            private readonly float[] _cImags;
-            private readonly int[] _iterations;
+            private readonly double[] _cReals;
+            private readonly double[] _cImags;
+            private readonly long[] _iterations;
 
             public int Capacity => _iterations.Length;
             public int Count { get; private set; }
 
             public PointBatch(int capacity)
             {
-                _cReals = new float[capacity];
-                _cImags = new float[capacity];
-                _iterations = new int[capacity];
+                _cReals = new double[capacity];
+                _cImags = new double[capacity];
+                _iterations = new long[capacity];
             }
 
             public PointBatch Reset()
@@ -39,25 +38,25 @@ namespace Buddhabrot.IterationKernels
                 return this;
             }
 
-            public int AddPoint(FComplex c)
+            public int AddPoint(Complex c)
             {
                 var index = Count;
                 Count++;
 
                 _cReals[index] = c.Real;
-                _cImags[index] = c.Imag;
+                _cImags[index] = c.Imaginary;
                 return index;
             }
 
-            public FComplex GetPoint(int index) => new FComplex(
+            public Complex GetPoint(int index) => new Complex(
                 _cReals[index],
                 _cImags[index]);
 
-            public int GetIteration(int index) => _iterations[index];
+            public long GetIteration(int index) => _iterations[index];
 
             public IPointBatchResults ComputeIterations(CancellationToken token)
             {
-                var vectorCapacity = Vector<float>.Count;
+                var vectorCapacity = Vector<double>.Count;
 
                 var numberOfVectorBatches = Count / vectorCapacity;
 
@@ -72,8 +71,8 @@ namespace Buddhabrot.IterationKernels
                             return;
                         }
 
-                        var realBatch = new float[vectorCapacity];
-                        var imagBatch = new float[vectorCapacity];
+                        var realBatch = new double[vectorCapacity];
+                        var imagBatch = new double[vectorCapacity];
 
                         for (int i = 0; i < vectorCapacity; i++)
                         {
@@ -81,8 +80,8 @@ namespace Buddhabrot.IterationKernels
                             imagBatch[i] = _cImags[vectorBatchIndex * vectorCapacity + i];
                         }
 
-                        var cReal = new Vector<float>(realBatch);
-                        var cImag = new Vector<float>(imagBatch);
+                        var cReal = new Vector<double>(realBatch);
+                        var cImag = new Vector<double>(imagBatch);
 
                         var vIterations = IteratePoints(cReal, cImag, Constant.IterationRange.Max);
 
@@ -98,18 +97,18 @@ namespace Buddhabrot.IterationKernels
 
         public void Dispose() { }
 
-        public static Vector<int> IteratePoints(Vector<float> cReal, Vector<float> cImag, int maxIterations)
+        public static Vector<long> IteratePoints(Vector<double> cReal, Vector<double> cImag, long maxIterations)
         {
-            var zReal = new Vector<float>(0);
-            var zImag = new Vector<float>(0);
+            var zReal = new Vector<double>(0);
+            var zImag = new Vector<double>(0);
 
             // Cache the squares
             // They are used to find the magnitude; reuse these values when computing the next re/im
-            var zReal2 = new Vector<float>(0);
-            var zImag2 = new Vector<float>(0);
+            var zReal2 = new Vector<double>(0);
+            var zImag2 = new Vector<double>(0);
 
-            var iterations = Vector<int>.Zero;
-            var increment = Vector<int>.One;
+            var iterations = Vector<long>.Zero;
+            var increment = Vector<long>.One;
 
             for (int i = 0; i < maxIterations; i++)
             {
@@ -121,7 +120,7 @@ namespace Buddhabrot.IterationKernels
                 zReal2 = zReal * zReal;
                 zImag2 = zImag * zImag;
 
-                var shouldContinue = Vector.LessThanOrEqual(zReal2 + zImag2, new Vector<float>(4));
+                var shouldContinue = Vector.LessThanOrEqual(zReal2 + zImag2, new Vector<double>(4));
 
                 increment = increment & shouldContinue;
                 iterations += increment;

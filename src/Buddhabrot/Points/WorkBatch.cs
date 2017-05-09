@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Numerics;
 using System.Threading;
-using System.Threading.Tasks;
-using Buddhabrot.Core;
 using Buddhabrot.Edges;
 using Buddhabrot.IterationKernels;
 
@@ -42,7 +39,7 @@ namespace Buddhabrot.Points
             _results = _batch.ComputeIterations(token);
         }
 
-        public IEnumerable<(PointPair pair, FComplex middle, int iterations)> GetResults()
+        public IEnumerable<(PointPair pair, Complex middle, long iterations)> GetResults()
         {
             for (int i = 0; i < _results.Count; i++)
             {

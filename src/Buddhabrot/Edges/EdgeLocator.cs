@@ -22,9 +22,9 @@ namespace Buddhabrot.Edges
             IntRange iterationRange)
         {
             // Assumptions for this class
-            if (Vector<float>.Count != 8 || Vector<int>.Count != 8)
+            if (Vector<double>.Count != Vector<long>.Count )
             {
-                throw new ArgumentException($"This assumes a vector capacity of 8 32-bit values, but instead it's {Vector<float>.Count}");
+                throw new ArgumentException($"This assumes a vector capacity of long and double are equal.");
             }
             if (Math.Abs(viewPort.ImagRange.ExclusiveMax + viewPort.ImagRange.InclusiveMin) >= float.Epsilon)
             {
@@ -39,7 +39,7 @@ namespace Buddhabrot.Edges
 
             var targetViewPort = new ComplexArea(
                 realRange: viewPort.RealRange,
-                imagRange: new FloatRange(0, viewPort.ImagRange.ExclusiveMax));
+                imagRange: new DoubleRange(0, viewPort.ImagRange.ExclusiveMax));
 
             var targetResolution = new Size(width: gridResolution, height: gridResolution / 2);
 
@@ -61,7 +61,7 @@ namespace Buddhabrot.Edges
 
         private static IEnumerable<EdgeArea> GetEdgeAreas(ComplexArea viewPort, Size resolution, IntRange iterationRange)
         {
-            var vectorSize = Vector<float>.Count;
+            var vectorSize = Vector<double>.Count;
 
             // An area has both a bottom and top row, so we can only fit n-1 areas into a strip.
             var areasInStripColumn = vectorSize - 1;
@@ -96,7 +96,7 @@ namespace Buddhabrot.Edges
             IntRange iterationRange,
             int stripIndex)
         {
-            var vectorSize = Vector<float>.Count;
+            var vectorSize = Vector<double>.Count;
 
             // An area has both a bottom and top row, so we can only fit n-1 areas into a strip.
             var areasInStripColumn = vectorSize - 1;
@@ -104,16 +104,16 @@ namespace Buddhabrot.Edges
             var areaRowsRemaining = resolution.Height - stripIndex * areasInStripColumn;
             var areasInBatch = Math.Min(areaRowsRemaining, areasInStripColumn);
 
-            float realIncrement = viewPort.RealRange.Magnitude / (resolution.Width - 1);
-            float imagIncrement = viewPort.ImagRange.Magnitude / (resolution.Height - 1);
+            double realIncrement = viewPort.RealRange.Magnitude / (resolution.Width - 1);
+            double imagIncrement = viewPort.ImagRange.Magnitude / (resolution.Height - 1);
 
-            var reals = new float[vectorSize];
-            var imags = new float[vectorSize];
+            var reals = new double[vectorSize];
+            var imags = new double[vectorSize];
             var leftColumnIsInSet = new bool[vectorSize];
             var rightColumnIsInSet = new bool[vectorSize];
 
-            float GetRealValue(int columnIndex) => viewPort.RealRange.InclusiveMin + columnIndex * realIncrement;
-            float GetImagValue(int rowIndex) => viewPort.ImagRange.InclusiveMin + (stripIndex * areasInStripColumn + rowIndex) * imagIncrement;
+            double GetRealValue(int columnIndex) => viewPort.RealRange.InclusiveMin + columnIndex * realIncrement;
+            double GetImagValue(int rowIndex) => viewPort.ImagRange.InclusiveMin + (stripIndex * areasInStripColumn + rowIndex) * imagIncrement;
 
             void IterateRightColumn(int columnIndex)
             {
@@ -129,14 +129,14 @@ namespace Buddhabrot.Edges
 
                 if (rightColumnIsInSet.Any(definitivelyInSet => !definitivelyInSet))
                 {
-                    var vReals = new Vector<float>(reals);
-                    var vImags = new Vector<float>(imags);
+                    var vReals = new Vector<double>(reals);
+                    var vImags = new Vector<double>(imags);
 
                     // Do a quick check with a low bailout to see if all the points are outside the set
                     const int quickBailout = 500;
                     var vIterations = VectorKernel.IteratePoints(vReals, vImags, quickBailout);
 
-                    void CopyResults(int max)
+                    void CopyResults(long max)
                     {
                         for (int i = 0; i < vectorSize; i++)
                         {

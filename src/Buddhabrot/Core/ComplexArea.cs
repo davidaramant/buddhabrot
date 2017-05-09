@@ -1,19 +1,21 @@
-﻿namespace Buddhabrot.Core
+﻿using System.Numerics;
+
+namespace Buddhabrot.Core
 {
     public sealed class ComplexArea
     {
-        public FloatRange RealRange { get; }
-        public FloatRange ImagRange { get; }
+        public DoubleRange RealRange { get; }
+        public DoubleRange ImagRange { get; }
 
-        public ComplexArea(FloatRange realRange, FloatRange imagRange)
+        public ComplexArea(DoubleRange realRange, DoubleRange imagRange)
         {
             RealRange = realRange;
             ImagRange = imagRange;
         }
 
-        public bool IsInside(FComplex number) =>
+        public bool IsInside(Complex number) =>
                 RealRange.IsInside(number.Real) &&
-                ImagRange.IsInside(number.Imag);
+                ImagRange.IsInside(number.Imaginary);
 
         public override string ToString() => $"Real: {RealRange}, Imag: {ImagRange}";
     }

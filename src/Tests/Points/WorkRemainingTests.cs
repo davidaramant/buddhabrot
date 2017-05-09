@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Buddhabrot.Core;
+using System.Numerics;
 using Buddhabrot.Edges;
 using Buddhabrot.Points;
 using NUnit.Framework;
@@ -54,6 +54,6 @@ namespace Tests.Points
 
         private static IEnumerable<PointPair> GetPointSequence(int size) =>
             Enumerable.Repeat(size, size).
-            Select(i => new PointPair(new FComplex(i, i), new FComplex(i, i)));
+            Select(i => new PointPair(new Complex(i, i), new Complex(i, i)));
     }
 }

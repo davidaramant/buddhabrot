@@ -1,28 +1,28 @@
-﻿using Buddhabrot.Core;
+﻿using System.Numerics;
 
 namespace Buddhabrot.Edges
 {
     public struct PointPair
     {
-        public readonly FComplex InSet;
-        public readonly FComplex NotInSet;
+        public readonly Complex InSet;
+        public readonly Complex NotInSet;
 
-        public PointPair(FComplex inSet, FComplex notInSet)
+        public PointPair(Complex inSet, Complex notInSet)
         {
             InSet = inSet;
             NotInSet = notInSet;
         }
 
-        public FComplex GetMidPoint()
+        public Complex GetMidPoint()
         {
-            return new FComplex(
+            return new Complex(
                 MidPointOf(InSet.Real, NotInSet.Real),
-                MidPointOf(InSet.Imag, NotInSet.Imag));
+                MidPointOf(InSet.Imaginary, NotInSet.Imaginary));
         }
 
-        private static float MidPointOf(float a, float b)
+        private static double MidPointOf(double a, double b)
         {
-            return a + 0.5f * (b - a);
+            return a + 0.5 * (b - a);
         }
 
         public override string ToString() => $"(In Set: {InSet}, Not in Set: {NotInSet})";

@@ -9,11 +9,11 @@ namespace Buddhabrot.Points
     /// <summary>
     /// Keeps track of remaining work in an undefined order.
     /// </summary>
-    public sealed class WorkRemaining
+    public sealed class WorkRemaining : IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(WorkRemaining));
 
-        private readonly IEnumerable<PointPair> _pairSequence;
+        private readonly IEnumerator<PointPair> _pairEnumerator;
 
         // Stacks are fast since they are array based
         // The order of the work is irrelevant, so the LIFO behavior doesn't matter
@@ -21,7 +21,7 @@ namespace Buddhabrot.Points
 
         public WorkRemaining(IEnumerable<PointPair> pairSequence)
         {
-            _pairSequence = pairSequence;
+            _pairEnumerator = pairSequence.GetEnumerator();
         }
 
         public void AddAdditional(IEnumerable<PointPair> pairs)
@@ -41,13 +41,23 @@ namespace Buddhabrot.Points
                 yield return _addedWorkBuffer.Pop();
             }
 
-            if (remaining > 0)
+            for (int i = 0; i < remaining; i++)
             {
-                foreach (var pair in _pairSequence.Take(remaining))
+                if (_pairEnumerator.MoveNext())
                 {
-                    yield return pair;
+                    yield return _pairEnumerator.Current;
                 }
+                else
+                {
+                    yield break;
+                }
+
             }
+        }
+
+        public void Dispose()
+        {
+            _pairEnumerator.Dispose();
         }
     }
 }

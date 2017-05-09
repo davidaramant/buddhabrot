@@ -36,10 +36,9 @@ namespace Buddhabrot.Points
                 () =>
                 {
                     using (var edgeReader = EdgeAreas.Load(_edgesFilePath))
+                    using (var workRemaining = new WorkRemaining(edgeReader.GetPointPairs()))
                     {
                         var workBatch = new WorkBatch(_worker.GetBatch);
-
-                        var workRemaining = new WorkRemaining(edgeReader.GetPointPairs());
 
                         while (!token.IsCancellationRequested)
                         {

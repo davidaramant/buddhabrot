@@ -81,35 +81,28 @@ namespace Buddhabrot
                 [ArgDescription("Input edges file."), ArgRequired, ArgExistingFile] string inputEdgesFilePath,
                 [ArgDescription("Output directory."), ArgDefaultValue(".")] string outputDirectory)
             {
-                System.Console.WriteLine("Press Ctrl-C to exit...");
+                Console.WriteLine("Press Ctrl-C to exit...");
 
                 if (!Directory.Exists(outputDirectory))
                 {
                     Directory.CreateDirectory(outputDirectory);
                 }
 
-                using (var statistics = new PointFinderStatistics())
+                using (var finder = new PointFinder(inputEdgesFilePath,
+                    Path.Combine(outputDirectory, $"points{DateTime.Now:yyyyMMdd-HHmmss}")))
                 {
-                    var areas = Edges.EdgeAreasLegacy.Load(inputEdgesFilePath);
-                    var randomNumbers = new RandomPointGenerator(areas.GetDistributedComplexAreas());
-                    var writer = new PointWriter(Path.Combine(outputDirectory, $"points{DateTime.Now:yyyyMMdd-HHmmss}"));
-
                     var cts = new CancellationTokenSource();
-                    System.Console.CancelKeyPress += (s, e) =>
+                    Console.CancelKeyPress += (s, e) =>
                     {
                         if (!cts.IsCancellationRequested)
                         {
                             e.Cancel = true;
                             cts.Cancel();
-                            System.Console.WriteLine("Cancelation requested...");
+                            Console.WriteLine("Cancelation requested...");
                         }
                     };
 
-                    using (var finder1 = new VectorPointFinder(randomNumbers, Constant.IterationRange, writer, statistics))
-                    using (var finder2 = new IntelGpuOpenCLPointFinder(randomNumbers, Constant.IterationRange, writer, statistics))
-                    {
-                        Task.WaitAll(finder1.Start(cts.Token), finder2.Start(cts.Token));
-                    }
+                    finder.Start(cts.Token).Wait();
                 }
             }
         }

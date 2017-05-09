@@ -2,7 +2,7 @@
 
 namespace Buddhabrot.IterationKernels
 {
-    interface IPointBatchResults
+    public interface IPointBatchResults
     {
         /// <summary>
         /// Gets amount of points loaded into the batch.

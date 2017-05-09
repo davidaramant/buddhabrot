@@ -15,7 +15,7 @@ namespace Buddhabrot.IterationKernels
             _pointBatch = new PointBatch(BatchSize);
         }
 
-        public IPointBatch GetBatch() => _pointBatch;
+        public IPointBatch GetBatch() => _pointBatch.Reset();
 
         private sealed class PointBatch : IPointBatch, IPointBatchResults
         {
@@ -33,9 +33,16 @@ namespace Buddhabrot.IterationKernels
                 _iterations = new int[capacity];
             }
 
+            public PointBatch Reset()
+            {
+                Count = 0;
+                return this;
+            }
+
             public int AddPoint(FComplex c)
             {
-                var index = Count++;
+                var index = Count;
+                Count++;
 
                 _cReals[index] = c.Real;
                 _cImags[index] = c.Imag;

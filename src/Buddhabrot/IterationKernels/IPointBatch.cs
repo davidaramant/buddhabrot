@@ -3,7 +3,7 @@ using Buddhabrot.Core;
 
 namespace Buddhabrot.IterationKernels
 {
-    interface IPointBatch
+    public interface IPointBatch
     {
         /// <summary>
         /// The maximum amount of points that can be loaded into this batch.

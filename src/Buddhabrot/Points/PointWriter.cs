@@ -2,16 +2,15 @@
 using System.IO;
 using System.Numerics;
 using Buddhabrot.Extensions;
-using log4net;
 
 namespace Buddhabrot.Points
 {
     sealed class PointWriter
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(PointWriter));
-
         private readonly object _fileLock = new object();
         private readonly string _filePath;
+
+        public int Count { get; private set; }
 
         public PointWriter(string filePath)
         {
@@ -26,6 +25,7 @@ namespace Buddhabrot.Points
                 using (var writer = new BinaryWriter(stream))
                 {
                     writer.WriteComplex(point);
+                    Count++;
                 }
             }
         }
@@ -40,6 +40,7 @@ namespace Buddhabrot.Points
                     foreach (var point in points)
                     {
                         writer.WriteComplex(point);
+                        Count++;
                     }
                 }
             }

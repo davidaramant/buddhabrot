@@ -17,7 +17,7 @@ namespace Buddhabrot.Points
         private readonly string _edgesFilePath;
         private readonly IKernel _worker;
         private readonly PointWriter _writer;
-        private readonly PointFinderStatistics _statistics = new PointFinderStatistics();
+        private readonly PointFinderStatistics _statistics;
 
         public PointFinder(string edgesFilePath, string outputFileName)
         {
@@ -25,6 +25,7 @@ namespace Buddhabrot.Points
             _worker = new VectorKernel();
 
             _writer = new PointWriter(outputFileName);
+            _statistics = new PointFinderStatistics(_writer);
         }
 
         public Task Start(CancellationToken token)
@@ -40,14 +41,10 @@ namespace Buddhabrot.Points
 
                         var workRemaining = new WorkRemaining(edgeReader.GetPointPairs());
 
-                        int batchNumber = 0;
                         while (!token.IsCancellationRequested)
                         {
-                            batchNumber++;
-
                             workBatch.Reset();
 
-                            // TODO - can this be done in parallel?
                             foreach (var workItem in workRemaining.Take(workBatch.Capacity))
                             {
                                 workBatch.Add(workItem);
@@ -61,8 +58,6 @@ namespace Buddhabrot.Points
 
                             workBatch.Compute(token);
 
-                            int numMax = 0;
-                            long iterationTotal = 0;
 
                             IEnumerable<PointPair> ProcessResult(PointPair pair, Complex middle, long iterations)
                             {
@@ -72,8 +67,6 @@ namespace Buddhabrot.Points
                                 }
                                 else if (iterations == Constant.IterationRange.Max)
                                 {
-                                    Interlocked.Increment(ref numMax);
-
                                     var newPair = new PointPair(
                                         inSet: middle,
                                         notInSet: pair.NotInSet);
@@ -82,8 +75,6 @@ namespace Buddhabrot.Points
                                 }
                                 else
                                 {
-                                    Interlocked.Add(ref iterationTotal, iterations);
-
                                     var newPair = new PointPair(
                                         inSet: pair.InSet,
                                         notInSet: middle);
@@ -96,11 +87,6 @@ namespace Buddhabrot.Points
                                 workBatch.GetResults().
                                 AsParallel().
                                 SelectMany(result => ProcessResult(result.pair, result.middle, result.iterations)));
-
-                            if (batchNumber % 10 == 0)
-                            {
-                                Log.Debug($"Batch Num: {batchNumber}, Num Max: {numMax:N0}, It avg: {(double)iterationTotal / (workBatch.Count - numMax):N1}");
-                            }
 
                             _statistics.AddPointCount(workBatch.Count);
                         }

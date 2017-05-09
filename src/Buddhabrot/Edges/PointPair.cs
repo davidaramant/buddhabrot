@@ -4,8 +4,8 @@ namespace Buddhabrot.Edges
 {
     public struct PointPair
     {
-        private readonly FComplex InSet;
-        private readonly FComplex NotInSet;
+        public readonly FComplex InSet;
+        public readonly FComplex NotInSet;
 
         public PointPair(FComplex inSet, FComplex notInSet)
         {

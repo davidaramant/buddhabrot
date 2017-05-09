@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Buddhabrot.Core;
@@ -38,80 +36,73 @@ namespace Buddhabrot.Points
                 {
                     using (var edgeReader = EdgeAreas.Load(_edgesFilePath))
                     {
-                        // TODO: Move todo and done into some kind of batch/results wrapper
-                        var results = NoResults.Instance;
-                        var todo = new List<PointPair>();
-                        var done = new List<PointPair>();
+                        var workBatch = new WorkBatch(_worker.GetBatch);
 
-                        void SwapTodoAndDone()
-                        {
-                            var temp = done;
-                            done = todo;
-                            todo = temp;
-                            todo.Clear();
-                        }
-     
                         var workRemaining = new WorkRemaining(edgeReader.GetPointPairs());
 
-                        while (!token.IsCancellationRequested )
+                        int batchNumber = 0;
+                        while (!token.IsCancellationRequested)
                         {
-                            Log.Debug("Starting new batch...");
-                            var batch = _worker.GetBatch();
-                            Log.Debug($"Batch Count = {batch.Count}, Capacity = {batch.Capacity}");
+                            batchNumber++;
+
+                            workBatch.Reset();
 
                             // TODO - can this be done in parallel?
-                            foreach (var workItem in workRemaining.Take(batch.Capacity))
+                            foreach (var workItem in workRemaining.Take(workBatch.Capacity))
                             {
-                                todo.Add(workItem);
-                                batch.AddPoint(workItem.GetMidPoint());
+                                workBatch.Add(workItem);
                             }
 
-                            if (batch.Count == 0)
+                            if (workBatch.Count == 0)
                             {
                                 Log.Info("Ran out of work!");
                                 break;
                             }
 
-                            // TODO: Should ComputeIterations be a Task?
-                            results = batch.ComputeIterations(token);
+                            workBatch.Compute(token);
 
-                            SwapTodoAndDone();
+                            int numMax = 0;
+                            int iterationTotal = 0;
 
-                            IEnumerable<PointPair> ProcessResult(Tuple<int, int> batchRange)
+                            IEnumerable<PointPair> ProcessResult(PointPair pair, FComplex middle, int iterations)
                             {
-                                for (int i = batchRange.Item1; i < batchRange.Item2; i++)
+                                if (Constant.IterationRange.IsInside(iterations))
                                 {
-                                    var iterations = results.GetIteration(i);
+                                    _writer.Save(middle);
+                                }
+                                else if (iterations == Constant.IterationRange.Max)
+                                {
+                                    Interlocked.Increment(ref numMax);
 
-                                    if (Constant.IterationRange.IsInside(iterations))
-                                    {
-                                        _writer.Save(results.GetPoint(i));
-                                    }
-                                    else if (iterations == Constant.IterationRange.Max)
-                                    {
-                                        var newPair = new PointPair(
-                                            inSet: results.GetPoint(i),
-                                            notInSet: done[i].NotInSet);
+                                    var newPair = new PointPair(
+                                        inSet: middle,
+                                        notInSet: pair.NotInSet);
 
-                                        yield return newPair;
-                                    }
-                                    else
-                                    {
-                                        var newPair = new PointPair(
-                                            inSet: done[i].InSet,
-                                            notInSet: results.GetPoint(i));
+                                    yield return newPair;
+                                }
+                                else
+                                {
+                                    Interlocked.Add(ref iterationTotal, iterations);
 
-                                        yield return newPair;
-                                    }
+                                    var newPair = new PointPair(
+                                        inSet: pair.InSet,
+                                        notInSet: middle);
+
+                                    yield return newPair;
                                 }
                             }
 
                             workRemaining.AddAdditional(
-                                Partitioner.Create(0, results.Count).
+                                workBatch.GetResults().
                                 AsParallel().
-                                SelectMany(ProcessResult));
+                                SelectMany(result => ProcessResult(result.pair, result.middle, result.iterations)));
 
-                            _statistics.AddPointCount(results.Count);
+                            if (batchNumber % 10 == 0)
+                            {
+                                Log.Debug($"Batch Num: {batchNumber}, Num Max: {numMax:N0}, It avg: {(double)iterationTotal / (workBatch.Count - numMax):N1}");
+                            }
+
+                            _statistics.AddPointCount(workBatch.Count);
                         }
                     }
 

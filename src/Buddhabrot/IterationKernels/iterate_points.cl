@@ -18,9 +18,19 @@
     double cImag = cImags[globalId];
 
     int iterations = 0;
+    int increment = 1;
+
+    printf("0 %.15f %.15f\n",cReal,cImag);
+    int outCount = 1;
 
     for (int i = 0; i < maxIterations; i++)
     {
+        if( increment == 1)
+        {
+            printf("%i %.15f %.15f\n",outCount,zReal,zImag);
+            outCount++;
+        }
+
         zImag = 2 * zReal * zImag + cImag;
         zReal = zReal2 - zImag2 + cReal;
 
@@ -28,7 +38,8 @@
         zImag2 = zImag * zImag;
 
         // Only increment if the point is still inside the circle
-        iterations += (zReal2 + zImag2) <= 4.0;
+        increment = increment & ((zReal2 + zImag2) <= 4.0);
+        iterations += increment;
     }
 
     finalIterations[globalId] = iterations;

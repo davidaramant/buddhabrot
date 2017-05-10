@@ -53,6 +53,8 @@ namespace Buddhabrot.IterationKernels
 
             public IPointBatchResults ComputeIterations(CancellationToken token, long maxIterations)
             {
+                const int interval = 100_000;
+
                 Parallel.For(
                     0,
                     Count,
@@ -68,9 +70,23 @@ namespace Buddhabrot.IterationKernels
 
                         var z = new Complex();
 
+                        void WL(Complex p, int count)
+                        {
+                            System.Console.WriteLine($"{count} {p.Real:F15} {p.Imaginary:F15}");
+                        }
+
+                        WL(c, 0);
+                        int outCount = 1;
+
                         int iterations = 0;
                         for (iterations = 0; iterations < maxIterations; iterations++)
                         {
+                            //if (iterations % interval == 0)
+                            {
+                                WL(z, outCount);
+                                outCount++;
+                            }
+
                             z = z * z + c;
 
                             if ((z.Real * z.Real + z.Imaginary * z.Imaginary) > 4)

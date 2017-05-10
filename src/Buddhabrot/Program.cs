@@ -106,14 +106,9 @@ namespace Buddhabrot
                 using (var kernel = new VectorKernel())
                 {
                     var batch = kernel.GetBatch();
-                    int count = 0;
                     foreach (var point in PointReader.ReadPoints(inputPointsFile).Take(batch.Capacity))
                     {
-
-                        Console.WriteLine($"{count} = Point: {point}");
-
                         batch.AddPoint(point);
-                        count++;
                     }
 
                     var results = batch.ComputeIterations(cts.Token);

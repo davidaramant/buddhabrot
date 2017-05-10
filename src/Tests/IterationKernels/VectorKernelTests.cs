@@ -10,6 +10,7 @@ namespace Tests.IterationKernels
     public sealed class VectorKernelTests
     {
         [TestCase(-1.0d, 0.0d)]
+        [TestCase(-0.108938062714878, 0.894186937285121)]
         public void ShouldIterateToSameValue(double real, double imag)
         {
             var range = new IntRange(0, 2000);

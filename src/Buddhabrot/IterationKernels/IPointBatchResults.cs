@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace Buddhabrot.IterationKernels
 {
@@ -22,5 +23,11 @@ namespace Buddhabrot.IterationKernels
         /// <param name="index">The index.</param>
         /// <returns>The iteration count.</returns>
         long GetIteration(int index);
+
+        /// <summary>
+        /// Returns a sequence of all the results.
+        /// </summary>
+        /// <returns>The points and their corresponding iterations.</returns>
+        IEnumerable<(Complex point, long iterations)> GetAllResults();
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Drawing;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.Points;
+using Humanizer;
 using PowerArgs;
 
 namespace Buddhabrot
@@ -103,20 +103,32 @@ namespace Buddhabrot
                 [ArgDescription("Input points file."), ArgRequired, ArgExistingFile] string inputPointsFile)
             {
                 var cts = new CancellationTokenSource();
-                using (var kernel = new VectorKernel())
+
+                var timer = Stopwatch.StartNew();
+
+                using (var kernel = new KernelBuilder().BuildOpenCL())
+                //using (var kernel = new VectorKernel())
+                //using (var kernel = new ScalarKernel())
                 {
+                    Console.WriteLine(kernel.GetType().Name);
                     var batch = kernel.GetBatch();
                     foreach (var point in PointReader.ReadPoints(inputPointsFile).Take(batch.Capacity))
                     {
                         batch.AddPoint(point);
                     }
 
+                    Console.WriteLine("Loaded batch");
+
                     var results = batch.ComputeIterations(cts.Token, Constant.IterationRange.Max);
-                    for (int i = 0; i < results.Count; i++)
-                    {
-                        Console.WriteLine($"{i} = Point: {results.GetPoint(i)}, iterations: {results.GetIteration(i):N0}");
-                    }
+
+                    Console.WriteLine($"Points outside range: {results.GetAllResults().Count(result => !Constant.IterationRange.IsInside(result.iterations))}");
+                    //for (int i = 0; i < results.Count; i++)
+                    //{
+                    //    Console.WriteLine($"{i} = Point: {results.GetPoint(i)}, iterations: {results.GetIteration(i):N0}");
+                    //}
                 }
+                timer.Stop();
+                Console.WriteLine(timer.Elapsed.Humanize(2));
             }
         }
     }

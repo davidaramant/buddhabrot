@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,6 +90,15 @@ namespace Buddhabrot.IterationKernels
 
                 return this;
             }
+            
+            public IEnumerable<(Complex point, long iterations)> GetAllResults()
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    yield return (_c[i], _iterations[i]);
+                }
+            }
+
         }
 
         public void Dispose() { }

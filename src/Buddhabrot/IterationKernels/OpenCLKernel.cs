@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using Buddhabrot.Utility;
@@ -134,6 +135,15 @@ namespace Buddhabrot.IterationKernels
                     unitSize * BatchSize,
                     ptr);
             }
+
+            public IEnumerable<(Complex point, long iterations)> GetAllResults()
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    yield return (new Complex(_cReals[i], _cImags[i]), _iterations[i]);
+                }
+            }
+
         }
     }
 }

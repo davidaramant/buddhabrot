@@ -45,7 +45,7 @@ namespace Buddhabrot.Edges
                     var chars = reader.ReadChars(HeaderText.Length);
                     var readHeader = new string(chars);
                     if (readHeader != HeaderText)
-                        throw new InvalidOperationException($"Edges file was corrupt: {filePath}");
+                        throw new InvalidOperationException($"Unsupported edges file format: {filePath}");
 
                     var size = reader.ReadSize();
                     var viewPort = reader.ReadComplexArea();

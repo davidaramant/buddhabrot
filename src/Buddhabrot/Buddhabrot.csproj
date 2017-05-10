@@ -71,7 +71,7 @@
     <Compile Include="Edges\EdgeAreas.cs" />
     <Compile Include="Edges\EdgeLocator.cs" />
     <Compile Include="Edges\EdgeVisualizer.cs" />
-    <Compile Include="Edges\PointPair.cs" />
+    <Compile Include="Core\PointPair.cs" />
     <Compile Include="Extensions\BinarySerializationExtensions.cs" />
     <Compile Include="Extensions\DrawingExtensions.cs" />
     <Compile Include="Images\FastImage.cs" />

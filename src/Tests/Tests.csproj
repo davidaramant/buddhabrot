@@ -41,7 +41,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Edges\PointPairTests.cs" />
+    <Compile Include="Core\PointPairTests.cs" />
     <Compile Include="Edges\EdgeAreasTests.cs" />
     <Compile Include="IterationKernels\VectorKernelTests.cs" />
     <Compile Include="Points\WorkRemainingTests.cs" />

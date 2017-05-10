@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
-using Buddhabrot.Edges;
+using Buddhabrot.Core;
 using NUnit.Framework;
 
-namespace Tests.Edges
+namespace Tests.Core
 {
     [TestFixture]
     public sealed class PointPairTests

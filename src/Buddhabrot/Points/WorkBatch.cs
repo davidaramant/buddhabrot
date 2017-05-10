@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
-using Buddhabrot.Edges;
+using Buddhabrot.Core;
 using Buddhabrot.IterationKernels;
 
 namespace Buddhabrot.Points

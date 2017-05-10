@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Buddhabrot.Edges
+namespace Buddhabrot.Core
 {
     public struct PointPair
     {

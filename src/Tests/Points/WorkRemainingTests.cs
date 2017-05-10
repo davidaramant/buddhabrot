@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Buddhabrot.Edges;
+using Buddhabrot.Core;
 using Buddhabrot.Points;
 using NUnit.Framework;
 

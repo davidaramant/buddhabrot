@@ -1,23 +1,26 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using Buddhabrot.Core;
 
 namespace Buddhabrot.IterationKernels
 {
-    sealed class VectorKernel : IKernel
+    public sealed class VectorKernel : IKernel
     {
         private const int BatchSize = 512;
         private readonly PointBatch _pointBatch;
 
-        public VectorKernel()
+        public VectorKernel(IntRange iterationRange = null)
         {
-            _pointBatch = new PointBatch(BatchSize);
+            _pointBatch = new PointBatch(BatchSize,iterationRange ?? Constant.IterationRange);
         }
 
         public IPointBatch GetBatch() => _pointBatch.Reset();
 
         private sealed class PointBatch : IPointBatch, IPointBatchResults
         {
+            private readonly IntRange _iterationRange;
             private readonly double[] _cReals;
             private readonly double[] _cImags;
             private readonly long[] _iterations;
@@ -25,8 +28,9 @@ namespace Buddhabrot.IterationKernels
             public int Capacity => _iterations.Length;
             public int Count { get; private set; }
 
-            public PointBatch(int capacity)
+            public PointBatch(int capacity, IntRange iterationRange)
             {
+                _iterationRange = iterationRange;
                 _cReals = new double[capacity];
                 _cImags = new double[capacity];
                 _iterations = new long[capacity];
@@ -58,7 +62,7 @@ namespace Buddhabrot.IterationKernels
             {
                 var vectorCapacity = Vector<double>.Count;
 
-                var numberOfVectorBatches = Count / vectorCapacity;
+                var numberOfVectorBatches = (int)Math.Ceiling((double)Count / vectorCapacity);
 
                 Parallel.For(
                     0,
@@ -83,7 +87,7 @@ namespace Buddhabrot.IterationKernels
                         var cReal = new Vector<double>(realBatch);
                         var cImag = new Vector<double>(imagBatch);
 
-                        var vIterations = IteratePoints(cReal, cImag, Constant.IterationRange.Max);
+                        var vIterations = IteratePoints(cReal, cImag, _iterationRange.Max);
 
                         for (int i = 0; i < vectorCapacity; i++)
                         {

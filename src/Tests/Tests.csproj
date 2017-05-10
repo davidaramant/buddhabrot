@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Edges\PointPairTests.cs" />
     <Compile Include="Edges\EdgeAreasTests.cs" />
+    <Compile Include="IterationKernels\VectorKernelTests.cs" />
     <Compile Include="Points\WorkRemainingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

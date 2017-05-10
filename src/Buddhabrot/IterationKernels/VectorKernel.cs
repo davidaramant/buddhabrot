@@ -23,8 +23,7 @@ namespace Buddhabrot.IterationKernels
         private sealed class PointBatch : IPointBatch, IPointBatchResults
         {
             private readonly IntRange _iterationRange;
-            private readonly double[] _cReals;
-            private readonly double[] _cImags;
+            private readonly Complex[] _c;
             private readonly long[] _iterations;
 
             public int Capacity => _iterations.Length;
@@ -33,8 +32,7 @@ namespace Buddhabrot.IterationKernels
             public PointBatch(int capacity, IntRange iterationRange)
             {
                 _iterationRange = iterationRange;
-                _cReals = new double[capacity];
-                _cImags = new double[capacity];
+                _c = new Complex[capacity];
                 _iterations = new long[capacity];
             }
 
@@ -49,14 +47,11 @@ namespace Buddhabrot.IterationKernels
                 var index = Count;
                 Count++;
 
-                _cReals[index] = c.Real;
-                _cImags[index] = c.Imaginary;
+                _c[index] = c;
                 return index;
             }
 
-            public Complex GetPoint(int index) => new Complex(
-                _cReals[index],
-                _cImags[index]);
+            public Complex GetPoint(int index) => _c[index];
 
             public long GetIteration(int index) => _iterations[index];
 
@@ -80,8 +75,8 @@ namespace Buddhabrot.IterationKernels
 
                         for (int i = 0; i < VectorCapacity; i++)
                         {
-                            realBatch[i] = _cReals[vectorBatchIndex * VectorCapacity + i];
-                            imagBatch[i] = _cImags[vectorBatchIndex * VectorCapacity + i];
+                            realBatch[i] = _c[vectorBatchIndex * VectorCapacity + i].Real;
+                            imagBatch[i] = _c[vectorBatchIndex * VectorCapacity + i].Imaginary;
                         }
 
                         var cReal = new Vector<double>(realBatch);

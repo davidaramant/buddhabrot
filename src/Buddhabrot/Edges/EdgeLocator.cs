@@ -71,14 +71,13 @@ namespace Buddhabrot.Edges
             return
                 Enumerable.Range(0, numberOfStrips).
                 AsParallel().
-                SelectMany(stripIndex => FindEdgeAreasInStrip(cornerCalculator, viewPort, gridResolution, iterationRange, stripIndex));
+                SelectMany(stripIndex => FindEdgeAreasInStrip(cornerCalculator, gridResolution, iterationRange, stripIndex));
         }
 
         /// <summary>
         /// Finds the edge areas in a strip of points.
         /// </summary>
         /// <param name="cornerCalculator">Calculates corners of edge areas.</param>
-        /// <param name="viewPort">The view port.</param>
         /// <param name="resolution">The resolution.</param>
         /// <param name="iterationRange">The iteration range.</param>
         /// <param name="areaStripIndex">Index of the strip of edge areas.</param>
@@ -93,7 +92,6 @@ namespace Buddhabrot.Edges
         /// </remarks>
         private static IEnumerable<EdgeArea> FindEdgeAreasInStrip(
             CornerCalculator cornerCalculator,
-            ComplexArea viewPort,
             Size resolution,
             IntRange iterationRange,
             int areaStripIndex)
@@ -104,30 +102,24 @@ namespace Buddhabrot.Edges
             var areaRowsRemaining = resolution.Height - areaStripIndex * areasInStripColumn;
             var areasInBatch = Math.Min(areaRowsRemaining, areasInStripColumn);
 
-            double realIncrement = viewPort.RealRange.Magnitude / (resolution.Width - 1);
-            double imagIncrement = viewPort.ImagRange.Magnitude / (resolution.Height - 1);
-
             var reals = new double[VectorKernel.VectorCapacity];
             var imags = new double[VectorKernel.VectorCapacity];
-            var leftColumnIsInSet = new bool[VectorKernel.VectorCapacity];
-            var rightColumnIsInSet = new bool[VectorKernel.VectorCapacity];
-
-            double GetRealValue(int columnIndex) => viewPort.RealRange.InclusiveMin + columnIndex * realIncrement;
-            double GetImagValue(int rowIndex) => viewPort.ImagRange.InclusiveMin + (areaStripIndex * areasInStripColumn + rowIndex) * imagIncrement;
+            var leftPointColumnIsInSet = new bool[VectorKernel.VectorCapacity];
+            var rightPointColumnIsInSet = new bool[VectorKernel.VectorCapacity];
 
             void IterateRightColumn(int pointColumnIndex)
             {
-                var realValue = GetRealValue(pointColumnIndex);
+                var realValue = cornerCalculator.GetRealValue(pointColumnIndex);
 
-                for (int rowIndex = 0; rowIndex < VectorKernel.VectorCapacity; rowIndex++)
+                for (int pointRowIndex = 0; pointRowIndex < VectorKernel.VectorCapacity; pointRowIndex++)
                 {
-                    reals[rowIndex] = realValue;
-                    imags[rowIndex] = GetImagValue(rowIndex);
+                    reals[pointRowIndex] = realValue;
+                    imags[pointRowIndex] = cornerCalculator.GetImagValue(areaStripIndex * areasInStripColumn + pointRowIndex);
 
-                    rightColumnIsInSet[rowIndex] = MandelbulbChecker.IsInsideBulbs(reals[rowIndex], imags[rowIndex]);
+                    rightPointColumnIsInSet[pointRowIndex] = MandelbulbChecker.IsInsideBulbs(reals[pointRowIndex], imags[pointRowIndex]);
                 }
 
-                if (rightColumnIsInSet.Any(definitivelyInSet => !definitivelyInSet))
+                if (rightPointColumnIsInSet.Any(definitivelyInSet => !definitivelyInSet))
                 {
                     var vReals = new Vector<double>(reals);
                     var vImags = new Vector<double>(imags);
@@ -140,12 +132,12 @@ namespace Buddhabrot.Edges
                     {
                         for (int i = 0; i < VectorKernel.VectorCapacity; i++)
                         {
-                            rightColumnIsInSet[i] = vIterations[i] == max;
+                            rightPointColumnIsInSet[i] = vIterations[i] == max;
                         }
                     }
 
                     CopyResults(quickBailout);
-                    if (rightColumnIsInSet.Any(inSet => inSet))
+                    if (rightPointColumnIsInSet.Any(inSet => inSet))
                     {
                         vIterations = VectorKernel.IteratePoints(vReals, vImags, iterationRange.Max);
 
@@ -156,9 +148,9 @@ namespace Buddhabrot.Edges
 
             void SwapColumnArrays()
             {
-                var temp = leftColumnIsInSet;
-                leftColumnIsInSet = rightColumnIsInSet;
-                rightColumnIsInSet = temp;
+                var temp = leftPointColumnIsInSet;
+                leftPointColumnIsInSet = rightPointColumnIsInSet;
+                rightPointColumnIsInSet = temp;
             }
 
             IterateRightColumn(pointColumnIndex: 0);
@@ -172,10 +164,10 @@ namespace Buddhabrot.Edges
                 for (int areaIndex = 0; areaIndex < areasInBatch; areaIndex++)
                 {
                     var cornersInSet =
-                        (leftColumnIsInSet[areaIndex] ? Corners.BottomLeft : Corners.None) |
-                        (rightColumnIsInSet[areaIndex] ? Corners.BottomRight : Corners.None) |
-                        (leftColumnIsInSet[areaIndex + 1] ? Corners.TopLeft : Corners.None) |
-                        (rightColumnIsInSet[areaIndex + 1] ? Corners.TopRight : Corners.None);
+                        (leftPointColumnIsInSet[areaIndex] ? Corners.BottomLeft : Corners.None) |
+                        (rightPointColumnIsInSet[areaIndex] ? Corners.BottomRight : Corners.None) |
+                        (leftPointColumnIsInSet[areaIndex + 1] ? Corners.TopLeft : Corners.None) |
+                        (rightPointColumnIsInSet[areaIndex + 1] ? Corners.TopRight : Corners.None);
 
                     if (cornersInSet != Corners.None && cornersInSet != Corners.All)
                     {

@@ -22,8 +22,8 @@ namespace Buddhabrot.Edges
             _imagIncrement = viewPort.ImagRange.Magnitude / gridSize.Height;
         }
 
-        private double GetRealValue(int x) => _viewPort.RealRange.InclusiveMin + x * _realIncrement;
-        private double GetImagValue(int y) => _viewPort.ImagRange.InclusiveMin + y * _imagIncrement;
+        public double GetRealValue(int x) => _viewPort.RealRange.InclusiveMin + x * _realIncrement;
+        public double GetImagValue(int y) => _viewPort.ImagRange.InclusiveMin + y * _imagIncrement;
 
         public Complex GetCorner(Point edgeLocation, Corners corner)
         {

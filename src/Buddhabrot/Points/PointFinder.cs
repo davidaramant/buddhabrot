@@ -54,7 +54,7 @@ namespace Buddhabrot.Points
                             foreach (var workItem in workRemaining.Take(workBatch.Capacity))
                             {
                                 workBatch.Add(workItem);
-                                if ( batchNumber % batchFrequency == 0)
+                                if (batchNumber % batchFrequency == 0)
                                 {
                                     Log.Debug($"{workItem} => {(workItem.InSet - workItem.NotInSet).Magnitude}");
                                 }

@@ -94,36 +94,7 @@ namespace Buddhabrot.Edges
 
         public IEnumerable<EdgeSpan> GetEdgeSpans()
         {
-            double realIncrement = ViewPort.RealRange.Magnitude / (GridResolution.Width - 1);
-            double imagIncrement = ViewPort.ImagRange.Magnitude / (GridResolution.Height - 1);
-
-            double GetRealValue(int x) => ViewPort.RealRange.InclusiveMin + x * realIncrement;
-            double GetImagValue(int y) => ViewPort.ImagRange.InclusiveMin + y * imagIncrement;
-
-            Complex GetPoint(Point location, Corners corner)
-            {
-                switch (corner)
-                {
-                    case Corners.BottomLeft:
-                        return new Complex(
-                            GetRealValue(location.X),
-                            GetImagValue(location.Y));
-                    case Corners.BottomRight:
-                        return new Complex(
-                            GetRealValue(location.X + 1),
-                            GetImagValue(location.Y));
-                    case Corners.TopLeft:
-                        return new Complex(
-                            GetRealValue(location.X),
-                            GetImagValue(location.Y + 1));
-                    case Corners.TopRight:
-                        return new Complex(
-                            GetRealValue(location.X + 1),
-                            GetImagValue(location.Y + 1));
-                    default:
-                        throw new ArgumentException();
-                }
-            };
+            var cornerCalculator = new CornerCalculator(GridResolution, ViewPort);
 
             foreach (var edge in GetAreas())
             {
@@ -132,8 +103,8 @@ namespace Buddhabrot.Edges
                     foreach (var cornerNotInSet in edge.GetCornersNotInSet())
                     {
                         yield return new EdgeSpan(
-                            inSet: GetPoint(edge.GridLocation, cornerInSet),
-                            notInSet: GetPoint(edge.GridLocation, cornerNotInSet));
+                            inSet: cornerCalculator.GetCorner(edge.GridLocation, cornerInSet),
+                            notInSet: cornerCalculator.GetCorner(edge.GridLocation, cornerNotInSet));
                     }
                 }
             }

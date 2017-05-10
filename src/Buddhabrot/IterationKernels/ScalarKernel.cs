@@ -53,7 +53,7 @@ namespace Buddhabrot.IterationKernels
 
             public IPointBatchResults ComputeIterations(CancellationToken token, long maxIterations)
             {
-                const int interval = 100_000;
+                const int interval = 10000;
 
                 Parallel.For(
                     0,
@@ -81,7 +81,7 @@ namespace Buddhabrot.IterationKernels
                         int iterations = 0;
                         for (iterations = 0; iterations < maxIterations; iterations++)
                         {
-                            //if (iterations % interval == 0)
+                            if (iterations % interval == 0)
                             {
                                 WL(z, outCount);
                                 outCount++;

@@ -1,4 +1,9 @@
-﻿kernel void iterate_points(
+﻿#if defined(cl_khr_fp64)
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+#endif
+
+
+kernel void iterate_points(
     constant const double* cReals,
     constant const double* cImags,
     global int* finalIterations,
@@ -25,7 +30,7 @@
 
     for (int i = 0; i < maxIterations; i++)
     {
-        if( increment == 1)
+        if( i % 10000 == 0)
         {
             printf("%i %.15f %.15f\n",outCount,zReal,zImag);
             outCount++;

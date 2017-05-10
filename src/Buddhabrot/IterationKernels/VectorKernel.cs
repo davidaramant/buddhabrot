@@ -8,6 +8,8 @@ namespace Buddhabrot.IterationKernels
 {
     public sealed class VectorKernel : IKernel
     {
+        public static int VectorCapacity => Vector<double>.Count;
+
         private const int BatchSize = 512;
         private readonly PointBatch _pointBatch;
 
@@ -60,9 +62,7 @@ namespace Buddhabrot.IterationKernels
 
             public IPointBatchResults ComputeIterations(CancellationToken token)
             {
-                var vectorCapacity = Vector<double>.Count;
-
-                var numberOfVectorBatches = (int)Math.Ceiling((double)Count / vectorCapacity);
+                var numberOfVectorBatches = (int)Math.Ceiling((double)Count / VectorCapacity);
 
                 Parallel.For(
                     0,
@@ -75,13 +75,13 @@ namespace Buddhabrot.IterationKernels
                             return;
                         }
 
-                        var realBatch = new double[vectorCapacity];
-                        var imagBatch = new double[vectorCapacity];
+                        var realBatch = new double[VectorCapacity];
+                        var imagBatch = new double[VectorCapacity];
 
-                        for (int i = 0; i < vectorCapacity; i++)
+                        for (int i = 0; i < VectorCapacity; i++)
                         {
-                            realBatch[i] = _cReals[vectorBatchIndex * vectorCapacity + i];
-                            imagBatch[i] = _cImags[vectorBatchIndex * vectorCapacity + i];
+                            realBatch[i] = _cReals[vectorBatchIndex * VectorCapacity + i];
+                            imagBatch[i] = _cImags[vectorBatchIndex * VectorCapacity + i];
                         }
 
                         var cReal = new Vector<double>(realBatch);
@@ -89,9 +89,9 @@ namespace Buddhabrot.IterationKernels
 
                         var vIterations = IteratePoints(cReal, cImag, _iterationRange.Max);
 
-                        for (int i = 0; i < vectorCapacity; i++)
+                        for (int i = 0; i < VectorCapacity; i++)
                         {
-                            _iterations[vectorBatchIndex * vectorCapacity + i] = vIterations[i];
+                            _iterations[vectorBatchIndex * VectorCapacity + i] = vIterations[i];
                         }
                     });
 

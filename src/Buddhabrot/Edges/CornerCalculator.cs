@@ -5,6 +5,9 @@ using Buddhabrot.Core;
 
 namespace Buddhabrot.Edges
 {
+    /// <summary>
+    /// Calculates positions of <see cref="EdgeArea"/> corners.
+    /// </summary>
     public sealed class CornerCalculator
     {
         private readonly ComplexArea _viewPort;

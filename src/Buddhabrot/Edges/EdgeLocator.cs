@@ -22,7 +22,7 @@ namespace Buddhabrot.Edges
             IntRange iterationRange)
         {
             // Assumptions for this class
-            if (Vector<double>.Count != Vector<long>.Count )
+            if (Vector<double>.Count != Vector<long>.Count)
             {
                 throw new ArgumentException($"This assumes a vector capacity of long and double are equal.");
             }
@@ -59,67 +59,67 @@ namespace Buddhabrot.Edges
             Log.Info($"Took {timer.Elapsed.Humanize(2)} to find edges.");
         }
 
-        private static IEnumerable<EdgeArea> GetEdgeAreas(ComplexArea viewPort, Size resolution, IntRange iterationRange)
+        private static IEnumerable<EdgeArea> GetEdgeAreas(ComplexArea viewPort, Size gridResolution, IntRange iterationRange)
         {
-            var vectorSize = Vector<double>.Count;
+            var cornerCalculator = new CornerCalculator(gridResolution, viewPort);
 
             // An area has both a bottom and top row, so we can only fit n-1 areas into a strip.
-            var areasInStripColumn = vectorSize - 1;
+            var areasInStripColumn = VectorKernel.VectorCapacity - 1;
 
-            var numberOfStrips = (int)Math.Ceiling((double)resolution.Height / areasInStripColumn);
+            var numberOfStrips = (int)Math.Ceiling((double)gridResolution.Height / areasInStripColumn);
 
             return
                 Enumerable.Range(0, numberOfStrips).
                 AsParallel().
-                SelectMany(stripIndex => FindEdgeAreasInStrip(viewPort, resolution, iterationRange, stripIndex));
+                SelectMany(stripIndex => FindEdgeAreasInStrip(cornerCalculator, viewPort, gridResolution, iterationRange, stripIndex));
         }
 
         /// <summary>
         /// Finds the edge areas in a strip of points.
         /// </summary>
+        /// <param name="cornerCalculator">Calculates corners of edge areas.</param>
         /// <param name="viewPort">The view port.</param>
         /// <param name="resolution">The resolution.</param>
         /// <param name="iterationRange">The iteration range.</param>
-        /// <param name="stripIndex">Index of the strip.</param>
+        /// <param name="areaStripIndex">Index of the strip of edge areas.</param>
         /// <returns>The edge areas it found.</returns>
         /// <remarks>
         /// This iterates horizontally over a columns of points in a strip.  It keeps track of two columns of results
         /// (left and right). From the columns, it determines which areas have corners that are a mix of points inside
         /// and outside the set.
         /// 
-        /// It gets a bit confusing because I interpret the grid to be defined by the points in the resolution.
-        /// In other words, there are (width-1) by (height-1) areas.
+        /// This gets confusing because points and edge areas do not have the same coordinate space (since an edge area
+        /// is, well, an area).
         /// </remarks>
         private static IEnumerable<EdgeArea> FindEdgeAreasInStrip(
+            CornerCalculator cornerCalculator,
             ComplexArea viewPort,
             Size resolution,
             IntRange iterationRange,
-            int stripIndex)
+            int areaStripIndex)
         {
-            var vectorSize = Vector<double>.Count;
-
             // An area has both a bottom and top row, so we can only fit n-1 areas into a strip.
-            var areasInStripColumn = vectorSize - 1;
+            var areasInStripColumn = VectorKernel.VectorCapacity - 1;
 
-            var areaRowsRemaining = resolution.Height - stripIndex * areasInStripColumn;
+            var areaRowsRemaining = resolution.Height - areaStripIndex * areasInStripColumn;
             var areasInBatch = Math.Min(areaRowsRemaining, areasInStripColumn);
 
             double realIncrement = viewPort.RealRange.Magnitude / (resolution.Width - 1);
             double imagIncrement = viewPort.ImagRange.Magnitude / (resolution.Height - 1);
 
-            var reals = new double[vectorSize];
-            var imags = new double[vectorSize];
-            var leftColumnIsInSet = new bool[vectorSize];
-            var rightColumnIsInSet = new bool[vectorSize];
+            var reals = new double[VectorKernel.VectorCapacity];
+            var imags = new double[VectorKernel.VectorCapacity];
+            var leftColumnIsInSet = new bool[VectorKernel.VectorCapacity];
+            var rightColumnIsInSet = new bool[VectorKernel.VectorCapacity];
 
             double GetRealValue(int columnIndex) => viewPort.RealRange.InclusiveMin + columnIndex * realIncrement;
-            double GetImagValue(int rowIndex) => viewPort.ImagRange.InclusiveMin + (stripIndex * areasInStripColumn + rowIndex) * imagIncrement;
+            double GetImagValue(int rowIndex) => viewPort.ImagRange.InclusiveMin + (areaStripIndex * areasInStripColumn + rowIndex) * imagIncrement;
 
-            void IterateRightColumn(int columnIndex)
+            void IterateRightColumn(int pointColumnIndex)
             {
-                var realValue = GetRealValue(columnIndex);
+                var realValue = GetRealValue(pointColumnIndex);
 
-                for (int rowIndex = 0; rowIndex < vectorSize; rowIndex++)
+                for (int rowIndex = 0; rowIndex < VectorKernel.VectorCapacity; rowIndex++)
                 {
                     reals[rowIndex] = realValue;
                     imags[rowIndex] = GetImagValue(rowIndex);
@@ -138,7 +138,7 @@ namespace Buddhabrot.Edges
 
                     void CopyResults(long max)
                     {
-                        for (int i = 0; i < vectorSize; i++)
+                        for (int i = 0; i < VectorKernel.VectorCapacity; i++)
                         {
                             rightColumnIsInSet[i] = vIterations[i] == max;
                         }
@@ -161,7 +161,7 @@ namespace Buddhabrot.Edges
                 rightColumnIsInSet = temp;
             }
 
-            IterateRightColumn(columnIndex: 0);
+            IterateRightColumn(pointColumnIndex: 0);
             SwapColumnArrays();
 
             for (int rightColumnIndex = 1; rightColumnIndex < (resolution.Width - 1); rightColumnIndex++)
@@ -172,15 +172,15 @@ namespace Buddhabrot.Edges
                 for (int areaIndex = 0; areaIndex < areasInBatch; areaIndex++)
                 {
                     var cornersInSet =
-                        (leftColumnIsInSet[areaIndex] ? Corners.BottomLeft : Corners.None)|
-                        (rightColumnIsInSet[areaIndex] ? Corners.BottomRight : Corners.None)|
+                        (leftColumnIsInSet[areaIndex] ? Corners.BottomLeft : Corners.None) |
+                        (rightColumnIsInSet[areaIndex] ? Corners.BottomRight : Corners.None) |
                         (leftColumnIsInSet[areaIndex + 1] ? Corners.TopLeft : Corners.None) |
                         (rightColumnIsInSet[areaIndex + 1] ? Corners.TopRight : Corners.None);
 
                     if (cornersInSet != Corners.None && cornersInSet != Corners.All)
                     {
                         yield return new EdgeArea(
-                            new Point(rightColumnIndex - 1, stripIndex * areasInStripColumn + areaIndex),
+                            new Point(rightColumnIndex - 1, areaStripIndex * areasInStripColumn + areaIndex),
                             cornersInSet);
                     }
                 }

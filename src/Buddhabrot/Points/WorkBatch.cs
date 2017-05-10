@@ -10,7 +10,7 @@ namespace Buddhabrot.Points
     public sealed class WorkBatch
     {
         private readonly Func<IPointBatch> _batchGetter;
-        private readonly List<PointPair> _pairs = new List<PointPair>();
+        private readonly List<EdgeSpan> _spans = new List<EdgeSpan>();
         private IPointBatch _batch;
         private IPointBatchResults _results;
 
@@ -25,13 +25,13 @@ namespace Buddhabrot.Points
         public void Reset()
         {
             _batch = _batchGetter();
-            _pairs.Clear();
+            _spans.Clear();
         }
 
-        public void Add(PointPair pair)
+        public void Add(EdgeSpan span)
         {
-            _pairs.Add(pair);
-            _batch.AddPoint(pair.GetMidPoint());
+            _spans.Add(span);
+            _batch.AddPoint(span.GetMidPoint());
         }
 
         public void Compute(CancellationToken token)
@@ -39,11 +39,11 @@ namespace Buddhabrot.Points
             _results = _batch.ComputeIterations(token);
         }
 
-        public IEnumerable<(PointPair pair, Complex middle, long iterations)> GetResults()
+        public IEnumerable<(EdgeSpan span, Complex middle, long iterations)> GetResults()
         {
             for (int i = 0; i < _results.Count; i++)
             {
-                yield return (_pairs[i], _results.GetPoint(i), _results.GetIteration(i));
+                yield return (_spans[i], _results.GetPoint(i), _results.GetIteration(i));
             }
         }
     }

@@ -37,7 +37,7 @@ namespace Buddhabrot.Points
                 () =>
                 {
                     using (var edgeReader = EdgeAreas.Load(_edgesFilePath))
-                    using (var workRemaining = new WorkRemaining(edgeReader.GetPointPairs()))
+                    using (var workRemaining = new WorkRemaining(edgeReader.GetEdgeSpans()))
                     {
                         var workBatch = new WorkBatch(_worker.GetBatch);
 
@@ -68,7 +68,7 @@ namespace Buddhabrot.Points
 
                             workBatch.Compute(token);
 
-                            IEnumerable<PointPair> ProcessResult(PointPair pair, Complex middle, long iterations)
+                            IEnumerable<EdgeSpan> ProcessResult(EdgeSpan span, Complex middle, long iterations)
                             {
                                 if (batchNumber % batchFrequency == 0)
                                 {
@@ -81,26 +81,22 @@ namespace Buddhabrot.Points
                                 }
                                 else if (iterations == Constant.IterationRange.Max)
                                 {
-                                    var newPair = new PointPair(
+                                    yield return new EdgeSpan(
                                         inSet: middle,
-                                        notInSet: pair.NotInSet);
-
-                                    yield return newPair;
+                                        notInSet: span.NotInSet);
                                 }
                                 else
                                 {
-                                    var newPair = new PointPair(
-                                        inSet: pair.InSet,
+                                    yield return new EdgeSpan(
+                                        inSet: span.InSet,
                                         notInSet: middle);
-
-                                    yield return newPair;
                                 }
                             }
 
                             workRemaining.AddAdditional(
                                 workBatch.GetResults().
                                 //AsParallel().
-                                SelectMany(result => ProcessResult(result.pair, result.middle, result.iterations)));
+                                SelectMany(result => ProcessResult(result.span, result.middle, result.iterations)));
 
                             _statistics.AddPointCount(workBatch.Count);
                         }

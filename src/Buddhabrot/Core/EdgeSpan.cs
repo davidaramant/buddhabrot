@@ -2,12 +2,15 @@
 
 namespace Buddhabrot.Core
 {
-    public struct PointPair
+    /// <summary>
+    /// A line segment that spans across the set boundary.
+    /// </summary>
+    public struct EdgeSpan
     {
         public readonly Complex InSet;
         public readonly Complex NotInSet;
 
-        public PointPair(Complex inSet, Complex notInSet)
+        public EdgeSpan(Complex inSet, Complex notInSet)
         {
             InSet = inSet;
             NotInSet = notInSet;

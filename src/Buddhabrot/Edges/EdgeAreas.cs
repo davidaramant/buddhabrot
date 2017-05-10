@@ -92,7 +92,7 @@ namespace Buddhabrot.Edges
 
         public IEnumerable<Point> GetAreaLocations() => GetAreas().Select(ea => ea.GridLocation);
 
-        public IEnumerable<PointPair> GetPointPairs()
+        public IEnumerable<EdgeSpan> GetEdgeSpans()
         {
             double realIncrement = ViewPort.RealRange.Magnitude / (GridResolution.Width - 1);
             double imagIncrement = ViewPort.ImagRange.Magnitude / (GridResolution.Height - 1);
@@ -131,7 +131,7 @@ namespace Buddhabrot.Edges
                 {
                     foreach (var cornerNotInSet in edge.GetCornersNotInSet())
                     {
-                        yield return new PointPair(
+                        yield return new EdgeSpan(
                             inSet: GetPoint(edge.GridLocation, cornerInSet),
                             notInSet: GetPoint(edge.GridLocation, cornerNotInSet));
                     }

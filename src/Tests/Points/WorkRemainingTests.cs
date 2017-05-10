@@ -68,8 +68,8 @@ namespace Tests.Points
             }
         }
 
-        private static IEnumerable<PointPair> GetPointSequence(int size) =>
+        private static IEnumerable<EdgeSpan> GetPointSequence(int size) =>
             Enumerable.Repeat(size, size).
-            Select(i => new PointPair(new Complex(i, i), new Complex(i, i)));
+            Select(i => new EdgeSpan(new Complex(i, i), new Complex(i, i)));
     }
 }

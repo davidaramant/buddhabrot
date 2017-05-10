@@ -12,18 +12,18 @@ namespace Buddhabrot.Points
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(WorkRemaining));
 
-        private readonly IEnumerator<PointPair> _pairEnumerator;
+        private readonly IEnumerator<EdgeSpan> _pairEnumerator;
 
         // Stacks are fast since they are array based
         // The order of the work is irrelevant, so the LIFO behavior doesn't matter
-        private readonly Stack<PointPair> _addedWorkBuffer = new Stack<PointPair>();
+        private readonly Stack<EdgeSpan> _addedWorkBuffer = new Stack<EdgeSpan>();
 
-        public WorkRemaining(IEnumerable<PointPair> pairSequence)
+        public WorkRemaining(IEnumerable<EdgeSpan> pairSequence)
         {
             _pairEnumerator = pairSequence.GetEnumerator();
         }
 
-        public void AddAdditional(IEnumerable<PointPair> pairs)
+        public void AddAdditional(IEnumerable<EdgeSpan> pairs)
         {
             foreach (var pair in pairs)
             {
@@ -31,7 +31,7 @@ namespace Buddhabrot.Points
             }
         }
 
-        public IEnumerable<PointPair> Take(int batchSize)
+        public IEnumerable<EdgeSpan> Take(int batchSize)
         {
             int fromBuffer = Math.Min(batchSize, _addedWorkBuffer.Count);
             int remaining = batchSize - _addedWorkBuffer.Count;

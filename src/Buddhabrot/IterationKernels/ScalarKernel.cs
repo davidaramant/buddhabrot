@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using Buddhabrot.Core;
 
 namespace Buddhabrot.IterationKernels
 {

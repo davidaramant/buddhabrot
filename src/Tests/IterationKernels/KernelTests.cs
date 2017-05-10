@@ -30,7 +30,7 @@ namespace Tests.IterationKernels
             var scalarIterations = IterateWithKernel(new ScalarKernel(), c, 2000);
             var openCLIterations = IterateWithKernel(kernelBuilder.BuildOpenCL(), c, 2000);
 
-            Assert.That(openCLIterations, Is.EqualTo(scalarIterations), "Vector iteration count was not equal to scalar version.");
+            Assert.That(openCLIterations, Is.EqualTo(scalarIterations), "OpenCL iteration count was not equal to scalar version.");
         }
 
         private static long IterateWithKernel(IKernel kernel, Complex c, long maxIterations)

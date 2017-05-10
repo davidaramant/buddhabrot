@@ -3,6 +3,9 @@ using System.Threading;
 
 namespace Buddhabrot.IterationKernels
 {
+    /// <summary>
+    /// Represents a one-time batch of work.  NOT reusable!
+    /// </summary>
     public interface IPointBatch
     {
         /// <summary>

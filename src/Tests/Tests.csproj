@@ -45,7 +45,7 @@
     <Compile Include="Edges\CornerCalculatorTests.cs" />
     <Compile Include="Edges\EdgeAreasTests.cs" />
     <Compile Include="Edges\EdgeAreaTests.cs" />
-    <Compile Include="IterationKernels\VectorKernelTests.cs" />
+    <Compile Include="IterationKernels\KernelTests.cs" />
     <Compile Include="Points\WorkRemainingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

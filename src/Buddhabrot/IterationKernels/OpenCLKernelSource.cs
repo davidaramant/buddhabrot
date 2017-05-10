@@ -6,8 +6,7 @@ namespace Buddhabrot.IterationKernels
     static class OpenCLKernelSource
     {
         private const string SourceName = "Buddhabrot.IterationKernels.iterate_points.cl";
-
-        public static string Read()
+        private static readonly Lazy<string> SourceLoader = new Lazy<string>(() =>
         {
             using (var stream = typeof(OpenCLKernelSource).Assembly.GetManifestResourceStream(SourceName))
             {
@@ -21,6 +20,9 @@ namespace Buddhabrot.IterationKernels
                     return streamReader.ReadToEnd();
                 }
             }
-        }
+        });
+
+
+        public static string Read() => SourceLoader.Value;
     }
 }

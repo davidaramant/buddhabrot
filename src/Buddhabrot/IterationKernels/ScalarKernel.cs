@@ -19,7 +19,8 @@ namespace Buddhabrot.IterationKernels
         private sealed class Batch : IPointBatch, IPointBatchResults
         {
             private readonly Complex[] _c;
-            private readonly long[] _iterations;
+            // There's no benefit to using longs for iterations in this kernel
+            private readonly int[] _iterations;
 
             public int Capacity => _iterations.Length;
             public int Count { get; private set; }
@@ -27,7 +28,7 @@ namespace Buddhabrot.IterationKernels
             public Batch(int capacity)
             {
                 _c = new Complex[capacity];
-                _iterations = new long[capacity];
+                _iterations = new int[capacity];
             }
 
             public Batch Reset()
@@ -67,7 +68,7 @@ namespace Buddhabrot.IterationKernels
                         var z = new Complex();
                         var z2 = new Complex();
 
-                        long iterations = 0;
+                        int iterations = 0;
                         for (iterations = 0; iterations < maxIterations; iterations++)
                         {
                             z = z2 + c;

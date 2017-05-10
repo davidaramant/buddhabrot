@@ -79,6 +79,8 @@
     <Compile Include="IterationKernels\IKernel.cs" />
     <Compile Include="IterationKernels\IPointBatch.cs" />
     <Compile Include="IterationKernels\IPointBatchResults.cs" />
+    <Compile Include="IterationKernels\KernelBuilder.cs" />
+    <Compile Include="IterationKernels\OpenCLKernel.cs" />
     <Compile Include="IterationKernels\OpenCLKernelSource.cs" />
     <Compile Include="IterationKernels\ScalarKernel.cs" />
     <Compile Include="IterationKernels\VectorKernel.cs" />

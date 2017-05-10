@@ -103,7 +103,7 @@ namespace Buddhabrot.IterationKernels
 
                             using (var eventQueue = commandQueue.EnqueueNDRangeKernel(
                                 kernel,
-                                globalWorkSize: new[] { (IntPtr)BatchSize },
+                                globalWorkSize: new[] { (IntPtr)Count },
                                 localWorkSize: null))
                             {
                                 Event.WaitAll(eventQueue);
@@ -113,7 +113,7 @@ namespace Buddhabrot.IterationKernels
                                 iterationsBuffer,
                                 blocking: true,
                                 offset: 0,
-                                size: sizeof(int) * BatchSize,
+                                size: sizeof(int) * Count,
                                 destination: (IntPtr)pIterations))
                             {
                             }

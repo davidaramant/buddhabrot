@@ -34,9 +34,9 @@ namespace Buddhabrot.Points
             _batch.AddPoint(span.GetMidPoint());
         }
 
-        public void Compute(CancellationToken token)
+        public void Compute(CancellationToken token, long maxIterations)
         {
-            _results = _batch.ComputeIterations(token);
+            _results = _batch.ComputeIterations(token, maxIterations);
         }
 
         public IEnumerable<(EdgeSpan span, Complex middle, long iterations)> GetResults()

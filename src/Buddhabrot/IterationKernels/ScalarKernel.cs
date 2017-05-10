@@ -10,25 +10,23 @@ namespace Buddhabrot.IterationKernels
         private const int BatchSize = 256;
         private readonly Batch _pointBatch;
 
-        public ScalarKernel(IntRange iterationRange = null)
+        public ScalarKernel()
         {
-            _pointBatch = new Batch(BatchSize, iterationRange ?? Constant.IterationRange);
+            _pointBatch = new Batch(BatchSize);
         }
 
         public IPointBatch GetBatch() => _pointBatch.Reset();
 
         private sealed class Batch : IPointBatch, IPointBatchResults
         {
-            private readonly IntRange _iterationRange;
             private readonly Complex[] _c;
             private readonly long[] _iterations;
 
             public int Capacity => _iterations.Length;
             public int Count { get; private set; }
 
-            public Batch(int capacity, IntRange iterationRange)
+            public Batch(int capacity)
             {
-                _iterationRange = iterationRange;
                 _c = new Complex[capacity];
                 _iterations = new long[capacity];
             }
@@ -52,7 +50,7 @@ namespace Buddhabrot.IterationKernels
 
             public long GetIteration(int index) => _iterations[index];
 
-            public IPointBatchResults ComputeIterations(CancellationToken token)
+            public IPointBatchResults ComputeIterations(CancellationToken token, long maxIterations)
             {
                 Parallel.For(
                     0,
@@ -71,7 +69,7 @@ namespace Buddhabrot.IterationKernels
                         var z2 = new Complex();
 
                         long iterations = 0;
-                        for (iterations = 0; iterations < _iterationRange.Max; iterations++)
+                        for (iterations = 0; iterations < maxIterations; iterations++)
                         {
                             z = z2 + c;
 

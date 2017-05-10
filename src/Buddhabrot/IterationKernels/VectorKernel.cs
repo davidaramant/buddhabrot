@@ -2,7 +2,6 @@
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using Buddhabrot.Core;
 
 namespace Buddhabrot.IterationKernels
 {
@@ -13,25 +12,23 @@ namespace Buddhabrot.IterationKernels
         private const int BatchSize = 512;
         private readonly PointBatch _pointBatch;
 
-        public VectorKernel(IntRange iterationRange = null)
+        public VectorKernel()
         {
-            _pointBatch = new PointBatch(BatchSize,iterationRange ?? Constant.IterationRange);
+            _pointBatch = new PointBatch(BatchSize);
         }
 
         public IPointBatch GetBatch() => _pointBatch.Reset();
 
         private sealed class PointBatch : IPointBatch, IPointBatchResults
         {
-            private readonly IntRange _iterationRange;
             private readonly Complex[] _c;
             private readonly long[] _iterations;
 
             public int Capacity => _iterations.Length;
             public int Count { get; private set; }
 
-            public PointBatch(int capacity, IntRange iterationRange)
+            public PointBatch(int capacity)
             {
-                _iterationRange = iterationRange;
                 _c = new Complex[capacity];
                 _iterations = new long[capacity];
             }
@@ -55,7 +52,7 @@ namespace Buddhabrot.IterationKernels
 
             public long GetIteration(int index) => _iterations[index];
 
-            public IPointBatchResults ComputeIterations(CancellationToken token)
+            public IPointBatchResults ComputeIterations(CancellationToken token, long maxIterations)
             {
                 var numberOfVectorBatches = (int)Math.Ceiling((double)Count / VectorCapacity);
 
@@ -82,7 +79,7 @@ namespace Buddhabrot.IterationKernels
                         var cReal = new Vector<double>(realBatch);
                         var cImag = new Vector<double>(imagBatch);
 
-                        var vIterations = IteratePoints(cReal, cImag, _iterationRange.Max);
+                        var vIterations = IteratePoints(cReal, cImag, maxIterations);
 
                         for (int i = 0; i < VectorCapacity; i++)
                         {

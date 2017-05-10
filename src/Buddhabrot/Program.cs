@@ -111,7 +111,7 @@ namespace Buddhabrot
                         batch.AddPoint(point);
                     }
 
-                    var results = batch.ComputeIterations(cts.Token);
+                    var results = batch.ComputeIterations(cts.Token, Constant.IterationRange.Max);
                     for (int i = 0; i < results.Count; i++)
                     {
                         Console.WriteLine($"{i} = Point: {results.GetPoint(i)}, iterations: {results.GetIteration(i):N0}");

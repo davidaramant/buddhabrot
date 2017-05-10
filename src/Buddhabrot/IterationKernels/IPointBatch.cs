@@ -28,7 +28,10 @@ namespace Buddhabrot.IterationKernels
         /// Computes the iterations.
         /// </summary>
         /// <param name="token">The token.</param>
-        /// <returns>The results of the batch.</returns>
-        IPointBatchResults ComputeIterations(CancellationToken token);
+        /// <param name="maxIterations">The maximum iterations.</param>
+        /// <returns>
+        /// The results of the batch.
+        /// </returns>
+        IPointBatchResults ComputeIterations(CancellationToken token, long maxIterations);
     }
 }

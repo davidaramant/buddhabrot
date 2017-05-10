@@ -66,7 +66,7 @@ namespace Buddhabrot.Points
                                 break;
                             }
 
-                            workBatch.Compute(token);
+                            workBatch.Compute(token, Constant.IterationRange.Max);
 
                             IEnumerable<EdgeSpan> ProcessResult(EdgeSpan span, Complex middle, long iterations)
                             {

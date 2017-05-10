@@ -67,16 +67,13 @@ namespace Buddhabrot.IterationKernels
                         var c = _c[index];
 
                         var z = new Complex();
-                        var z2 = new Complex();
 
                         int iterations = 0;
                         for (iterations = 0; iterations < maxIterations; iterations++)
                         {
-                            z = z2 + c;
+                            z = z * z + c;
 
-                            z2 = z * z;
-
-                            if ((z2.Real + z.Imaginary) > 4)
+                            if ((z.Real * z.Real + z.Imaginary * z.Imaginary) > 4)
                             {
                                 break;
                             }

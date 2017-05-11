@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Buddhabrot.Core;
+using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.PointGrids;
 using Buddhabrot.Points;
@@ -27,49 +28,68 @@ namespace Buddhabrot
             [HelpHook, ArgShortcut("-?"), ArgDescription("Shows this help")]
             public bool Help { get; set; }
 
-            [ArgActionMethod, ArgDescription("Finds the border regions of the Mandelbrot set.")]
-            public void FindEdges(
+            [ArgActionMethod, ArgDescription("Computes a point grid.")]
+            public void ComputePointGrid(
                 [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
-                [ArgDescription("The directory for the resulting edges file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
+                [ArgDescription("The directory for the resulting grid file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
             {
-                Edges.EdgeLocator.FindEdges(
-                    Path.Combine(outputPath, $"edges{resolution}"),
-                    Constant.RenderingArea,
-                    resolution,
-                    Constant.IterationRange
-                );
+                using (TimedOperation.Start("Computing point grid"))
+                {
+                    var size = new Size(resolution, resolution / 2);
+                    var viewPort = Constant.RenderingArea.GetPositiveImagArea();
+
+                    PointGrid.Compute(
+                        Path.Combine(outputPath, $"pointGrid{resolution}"),
+                        size,
+                        viewPort);
+                }
             }
 
-            [ArgActionMethod, ArgDescription("Renders the edge areas to an image.  The image location/name will be based on the edge file.")]
-            public void PlotEdges(
-                [ArgDescription("Edges file."), ArgRequired, ArgExistingFile] string edgesFilePath)
+            [ArgActionMethod, ArgDescription("Plots a point grid.")]
+            public void PlotPointGrid(
+                [ArgDescription("Input point grid file."), ArgRequired, ArgExistingFile] string pointGridPath)
             {
-                var imageFilePath = Path.Combine(
-                    Path.GetDirectoryName(edgesFilePath),
-                    Path.GetFileNameWithoutExtension(edgesFilePath) + ".png");
+                using (TimedOperation.Start("Plotting point grid"))
+                {
+                    var imageFilePath = Path.Combine(
+                        Path.GetDirectoryName(pointGridPath),
+                        Path.GetFileNameWithoutExtension(pointGridPath) + ".png");
 
-                Edges.EdgeVisualizer.Render(edgesFilePath, imageFilePath);
+                    PointGridVisualizer.Render(pointGridPath, imageFilePath);
+                }
             }
 
-            [ArgActionMethod, ArgDescription("Renders the edge areas with corners highlighted to an image.  The image location/name will be based on the edge file.")]
-            public void PlotCorners(
-                [ArgDescription("Edges file."), ArgRequired, ArgExistingFile] string edgesFilePath)
+            [ArgActionMethod, ArgDescription("Finds line segments straddling the Mandelbrot set.")]
+            public void FindEdgeSpans(
+                [ArgDescription("Input point grid file."), ArgRequired, ArgExistingFile] string pointGridPath)
             {
-                var imageFilePath = Path.Combine(
-                    Path.GetDirectoryName(edgesFilePath),
-                    Path.GetFileNameWithoutExtension(edgesFilePath) + ".corners.png");
+                using (TimedOperation.Start("Finding edge spans"))
+                {
+                    var number = Path.GetFileNameWithoutExtension(pointGridPath).Remove(0, "pointGrid".Length);
 
-                Edges.CornerVisualizer.Render(edgesFilePath, imageFilePath);
+                    var edgeSpansFilePath = Path.Combine(
+                        Path.GetDirectoryName(pointGridPath),
+                         $"edgeSpans{number}");
+
+                    EdgeSpanLocator.FindEdgeSpans(pointGridPath, edgeSpansFilePath);
+                }
             }
 
-            [ArgActionMethod, ArgDescription("Finds and renders the edge areas.")]
-            public void FindAndPlotEdges(
-                [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
-                [ArgDescription("The directory for the resulting edges file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
+            [ArgActionMethod, ArgDescription("Renders the edge spans to an image.")]
+            public void PlotEdgeSpans(
+                [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath)
             {
-                FindEdges(resolution, outputPath);
-                PlotEdges(Path.Combine(outputPath, $"edges{resolution}"));
+                using (TimedOperation.Start("Plotting edge spans"))
+                {
+                    var imageFilePath = Path.Combine(
+                        Path.GetDirectoryName(edgeSpansFilePath),
+                        Path.GetFileNameWithoutExtension(edgeSpansFilePath) + ".png");
+
+                    EdgeSpanVisualizer.Render(edgeSpansFilePath, imageFilePath);
+                }
             }
+
+
 
             [ArgActionMethod, ArgDescription("Finds points.")]
             public void FindPoints(
@@ -100,38 +120,6 @@ namespace Buddhabrot
                     finder.Start(cts.Token).Wait();
                 }
             }
-
-            [ArgActionMethod, ArgDescription("Computes a point grid.")]
-            public void ComputePointGrid(
-                [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
-                [ArgDescription("The directory for the resulting grid file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
-            {
-                using (TimedOperation.Start("Computing point grid"))
-                {
-                    var size = new Size(resolution, resolution / 2);
-                    var viewPort = Constant.RenderingArea.GetPositiveImagArea();
-
-                    PointGrid.Compute(
-                        Path.Combine(outputPath, $"pointGrid{resolution}"),
-                        size,
-                        viewPort);
-                }
-            }
-
-            [ArgActionMethod, ArgDescription("Plots a point grid.")]
-            public void PlotPointGrid(
-                [ArgDescription("Input plot grid file."), ArgRequired, ArgExistingFile] string plotGridPath)
-            {
-                using (TimedOperation.Start("Plotting point grid"))
-                {
-                    var imageFilePath = Path.Combine(
-                        Path.GetDirectoryName(plotGridPath),
-                        Path.GetFileNameWithoutExtension(plotGridPath) + ".png");
-
-                    PointGridVisualizer.Render(plotGridPath, imageFilePath);
-                }
-            }
-
 
             [ArgActionMethod, ArgDescription("Validates that the points escape in the range.")]
             public void ValidatePoints(

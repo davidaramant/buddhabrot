@@ -11,7 +11,7 @@ using log4net;
 
 namespace Buddhabrot.EdgeSpans
 {
-    public sealed class EdgeSpanStream : IEnumerable<EdgeSpan>, IDisposable
+    public sealed class EdgeSpanStream : IEnumerable<(Point location, EdgeSpan span)>, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeSpanStream));
         private const string HeaderText = "Edge Spans V1.00";
@@ -19,7 +19,7 @@ namespace Buddhabrot.EdgeSpans
         // Since the direction is only a byte, we'll pack it into the top of the Y position
         // This saves a byte of disk space and, uh, has better alignment?
         // Yes, it's pointless, but kind of fun!
-        private const int DirectionOffset = sizeof(int) - sizeof(byte);
+        private const int DirectionOffset = 8 * (sizeof(int) - sizeof(byte));
 
         public Size PointResolution { get; }
         public ComplexArea ViewPort { get; }
@@ -71,7 +71,7 @@ namespace Buddhabrot.EdgeSpans
             _positionCalculator = new PositionCalculator(PointResolution, viewPort);
         }
 
-        public IEnumerator<EdgeSpan> GetEnumerator()
+        public IEnumerator<(Point location, EdgeSpan span)> GetEnumerator()
         {
             _spanStream.Position = _spansPosition;
             using (var reader = new BinaryReader(_spanStream, Encoding.ASCII, leaveOpen: true))
@@ -85,9 +85,10 @@ namespace Buddhabrot.EdgeSpans
                     var direction = (Direction)(packedY >> DirectionOffset & 0xFF);
 
                     var location = new Point(x, y);
-                    yield return new EdgeSpan(
-                        inSet: _positionCalculator.GetPoint(location),
-                        notInSet: _positionCalculator.GetPoint(location.OffsetIn(direction)));
+                    yield return (location, 
+                        new EdgeSpan(
+                            inSet: _positionCalculator.GetPoint(location),
+                            notInSet: _positionCalculator.GetPoint(location.OffsetIn(direction))));
                 }
             }
         }
@@ -102,7 +103,7 @@ namespace Buddhabrot.EdgeSpans
             ComplexArea viewPort,
             IEnumerable<LogicalEdgeSpan> spans)
         {
-            if (pointResolution.Height > Math.Pow(2, DirectionOffset))
+            if (pointResolution.Height > (1 << DirectionOffset))
             {
                 throw new ArgumentOutOfRangeException(nameof(pointResolution), "That resolution is too damn big.");
             }

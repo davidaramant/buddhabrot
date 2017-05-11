@@ -39,8 +39,10 @@ namespace Buddhabrot.Extensions
                     return p.OffsetBy(-1, -1);
                 case Direction.Left:
                     return p.OffsetBy(-1, 0);
+                case Direction.UpLeft:
+                    return p.OffsetBy(-1, 1);
                 default:
-                    throw new ArgumentException();
+                    throw new ArgumentException($"Unknown direction: {direction}");
             }
         }
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using Buddhabrot.Core;
-using Humanizer;
+using Buddhabrot.PointGrids;
 using log4net;
 
 namespace Buddhabrot.EdgeSpans
@@ -12,37 +10,74 @@ namespace Buddhabrot.EdgeSpans
         private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeSpanLocator));
 
         public static void FindEdgeSpans(
-            string outputFilePath,
-            ComplexArea logicalViewPort,
-            int logicalPointResolution,
-            IntRange iterationRange)
+            string pointGridFilePath,
+            string outputFilePath)
         {
-            // Assumptions for this class
-            if (Math.Abs(logicalViewPort.ImagRange.ExclusiveMax + logicalViewPort.ImagRange.InclusiveMin) >= double.Epsilon)
+            using (var pointGrid = PointGrid.Load(pointGridFilePath))
             {
-                throw new ArgumentException($"The imaginary range of the viewport must be centered around the real axis.");
+                EdgeSpanStream.Write(
+                    outputFilePath,
+                    pointGrid.PointResolution,
+                    pointGrid.ViewPort,
+                    GetEdgeSpans(pointGrid));
             }
-            if (logicalPointResolution % 2 != 0)
+        }
+
+        private static IEnumerable<LogicalEdgeSpan> GetEdgeSpans(IEnumerable<PointRow> rows)
+        {
+            foreach (var (belowRow, currentRow, aboveRow) in GetRowBatches(rows))
             {
-                throw new ArgumentException($"The vertical resolution of the grid must be divisible by 2.");
+                var y = currentRow.Y;
+                int maxX = currentRow.Width - 1;
+                foreach (var x in currentRow.GetXPositionsOfSetEdges())
+                {
+                    if (aboveRow != null)
+                    {
+                        if (x > 0 && !aboveRow[x - 1])
+                            yield return new LogicalEdgeSpan(x, y, Direction.UpLeft);
+                        if (!aboveRow[x])
+                            yield return new LogicalEdgeSpan(x, y, Direction.Up);
+                        if (x < maxX && !aboveRow[x + 1])
+                            yield return new LogicalEdgeSpan(x, y, Direction.UpRight);
+                    }
+
+                    if (x > 0 && !currentRow[x - 1])
+                        yield return new LogicalEdgeSpan(x, y, Direction.Left);
+                    if (x < maxX && !currentRow[x + 1])
+                        yield return new LogicalEdgeSpan(x, y, Direction.Right);
+
+                    if (belowRow != null)
+                    {
+                        if (x > 0 && !belowRow[x - 1])
+                            yield return new LogicalEdgeSpan(x, y, Direction.DownLeft);
+                        if (!belowRow[x])
+                            yield return new LogicalEdgeSpan(x, y, Direction.Down);
+                        if (x < maxX && !belowRow[x + 1])
+                            yield return new LogicalEdgeSpan(x, y, Direction.DownRight);
+                    }
+                }
+            }
+        }
+
+        private static IEnumerable<(PointRow below, PointRow current, PointRow above)> GetRowBatches(
+            IEnumerable<PointRow> rows)
+        {
+            PointRow row1 = null;
+            PointRow row0 = null;
+
+            foreach (var row in rows)
+            {
+                var row2 = row1;
+                row1 = row0;
+                row0 = row;
+
+                if (row1 != null)
+                {
+                    yield return (row2, row1, row0);
+                }
             }
 
-            // Divide the view port / resolution in half since the set is symmetrical across the real axis
-
-            var targetViewPort = new ComplexArea(
-                realRange: logicalViewPort.RealRange,
-                imagRange: new DoubleRange(0, logicalViewPort.ImagRange.ExclusiveMax));
-
-            var targetResolution = new Size(width: logicalPointResolution, height: logicalPointResolution / 2);
-
-            Log.Info($"Looking for edges in {targetViewPort} with a resolution of {targetResolution.Width:N0}x{targetResolution.Height:N0}");
-            Log.Info($"Saving edges to: {outputFilePath}");
-            Log.Info($"Iteration count: {iterationRange}");
-
-            var timer = Stopwatch.StartNew();
-
-            timer.Stop();
-            Log.Info($"Took {timer.Elapsed.Humanize(2)} to find edge spans.");
+            yield return (row1, row0, null);
         }
     }
 }

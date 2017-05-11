@@ -1,8 +1,8 @@
 using System.Numerics;
-using Buddhabrot.Core;
+using Buddhabrot.EdgeSpans;
 using NUnit.Framework;
 
-namespace Tests.Core
+namespace Tests.EdgeSpans
 {
     [TestFixture]
     public sealed class EdgeSpanTests

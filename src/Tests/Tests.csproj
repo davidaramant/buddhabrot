@@ -41,11 +41,11 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\EdgeSpanTests.cs" />
+    <Compile Include="EdgeSpans\EdgeSpanTests.cs" />
     <Compile Include="Edges\CornerCalculatorTests.cs" />
     <Compile Include="Edges\EdgeAreasTests.cs" />
     <Compile Include="Edges\EdgeAreaTests.cs" />
-    <Compile Include="Edges\EdgeSpanStreamTests.cs" />
+    <Compile Include="EdgeSpans\EdgeSpanStreamTests.cs" />
     <Compile Include="IterationKernels\KernelTests.cs" />
     <Compile Include="PointGrids\PointGridTests.cs" />
     <Compile Include="Points\WorkRemainingTests.cs" />

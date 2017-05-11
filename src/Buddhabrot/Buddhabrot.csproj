@@ -75,11 +75,11 @@
     <Compile Include="Edges\EdgeArea.cs" />
     <Compile Include="Edges\EdgeAreas.cs" />
     <Compile Include="Edges\EdgeLocator.cs" />
-    <Compile Include="Edges\EdgeSpanLocator.cs" />
-    <Compile Include="Edges\EdgeSpanStream.cs" />
+    <Compile Include="EdgeSpans\EdgeSpanLocator.cs" />
+    <Compile Include="EdgeSpans\EdgeSpanStream.cs" />
     <Compile Include="Edges\EdgeVisualizer.cs" />
-    <Compile Include="Core\EdgeSpan.cs" />
-    <Compile Include="Edges\LogicalEdgeSpan.cs" />
+    <Compile Include="EdgeSpans\EdgeSpan.cs" />
+    <Compile Include="EdgeSpans\LogicalEdgeSpan.cs" />
     <Compile Include="PointGrids\PointGrid.cs" />
     <Compile Include="PointGrids\PointGridVisualizer.cs" />
     <Compile Include="PointGrids\PointRow.cs" />

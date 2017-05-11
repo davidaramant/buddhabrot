@@ -4,8 +4,8 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using Buddhabrot.Core;
 using Buddhabrot.Edges;
+using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 using log4net;
 

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using Buddhabrot.Core;
+using Buddhabrot.EdgeSpans;
 using Buddhabrot.Extensions;
 using log4net;
 

@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Buddhabrot.Core
+namespace Buddhabrot.EdgeSpans
 {
     /// <summary>
     /// A line segment that spans across the set boundary.

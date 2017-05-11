@@ -1,6 +1,6 @@
 ﻿using Buddhabrot.Core;
 
-namespace Buddhabrot.Edges
+namespace Buddhabrot.EdgeSpans
 {
     /// <summary>
     /// The location of a point in the set and the direction to a point outside.

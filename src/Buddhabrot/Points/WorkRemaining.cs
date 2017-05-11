@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Buddhabrot.Core;
+using Buddhabrot.EdgeSpans;
 using log4net;
 
 namespace Buddhabrot.Points

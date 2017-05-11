@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Numerics;
 using Buddhabrot.Core;
-using Buddhabrot.Edges;
+using Buddhabrot.EdgeSpans;
 using NUnit.Framework;
 
-namespace Tests.Edges
+namespace Tests.EdgeSpans
 {
     [TestFixture]
     public sealed class EdgeSpanStreamTests

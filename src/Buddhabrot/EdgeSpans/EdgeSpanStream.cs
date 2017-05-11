@@ -9,7 +9,7 @@ using Buddhabrot.Extensions;
 using Buddhabrot.PointGrids;
 using log4net;
 
-namespace Buddhabrot.Edges
+namespace Buddhabrot.EdgeSpans
 {
     public sealed class EdgeSpanStream : IEnumerable<EdgeSpan>, IDisposable
     {

@@ -15,6 +15,11 @@ namespace Buddhabrot.Edges
         private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeSpanStream));
         private const string HeaderText = "Edge Spans V1.00";
 
+        // Since the direction is only a byte, we'll pack it into the top of the Y position
+        // This saves a byte of disk space and, uh, has better alignment?
+        // Yes, it's pointless, but kind of fun!
+        private const int DirectionOffset = sizeof(int) - sizeof(byte);
+
         public Size PointResolution { get; }
         public ComplexArea ViewPort { get; }
         public int Count { get; }
@@ -76,7 +81,7 @@ namespace Buddhabrot.Edges
                     var packedY = reader.ReadInt32();
 
                     var y = packedY & 0x00FFFFFF;
-                    var direction = (Direction)(packedY >> 24 & 0xFF);
+                    var direction = (Direction)(packedY >> DirectionOffset & 0xFF);
 
                     var location = new Point(x, y);
                     yield return new EdgeSpan(
@@ -96,7 +101,7 @@ namespace Buddhabrot.Edges
             ComplexArea viewPort,
             IEnumerable<LogicalEdgeSpan> spans)
         {
-            if (pointResolution.Height > Math.Pow(2, 32 - sizeof(byte)))
+            if (pointResolution.Height > Math.Pow(2, DirectionOffset))
             {
                 throw new ArgumentOutOfRangeException(nameof(pointResolution), "That resolution is too damn big.");
             }
@@ -118,7 +123,7 @@ namespace Buddhabrot.Edges
                     count++;
 
                     writer.Write(span.X);
-                    writer.Write(span.Y | ((int)span.ToOutside << 24));
+                    writer.Write(span.Y | ((int)span.ToOutside << DirectionOffset));
                 }
 
                 Log.Info($"Wrote {count:N0} edge spans.");

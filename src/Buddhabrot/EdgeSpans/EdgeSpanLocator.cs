@@ -29,7 +29,7 @@ namespace Buddhabrot.EdgeSpans
             {
                 var y = currentRow.Y;
                 int maxX = currentRow.Width - 1;
-                foreach (var x in currentRow.GetXPositionsOfSetEdges())
+                foreach (var x in currentRow.GetXPositionsOfSet())
                 {
                     if (aboveRow != null)
                     {

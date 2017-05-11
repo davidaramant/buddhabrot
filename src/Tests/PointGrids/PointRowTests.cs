@@ -8,7 +8,7 @@ namespace Tests.PointGrids
     public sealed class PointRowTests
     {
         [Test]
-        public void ShouldReturnEdgesOfSet()
+        public void ShouldReturnPointsInSet()
         {
             //0123456789
             //  SSS SSSS
@@ -21,12 +21,12 @@ namespace Tests.PointGrids
                 (true,4),
             });
 
-            var edgeLocations = row.GetXPositionsOfSetEdges().ToArray();
+            var edgeLocations = row.GetXPositionsOfSet().ToArray();
 
             Assert.That(
                 edgeLocations,
-                Is.EqualTo(new[] { 2, 4, 6, 9 }),
-                "Did not return set edges.");
+                Is.EqualTo(new[] { 2, 3, 4, 6, 7, 8, 9 }),
+                "Did not return set positions.");
         }
 
         [Test]

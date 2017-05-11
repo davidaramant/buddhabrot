@@ -48,16 +48,9 @@ namespace Buddhabrot.PointGrids
             }
         }
 
-        public IEnumerable<int> GetXPositionsOfSetEdges()
+        public IEnumerable<int> GetXPositionsOfSet()
         {
-            foreach (var segment in _segments.Where(s => s.inSet))
-            {
-                yield return segment.start;
-                if (segment.length > 1)
-                {
-                    yield return segment.start + segment.length - 1;
-                }
-            }
+            return _segments.Where(s => s.inSet).SelectMany(segment => Enumerable.Range(segment.start, segment.length));
         }
 
         public IEnumerator<bool> GetEnumerator()

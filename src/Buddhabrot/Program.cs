@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Buddhabrot.Core;
 using Buddhabrot.IterationKernels;
+using Buddhabrot.PointGrids;
 using Buddhabrot.Points;
 using Humanizer;
 using PowerArgs;

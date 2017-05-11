@@ -77,9 +77,13 @@
     <Compile Include="Edges\EdgeVisualizer.cs" />
     <Compile Include="Core\EdgeSpan.cs" />
     <Compile Include="Edges\LogicalEdgeSpan.cs" />
-    <Compile Include="Edges\PositionCalculator.cs" />
+    <Compile Include="PointGrids\PointGrid.cs" />
+    <Compile Include="PointGrids\PointGridVisualizer.cs" />
+    <Compile Include="PointGrids\PointRow.cs" />
+    <Compile Include="PointGrids\PositionCalculator.cs" />
     <Compile Include="Extensions\BinarySerializationExtensions.cs" />
     <Compile Include="Extensions\DrawingExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Images\FastImage.cs" />
     <Compile Include="IterationKernels\IKernel.cs" />
     <Compile Include="IterationKernels\IPointBatch.cs" />

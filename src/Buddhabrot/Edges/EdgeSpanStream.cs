@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;
+using Buddhabrot.PointGrids;
 using log4net;
 
 namespace Buddhabrot.Edges

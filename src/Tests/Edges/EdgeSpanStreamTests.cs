@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using Buddhabrot.Core;
@@ -14,11 +13,10 @@ namespace Tests.Edges
         [Test]
         public void ShouldRoundTrip()
         {
-            var filePath = Path.GetTempFileName();
-            try
+            using (var tempFile = new TempFile())
             {
                 EdgeSpanStream.Write(
-                    filePath,
+                    tempFile.Path,
                     pointResolution: new Size(3, 3),
                     viewPort: new ComplexArea(new DoubleRange(-1, 1), new DoubleRange(-1, 1)),
                     spans: new[]
@@ -26,7 +24,7 @@ namespace Tests.Edges
                         new LogicalEdgeSpan(1,1,Direction.Up),
                     });
 
-                using (var stream = EdgeSpanStream.Load(filePath))
+                using (var stream = EdgeSpanStream.Load(tempFile.Path))
                 {
                     var spans = stream.ToArray();
 
@@ -37,13 +35,7 @@ namespace Tests.Edges
                     Assert.That(span.NotInSet, Is.EqualTo(new Complex(0, 1)), "Wrong point in the set.");
                 }
             }
-            finally
-            {
-                if (File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
-            }
+
         }
     }
 }

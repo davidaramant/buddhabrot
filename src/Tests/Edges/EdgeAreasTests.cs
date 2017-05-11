@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.IO;
 using System.Linq;
 using Buddhabrot.Core;
 using Buddhabrot.Edges;
@@ -13,11 +12,10 @@ namespace Tests.Edges
         [Test]
         public void ShouldRoundTripAreasToDisk()
         {
-            var filePath = Path.GetTempFileName();
-            try
+            using (var tempFile = new TempFile())
             {
                 ComplexArea CreateArea(int value) => new ComplexArea(new DoubleRange(value, value + 1), new DoubleRange(value + 2, value + 3));
-                EdgeArea CreateEdgeArea(int x, int y) => new EdgeArea(new Point(x, y),Corners.BottomRight);
+                EdgeArea CreateEdgeArea(int x, int y) => new EdgeArea(new Point(x, y), Corners.BottomRight);
 
                 var size = new Size(1, 2);
                 var viewPort = CreateArea(1);
@@ -27,9 +25,9 @@ namespace Tests.Edges
                     CreateEdgeArea(2,3),
                 };
 
-                EdgeAreas.Write(size, viewPort, edgeAreas, filePath);
+                EdgeAreas.Write(size, viewPort, edgeAreas, tempFile.Path);
 
-                using (var roundTripped = EdgeAreas.Load(filePath))
+                using (var roundTripped = EdgeAreas.Load(tempFile.Path))
                 {
                     void RangesAreEqual(DoubleRange actual, DoubleRange expected, string name)
                     {
@@ -53,10 +51,6 @@ namespace Tests.Edges
                         Is.EqualTo(edgeAreas.Select(ea => ea.GridLocation).ToArray()),
                         "Did not round-trip the area locations.");
                 }
-            }
-            finally
-            {
-                File.Delete(filePath);
             }
         }
     }

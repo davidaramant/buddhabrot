@@ -47,8 +47,10 @@
     <Compile Include="Edges\EdgeAreaTests.cs" />
     <Compile Include="Edges\EdgeSpanStreamTests.cs" />
     <Compile Include="IterationKernels\KernelTests.cs" />
+    <Compile Include="PointGrids\PointGridTests.cs" />
     <Compile Include="Points\WorkRemainingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TempFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Buddhabrot\Buddhabrot.csproj">

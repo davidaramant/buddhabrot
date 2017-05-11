@@ -2,7 +2,7 @@
 using System.Numerics;
 using Buddhabrot.Core;
 
-namespace Buddhabrot.Edges
+namespace Buddhabrot.PointGrids
 {
     public sealed class PositionCalculator
     {
@@ -22,6 +22,7 @@ namespace Buddhabrot.Edges
         public double GetRealValue(int x) => _viewPort.RealRange.InclusiveMin + x * _realIncrement;
         public double GetImagValue(int y) => _viewPort.ImagRange.InclusiveMin + y * _imagIncrement;
 
-        public Complex GetPoint(Point position) => new Complex(GetRealValue(position.X), GetImagValue(position.Y));
+        public Complex GetPoint(int x, int y) => new Complex(GetRealValue(x), GetImagValue(y));
+        public Complex GetPoint(Point position) => GetPoint(position.X, position.Y);
     }
 }

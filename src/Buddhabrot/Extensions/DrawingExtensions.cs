@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using Buddhabrot.Core;
 
 namespace Buddhabrot.Extensions
 {
@@ -16,7 +18,30 @@ namespace Buddhabrot.Extensions
 
         public static int Area(this Size s) => s.Width * s.Height;
 
-        public static Size MultiplyBy(this Size size, int scale) => 
+        public static Size MultiplyBy(this Size size, int scale) =>
             new Size(size.Width * scale, size.Height * scale);
+
+        public static Point OffsetIn(this Point p, Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Up:
+                    return p.OffsetBy(0, 1);
+                case Direction.UpRight:
+                    return p.OffsetBy(1, 1);
+                case Direction.Right:
+                    return p.OffsetBy(1, 0);
+                case Direction.DownRight:
+                    return p.OffsetBy(1, -1);
+                case Direction.Down:
+                    return p.OffsetBy(0, -1);
+                case Direction.DownLeft:
+                    return p.OffsetBy(-1, -1);
+                case Direction.Left:
+                    return p.OffsetBy(-1, 0);
+                default:
+                    throw new ArgumentException();
+            }
+        }
     }
 }

@@ -129,7 +129,7 @@ namespace Buddhabrot
                     Console.WriteLine($"{kernel.GetType().Name} with {maxIterations:N0} iterations.");
 
                     var batch = kernel.GetBatch();
-                    foreach (var point in PointReader.ReadPoints(inputPointsFile).Take(batch.Capacity))
+                    foreach (var point in PointReader.ReadPoints(inputPointsFile))//.Take(batch.Capacity))
                     {
                         batch.AddPoint(point);
                     }

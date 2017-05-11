@@ -18,5 +18,7 @@ namespace Buddhabrot.Core
                 ImagRange.IsInside(number.Imaginary);
 
         public override string ToString() => $"Real: {RealRange}, Imag: {ImagRange}";
+
+        public ComplexArea GetPositiveImagArea() => new ComplexArea(RealRange, new DoubleRange(0, ImagRange.ExclusiveMax));
     }
 }

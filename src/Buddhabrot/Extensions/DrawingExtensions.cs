@@ -43,5 +43,7 @@ namespace Buddhabrot.Extensions
                     throw new ArgumentException();
             }
         }
+
+        public static Size HalveVertically(this Size size) => new Size(size.Width, size.Height / 2);
     }
 }

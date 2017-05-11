@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;
 using log4net;
@@ -137,6 +139,44 @@ namespace Buddhabrot.PointGrids
                     writer.Write(inSet ? length : -length);
                 }
             }
+        }
+
+        public static void Compute(
+            string filePath,
+            Size pointResolution,
+            ComplexArea viewPort)
+        {
+            Log.Info($"Outputting to: {filePath}");
+            Log.Info($"Resolution: {pointResolution.Width:N0}x{pointResolution.Height:N0}");
+            Log.Info($"View port: {viewPort}");
+
+            IEnumerable<bool> GetPointsInSet()
+            {
+                int reportingInterval = pointResolution.Height / 10;
+
+                var pointCalculator = new PositionCalculator(pointResolution, viewPort);
+                var pointsInSet = new BitArray(pointResolution.Width);
+                for (int row = 0; row < pointResolution.Height; row++)
+                {
+                    Parallel.For(
+                        0,
+                        pointResolution.Width,
+                        col => pointsInSet[col] = MandelbrotChecker.FindEscapeTime(pointCalculator.GetPoint(col, row))
+                            .IsInfinite);
+
+                    for (int x = 0; x < pointResolution.Width; x++)
+                    {
+                        yield return pointsInSet[x];
+                    }
+
+                    if (row > 0 && row % reportingInterval == 0)
+                    {
+                        Log.Info($"Got through {row + 1:N0} rows");
+                    }
+                }
+            }
+
+            Write(filePath, pointResolution, viewPort, GetPointsInSet());
         }
     }
 }

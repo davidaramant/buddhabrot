@@ -101,6 +101,38 @@ namespace Buddhabrot
                 }
             }
 
+            [ArgActionMethod, ArgDescription("Computes a point grid.")]
+            public void ComputePointGrid(
+                [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
+                [ArgDescription("The directory for the resulting grid file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
+            {
+                using (TimedOperation.Start("Computing point grid"))
+                {
+                    var size = new Size(resolution, resolution / 2);
+                    var viewPort = Constant.RenderingArea.GetPositiveImagArea();
+
+                    PointGrid.Compute(
+                        Path.Combine(outputPath, $"pointGrid{resolution}"),
+                        size,
+                        viewPort);
+                }
+            }
+
+            [ArgActionMethod, ArgDescription("Plots a point grid.")]
+            public void PlotPointGrid(
+                [ArgDescription("Input plot grid file."), ArgRequired, ArgExistingFile] string plotGridPath)
+            {
+                using (TimedOperation.Start("Plotting point grid"))
+                {
+                    var imageFilePath = Path.Combine(
+                        Path.GetDirectoryName(plotGridPath),
+                        Path.GetFileNameWithoutExtension(plotGridPath) + ".png");
+
+                    PointGridVisualizer.Render(plotGridPath, imageFilePath);
+                }
+            }
+
+
             [ArgActionMethod, ArgDescription("Validates that the points escape in the range.")]
             public void ValidatePoints(
                 [ArgDescription("Input points file."), ArgRequired, ArgExistingFile] string inputPointsFile,

@@ -165,7 +165,7 @@ namespace Buddhabrot.PointGrids
                     Parallel.For(
                         0,
                         pointResolution.Width,
-                        col => pointsInSet[col] = MandelbrotChecker.FindEscapeTime(
+                        col => pointsInSet[col] = MandelbrotChecker.FindEscapeTimeFloat(
                             pointCalculator.GetPoint(col, row)).IsInfinite);
 
                     for (int x = 0; x < pointResolution.Width; x++)

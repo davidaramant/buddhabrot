@@ -2,7 +2,6 @@
 using System.IO;
 using System.Numerics;
 using Buddhabrot.Core;
-using Buddhabrot.Edges;
 
 namespace Buddhabrot.Extensions
 {
@@ -38,14 +37,6 @@ namespace Buddhabrot.Extensions
         }
 
         public static Point ReadPoint(this BinaryReader reader) => new Point(reader.ReadInt32(), reader.ReadInt32());
-
-        public static void WriteEdgeAreaLegacy(this BinaryWriter writer, EdgeArea edgeArea)
-        {
-            writer.WritePoint(edgeArea.GridLocation);
-            writer.Write((byte)edgeArea.CornersInSet);
-        }
-
-        public static EdgeArea ReadEdgeArea(this BinaryReader reader) => new EdgeArea(reader.ReadPoint(), (Corners)reader.ReadByte());
 
         public static void WriteComplex(this BinaryWriter writer, Complex complex)
         {

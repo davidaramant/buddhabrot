@@ -72,16 +72,9 @@
     <Compile Include="Core\MandelbulbChecker.cs" />
     <Compile Include="Core\TimedOperation.cs" />
     <Compile Include="EdgeSpans\EdgeSpanVisualizer.cs" />
-    <Compile Include="Edges\CornerCalculator.cs" />
-    <Compile Include="Edges\Corners.cs" />
-    <Compile Include="Edges\CornerVisualizer.cs" />
     <Compile Include="Core\Direction.cs" />
-    <Compile Include="Edges\EdgeArea.cs" />
-    <Compile Include="Edges\EdgeAreas.cs" />
-    <Compile Include="Edges\EdgeLocator.cs" />
     <Compile Include="EdgeSpans\EdgeSpanLocator.cs" />
     <Compile Include="EdgeSpans\EdgeSpanStream.cs" />
-    <Compile Include="Edges\EdgeVisualizer.cs" />
     <Compile Include="EdgeSpans\EdgeSpan.cs" />
     <Compile Include="EdgeSpans\LogicalEdgeSpan.cs" />
     <Compile Include="Extensions\ComplexExtensions.cs" />

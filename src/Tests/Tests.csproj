@@ -45,9 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EdgeSpans\EdgeSpanTests.cs" />
-    <Compile Include="Edges\CornerCalculatorTests.cs" />
-    <Compile Include="Edges\EdgeAreasTests.cs" />
-    <Compile Include="Edges\EdgeAreaTests.cs" />
     <Compile Include="EdgeSpans\EdgeSpanStreamTests.cs" />
     <Compile Include="IterationKernels\KernelTests.cs" />
     <Compile Include="PointGrids\PointGridTests.cs" />

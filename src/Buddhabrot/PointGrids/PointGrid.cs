@@ -159,7 +159,7 @@ namespace Buddhabrot.PointGrids
                 int reportingInterval = Math.Max(pointResolution.Height / 10, 1);
 
                 var pointCalculator = new PositionCalculator(pointResolution, viewPort);
-                var pointsInSet = new BitArray(pointResolution.Width);
+                var pointsInSet = new bool[pointResolution.Width];
                 for (int row = 0; row < pointResolution.Height; row++)
                 {
                     Parallel.For(

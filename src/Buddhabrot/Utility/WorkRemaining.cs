@@ -34,13 +34,13 @@ namespace Buddhabrot.Utility
         public IEnumerable<T> Take(int batchSize)
         {
             int fromBuffer = Math.Min(batchSize, _addedWorkBuffer.Count);
-            int remaining = batchSize - _addedWorkBuffer.Count;
+            int fromSequence = batchSize - _addedWorkBuffer.Count;
             for(int i = 0; i < fromBuffer; i++)
             {
                 yield return _addedWorkBuffer.Pop();
             }
 
-            for (int i = 0; i < remaining; i++)
+            for (int i = 0; i < fromSequence; i++)
             {
                 if (_enumerator.MoveNext())
                 {

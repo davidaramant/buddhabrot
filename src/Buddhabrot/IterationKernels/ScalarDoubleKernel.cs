@@ -41,18 +41,14 @@ namespace Buddhabrot.IterationKernels
 
             public void AddPoint(Complex c)
             {
-                var index = Count;
-                Count++;
-
-                _c[index] = c;
+                _c[Count++] = c;
             }
 
             public void AddPoints(IEnumerable<Complex> points)
             {
-                int index = Count;
                 foreach (var point in points)
                 {
-                    _c[index] = point;
+                    _c[Count] = point;
                     Count++;
                 }
             }

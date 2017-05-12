@@ -1,149 +1,149 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Threading;
-using Buddhabrot.Utility;
-using NOpenCL;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Numerics;
+//using System.Threading;
+//using Buddhabrot.Utility;
+//using NOpenCL;
 
-namespace Buddhabrot.IterationKernels
-{
-    public sealed class OpenCLKernel : IKernel
-    {
-        private const int BatchSize = 8192;
-        private readonly Batch _pointBatch;
-        private readonly DisposeStack _resources = new DisposeStack();
+//namespace Buddhabrot.IterationKernels
+//{
+//    public sealed class OpenCLKernel : IKernel
+//    {
+//        private const int BatchSize = 8192;
+//        private readonly Batch _pointBatch;
+//        private readonly DisposeStack _resources = new DisposeStack();
 
-        public OpenCLKernel(Device device)
-        {
-            _resources.Add(device);
+//        public OpenCLKernel(Device device)
+//        {
+//            _resources.Add(device);
 
-            var context = _resources.Add(Context.Create(device));
-            var program = _resources.Add(context.CreateProgramWithSource(OpenCLKernelSource.Read()));
-            program.Build();
+//            var context = _resources.Add(Context.Create(device));
+//            var program = _resources.Add(context.CreateProgramWithSource(OpenCLKernelSource.Read()));
+//            program.Build();
 
-            _pointBatch = new Batch(program, context, device, BatchSize);
-        }
+//            _pointBatch = new Batch(program, context, device, BatchSize);
+//        }
 
-        public void Dispose() => _resources.Dispose();
+//        public void Dispose() => _resources.Dispose();
 
-        public IPointBatch GetBatch() => _pointBatch.Reset();
+//        public IPointBatch GetBatch() => _pointBatch.Reset();
 
-        private sealed class Batch : IPointBatch, IPointBatchResults
-        {
-            private readonly NOpenCL.Program _program;
-            private readonly Context _context;
-            private readonly Device _device;
-            private readonly double[] _cReals;
-            private readonly double[] _cImags;
-            // There's no benefit to using longs for iterations in this kernel
-            private readonly int[] _iterations;
+//        private sealed class Batch : IPointBatch, IPointBatchResults
+//        {
+//            private readonly NOpenCL.Program _program;
+//            private readonly Context _context;
+//            private readonly Device _device;
+//            private readonly double[] _cReals;
+//            private readonly double[] _cImags;
+//            // There's no benefit to using longs for iterations in this kernel
+//            private readonly int[] _iterations;
 
-            public int Capacity { get; }
-            public int Count { get; private set; }
+//            public int Capacity { get; }
+//            public int Count { get; private set; }
 
-            public Batch(NOpenCL.Program program, Context context, Device device, int batchSize)
-            {
-                _program = program;
-                _context = context;
-                _device = device;
-                Capacity = batchSize;
+//            public Batch(NOpenCL.Program program, Context context, Device device, int batchSize)
+//            {
+//                _program = program;
+//                _context = context;
+//                _device = device;
+//                Capacity = batchSize;
 
-                _cReals = new double[batchSize];
-                _cImags = new double[batchSize];
-                _iterations = new int[batchSize];
-            }
+//                _cReals = new double[batchSize];
+//                _cImags = new double[batchSize];
+//                _iterations = new int[batchSize];
+//            }
 
-            public Batch Reset()
-            {
-                Count = 0;
-                return this;
-            }
+//            public Batch Reset()
+//            {
+//                Count = 0;
+//                return this;
+//            }
 
-            public Complex GetPoint(int index) => new Complex(_cReals[index], _cImags[index]);
+//            public Complex GetPoint(int index) => new Complex(_cReals[index], _cImags[index]);
 
-            public long GetIteration(int index) => _iterations[index];
+//            public long GetIteration(int index) => _iterations[index];
 
-            public int AddPoint(Complex c)
-            {
-                var index = Count;
-                Count++;
+//            public int AddPoint(Complex c)
+//            {
+//                var index = Count;
+//                Count++;
 
-                _cReals[index] = c.Real;
-                _cImags[index] = c.Imaginary;
-                return index;
-            }
+//                _cReals[index] = c.Real;
+//                _cImags[index] = c.Imaginary;
+//                return index;
+//            }
 
-            public unsafe IPointBatchResults ComputeIterations(CancellationToken token, long maxIterations)
-            {
-                // TODO: Look into not duplicating all this stuff every time.
-                using (var localStack = new DisposeStack())
-                {
-                    fixed (double* pCReals = _cReals, pCImags = _cImags)
-                    fixed (int* pIterations = _iterations)
-                    {
-                        using (var cRealsBuffer = CreateBuffer(
-                            (IntPtr)pCReals,
-                            sizeof(double),
-                            MemoryFlags.ReadOnly | MemoryFlags.HostNoAccess))
-                        using (var cImagsBuffer = CreateBuffer(
-                            (IntPtr)pCImags,
-                            sizeof(double),
-                            MemoryFlags.ReadOnly | MemoryFlags.HostNoAccess))
-                        using (var iterationsBuffer = CreateBuffer(
-                            (IntPtr)pIterations,
-                            sizeof(int),
-                            MemoryFlags.WriteOnly | MemoryFlags.HostReadOnly))
-                        using (var commandQueue = _context.CreateCommandQueue(_device))
-                        using (var kernel = localStack.Add(_program.CreateKernel("iterate_points")))
-                        {
-                            kernel.Arguments[0].SetValue(cRealsBuffer);
-                            kernel.Arguments[1].SetValue(cImagsBuffer);
-                            kernel.Arguments[2].SetValue(iterationsBuffer);
-                            kernel.Arguments[3].SetValue((int)maxIterations);
+//            public unsafe IPointBatchResults ComputeIterations(CancellationToken token, long maxIterations)
+//            {
+//                // TODO: Look into not duplicating all this stuff every time.
+//                using (var localStack = new DisposeStack())
+//                {
+//                    fixed (double* pCReals = _cReals, pCImags = _cImags)
+//                    fixed (int* pIterations = _iterations)
+//                    {
+//                        using (var cRealsBuffer = CreateBuffer(
+//                            (IntPtr)pCReals,
+//                            sizeof(double),
+//                            MemoryFlags.ReadOnly | MemoryFlags.HostNoAccess))
+//                        using (var cImagsBuffer = CreateBuffer(
+//                            (IntPtr)pCImags,
+//                            sizeof(double),
+//                            MemoryFlags.ReadOnly | MemoryFlags.HostNoAccess))
+//                        using (var iterationsBuffer = CreateBuffer(
+//                            (IntPtr)pIterations,
+//                            sizeof(int),
+//                            MemoryFlags.WriteOnly | MemoryFlags.HostReadOnly))
+//                        using (var commandQueue = _context.CreateCommandQueue(_device))
+//                        using (var kernel = localStack.Add(_program.CreateKernel("iterate_points")))
+//                        {
+//                            kernel.Arguments[0].SetValue(cRealsBuffer);
+//                            kernel.Arguments[1].SetValue(cImagsBuffer);
+//                            kernel.Arguments[2].SetValue(iterationsBuffer);
+//                            kernel.Arguments[3].SetValue((int)maxIterations);
 
-                            using (var eventQueue = commandQueue.EnqueueNDRangeKernel(
-                                kernel,
-                                globalWorkSize: new[] { (IntPtr)Count },
-                                localWorkSize: null))
-                            {
-                                Event.WaitAll(eventQueue);
-                            }
+//                            using (var eventQueue = commandQueue.EnqueueNDRangeKernel(
+//                                kernel,
+//                                globalWorkSize: new[] { (IntPtr)Count },
+//                                localWorkSize: null))
+//                            {
+//                                Event.WaitAll(eventQueue);
+//                            }
 
-                            using (commandQueue.EnqueueReadBuffer(
-                                iterationsBuffer,
-                                blocking: true,
-                                offset: 0,
-                                size: sizeof(int) * Count,
-                                destination: (IntPtr)pIterations))
-                            {
-                            }
+//                            using (commandQueue.EnqueueReadBuffer(
+//                                iterationsBuffer,
+//                                blocking: true,
+//                                offset: 0,
+//                                size: sizeof(int) * Count,
+//                                destination: (IntPtr)pIterations))
+//                            {
+//                            }
 
-                            commandQueue.Finish();
-                        }
-                    }
-                }
+//                            commandQueue.Finish();
+//                        }
+//                    }
+//                }
 
-                return this;
-            }
+//                return this;
+//            }
 
-            private NOpenCL.Buffer CreateBuffer(IntPtr ptr, int unitSize, MemoryFlags accessFlags)
-            {
-                var memoryAccess = _device.HostUnifiedMemory ? MemoryFlags.UseHostPointer : MemoryFlags.CopyHostPointer;
+//            private NOpenCL.Buffer CreateBuffer(IntPtr ptr, int unitSize, MemoryFlags accessFlags)
+//            {
+//                var memoryAccess = _device.HostUnifiedMemory ? MemoryFlags.UseHostPointer : MemoryFlags.CopyHostPointer;
 
-                return _context.CreateBuffer(
-                    memoryAccess | accessFlags,
-                    unitSize * BatchSize,
-                    ptr);
-            }
+//                return _context.CreateBuffer(
+//                    memoryAccess | accessFlags,
+//                    unitSize * BatchSize,
+//                    ptr);
+//            }
 
-            public IEnumerable<(Complex point, long iterations)> GetAllResults()
-            {
-                for (int i = 0; i < Count; i++)
-                {
-                    yield return (new Complex(_cReals[i], _cImags[i]), _iterations[i]);
-                }
-            }
+//            public IEnumerable<(Complex point, long iterations)> GetAllResults()
+//            {
+//                for (int i = 0; i < Count; i++)
+//                {
+//                    yield return (new Complex(_cReals[i], _cImags[i]), _iterations[i]);
+//                }
+//            }
 
-        }
-    }
-}
+//        }
+//    }
+//}

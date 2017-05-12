@@ -93,97 +93,97 @@ namespace Buddhabrot
             }
 
 
-            [ArgActionMethod, ArgDescription("Finds points.")]
-            public void FindPoints(
-                [ArgDescription("Input edges file."), ArgRequired, ArgExistingFile] string inputEdgesFilePath,
-                [ArgDescription("Output directory."), ArgDefaultValue(".")] string outputDirectory)
-            {
-                Console.WriteLine("Press Ctrl-C to exit...");
+            //[ArgActionMethod, ArgDescription("Finds points.")]
+            //public void FindPoints(
+            //    [ArgDescription("Input edges file."), ArgRequired, ArgExistingFile] string inputEdgesFilePath,
+            //    [ArgDescription("Output directory."), ArgDefaultValue(".")] string outputDirectory)
+            //{
+            //    Console.WriteLine("Press Ctrl-C to exit...");
 
-                if (!Directory.Exists(outputDirectory))
-                {
-                    Directory.CreateDirectory(outputDirectory);
-                }
+            //    if (!Directory.Exists(outputDirectory))
+            //    {
+            //        Directory.CreateDirectory(outputDirectory);
+            //    }
 
-                using (var finder = new PointFinder(inputEdgesFilePath,
-                    Path.Combine(outputDirectory, $"points{DateTime.Now:yyyyMMdd-HHmmss}")))
-                {
-                    var cts = new CancellationTokenSource();
-                    Console.CancelKeyPress += (s, e) =>
-                    {
-                        if (!cts.IsCancellationRequested)
-                        {
-                            e.Cancel = true;
-                            cts.Cancel();
-                            Console.WriteLine("Cancelation requested...");
-                        }
-                    };
+            //    using (var finder = new PointFinder(inputEdgesFilePath,
+            //        Path.Combine(outputDirectory, $"points{DateTime.Now:yyyyMMdd-HHmmss}")))
+            //    {
+            //        var cts = new CancellationTokenSource();
+            //        Console.CancelKeyPress += (s, e) =>
+            //        {
+            //            if (!cts.IsCancellationRequested)
+            //            {
+            //                e.Cancel = true;
+            //                cts.Cancel();
+            //                Console.WriteLine("Cancelation requested...");
+            //            }
+            //        };
 
-                    finder.Start(cts.Token).Wait();
-                }
-            }
+            //        finder.Start(cts.Token).Wait();
+            //    }
+            //}
 
-            [ArgActionMethod, ArgDescription("Validates that the points escape in the range.")]
-            public void ValidatePoints(
-                [ArgDescription("Input points file."), ArgRequired, ArgExistingFile] string inputPointsFile,
-                string kernelType,
-                int maxIterations,
-                [ArgDefaultValue(false)]bool showDetails)
-            {
-                var cts = new CancellationTokenSource();
+            //[ArgActionMethod, ArgDescription("Validates that the points escape in the range.")]
+            //public void ValidatePoints(
+            //    [ArgDescription("Input points file."), ArgRequired, ArgExistingFile] string inputPointsFile,
+            //    string kernelType,
+            //    int maxIterations,
+            //    [ArgDefaultValue(false)]bool showDetails)
+            //{
+            //    var cts = new CancellationTokenSource();
 
-                var timer = Stopwatch.StartNew();
+            //    var timer = Stopwatch.StartNew();
 
-                IKernel PickKernel(string name)
-                {
-                    switch (name.Trim().ToLowerInvariant())
-                    {
-                        case "scalar":
-                            return new ScalarKernel();
-                        case "vector":
-                            return new VectorKernel();
-                        case "opencl":
-                            return new KernelBuilder().BuildOpenCL();
-                        default:
-                            throw new ArgumentException("Unknown kernel type: " + name);
-                    }
-                }
+            //    IKernel PickKernel(string name)
+            //    {
+            //        switch (name.Trim().ToLowerInvariant())
+            //        {
+            //            case "scalar":
+            //                return new ScalarKernel();
+            //            case "vector":
+            //                return new VectorKernel();
+            //            case "opencl":
+            //                return new KernelBuilder().BuildOpenCL();
+            //            default:
+            //                throw new ArgumentException("Unknown kernel type: " + name);
+            //        }
+            //    }
 
-                using (var kernel = PickKernel(kernelType))
-                {
-                    Console.WriteLine($"{kernel.GetType().Name} with {maxIterations:N0} iterations.");
+            //    using (var kernel = PickKernel(kernelType))
+            //    {
+            //        Console.WriteLine($"{kernel.GetType().Name} with {maxIterations:N0} iterations.");
 
-                    var batch = kernel.GetBatch();
-                    foreach (var point in PointReader.ReadPoints(inputPointsFile))//.Take(batch.Capacity))
-                    {
-                        batch.AddPoint(point);
-                    }
+            //        var batch = kernel.GetBatch();
+            //        foreach (var point in PointReader.ReadPoints(inputPointsFile))//.Take(batch.Capacity))
+            //        {
+            //            batch.AddPoint(point);
+            //        }
 
-                    var results = batch.ComputeIterations(cts.Token, maxIterations);
+            //        var results = batch.ComputeIterations(cts.Token, maxIterations);
 
-                    if (showDetails)
-                    {
-                        for (int i = 0; i < results.Count; i++)
-                        {
-                            var inRange = Constant.IterationRange.IsInside(results.GetIteration(i));
-                            var iterationResult = inRange ? "" : "   NOT IN RANGE";
+            //        if (showDetails)
+            //        {
+            //            for (int i = 0; i < results.Count; i++)
+            //            {
+            //                var inRange = Constant.IterationRange.IsInside(results.GetIteration(i));
+            //                var iterationResult = inRange ? "" : "   NOT IN RANGE";
 
-                            var c = results.GetPoint(i);
+            //                var c = results.GetPoint(i);
 
-                            string p(double d) => d.ToString("+0.000000000000000;-0.000000000000000");
+            //                string p(double d) => d.ToString("+0.000000000000000;-0.000000000000000");
 
-                            Console.WriteLine(
-                                $"{i:00}: {p(c.Real)} {p(c.Imaginary)}i\t{results.GetIteration(i),10:N0}{iterationResult}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Points outside range: {results.GetAllResults().Count(result => !Constant.IterationRange.IsInside(result.iterations))}");
-                    }
-                }
-                timer.Stop();
-                Console.WriteLine($"Took {timer.Elapsed.Humanize(2)}");
-            }
+            //                Console.WriteLine(
+            //                    $"{i:00}: {p(c.Real)} {p(c.Imaginary)}i\t{results.GetIteration(i),10:N0}{iterationResult}");
+            //            }
+            //        }
+            //        else
+            //        {
+            //            Console.WriteLine($"Points outside range: {results.GetAllResults().Count(result => !Constant.IterationRange.IsInside(result.iterations))}");
+            //        }
+            //    }
+            //    timer.Stop();
+            //    Console.WriteLine($"Took {timer.Elapsed.Humanize(2)}");
+            //}
         }
     }
 }

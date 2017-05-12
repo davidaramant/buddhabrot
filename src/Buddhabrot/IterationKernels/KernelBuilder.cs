@@ -11,7 +11,8 @@ namespace Buddhabrot.IterationKernels
     {
         public IKernel BuildOpenCL()
         {
-            return new OpenCLKernel(Platform.GetPlatforms()[0].GetDevices(DeviceType.Gpu).Single());
+            return null;
+            //return new OpenCLKernel(Platform.GetPlatforms()[0].GetDevices(DeviceType.Gpu).Single());
         }
     }
 }

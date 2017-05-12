@@ -156,7 +156,7 @@ namespace Buddhabrot.PointGrids
 
             IEnumerable<bool> GetPointsInSet()
             {
-                int reportingInterval = pointResolution.Height / 10;
+                int reportingInterval = Math.Max(pointResolution.Height / 10, 1);
 
                 var pointCalculator = new PositionCalculator(pointResolution, viewPort);
                 var pointsInSet = new BitArray(pointResolution.Width);

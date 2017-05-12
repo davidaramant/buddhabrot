@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Buddhabrot.Extensions;
 
 namespace Buddhabrot.Core
 {
@@ -22,9 +23,10 @@ namespace Buddhabrot.Core
         static bool IsInLargerBulb(Complex number)
         {
             var realMinusFourth = number.Real - 0.25;
-            var q = realMinusFourth * realMinusFourth + number.Imaginary * number.Imaginary;
+            var imagSquared = number.Imaginary * number.Imaginary;
+            var q = realMinusFourth * realMinusFourth + imagSquared;
 
-            return (q * (q + (number.Real - 0.25))) < (0.25 * number.Imaginary * number.Imaginary);
+            return (q * (q + realMinusFourth)) < (0.25 * imagSquared);
         }
 
         static bool IsInCircularBulbs(Complex number)
@@ -40,7 +42,7 @@ namespace Buddhabrot.Core
         {
             var translated = number - center;
 
-            return (translated.Real * translated.Real + translated.Imaginary * translated.Imaginary) <= (radius * radius);
+            return translated.MagnitudeSquared() <= (radius * radius);
         }
     }
 }

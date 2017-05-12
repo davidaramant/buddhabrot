@@ -81,6 +81,7 @@
     <Compile Include="Edges\EdgeVisualizer.cs" />
     <Compile Include="EdgeSpans\EdgeSpan.cs" />
     <Compile Include="EdgeSpans\LogicalEdgeSpan.cs" />
+    <Compile Include="Extensions\ComplexExtensions.cs" />
     <Compile Include="PointGrids\PointGrid.cs" />
     <Compile Include="PointGrids\PointGridVisualizer.cs" />
     <Compile Include="PointGrids\PointRow.cs" />

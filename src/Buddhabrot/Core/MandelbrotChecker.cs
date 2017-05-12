@@ -83,7 +83,10 @@ namespace Buddhabrot.Core
             var z2Imag = 0.0f;
 
             var oldZReal = 0.0f;
-            var oldZImag = 0.0;
+            var oldZImag = 0.0f;
+
+            var cReal = (float)c.Real;
+            var cImag = (float)c.Imaginary;
 
             int stepsTaken = 0;
             int stepLimit = 2;
@@ -94,8 +97,8 @@ namespace Buddhabrot.Core
                 iterations++;
                 stepsTaken++;
 
-                zImag = 2 * zReal * zImag + (float)c.Imaginary;
-                zReal = z2Real - z2Imag + (float)c.Real;
+                zImag = 2 * zReal * zImag + cImag;
+                zReal = z2Real - z2Imag + cReal;
 
                 z2Real = zReal * zReal;
                 z2Imag = zImag * zImag;

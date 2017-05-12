@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;
+using Buddhabrot.IterationKernels;
 using log4net;
 
 namespace Buddhabrot.PointGrids
@@ -15,10 +15,11 @@ namespace Buddhabrot.PointGrids
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(PointGrid));
         //                                 0123456789abcdef
-        private const string HeaderText = "Point Grid V1.00";
+        private const string HeaderText = "Point Grid V2.00";
 
         public Size PointResolution { get; }
         public ComplexArea ViewPort { get; }
+        public KernelType ComputationType { get; }
 
         private readonly Stream _pointStream;
         private readonly long _pointsPosition;
@@ -39,9 +40,10 @@ namespace Buddhabrot.PointGrids
 
                     var size = reader.ReadSize();
                     var viewPort = reader.ReadComplexArea();
+                    var computationType = (KernelType)reader.ReadInt32();
                     Log.Info($"Loaded point grid with resolution ({size.Width:N0}x{size.Height:N0}), " +
                              $"view port {viewPort}.");
-                    return new PointGrid(size, viewPort, stream);
+                    return new PointGrid(size, viewPort, computationType, stream);
                 }
             }
             catch (Exception)
@@ -54,10 +56,12 @@ namespace Buddhabrot.PointGrids
         private PointGrid(
             Size pointResolution,
             ComplexArea viewPort,
+            KernelType computationType,
             Stream pointStream)
         {
             PointResolution = pointResolution;
             ViewPort = viewPort;
+            ComputationType = computationType;
             _pointStream = pointStream;
             _pointsPosition = pointStream.Position;
         }
@@ -100,6 +104,7 @@ namespace Buddhabrot.PointGrids
             string filePath,
             Size pointResolution,
             ComplexArea viewPort,
+            KernelType computationType,
             IEnumerable<bool> pointsInSet)
         {
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -108,6 +113,7 @@ namespace Buddhabrot.PointGrids
                 writer.Write(HeaderText);
                 writer.WriteSize(pointResolution);
                 writer.WriteComplexArea(viewPort);
+                writer.Write((int)computationType);
 
                 int rowsWritten = 0;
                 foreach (var row in pointsInSet.Batch(pointResolution.Width))
@@ -148,11 +154,13 @@ namespace Buddhabrot.PointGrids
         public static void Compute(
             string filePath,
             Size pointResolution,
-            ComplexArea viewPort)
+            ComplexArea viewPort,
+            KernelType computationType)
         {
             Log.Info($"Outputting to: {filePath}");
             Log.Info($"Resolution: {pointResolution.Width:N0}x{pointResolution.Height:N0}");
             Log.Info($"View port: {viewPort}");
+            Log.Info($"Computation type: {computationType}");
 
             IEnumerable<bool> GetPointsInSet()
             {
@@ -180,7 +188,7 @@ namespace Buddhabrot.PointGrids
                 }
             }
 
-            Write(filePath, pointResolution, viewPort, GetPointsInSet());
+            Write(filePath, pointResolution, viewPort, computationType, GetPointsInSet());
         }
     }
 }

@@ -31,6 +31,7 @@ namespace Buddhabrot
             [ArgActionMethod, ArgDescription("Computes a point grid.")]
             public void ComputePointGrid(
                 [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
+                [ArgDescription("The type of computations to do.")] KernelType computationType,
                 [ArgDescription("The directory for the resulting grid file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
             {
                 using (TimedOperation.Start("Computing point grid"))
@@ -39,9 +40,10 @@ namespace Buddhabrot
                     var viewPort = Constant.RenderingArea.GetPositiveImagArea();
 
                     PointGrid.Compute(
-                        Path.Combine(outputPath, $"pointGrid{resolution}"),
+                        Path.Combine(outputPath, $"pointGrid_{resolution}_{computationType}"),
                         size,
-                        viewPort);
+                        viewPort,
+                        computationType);
                 }
             }
 

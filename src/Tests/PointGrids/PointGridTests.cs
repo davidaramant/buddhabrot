@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Linq;
 using Buddhabrot.Core;
+using Buddhabrot.IterationKernels;
 using Buddhabrot.PointGrids;
 using NUnit.Framework;
 
@@ -41,6 +42,7 @@ namespace Tests.PointGrids
                     tempFile.Path,
                     new Size(4, 4),
                     new ComplexArea(new DoubleRange(-1, 1), new DoubleRange(-1, 1)),
+                    KernelType.ScalarFloat, 
                     pointsInSet);
 
                 using (var pointGrid = PointGrid.Load(tempFile.Path))

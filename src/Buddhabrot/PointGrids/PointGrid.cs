@@ -109,9 +109,9 @@ namespace Buddhabrot.PointGrids
                 writer.WriteSize(pointResolution);
                 writer.WriteComplexArea(viewPort);
 
+                int rowsWritten = 0;
                 foreach (var row in pointsInSet.Batch(pointResolution.Width))
                 {
-                    int x = 0;
                     bool inSet = false;
                     int length = 0;
                     foreach (var point in row)
@@ -132,11 +132,15 @@ namespace Buddhabrot.PointGrids
                             inSet = point;
                             length = 1;
                         }
-
-                        x++;
                     }
 
                     writer.Write(inSet ? length : -length);
+                    rowsWritten++;
+                }
+
+                if (rowsWritten != pointResolution.Height)
+                {
+                    throw new ArgumentException($"Expected {pointResolution.Height} rows but only got {rowsWritten}.");
                 }
             }
         }
@@ -161,8 +165,8 @@ namespace Buddhabrot.PointGrids
                     Parallel.For(
                         0,
                         pointResolution.Width,
-                        col => pointsInSet[col] = MandelbrotChecker.FindEscapeTime(pointCalculator.GetPoint(col, row))
-                            .IsInfinite);
+                        col => pointsInSet[col] = MandelbrotChecker.FindEscapeTime(
+                            pointCalculator.GetPoint(col, row)).IsInfinite);
 
                     for (int x = 0; x < pointResolution.Width; x++)
                     {

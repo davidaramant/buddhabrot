@@ -64,6 +64,9 @@
     <Compile Include="Core\ComplexArea.cs" />
     <Compile Include="Core\DoubleRange.cs" />
     <Compile Include="Core\EscapeTime.cs" />
+    <Compile Include="Core\FComplex.cs" />
+    <Compile Include="Core\FComplexArea.cs" />
+    <Compile Include="Core\FloatRange.cs" />
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbrotChecker.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />

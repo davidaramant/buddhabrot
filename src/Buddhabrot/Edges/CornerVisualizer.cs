@@ -22,7 +22,7 @@ namespace Buddhabrot.Edges
 
             using (var edgeAreas = EdgeAreas.Load(edgesFilePath))
             {
-                var imageResolution = edgeAreas.GridResolution.MultiplyBy(scale);
+                var imageResolution = edgeAreas.GridResolution.Scale(scale);
                 if (imageResolution.Area() > 500_000_000)
                 {
                     throw new ArgumentException("Edges are too fine to plot corners.");

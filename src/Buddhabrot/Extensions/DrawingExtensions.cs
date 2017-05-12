@@ -18,8 +18,12 @@ namespace Buddhabrot.Extensions
 
         public static int Area(this Size s) => s.Width * s.Height;
 
-        public static Size MultiplyBy(this Size size, int scale) =>
+        public static Size Scale(this Size size, int scale) =>
             new Size(size.Width * scale, size.Height * scale);
+
+        public static Point Scale(this Point point, int scale) =>
+            new Point(point.X * scale, point.Y * scale);
+
 
         public static Point OffsetIn(this Point p, Direction direction)
         {

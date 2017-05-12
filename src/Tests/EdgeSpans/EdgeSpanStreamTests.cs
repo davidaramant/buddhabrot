@@ -30,7 +30,7 @@ namespace Tests.EdgeSpans
 
                     Assert.That(spans, Has.Length.EqualTo(1), "Incorrect number of spans.");
 
-                    var span = spans.First().span;
+                    var span = spans.First().Span;
                     Assert.That(span.InSet, Is.EqualTo(new Complex(0, 0)), "Wrong point in the set.");
                     Assert.That(span.NotInSet, Is.EqualTo(new Complex(0, 1)), "Wrong point in the set.");
                 }

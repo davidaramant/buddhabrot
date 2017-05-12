@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
+using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 
@@ -36,10 +37,10 @@ namespace Buddhabrot.Points
 
         public void Compute(CancellationToken token, long maxIterations)
         {
-            _results = _batch.ComputeIterations(token, maxIterations);
+            _results = _batch.ComputeIterations(token);
         }
 
-        public IEnumerable<(EdgeSpan span, Complex middle, long iterations)> GetResults()
+        public IEnumerable<(EdgeSpan span, Complex middle, EscapeTime iterations)> GetResults()
         {
             for (int i = 0; i < _results.Count; i++)
             {

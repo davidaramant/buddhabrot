@@ -76,6 +76,7 @@
     <Compile Include="EdgeSpans\LogicalEdgeSpan.cs" />
     <Compile Include="Extensions\ComplexExtensions.cs" />
     <Compile Include="IterationKernels\KernelType.cs" />
+    <Compile Include="IterationKernels\ScalarFloatKernel.cs" />
     <Compile Include="PointGrids\PointGrid.cs" />
     <Compile Include="PointGrids\PointGridVisualizer.cs" />
     <Compile Include="PointGrids\PointRow.cs" />
@@ -90,7 +91,7 @@
     <Compile Include="IterationKernels\KernelBuilder.cs" />
     <Compile Include="IterationKernels\OpenCLKernel.cs" />
     <Compile Include="IterationKernels\OpenCLKernelSource.cs" />
-    <Compile Include="IterationKernels\ScalarKernel.cs" />
+    <Compile Include="IterationKernels\ScalarDoubleKernel.cs" />
     <Compile Include="IterationKernels\VectorKernel.cs" />
     <Compile Include="Points\PointFinder.cs" />
     <Compile Include="Points\PointFinderStatistics.cs" />

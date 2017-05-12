@@ -22,19 +22,15 @@ namespace Buddhabrot.IterationKernels
         /// Adds a point to the batch
         /// </summary>
         /// <param name="c">The point.</param>
-        /// <returns>
-        /// The index it was added to.
-        /// </returns>
-        int AddPoint(Complex c);
+        void AddPoint(Complex c);
 
         /// <summary>
         /// Computes the iterations.
         /// </summary>
         /// <param name="token">The token.</param>
-        /// <param name="maxIterations">The maximum iterations.</param>
         /// <returns>
         /// The results of the batch.
         /// </returns>
-        IPointBatchResults ComputeIterations(CancellationToken token, long maxIterations);
+        IPointBatchResults ComputeIterations(CancellationToken token);
     }
 }

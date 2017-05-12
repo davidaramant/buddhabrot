@@ -13,6 +13,8 @@ namespace Buddhabrot.IterationKernels
                     return new ScalarFloatKernel();
                 case KernelType.ScalarDouble:
                     return new ScalarDoubleKernel();
+                case KernelType.VectorFloat:
+                    return new VectorFloatKernel();
                 default:
                     throw new ArgumentException($"Unsupported kernel type: {type}");
             }

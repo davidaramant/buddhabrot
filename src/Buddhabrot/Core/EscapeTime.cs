@@ -26,6 +26,7 @@ namespace Buddhabrot.Core
         }
 
         public static EscapeTime Discrete(int iterations) => new EscapeTime(iterations);
+        public static EscapeTime Choose(int iterations) => iterations < 0 ? Infinite : new EscapeTime(iterations);
 
         public override string ToString() => IsInfinite ? "Infinite" : _iterations.ToString("N0");
     }

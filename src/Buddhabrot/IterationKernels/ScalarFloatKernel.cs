@@ -10,7 +10,7 @@ namespace Buddhabrot.IterationKernels
     public sealed class ScalarFloatKernel : IKernel
     {
         public KernelType Type => KernelType.ScalarFloat;
-        private const int BatchSize = 256;
+        private const int BatchSize = 2048;
         private readonly Batch _pointBatch;
 
         public ScalarFloatKernel()

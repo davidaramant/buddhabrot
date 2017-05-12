@@ -92,7 +92,7 @@
     <Compile Include="IterationKernels\OpenCLKernel.cs" />
     <Compile Include="IterationKernels\OpenCLKernelSource.cs" />
     <Compile Include="IterationKernels\ScalarDoubleKernel.cs" />
-    <Compile Include="IterationKernels\VectorKernel.cs" />
+    <Compile Include="IterationKernels\VectorFloatKernel.cs" />
     <Compile Include="Points\PointFinder.cs" />
     <Compile Include="Points\PointFinderStatistics.cs" />
     <Compile Include="Points\PointReader.cs" />

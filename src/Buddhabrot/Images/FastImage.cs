@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Buddhabrot.Images
 {
@@ -18,6 +19,7 @@ namespace Buddhabrot.Images
 
         public int Width { get; }
         public int Height { get; }
+        public int PixelCount => Width * Height;
 
         public FastImage(int tileSize) : this(tileSize, tileSize)
         {
@@ -37,16 +39,13 @@ namespace Buddhabrot.Images
 
         public void Fill(Color color)
         {
-            for (int i = 0; i < _pixelBuffer.Length; i += 3)
-            {
-                SetPixelFromIndex(i, color);
-            }
+            Parallel.For(
+                0,
+                PixelCount,
+                pixelIndex => SetPixel(pixelIndex, color));
         }
 
-        public void SetPixel(Point p, Color color)
-        {
-            SetPixel(p.X, p.Y, color);
-        }
+        public void SetPixel(Point p, Color color) => SetPixel(p.X, p.Y, color);
 
         public void SetPixel(int x, int y, Color color)
         {
@@ -86,7 +85,6 @@ namespace Buddhabrot.Images
                 // Copy the RGB values back to the bitmap
                 Marshal.Copy(_pixelBuffer, 0, ptr, _pixelBuffer.Length);
 
-                // Unlock the bits.
                 bmp.UnlockBits(bmpData);
 
                 switch (Path.GetExtension(filePath))
@@ -107,17 +105,11 @@ namespace Buddhabrot.Images
         private static readonly ImageCodecInfo JgpEncoder = GetEncoder(ImageFormat.Jpeg);
         private static readonly EncoderParameters QualitySetting = CreateQualityParameter();
 
-        private static ImageCodecInfo GetEncoder(ImageFormat format)
-        {
-            return ImageCodecInfo.GetImageDecoders().FirstOrDefault(codec => codec.FormatID == format.Guid);
-        }
+        private static ImageCodecInfo GetEncoder(ImageFormat format) =>
+            ImageCodecInfo.GetImageDecoders().FirstOrDefault(codec => codec.FormatID == format.Guid);
 
         private static EncoderParameters CreateQualityParameter()
         {
-            // Create an EncoderParameters object.
-            // An EncoderParameters object has an array of EncoderParameter
-            // objects. In this case, there is only one
-            // EncoderParameter object in the array.
             var encoderParams = new EncoderParameters(1);
             var encoderParam = new EncoderParameter(Encoder.Quality, (long)JpgQuality);
             encoderParams.Param[0] = encoderParam;

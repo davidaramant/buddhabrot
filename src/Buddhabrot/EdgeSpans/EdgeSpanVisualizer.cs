@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using Buddhabrot.Images;
-using Buddhabrot.PointGrids;
 using log4net;
 
 namespace Buddhabrot.EdgeSpans
@@ -20,13 +20,11 @@ namespace Buddhabrot.EdgeSpans
 
                 image.Fill(Color.White);
 
-                var pointCalculator = new PositionCalculator(span.PointResolution, span.ViewPort);
-
-                foreach (var position in span.Select(pair => pair.location))
+                Parallel.ForEach(span.Select(pair => pair.location), position =>
                 {
                     var y = span.PointResolution.Height - position.Y - 1;
                     image.SetPixel(position.X, y, Color.Black);
-                }
+                });
 
                 image.Save(imageFilePath);
             }

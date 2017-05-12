@@ -49,7 +49,7 @@
     <Compile Include="IterationKernels\KernelTests.cs" />
     <Compile Include="PointGrids\PointGridTests.cs" />
     <Compile Include="PointGrids\PointRowTests.cs" />
-    <Compile Include="Points\WorkRemainingTests.cs" />
+    <Compile Include="Utility\WorkRemainingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TempFile.cs" />
   </ItemGroup>

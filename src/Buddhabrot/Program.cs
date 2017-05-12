@@ -9,6 +9,7 @@ using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.PointGrids;
 using Buddhabrot.Points;
+using Buddhabrot.Utility;
 using Humanizer;
 using PowerArgs;
 
@@ -19,12 +20,28 @@ namespace Buddhabrot
         static void Main(string[] args)
         {
             log4net.Config.XmlConfigurator.Configure();
-            Args.InvokeAction<BudhabrotProgram>(args);
+            Args.InvokeAction<BuddhabrotProgram>(args);
         }
 
         [ArgExceptionBehavior(ArgExceptionPolicy.StandardExceptionHandling)]
-        public sealed class BudhabrotProgram
+        public sealed class BuddhabrotProgram
         {
+            private readonly CancellationToken _token;
+            public BuddhabrotProgram()
+            {
+                var cts = new CancellationTokenSource();
+                Console.CancelKeyPress += (s, e) =>
+                {
+                    if (!cts.IsCancellationRequested)
+                    {
+                        e.Cancel = true;
+                        cts.Cancel();
+                        Console.WriteLine("Cancelation requested...");
+                    }
+                };
+                _token = cts.Token;
+            }
+
             [HelpHook, ArgShortcut("-?"), ArgDescription("Shows this help")]
             public bool Help { get; set; }
 
@@ -43,7 +60,8 @@ namespace Buddhabrot
                         Path.Combine(outputPath, $"pointGrid_{resolution}_{computationType}"),
                         size,
                         viewPort,
-                        computationType);
+                        computationType,
+                        _token);
                 }
             }
 

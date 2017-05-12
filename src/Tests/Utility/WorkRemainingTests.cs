@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using Buddhabrot.EdgeSpans;
-using Buddhabrot.Points;
+﻿using System.Linq;
+using Buddhabrot.Utility;
 using NUnit.Framework;
 
-namespace Tests.Points
+namespace Tests.Utility
 {
     [TestFixture]
     public sealed class WorkRemainingTests
@@ -14,7 +11,7 @@ namespace Tests.Points
         public void ShouldReturnFromSequenceIfNoAdditionalItems()
         {
             const int size = 5;
-            using (var work = new WorkRemaining(GetPointSequence(size)))
+            using (var work = new WorkRemaining<int>(Enumerable.Repeat(size,size)))
             {
                 Assert.That(work.Take(size).Count(), Is.EqualTo(size));
             }
@@ -24,7 +21,7 @@ namespace Tests.Points
         public void ShouldReturnAsMuchDataAsAvailable()
         {
             const int size = 5;
-            using (var work = new WorkRemaining(GetPointSequence(size)))
+            using (var work = new WorkRemaining<int>(Enumerable.Repeat(size, size)))
             {
                 Assert.That(work.Take(10 * size).Count(), Is.EqualTo(size));
             }
@@ -33,11 +30,11 @@ namespace Tests.Points
         [Test]
         public void ShouldReturnFromBufferBeforeSequence()
         {
-            using (var work = new WorkRemaining(GetPointSequence(5)))
+            using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))
             {
-                work.AddAdditional(GetPointSequence(3));
+                work.AddAdditional(Enumerable.Repeat(3, 3));
 
-                var dataReturned = work.Take(8).Select(pair => (int) pair.InSet.Real).ToArray();
+                var dataReturned = work.Take(8).ToArray();
                 var expected = Enumerable.Repeat(3, 3).Concat(Enumerable.Repeat(5, 5)).ToArray();
 
                 Assert.That(dataReturned, Is.EqualTo(expected));
@@ -47,11 +44,11 @@ namespace Tests.Points
         [Test]
         public void ShouldTakeLessThanTotal()
         {
-            using (var work = new WorkRemaining(GetPointSequence(5)))
+            using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))
             {
-                work.AddAdditional(GetPointSequence(3));
+                work.AddAdditional(Enumerable.Repeat(3,3));
 
-                var dataReturned = work.Take(4).Select(pair => (int) pair.InSet.Real).ToArray();
+                var dataReturned = work.Take(4).ToArray();
                 var expected = Enumerable.Repeat(3, 3).Concat(Enumerable.Repeat(5, 1)).ToArray();
 
                 Assert.That(dataReturned, Is.EqualTo(expected));
@@ -61,15 +58,11 @@ namespace Tests.Points
         [Test]
         public void ShouldNotReturnDuplicatedWork()
         {
-            using (var work = new WorkRemaining(GetPointSequence(5)))
+            using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))
             {
                 Assert.That(work.Take(4).Count(), Is.EqualTo(4));
                 Assert.That(work.Take(4).Count(), Is.EqualTo(1));
             }
         }
-
-        private static IEnumerable<EdgeSpan> GetPointSequence(int size) =>
-            Enumerable.Repeat(size, size).
-            Select(i => new EdgeSpan(new Complex(i, i), new Complex(i, i)));
     }
 }

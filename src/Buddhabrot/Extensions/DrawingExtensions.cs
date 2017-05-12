@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Buddhabrot.Core;
 
@@ -51,5 +52,16 @@ namespace Buddhabrot.Extensions
         }
 
         public static Size HalveVertically(this Size size) => new Size(size.Width, size.Height / 2);
+
+        public static IEnumerable<Point> GetPointsRowFirst(this Size resolution)
+        {
+            for (int y = 0; y < resolution.Height; y++)
+            {
+                for (int x = 0; x < resolution.Width; x++)
+                {
+                    yield return new Point(x, y);
+                }
+            }
+        }
     }
 }

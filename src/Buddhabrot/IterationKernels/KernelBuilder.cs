@@ -1,18 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NOpenCL;
 
 namespace Buddhabrot.IterationKernels
 {
-    public sealed class KernelBuilder
+    public static class KernelBuilder
     {
-        public IKernel BuildOpenCL()
+        public static IKernel Build(KernelType type)
         {
-            return null;
-            //return new OpenCLKernel(Platform.GetPlatforms()[0].GetDevices(DeviceType.Gpu).Single());
+            switch (type)
+            {
+                case KernelType.ScalarFloat:
+                    return new ScalarFloatKernel();
+                case KernelType.ScalarDouble:
+                    return new ScalarDoubleKernel();
+                default:
+                    throw new ArgumentException($"Unsupported kernel type: {type}");
+            }
         }
+
+
+        //public IKernel BuildOpenCL()
+        //{
+        //    return null;
+        //    //return new OpenCLKernel(Platform.GetPlatforms()[0].GetDevices(DeviceType.Gpu).Single());
+        //}
     }
 }

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Humanizer;
 using log4net;
 
-namespace Buddhabrot.Core
+namespace Buddhabrot.Utility
 {
     sealed class TimedOperation : IDisposable
     {

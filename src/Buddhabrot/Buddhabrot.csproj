@@ -67,7 +67,7 @@
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbrotChecker.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
-    <Compile Include="Core\TimedOperation.cs" />
+    <Compile Include="Utility\TimedOperation.cs" />
     <Compile Include="EdgeSpans\EdgeSpanVisualizer.cs" />
     <Compile Include="Core\Direction.cs" />
     <Compile Include="EdgeSpans\EdgeSpanLocator.cs" />
@@ -98,7 +98,7 @@
     <Compile Include="Points\PointReader.cs" />
     <Compile Include="Points\PointWriter.cs" />
     <Compile Include="Points\WorkBatch.cs" />
-    <Compile Include="Points\WorkRemaining.cs" />
+    <Compile Include="Utility\WorkRemaining.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Constant.cs" />

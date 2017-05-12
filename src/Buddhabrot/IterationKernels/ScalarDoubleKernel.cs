@@ -47,6 +47,16 @@ namespace Buddhabrot.IterationKernels
                 _c[index] = c;
             }
 
+            public void AddPoints(IEnumerable<Complex> points)
+            {
+                int index = Count;
+                foreach (var point in points)
+                {
+                    _c[index] = point;
+                    Count++;
+                }
+            }
+
             public Complex GetPoint(int index) => _c[index];
 
             public EscapeTime GetIteration(int index) => _iterations[index];

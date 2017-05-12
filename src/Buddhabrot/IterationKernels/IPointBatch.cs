@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using System.Threading;
 
 namespace Buddhabrot.IterationKernels
@@ -18,11 +19,8 @@ namespace Buddhabrot.IterationKernels
         /// </summary>
         int Count { get; }
 
-        /// <summary>
-        /// Adds a point to the batch
-        /// </summary>
-        /// <param name="c">The point.</param>
         void AddPoint(Complex c);
+        void AddPoints(IEnumerable<Complex> c);
 
         /// <summary>
         /// Computes the iterations.

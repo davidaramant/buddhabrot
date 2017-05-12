@@ -82,6 +82,7 @@
     <Compile Include="EdgeSpans\EdgeSpan.cs" />
     <Compile Include="EdgeSpans\LogicalEdgeSpan.cs" />
     <Compile Include="Extensions\ComplexExtensions.cs" />
+    <Compile Include="IterationKernels\KernelType.cs" />
     <Compile Include="PointGrids\PointGrid.cs" />
     <Compile Include="PointGrids\PointGridVisualizer.cs" />
     <Compile Include="PointGrids\PointRow.cs" />

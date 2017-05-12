@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Threading.Tasks;
 using Buddhabrot.Images;
 using log4net;
 
@@ -18,7 +19,7 @@ namespace Buddhabrot.PointGrids
 
                 image.Fill(Color.White);
 
-                foreach (var row in grid)
+                Parallel.ForEach(grid, row =>
                 {
                     int x = 0;
                     var y = grid.PointResolution.Height - row.Y - 1;
@@ -28,7 +29,7 @@ namespace Buddhabrot.PointGrids
 
                         x++;
                     }
-                }
+                });
 
                 image.Save(imageFilePath);
             }

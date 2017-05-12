@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Buddhabrot.Core;
 using Buddhabrot.PointGrids;
 using log4net;
@@ -25,7 +27,7 @@ namespace Buddhabrot.EdgeSpans
 
         private static IEnumerable<LogicalEdgeSpan> GetEdgeSpans(IEnumerable<PointRow> rows)
         {
-            foreach (var (belowRow, currentRow, aboveRow) in GetRowBatches(rows))
+            IEnumerable<LogicalEdgeSpan> Process(PointRow aboveRow, PointRow currentRow, PointRow belowRow)
             {
                 var y = currentRow.Y;
                 int maxX = currentRow.Width - 1;
@@ -57,6 +59,11 @@ namespace Buddhabrot.EdgeSpans
                     }
                 }
             }
+
+            return
+                GetRowBatches(rows).
+                AsParallel().
+                SelectMany(rowBatch => Process(rowBatch.above, rowBatch.current, rowBatch.below));
         }
 
         private static IEnumerable<(PointRow below, PointRow current, PointRow above)> GetRowBatches(

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,63 +77,6 @@ namespace Buddhabrot.IterationKernels
                 return this;
             }
 
-            /// <summary>
-            /// Determines whether the point is in the set, without using an arbitrary iteration limit.
-            /// </summary>
-            /// <param name="c">The c.</param>
-            /// <remarks>
-            /// Brent's Algorithm is used to detect cycles for points in the set.
-            /// </remarks>
-            /// <returns>
-            /// The <see cref="EscapeTime"/> of the point.
-            /// </returns>
-            private static EscapeTime FindEscapeTime(Complex c)
-            {
-                if (MandelbulbChecker.IsInsideBulbs(c))
-                    return EscapeTime.Infinite;
-
-                var zReal = 0.0f;
-                var zImag = 0.0f;
-
-                var z2Real = 0.0f;
-                var z2Imag = 0.0f;
-
-                var oldZReal = 0.0f;
-                var oldZImag = 0.0f;
-
-                var cReal = (float)c.Real;
-                var cImag = (float)c.Imaginary;
-
-                int stepsTaken = 0;
-                int stepLimit = 2;
-
-                int iterations = 0;
-                while ((z2Real + z2Imag) <= 4)
-                {
-                    iterations++;
-                    stepsTaken++;
-
-                    zImag = 2 * zReal * zImag + cImag;
-                    zReal = z2Real - z2Imag + cReal;
-
-                    z2Real = zReal * zReal;
-                    z2Imag = zImag * zImag;
-
-                    if (oldZReal == zReal && oldZImag == zImag)
-                        return EscapeTime.Infinite;
-
-                    if (stepsTaken == stepLimit)
-                    {
-                        oldZReal = zReal;
-                        oldZImag = zImag;
-                        stepsTaken = 0;
-                        stepLimit = stepLimit << 1;
-                    }
-                }
-
-                return EscapeTime.Discrete(iterations);
-            }
-
             public IEnumerable<(Complex Point, EscapeTime Iterations)> GetAllResults()
             {
                 for (int i = 0; i < Count; i++)
@@ -143,5 +87,63 @@ namespace Buddhabrot.IterationKernels
         }
 
         public void Dispose() { }
+
+        /// <summary>
+        /// Determines whether the point is in the set, without using an arbitrary iteration limit.
+        /// </summary>
+        /// <param name="c">The c.</param>
+        /// <remarks>
+        /// Brent's Algorithm is used to detect cycles for points in the set.
+        /// </remarks>
+        /// <returns>
+        /// The <see cref="EscapeTime"/> of the point.
+        /// </returns>
+        [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator",Justification = "Cycle detection requires direct floating point comparisons.")]
+        public static EscapeTime FindEscapeTime(Complex c)
+        {
+            if (MandelbulbChecker.IsInsideBulbs(c))
+                return EscapeTime.Infinite;
+
+            var zReal = 0.0f;
+            var zImag = 0.0f;
+
+            var z2Real = 0.0f;
+            var z2Imag = 0.0f;
+
+            var oldZReal = 0.0f;
+            var oldZImag = 0.0f;
+
+            var cReal = (float)c.Real;
+            var cImag = (float)c.Imaginary;
+
+            int stepsTaken = 0;
+            int stepLimit = 2;
+
+            int iterations = 0;
+            while ((z2Real + z2Imag) <= 4)
+            {
+                iterations++;
+                stepsTaken++;
+
+                zImag = 2 * zReal * zImag + cImag;
+                zReal = z2Real - z2Imag + cReal;
+
+                z2Real = zReal * zReal;
+                z2Imag = zImag * zImag;
+
+                if (oldZReal == zReal && oldZImag == zImag)
+                    return EscapeTime.Infinite;
+
+                if (stepsTaken == stepLimit)
+                {
+                    oldZReal = zReal;
+                    oldZImag = zImag;
+                    stepsTaken = 0;
+                    stepLimit = stepLimit << 1;
+                }
+            }
+
+            return EscapeTime.Discrete(iterations);
+        }
     }
 }

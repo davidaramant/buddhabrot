@@ -170,27 +170,17 @@ namespace Buddhabrot.PointGrids
             {
                 var pointCalculator = new PositionCalculator(pointResolution, viewPort);
 
-                using (var kernel = KernelBuilder.Build(computationType))
-                using (var workRemaining = new WorkRemaining<Point>(pointResolution.GetPointsRowFirst()))
+                var pointsInSet = new bool[pointResolution.Width];
+                for (int row = 0; row < pointResolution.Height; row++)
                 {
-                    while (true)
+                    Parallel.For(
+                        0,
+                        pointResolution.Width,
+                        col => pointsInSet[col] = ScalarDoubleKernel.FindEscapeTime(pointCalculator.GetPoint(col, row)).IsInfinite);
+
+                    for (int x = 0; x < pointResolution.Width; x++)
                     {
-                        var batch = kernel.GetBatch();
-
-                        batch.AddPoints(
-                            workRemaining.Take(batch.Capacity).Select(p => pointCalculator.GetPoint(p)));
-
-                        if (batch.Count == 0)
-                        {
-                            yield break;
-                        }
-
-                        var results = batch.ComputeIterations(token);
-
-                        foreach (var escapeTime in results.GetAllResults().Select(pair => pair.Iterations))
-                        {
-                            yield return escapeTime.IsInfinite;
-                        }
+                        yield return pointsInSet[x];
                     }
                 }
             }

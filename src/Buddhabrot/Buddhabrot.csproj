@@ -65,7 +65,6 @@
     <Compile Include="Core\DoubleRange.cs" />
     <Compile Include="Core\EscapeTime.cs" />
     <Compile Include="Core\IntRange.cs" />
-    <Compile Include="Core\MandelbrotChecker.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
     <Compile Include="Utility\TimedOperation.cs" />
     <Compile Include="EdgeSpans\EdgeSpanVisualizer.cs" />

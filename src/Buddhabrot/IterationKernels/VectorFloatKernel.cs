@@ -128,6 +128,38 @@ namespace Buddhabrot.IterationKernels
 
         public void Dispose() { }
 
+        public static Vector<long> IteratePoints(Vector<double> cReal, Vector<double> cImag, long maxIterations)
+        {
+            var zReal = new Vector<double>(0);
+            var zImag = new Vector<double>(0);
+
+            // Cache the squares
+            // They are used to find the magnitude; reuse these values when computing the next re/im
+            var zReal2 = new Vector<double>(0);
+            var zImag2 = new Vector<double>(0);
+
+            var iterations = Vector<long>.Zero;
+            var increment = Vector<long>.One;
+
+            for (int i = 0; i < maxIterations; i++)
+            {
+                // Doing the two multiplications with an addition is somehow faster than 2 * zReal * zImag!
+                // I don't get it either
+                zImag = zReal * zImag + zReal * zImag + cImag;
+                zReal = zReal2 - zImag2 + cReal;
+
+                zReal2 = zReal * zReal;
+                zImag2 = zImag * zImag;
+
+                var shouldContinue = Vector.LessThanOrEqual(zReal2 + zImag2, new Vector<double>(4));
+
+                increment = increment & shouldContinue;
+                iterations += increment;
+            }
+
+            return iterations;
+        }
+
         public static Vector<int> IteratePoints(Vector<float> cReal, Vector<float> cImag)
         {
             // TODO: Vectorized MandelbulbChecker
@@ -183,37 +215,6 @@ namespace Buddhabrot.IterationKernels
             var mask = inCycle * new Vector<int>(int.MaxValue);
             return iterations + mask;
         }
-
-        public static Vector<long> IteratePoints(Vector<double> cReal, Vector<double> cImag, long maxIterations)
-        {
-            var zReal = new Vector<double>(0);
-            var zImag = new Vector<double>(0);
-
-            // Cache the squares
-            // They are used to find the magnitude; reuse these values when computing the next re/im
-            var zReal2 = new Vector<double>(0);
-            var zImag2 = new Vector<double>(0);
-
-            var iterations = Vector<long>.Zero;
-            var increment = Vector<long>.One;
-
-            for (int i = 0; i < maxIterations; i++)
-            {
-                // Doing the two multiplications with an addition is somehow faster than 2 * zReal * zImag!
-                // I don't get it either
-                zImag = zReal * zImag + zReal * zImag + cImag;
-                zReal = zReal2 - zImag2 + cReal;
-
-                zReal2 = zReal * zReal;
-                zImag2 = zImag * zImag;
-
-                var shouldContinue = Vector.LessThanOrEqual(zReal2 + zImag2, new Vector<double>(4));
-
-                increment = increment & shouldContinue;
-                iterations += increment;
-            }
-
-            return iterations;
-        }
     }
 }
+

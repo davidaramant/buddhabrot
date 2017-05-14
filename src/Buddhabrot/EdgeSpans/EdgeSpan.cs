@@ -16,6 +16,8 @@ namespace Buddhabrot.EdgeSpans
             NotInSet = notInSet;
         }
 
+        public double Length => (InSet - NotInSet).Magnitude;
+
         public Complex GetMidPoint()
         {
             return new Complex(

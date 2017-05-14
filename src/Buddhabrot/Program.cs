@@ -106,10 +106,17 @@ namespace Buddhabrot
                         Path.GetDirectoryName(edgeSpansFilePath),
                         Path.GetFileNameWithoutExtension(edgeSpansFilePath) + (showDirections ? ".withDirections" : "") + ".png");
 
-                    EdgeSpanVisualizer.Render(edgeSpansFilePath, imageFilePath, showDirections);
+                    EdgeSpanVisualizer.RenderAllSpans(edgeSpansFilePath, imageFilePath, showDirections);
                 }
             }
 
+            [ArgActionMethod, ArgDescription("Renders a single edge span to an image.")]
+            public void PlotEdgeSpan(
+                [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath,
+                [ArgDescription("The index of the edge span to visualize.  If negative, a random one will be chosen."), ArgDefaultValue(-1)] int index)
+            {
+                EdgeSpanVisualizer.RenderSingleSpan(edgeSpansFilePath, index);
+            }
 
             //[ArgActionMethod, ArgDescription("Finds points.")]
             //public void FindPoints(

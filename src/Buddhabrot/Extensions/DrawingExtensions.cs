@@ -53,7 +53,7 @@ namespace Buddhabrot.Extensions
 
         public static Size HalveVertically(this Size size) => new Size(size.Width, size.Height / 2);
 
-        public static IEnumerable<Point> GetPointsRowFirst(this Size resolution)
+        public static IEnumerable<Point> GetPositionsRowFirst(this Size resolution)
         {
             for (int y = 0; y < resolution.Height; y++)
             {

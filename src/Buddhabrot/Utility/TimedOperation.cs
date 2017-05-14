@@ -10,9 +10,9 @@ namespace Buddhabrot.Utility
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(TimedOperation));
         private readonly Stopwatch _timer = Stopwatch.StartNew();
+        readonly DateTime _startTime = DateTime.Now;
         private readonly string _description;
 
-        // TODO: Figure out how this should be set
         private readonly long _totalWork;
         private long _workDone;
 
@@ -20,9 +20,10 @@ namespace Buddhabrot.Utility
         private readonly Timer _reportingTimer;
 
 
-        private TimedOperation(string description, bool reportProgress)
+        private TimedOperation(string description, bool reportProgress, long totalWork)
         {
             _description = description;
+            _totalWork = totalWork;
 
             if (reportProgress)
             {
@@ -34,12 +35,30 @@ namespace Buddhabrot.Utility
         {
             Log.Info($"Time spent: {_timer.Elapsed.Humanize(2)}");
 
+            if (_totalWork != 0)
+            {
+                var workDone = _workDone;
 
-            //var totalRate = _workDone / _timer.Elapsed.TotalSeconds;
-            //Log.Info($"Time spent: {_timer.Elapsed.Humanize(2)}");
-            //Log.Info($"Points processed: {_workDone:N0}");
-            //Log.Info($"Rate: {totalRate:N1} points/second");
-            //Log.Info($"Points written: {_writer.Count}");
+                if (workDone == 0)
+                {
+                    Log.Info("No work done yet.");
+                }
+                else
+                {
+                    var percentageComplete = (double)workDone / _totalWork;
+                    var rate = workDone / _timer.Elapsed.TotalSeconds;
+
+                    var remainingWork = _totalWork - workDone;
+
+                    var estimatedRemainingSeconds = remainingWork / rate;
+
+                    var remaining = TimeSpan.FromSeconds(estimatedRemainingSeconds);
+
+                    Log.Info($"Work done: {workDone:N0}/{_totalWork:N0} ({percentageComplete:P})");
+                    Log.Info($"Rate: {rate:N1} work/second");
+                    Log.Info($"Estimated end time {DateTime.Now + remaining:t} ({remaining.Humanize(2)} remaining)");
+                }
+            }
         }
 
         public void AddWorkDone(int count)
@@ -47,7 +66,10 @@ namespace Buddhabrot.Utility
             Interlocked.Add(ref _workDone, count);
         }
 
-        public static TimedOperation Start(string description, bool reportProgress = true) => new TimedOperation(description, reportProgress);
+        public static TimedOperation Start(
+            string description,
+            bool reportProgress = true,
+            long totalWork = 0) => new TimedOperation(description, reportProgress, totalWork);
 
         public void Dispose()
         {

@@ -10,7 +10,6 @@ namespace Buddhabrot.Utility
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(TimedOperation));
         private readonly Stopwatch _timer = Stopwatch.StartNew();
-        readonly DateTime _startTime = DateTime.Now;
         private readonly string _description;
 
         private readonly long _totalWork;
@@ -66,6 +65,7 @@ namespace Buddhabrot.Utility
             Interlocked.Add(ref _workDone, count);
         }
 
+        // TODO: Change this interface to make the description something like a noun for the work instead
         public static TimedOperation Start(
             string description,
             bool reportProgress = true,

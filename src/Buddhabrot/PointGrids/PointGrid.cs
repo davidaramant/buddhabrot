@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -171,16 +170,22 @@ namespace Buddhabrot.PointGrids
                 var pointCalculator = new PositionCalculator(pointResolution, viewPort);
 
                 var pointsInSet = new bool[pointResolution.Width];
-                for (int row = 0; row < pointResolution.Height; row++)
+                using (var progress = TimedOperation.Start("Computing point grid", totalWork: pointResolution.Area()))
                 {
-                    Parallel.For(
-                        0,
-                        pointResolution.Width,
-                        col => pointsInSet[col] = ScalarDoubleKernel.FindEscapeTime(pointCalculator.GetPoint(col, row)).IsInfinite);
-
-                    for (int x = 0; x < pointResolution.Width; x++)
+                    for (int row = 0; row < pointResolution.Height; row++)
                     {
-                        yield return pointsInSet[x];
+                        Parallel.For(
+                            0,
+                            pointResolution.Width,
+                            col => pointsInSet[col] = ScalarDoubleKernel
+                                .FindEscapeTime(pointCalculator.GetPoint(col, row)).IsInfinite);
+
+                        for (int x = 0; x < pointResolution.Width; x++)
+                        {
+                            yield return pointsInSet[x];
+                        }
+
+                        progress.AddWorkDone(pointResolution.Width);
                     }
                 }
             }

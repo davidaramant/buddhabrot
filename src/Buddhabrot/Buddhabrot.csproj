@@ -66,6 +66,7 @@
     <Compile Include="Core\EscapeTime.cs" />
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
+    <Compile Include="PointGrids\RowSetSegment.cs" />
     <Compile Include="Utility\TimedOperation.cs" />
     <Compile Include="EdgeSpans\EdgeSpanVisualizer.cs" />
     <Compile Include="Core\Direction.cs" />

@@ -1,6 +1,9 @@
 ﻿using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
+using Buddhabrot.Extensions;
 using Buddhabrot.Images;
+using Buddhabrot.Utility;
 using log4net;
 
 namespace Buddhabrot.PointGrids
@@ -14,6 +17,7 @@ namespace Buddhabrot.PointGrids
             Log.Info($"Output image: {imageFilePath}");
 
             using (var grid = PointGrid.Load(gridFilePath))
+            using (var timer = TimedOperation.Start("Plotting point grid", totalWork: grid.PointResolution.Area()))
             {
                 var image = new FastImage(grid.PointResolution);
 
@@ -21,14 +25,16 @@ namespace Buddhabrot.PointGrids
 
                 Parallel.ForEach(grid, row =>
                 {
-                    int x = 0;
                     var y = grid.PointResolution.Height - row.Y - 1;
-                    foreach (var inSet in row)
-                    {
-                        image.SetPixel(x, y, inSet ? Color.Black : Color.White);
 
-                        x++;
+                    foreach (var setSegment in row.GetSegmentsInSet())
+                    {
+                        foreach (var x in Enumerable.Range(setSegment.StartCol, setSegment.Length))
+                        {
+                            image.SetPixel(x, y, Color.Black);
+                        }
                     }
+                    timer.AddWorkDone(grid.PointResolution.Width);
                 });
 
                 image.Save(imageFilePath);

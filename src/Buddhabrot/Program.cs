@@ -51,48 +51,39 @@ namespace Buddhabrot
                 [ArgDescription("The type of computations to do.")] KernelType computationType,
                 [ArgDescription("The directory for the resulting grid file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
             {
-                using (TimedOperation.Start("Computing point grid"))
-                {
-                    var size = new Size(resolution, resolution / 2);
-                    var viewPort = Constant.RenderingArea.GetPositiveImagArea();
+                var size = new Size(resolution, resolution / 2);
+                var viewPort = Constant.RenderingArea.GetPositiveImagArea();
 
-                    PointGrid.Compute(
-                        Path.Combine(outputPath, $"pointGrid_{resolution}_{computationType}"),
-                        size,
-                        viewPort,
-                        computationType,
-                        _token);
-                }
+                PointGrid.Compute(
+                    Path.Combine(outputPath, $"pointGrid_{resolution}_{computationType}"),
+                    size,
+                    viewPort,
+                    computationType,
+                    _token);
             }
 
             [ArgActionMethod, ArgDescription("Plots a point grid.")]
             public void PlotPointGrid(
                 [ArgDescription("Input point grid file."), ArgRequired, ArgExistingFile] string pointGridPath)
             {
-                using (TimedOperation.Start("Plotting point grid"))
-                {
-                    var imageFilePath = Path.Combine(
-                        Path.GetDirectoryName(pointGridPath),
-                        Path.GetFileNameWithoutExtension(pointGridPath) + ".png");
+                var imageFilePath = Path.Combine(
+                    Path.GetDirectoryName(pointGridPath),
+                    Path.GetFileNameWithoutExtension(pointGridPath) + ".png");
 
-                    PointGridVisualizer.Render(pointGridPath, imageFilePath);
-                }
+                PointGridVisualizer.Render(pointGridPath, imageFilePath);
             }
 
             [ArgActionMethod, ArgDescription("Finds line segments straddling the Mandelbrot set.")]
             public void FindEdgeSpans(
                 [ArgDescription("Input point grid file."), ArgRequired, ArgExistingFile] string pointGridPath)
             {
-                using (TimedOperation.Start("Finding edge spans"))
-                {
-                    var number = Path.GetFileNameWithoutExtension(pointGridPath).Remove(0, "pointGrid".Length);
+                var number = Path.GetFileNameWithoutExtension(pointGridPath).Remove(0, "pointGrid".Length);
 
-                    var edgeSpansFilePath = Path.Combine(
-                        Path.GetDirectoryName(pointGridPath),
-                         $"edgeSpans{number}");
+                var edgeSpansFilePath = Path.Combine(
+                    Path.GetDirectoryName(pointGridPath),
+                     $"edgeSpans{number}");
 
-                    EdgeSpanLocator.FindEdgeSpans(pointGridPath, edgeSpansFilePath);
-                }
+                EdgeSpanLocator.FindEdgeSpans(pointGridPath, edgeSpansFilePath);
             }
 
             [ArgActionMethod, ArgDescription("Renders the edge spans to an image.")]

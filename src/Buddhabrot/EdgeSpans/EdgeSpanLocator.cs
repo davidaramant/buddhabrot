@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Buddhabrot.Core;
 using Buddhabrot.PointGrids;
+using Buddhabrot.Utility;
 using log4net;
 
 namespace Buddhabrot.EdgeSpans
@@ -16,16 +16,17 @@ namespace Buddhabrot.EdgeSpans
             string outputFilePath)
         {
             using (var pointGrid = PointGrid.Load(pointGridFilePath))
+            using (var timer = TimedOperation.Start("Finding edge spans", totalWork: pointGrid.PointResolution.Height))
             {
                 EdgeSpanStream.Write(
                     outputFilePath,
                     pointGrid.PointResolution,
                     pointGrid.ViewPort,
-                    GetEdgeSpans(pointGrid));
+                    GetEdgeSpans(pointGrid, timer));
             }
         }
 
-        private static IEnumerable<LogicalEdgeSpan> GetEdgeSpans(IEnumerable<PointRow> rows)
+        private static IEnumerable<LogicalEdgeSpan> GetEdgeSpans(IEnumerable<PointRow> rows, TimedOperation timer)
         {
             IEnumerable<LogicalEdgeSpan> Process(PointRow aboveRow, PointRow currentRow, PointRow belowRow)
             {
@@ -58,6 +59,7 @@ namespace Buddhabrot.EdgeSpans
                             yield return new LogicalEdgeSpan(x, y, Direction.DownRight);
                     }
                 }
+                timer.AddWorkDone(1);
             }
 
             return

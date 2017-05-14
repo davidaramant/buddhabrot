@@ -9,6 +9,7 @@ namespace Buddhabrot.PointGrids
     /// </summary>
     public sealed class PointRow : IEnumerable<bool>
     {
+        // TODO: This should use RowSetSegment
         private readonly List<(bool inSet, int start, int length)> _segments =
             new List<(bool inSet, int start, int length)>();
 
@@ -46,6 +47,11 @@ namespace Buddhabrot.PointGrids
             {
                 throw new ArgumentException($"The segments should have added up to {width} but reached {position}.");
             }
+        }
+
+        public IEnumerable<RowSetSegment> GetSegmentsInSet()
+        {
+            return _segments.Where(s => s.inSet).Select(s => new RowSetSegment(s.start, s.length));
         }
 
         public IEnumerable<int> GetXPositionsOfSet()

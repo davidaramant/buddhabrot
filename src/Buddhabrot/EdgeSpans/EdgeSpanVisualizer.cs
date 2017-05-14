@@ -109,9 +109,11 @@ namespace Buddhabrot.EdgeSpans
 
                 Point CorrectLocation(Point p) => new Point(p.X, resolution.Height - p.Y - 1);
 
-                var spanLength = span.Length;
-                var highlightSize = spanLength * 0.01;
+                var spanLength = span.Length();
+                var highlightSize = spanLength * 0.005;
                 var highlightSizeSquared = highlightSize * highlightSize;
+
+                Log.Info($"Edge span length: {spanLength}");
 
                 for (int row = 0; row < resolution.Height; row++)
                 {
@@ -126,6 +128,7 @@ namespace Buddhabrot.EdgeSpans
 
                             Color PickColor()
                             {
+                                // TODO: Change this to be based on the pixel position, not the complex number
                                 if ((c - span.InSet).MagnitudeSquared() < highlightSizeSquared)
                                     return Color.Red;
 

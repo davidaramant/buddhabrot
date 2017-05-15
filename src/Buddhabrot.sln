@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buddhabrot", "Buddhabrot\Buddhabrot.csproj", "{E96B5724-766E-46AF-9B6D-56C8DBA30AC6}"
 EndProject
@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{D522093A-E31B-4199-9A0C-12BF6C3B69C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buddhabrot.Benchmarks", "Buddhabrot.Benchmarks\Buddhabrot.Benchmarks.csproj", "{90404397-529E-4C6C-A6E1-32698D3974A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{D522093A-E31B-4199-9A0C-12BF6C3B69C9}.Debug|x64.Build.0 = Debug|x64
 		{D522093A-E31B-4199-9A0C-12BF6C3B69C9}.Release|x64.ActiveCfg = Release|x64
 		{D522093A-E31B-4199-9A0C-12BF6C3B69C9}.Release|x64.Build.0 = Release|x64
+		{90404397-529E-4C6C-A6E1-32698D3974A8}.Debug|x64.ActiveCfg = Debug|x64
+		{90404397-529E-4C6C-A6E1-32698D3974A8}.Debug|x64.Build.0 = Debug|x64
+		{90404397-529E-4C6C-A6E1-32698D3974A8}.Release|x64.ActiveCfg = Release|x64
+		{90404397-529E-4C6C-A6E1-32698D3974A8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

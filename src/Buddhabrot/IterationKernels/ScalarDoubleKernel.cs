@@ -107,5 +107,33 @@ namespace Buddhabrot.IterationKernels
 
             return EscapeTime.Infinite;
         }
+
+        public static EscapeTime FindEscapeTimeNoCycleDetection(Complex c, int maxIterations)
+        {
+            if (MandelbulbChecker.IsInsideBulbs(c))
+                return EscapeTime.Infinite;
+
+            var zReal = 0.0;
+            var zImag = 0.0;
+
+            var z2Real = 0.0;
+            var z2Imag = 0.0;
+
+            for (int i = 0; i < maxIterations; i++)
+            {
+                zImag = 2 * zReal * zImag + c.Imaginary;
+                zReal = z2Real - z2Imag + c.Real;
+
+                z2Real = zReal * zReal;
+                z2Imag = zImag * zImag;
+
+                if ((z2Real + z2Imag) > 4)
+                {
+                    return EscapeTime.Discrete(i);
+                }
+            }
+
+            return EscapeTime.Infinite;
+        }
     }
 }

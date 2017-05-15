@@ -66,6 +66,7 @@
     <Compile Include="Core\EscapeTime.cs" />
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
+    <Compile Include="Core\ViewPort.cs" />
     <Compile Include="IterationKernels\VectorDoubleKernel.cs" />
     <Compile Include="PointGrids\RowSetSegment.cs" />
     <Compile Include="Utility\TimedOperation.cs" />
@@ -81,7 +82,6 @@
     <Compile Include="PointGrids\PointGrid.cs" />
     <Compile Include="PointGrids\PointGridVisualizer.cs" />
     <Compile Include="PointGrids\PointRow.cs" />
-    <Compile Include="PointGrids\PositionCalculator.cs" />
     <Compile Include="Extensions\BinarySerializationExtensions.cs" />
     <Compile Include="Extensions\DrawingExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />

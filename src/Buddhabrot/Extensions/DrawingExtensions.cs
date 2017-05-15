@@ -30,24 +30,26 @@ namespace Buddhabrot.Extensions
 
         public static Point OffsetIn(this Point p, Direction direction)
         {
+            // PIxel locations use a different origin than Complex numbers.
+
             switch (direction)
             {
                 case Direction.Up:
-                    return p.OffsetBy(0, 1);
+                    return p.OffsetBy(0, -1);
                 case Direction.UpRight:
-                    return p.OffsetBy(1, 1);
+                    return p.OffsetBy(1, -1);
                 case Direction.Right:
                     return p.OffsetBy(1, 0);
                 case Direction.DownRight:
-                    return p.OffsetBy(1, -1);
+                    return p.OffsetBy(1, 1);
                 case Direction.Down:
-                    return p.OffsetBy(0, -1);
+                    return p.OffsetBy(0, 1);
                 case Direction.DownLeft:
-                    return p.OffsetBy(-1, -1);
+                    return p.OffsetBy(-1, 1);
                 case Direction.Left:
                     return p.OffsetBy(-1, 0);
                 case Direction.UpLeft:
-                    return p.OffsetBy(-1, 1);
+                    return p.OffsetBy(-1, -1);
                 default:
                     throw new ArgumentException($"Unknown direction: {direction}");
             }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Text;
@@ -18,10 +17,9 @@ namespace Buddhabrot.PointGrids
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(PointGrid));
         //                                 0123456789abcdef
-        private const string HeaderText = "Point Grid V2.00";
+        private const string HeaderText = "Point Grid V3.00";
 
-        public Size PointResolution { get; }
-        public ComplexArea ViewPort { get; }
+        public ViewPort ViewPort { get; }
         public ComputationType ComputationType { get; }
 
         private readonly Stream _pointStream;
@@ -41,12 +39,11 @@ namespace Buddhabrot.PointGrids
                     if (readHeader != HeaderText)
                         throw new InvalidOperationException($"Unsupported edge span file format: {filePath}");
 
-                    var size = reader.ReadSize();
-                    var viewPort = reader.ReadComplexArea();
+                    var viewPort = reader.ReadViewPort();
                     var computationType = (ComputationType)reader.ReadInt32();
-                    Log.Info($"Loaded point grid with resolution ({size.Width:N0}x{size.Height:N0}), " +
-                             $"view port {viewPort}.");
-                    return new PointGrid(size, viewPort, computationType, stream);
+                    Log.Info($"Loaded point grid with resolution ({viewPort.Resolution.Width:N0}x{viewPort.Resolution.Height:N0}), " +
+                             $"Area {viewPort.Area}.");
+                    return new PointGrid(viewPort, computationType, stream);
                 }
             }
             catch (Exception)
@@ -57,12 +54,10 @@ namespace Buddhabrot.PointGrids
         }
 
         private PointGrid(
-            Size pointResolution,
-            ComplexArea viewPort,
+            ViewPort viewPort,
             ComputationType computationType,
             Stream pointStream)
         {
-            PointResolution = pointResolution;
             ViewPort = viewPort;
             ComputationType = computationType;
             _pointStream = pointStream;
@@ -90,9 +85,9 @@ namespace Buddhabrot.PointGrids
                     rowSegments.Add(segment);
                     totalLength += length;
 
-                    if (totalLength == PointResolution.Width)
+                    if (totalLength == ViewPort.Resolution.Width)
                     {
-                        yield return new PointRow(PointResolution.Width, y, rowSegments);
+                        yield return new PointRow(ViewPort.Resolution.Width, y, rowSegments);
                         rowSegments.Clear();
                         totalLength = 0;
                         y++;
@@ -105,8 +100,7 @@ namespace Buddhabrot.PointGrids
 
         public static void Write(
             string filePath,
-            Size pointResolution,
-            ComplexArea viewPort,
+            ViewPort viewPort,
             ComputationType computationType,
             IEnumerable<bool> pointsInSet)
         {
@@ -114,12 +108,11 @@ namespace Buddhabrot.PointGrids
             using (var writer = new BinaryWriter(stream, Encoding.ASCII))
             {
                 writer.Write(HeaderText);
-                writer.WriteSize(pointResolution);
-                writer.WriteComplexArea(viewPort);
+                writer.WriteViewPort(viewPort);
                 writer.Write((int)computationType);
 
                 int rowsWritten = 0;
-                foreach (var row in pointsInSet.Batch(pointResolution.Width))
+                foreach (var row in pointsInSet.Batch(viewPort.Resolution.Width))
                 {
                     bool inSet = false;
                     int length = 0;
@@ -147,23 +140,22 @@ namespace Buddhabrot.PointGrids
                     rowsWritten++;
                 }
 
-                if (rowsWritten != pointResolution.Height)
+                if (rowsWritten != viewPort.Resolution.Height)
                 {
-                    throw new ArgumentException($"Expected {pointResolution.Height} rows but only got {rowsWritten}.");
+                    throw new ArgumentException($"Expected {viewPort.Resolution.Height} rows but only got {rowsWritten}.");
                 }
             }
         }
 
         public static void Compute(
             string filePath,
-            Size pointResolution,
-            ComplexArea viewPort,
+            ViewPort viewPort,
             ComputationType computationType,
             CancellationToken token)
         {
             Log.Info($"Outputting to: {filePath}");
-            Log.Info($"Resolution: {pointResolution.Width:N0}x{pointResolution.Height:N0}");
-            Log.Info($"View port: {viewPort}");
+            Log.Info($"Resolution: {viewPort.Resolution.Width:N0}x{viewPort.Resolution.Height:N0}");
+            Log.Info($"Area: {viewPort.Area}");
             Log.Info($"Computation type: {computationType}");
 
             Func<Complex, bool> GetComputationMethod()
@@ -184,29 +176,27 @@ namespace Buddhabrot.PointGrids
 
             IEnumerable<bool> GetPointsInSet()
             {
-                var pointCalculator = new PositionCalculator(pointResolution, viewPort);
-
-                var pointsInSet = new bool[pointResolution.Width];
-                using (var progress = TimedOperation.Start("Computing point grid", totalWork: pointResolution.Area()))
+                var pointsInSet = new bool[viewPort.Resolution.Width];
+                using (var progress = TimedOperation.Start("Computing point grid", totalWork: viewPort.Resolution.Area()))
                 {
-                    for (int row = 0; row < pointResolution.Height; row++)
+                    for (int row = 0; row < viewPort.Resolution.Height; row++)
                     {
                         Parallel.For(
                             0,
-                            pointResolution.Width,
-                            col => pointsInSet[col] = isInSet(pointCalculator.GetPoint(col, row)));
+                            viewPort.Resolution.Width,
+                            col => pointsInSet[col] = isInSet(viewPort.GetComplex(col, row)));
 
-                        for (int x = 0; x < pointResolution.Width; x++)
+                        for (int x = 0; x < viewPort.Resolution.Width; x++)
                         {
                             yield return pointsInSet[x];
                         }
 
-                        progress.AddWorkDone(pointResolution.Width);
+                        progress.AddWorkDone(viewPort.Resolution.Width);
                     }
                 }
             }
 
-            Write(filePath, pointResolution, viewPort, computationType, GetPointsInSet());
+            Write(filePath, viewPort, computationType, GetPointsInSet());
         }
     }
 }

@@ -44,6 +44,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\ViewPortTests.cs" />
     <Compile Include="EdgeSpans\EdgeSpanTests.cs" />
     <Compile Include="EdgeSpans\EdgeSpanStreamTests.cs" />
     <Compile Include="IterationKernels\KernelTests.cs" />

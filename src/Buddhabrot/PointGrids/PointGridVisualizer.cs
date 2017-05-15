@@ -17,24 +17,22 @@ namespace Buddhabrot.PointGrids
             Log.Info($"Output image: {imageFilePath}");
 
             using (var grid = PointGrid.Load(gridFilePath))
-            using (var timer = TimedOperation.Start("Plotting point grid", totalWork: grid.PointResolution.Area()))
+            using (var timer = TimedOperation.Start("Plotting point grid", totalWork: grid.ViewPort.Resolution.Area()))
             {
-                var image = new FastImage(grid.PointResolution);
+                var image = new FastImage(grid.ViewPort.Resolution);
 
                 image.Fill(Color.White);
 
                 Parallel.ForEach(grid, row =>
                 {
-                    var y = grid.PointResolution.Height - row.Y - 1;
-
                     foreach (var setSegment in row.GetSegmentsInSet())
                     {
                         foreach (var x in Enumerable.Range(setSegment.StartCol, setSegment.Length))
                         {
-                            image.SetPixel(x, y, Color.Black);
+                            image.SetPixel(x, row.Y, Color.Black);
                         }
                     }
-                    timer.AddWorkDone(grid.PointResolution.Width);
+                    timer.AddWorkDone(grid.ViewPort.Resolution.Width);
                 });
 
                 image.Save(imageFilePath);

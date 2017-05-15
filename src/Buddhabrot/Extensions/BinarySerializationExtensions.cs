@@ -30,6 +30,14 @@ namespace Buddhabrot.Extensions
         }
         public static Size ReadSize(this BinaryReader reader) => new Size(reader.ReadInt32(), reader.ReadInt32());
 
+        public static void WriteViewPort(this BinaryWriter writer, ViewPort viewPort)
+        {
+            writer.WriteComplexArea(viewPort.Area);
+            writer.WriteSize(viewPort.Resolution);
+        }
+
+        public static ViewPort ReadViewPort(this BinaryReader reader) => new ViewPort(reader.ReadComplexArea(), reader.ReadSize());
+
         public static void WritePoint(this BinaryWriter writer, Point p)
         {
             writer.Write(p.X);

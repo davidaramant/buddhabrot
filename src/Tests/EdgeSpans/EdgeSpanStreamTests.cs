@@ -17,11 +17,12 @@ namespace Tests.EdgeSpans
             {
                 EdgeSpanStream.Write(
                     tempFile.Path,
-                    pointResolution: new Size(3, 3),
-                    viewPort: new ComplexArea(new DoubleRange(-1, 1), new DoubleRange(-1, 1)),
+                    viewPort: new ViewPort(
+                        new ComplexArea(new DoubleRange(-1, 1), new DoubleRange(-1, 1)),
+                        new Size(3, 3)),
                     spans: new[]
                     {
-                        new LogicalEdgeSpan(1,1,Direction.Up),
+                        new LogicalEdgeSpan(1,1,toOutside:Direction.Up),
                     });
 
                 using (var stream = EdgeSpanStream.Load(tempFile.Path))

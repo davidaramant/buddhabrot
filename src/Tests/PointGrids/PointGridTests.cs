@@ -40,9 +40,10 @@ namespace Tests.PointGrids
 
                 PointGrid.Write(
                     tempFile.Path,
-                    new Size(4, 4),
-                    new ComplexArea(new DoubleRange(-1, 1), new DoubleRange(-1, 1)),
-                    ComputationType.ScalarFloat, 
+                    new ViewPort(
+                        new ComplexArea(new DoubleRange(-1, 1), new DoubleRange(-1, 1)),
+                        new Size(4, 4)),
+                    ComputationType.ScalarFloat,
                     pointsInSet);
 
                 using (var pointGrid = PointGrid.Load(tempFile.Path))

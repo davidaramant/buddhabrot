@@ -29,13 +29,11 @@ namespace Buddhabrot.EdgeSpans
             {
                 var scale = showDirections ? 3 : 1;
 
-                var resolution = spans.PointResolution.Scale(scale);
+                var resolution = spans.ViewPort.Resolution.Scale(scale);
 
                 var image = new FastImage(resolution);
 
                 image.Fill(Color.White);
-
-                Point CorrectLocation(Point p) => new Point(p.X, resolution.Height - p.Y - 1);
 
                 Parallel.ForEach(spans, locatedSpan =>
                 {
@@ -47,7 +45,7 @@ namespace Buddhabrot.EdgeSpans
                             for (int xDelta = 0; xDelta < 3; xDelta++)
                             {
                                 image.SetPixel(
-                                    CorrectLocation(scaledLocation.OffsetBy(xDelta, yDelta)),
+                                    scaledLocation.OffsetBy(xDelta, yDelta),
                                     (locatedSpan.Location.X + locatedSpan.Location.Y) % 2 == 1 ? Color.Black : Color.Gray);
                             }
                         }
@@ -55,7 +53,7 @@ namespace Buddhabrot.EdgeSpans
                     else
                     {
                         image.SetPixel(
-                            CorrectLocation(locatedSpan.Location),
+                            locatedSpan.Location,
                             Color.Black);
                     }
                 });
@@ -68,7 +66,7 @@ namespace Buddhabrot.EdgeSpans
                         var pointingTo = scaledLocation.OffsetBy(1, 1).OffsetIn(locatedSpan.Direction);
 
                         image.SetPixel(
-                            CorrectLocation(pointingTo),
+                            pointingTo,
                             Color.Red);
 
                     });
@@ -103,16 +101,14 @@ namespace Buddhabrot.EdgeSpans
 
                 var image = new FastImage(resolution);
 
-                var viewPort = GetEdgeSpanViewPort(span);
+                var viewPort = new ViewPort(GetArea(span), resolution);
                 Log.Info($"View port: {viewPort}");
-
-                var positionCalculator = new PositionCalculator(resolution, viewPort);
 
                 Point CorrectLocation(Point p) => new Point(p.X, resolution.Height - p.Y - 1);
 
 
-                var positionInSet = positionCalculator.GetPosition(span.InSet);
-                var positionNotInSet = positionCalculator.GetPosition(span.NotInSet);
+                var positionInSet = viewPort.GetPosition(span.InSet);
+                var positionNotInSet = viewPort.GetPosition(span.NotInSet);
 
                 var highlightPixelRadius = 10.0;
 
@@ -123,7 +119,7 @@ namespace Buddhabrot.EdgeSpans
                         {
                             var position = new Point(col, row);
 
-                            var c = positionCalculator.GetPoint(position);
+                            var c = viewPort.GetComplex(position);
                             var imagePosition = CorrectLocation(position);
 
 
@@ -150,7 +146,7 @@ namespace Buddhabrot.EdgeSpans
             }
         }
 
-        private static ComplexArea GetEdgeSpanViewPort(EdgeSpan span)
+        private static ComplexArea GetArea(EdgeSpan span)
         {
             var middle = span.GetMidPoint();
 
@@ -174,8 +170,7 @@ namespace Buddhabrot.EdgeSpans
 
             return new ComplexArea(
                 realRange: new DoubleRange(middle.Real - halfPaddedLength, middle.Real + halfPaddedLength),
-                imagRange: new DoubleRange(middle.Imaginary - halfPaddedLength,
-                    middle.Imaginary + halfPaddedLength));
+                imagRange: new DoubleRange(middle.Imaginary - halfPaddedLength, middle.Imaginary + halfPaddedLength));
         }
     }
 }

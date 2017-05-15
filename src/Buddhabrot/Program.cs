@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.PointGrids;
@@ -46,13 +47,14 @@ namespace Buddhabrot
                 [ArgDescription("Use floats instead of doubles."), ArgDefaultValue(true)] bool useDoubles,
                 [ArgDescription("The directory for the resulting grid file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
             {
-                var size = new Size(resolution, resolution / 2);
-                var viewPort = Constant.RenderingArea.GetPositiveImagArea();
                 var computationType = useDoubles ? ComputationType.ScalarDouble : ComputationType.ScalarFloat;
+
+                var viewPort = new ViewPort(
+                    Constant.RenderingArea.GetPositiveImagArea(),
+                    new Size(resolution, resolution / 2));
 
                 PointGrid.Compute(
                     Path.Combine(outputPath, $"pointGrid_{resolution}_{computationType}"),
-                    size,
                     viewPort,
                     computationType,
                     _token);

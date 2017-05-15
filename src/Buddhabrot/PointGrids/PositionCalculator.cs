@@ -25,6 +25,8 @@ namespace Buddhabrot.PointGrids
         public Complex GetPoint(int x, int y) => new Complex(GetRealValue(x), GetImagValue(y));
         public Complex GetPoint(Point position) => GetPoint(position.X, position.Y);
 
-        public Point GetPosition(Complex c) => new Point((int)(c.Real / RealIncrement), (int)(c.Imaginary / ImagIncrement));
+        public Point GetPosition(Complex c) => new Point(
+            (int)((c.Real - _viewPort.RealRange.InclusiveMin) / RealIncrement),
+            (int)((c.Imaginary - _viewPort.ImagRange.InclusiveMin) / ImagIncrement));
     }
 }

@@ -110,10 +110,13 @@ namespace Buddhabrot.EdgeSpans
                 Point CorrectLocation(Point p) => new Point(p.X, resolution.Height - p.Y - 1);
 
                 var spanLength = span.Length();
-                var highlightSize = spanLength * 0.005;
-                var highlightSizeSquared = highlightSize * highlightSize;
 
                 Log.Info($"Edge span length: {spanLength}");
+
+                var positionInSet = positionCalculator.GetPosition(span.InSet);
+                var positionNotInSet = positionCalculator.GetPosition(span.NotInSet);
+
+                var highlightPixelRadius = 10.0;
 
                 for (int row = 0; row < resolution.Height; row++)
                 {
@@ -128,11 +131,10 @@ namespace Buddhabrot.EdgeSpans
 
                             Color PickColor()
                             {
-                                // TODO: Change this to be based on the pixel position, not the complex number
-                                if ((c - span.InSet).MagnitudeSquared() < highlightSizeSquared)
+                                if (position.DistanceSquaredFrom(positionInSet) <= highlightPixelRadius)
                                     return Color.Red;
 
-                                if ((c - span.NotInSet).MagnitudeSquared() < highlightSizeSquared)
+                                if (position.DistanceSquaredFrom(positionNotInSet) <= highlightPixelRadius)
                                     return Color.Green;
 
                                 var isInSet = ScalarDoubleKernel.FindEscapeTime(c).IsInfinite;

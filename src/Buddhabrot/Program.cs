@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.PointGrids;
-using Buddhabrot.Points;
 using Buddhabrot.Utility;
-using Humanizer;
 using PowerArgs;
 
 namespace Buddhabrot

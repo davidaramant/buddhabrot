@@ -3,35 +3,35 @@ using Buddhabrot.Core;
 
 namespace Buddhabrot.IterationKernels
 {
-    public sealed class VectorFloatKernel
+    public static class VectorDoubleKernel
     {
-        public static int VectorCapacity => Vector<float>.Count;
+        public static int VectorCapacity => Vector<double>.Count;
 
-        public static void FindEscapeTimes(float[] cReals, float[] cImags, int maxIterations, EscapeTime[] escapeTimes)
+        public static void FindEscapeTimes(double[] cReals, double[] cImags, int maxIterations, EscapeTime[] escapeTimes)
         {
-            var cReal = new Vector<float>(cReals);
-            var cImag = new Vector<float>(cImags);
+            var cReal = new Vector<double>(cReals);
+            var cImag = new Vector<double>(cImags);
 
             var vIterations = IteratePoints(cReal, cImag, maxIterations);
 
             for (int i = 0; i < VectorCapacity; i++)
             {
-                escapeTimes[i] = EscapeTime.Choose(vIterations[i]);
+                escapeTimes[i] = EscapeTime.Choose((int)vIterations[i]);
             }
         }
 
-        public static Vector<int> IteratePoints(Vector<float> cReal, Vector<float> cImag, int maxIterations)
+        public static Vector<long> IteratePoints(Vector<double> cReal, Vector<double> cImag, long maxIterations)
         {
-            var zReal = new Vector<float>(0);
-            var zImag = new Vector<float>(0);
+            var zReal = new Vector<double>(0);
+            var zImag = new Vector<double>(0);
 
             // Cache the squares
             // They are used to find the magnitude; reuse these values when computing the next re/im
-            var zReal2 = new Vector<float>(0);
-            var zImag2 = new Vector<float>(0);
+            var zReal2 = new Vector<double>(0);
+            var zImag2 = new Vector<double>(0);
 
-            var iterations = Vector<int>.Zero;
-            var increment = Vector<int>.One;
+            var iterations = Vector<long>.Zero;
+            var increment = Vector<long>.One;
 
             for (int i = 0; i < maxIterations; i++)
             {
@@ -43,7 +43,7 @@ namespace Buddhabrot.IterationKernels
                 zReal2 = zReal * zReal;
                 zImag2 = zImag * zImag;
 
-                var shouldContinue = Vector.LessThanOrEqual(zReal2 + zImag2, new Vector<float>(4));
+                var shouldContinue = Vector.LessThanOrEqual(zReal2 + zImag2, new Vector<double>(4));
 
                 increment = increment & shouldContinue;
                 iterations += increment;
@@ -53,4 +53,3 @@ namespace Buddhabrot.IterationKernels
         }
     }
 }
-

@@ -43,11 +43,12 @@ namespace Buddhabrot
             [ArgActionMethod, ArgDescription("Computes a point grid.")]
             public void ComputePointGrid(
                 [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
-                [ArgDescription("The type of computations to do.")] KernelType computationType,
+                [ArgDescription("Use floats instead of doubles."), ArgDefaultValue(true)] bool useDoubles,
                 [ArgDescription("The directory for the resulting grid file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
             {
                 var size = new Size(resolution, resolution / 2);
                 var viewPort = Constant.RenderingArea.GetPositiveImagArea();
+                var computationType = useDoubles ? ComputationType.ScalarDouble : ComputationType.ScalarFloat;
 
                 PointGrid.Compute(
                     Path.Combine(outputPath, $"pointGrid_{resolution}_{computationType}"),
@@ -99,9 +100,10 @@ namespace Buddhabrot
             [ArgActionMethod, ArgDescription("Renders a single edge span to an image.")]
             public void PlotEdgeSpan(
                 [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath,
-                [ArgDescription("The index of the edge span to visualize.  If negative, a random one will be chosen."), ArgDefaultValue(-1)] int index)
+                [ArgDescription("The index of the edge span to visualize.  If negative, a random one will be chosen."), ArgDefaultValue(-1)] int index,
+                [ArgDescription("Resolution of the image (it will be squared)"), ArgDefaultValue(1024)] int sideResolution)
             {
-                EdgeSpanVisualizer.RenderSingleSpan(edgeSpansFilePath, index);
+                EdgeSpanVisualizer.RenderSingleSpan(edgeSpansFilePath, index, sideResolution);
             }
 
             //[ArgActionMethod, ArgDescription("Finds points.")]

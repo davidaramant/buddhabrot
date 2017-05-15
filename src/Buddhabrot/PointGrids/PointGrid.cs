@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace Buddhabrot.PointGrids
 
         public Size PointResolution { get; }
         public ComplexArea ViewPort { get; }
-        public KernelType ComputationType { get; }
+        public ComputationType ComputationType { get; }
 
         private readonly Stream _pointStream;
         private readonly long _pointsPosition;
@@ -42,7 +43,7 @@ namespace Buddhabrot.PointGrids
 
                     var size = reader.ReadSize();
                     var viewPort = reader.ReadComplexArea();
-                    var computationType = (KernelType)reader.ReadInt32();
+                    var computationType = (ComputationType)reader.ReadInt32();
                     Log.Info($"Loaded point grid with resolution ({size.Width:N0}x{size.Height:N0}), " +
                              $"view port {viewPort}.");
                     return new PointGrid(size, viewPort, computationType, stream);
@@ -58,7 +59,7 @@ namespace Buddhabrot.PointGrids
         private PointGrid(
             Size pointResolution,
             ComplexArea viewPort,
-            KernelType computationType,
+            ComputationType computationType,
             Stream pointStream)
         {
             PointResolution = pointResolution;
@@ -106,7 +107,7 @@ namespace Buddhabrot.PointGrids
             string filePath,
             Size pointResolution,
             ComplexArea viewPort,
-            KernelType computationType,
+            ComputationType computationType,
             IEnumerable<bool> pointsInSet)
         {
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -157,13 +158,29 @@ namespace Buddhabrot.PointGrids
             string filePath,
             Size pointResolution,
             ComplexArea viewPort,
-            KernelType computationType,
+            ComputationType computationType,
             CancellationToken token)
         {
             Log.Info($"Outputting to: {filePath}");
             Log.Info($"Resolution: {pointResolution.Width:N0}x{pointResolution.Height:N0}");
             Log.Info($"View port: {viewPort}");
             Log.Info($"Computation type: {computationType}");
+
+            Func<Complex, bool> GetComputationMethod()
+            {
+                switch (computationType)
+                {
+                    case ComputationType.ScalarDouble:
+                        return c => ScalarDoubleKernel.FindEscapeTime(c).IsInfinite;
+                    case ComputationType.ScalarFloat:
+                        return c => ScalarFloatKernel.FindEscapeTime(c).IsInfinite;
+                    default:
+                        throw new ArgumentException("Unsupported computation type for this operation: " + computationType);
+                }
+            }
+
+            Func<Complex, bool> isInSet = GetComputationMethod();
+
 
             IEnumerable<bool> GetPointsInSet()
             {
@@ -177,8 +194,7 @@ namespace Buddhabrot.PointGrids
                         Parallel.For(
                             0,
                             pointResolution.Width,
-                            col => pointsInSet[col] = ScalarDoubleKernel
-                                .FindEscapeTime(pointCalculator.GetPoint(col, row)).IsInfinite);
+                            col => pointsInSet[col] = isInSet(pointCalculator.GetPoint(col, row)));
 
                         for (int x = 0; x < pointResolution.Width; x++)
                         {

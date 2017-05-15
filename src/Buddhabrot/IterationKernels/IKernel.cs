@@ -4,7 +4,7 @@ namespace Buddhabrot.IterationKernels
 {
     public interface IKernel : IDisposable
     {
-        KernelType Type { get; }
+        ComputationType Type { get; }
         IPointBatch GetBatch();
     }
 }

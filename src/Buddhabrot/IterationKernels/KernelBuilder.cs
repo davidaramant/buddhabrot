@@ -5,22 +5,6 @@ namespace Buddhabrot.IterationKernels
 {
     public static class KernelBuilder
     {
-        public static IKernel Build(KernelType type)
-        {
-            switch (type)
-            {
-                case KernelType.ScalarFloat:
-                    return new ScalarFloatKernel();
-                case KernelType.ScalarDouble:
-                    return new ScalarDoubleKernel();
-                case KernelType.VectorFloat:
-                    return new VectorFloatKernel();
-                default:
-                    throw new ArgumentException($"Unsupported kernel type: {type}");
-            }
-        }
-
-
         //public IKernel BuildOpenCL()
         //{
         //    return null;

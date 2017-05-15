@@ -1,6 +1,6 @@
 ﻿namespace Buddhabrot.IterationKernels
 {
-    public enum KernelType
+    public enum ComputationType
     {
         ScalarFloat,
         ScalarDouble,

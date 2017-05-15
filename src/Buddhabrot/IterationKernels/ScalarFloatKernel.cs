@@ -1,94 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using Buddhabrot.Core;
 
 namespace Buddhabrot.IterationKernels
 {
-    public sealed class ScalarFloatKernel : IKernel
+    [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Cycle detection requires direct float comparisons.")]
+    public sealed class ScalarFloatKernel 
     {
-        public KernelType Type => KernelType.ScalarFloat;
-        private const int BatchSize = 2048;
-        private readonly Batch _pointBatch;
-
-        public ScalarFloatKernel()
-        {
-            _pointBatch = new Batch(BatchSize);
-        }
-
-        public IPointBatch GetBatch() => _pointBatch.Reset();
-
-        private sealed class Batch : IPointBatch, IPointBatchResults
-        {
-            private readonly Complex[] _c;
-            private readonly EscapeTime[] _iterations;
-
-            public int Capacity => _iterations.Length;
-            public int Count { get; private set; }
-
-            public Batch(int capacity)
-            {
-                _c = new Complex[capacity];
-                _iterations = new EscapeTime[capacity];
-            }
-
-            public Batch Reset()
-            {
-                Count = 0;
-                return this;
-            }
-
-            public void AddPoint(Complex c)
-            {
-                _c[Count++] = c;
-            }
-
-            public void AddPoints(IEnumerable<Complex> points)
-            {
-                foreach (var point in points)
-                {
-                    _c[Count] = point;
-                    Count++;
-                }
-            }
-
-            public Complex GetPoint(int index) => _c[index];
-
-            public EscapeTime GetIteration(int index) => _iterations[index];
-
-            public IPointBatchResults ComputeIterations(CancellationToken token)
-            {
-                Parallel.For(
-                    0,
-                    Count,
-                    (index, loopState) =>
-                    {
-                        if (token.IsCancellationRequested || loopState.ShouldExitCurrentIteration)
-                        {
-                            loopState.Stop();
-                            return;
-                        }
-                        _iterations[index] = FindEscapeTime(_c[index]);
-                    });
-
-                return this;
-            }
-
-            public IEnumerable<(Complex Point, EscapeTime Iterations)> GetAllResults()
-            {
-                for (int i = 0; i < Count; i++)
-                {
-                    yield return (_c[i], _iterations[i]);
-                }
-            }
-        }
-
-        public void Dispose() { }
-
-        /// <summary>
+       /// <summary>
         /// Determines whether the point is in the set, without using an arbitrary iteration limit.
         /// </summary>
         /// <param name="c">The c.</param>
@@ -98,7 +17,6 @@ namespace Buddhabrot.IterationKernels
         /// <returns>
         /// The <see cref="EscapeTime"/> of the point.
         /// </returns>
-        [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator",Justification = "Cycle detection requires direct floating point comparisons.")]
         public static EscapeTime FindEscapeTime(Complex c)
         {
             if (MandelbulbChecker.IsInsideBulbs(c))
@@ -144,6 +62,53 @@ namespace Buddhabrot.IterationKernels
             }
 
             return EscapeTime.Discrete(iterations);
+        }
+
+        public static EscapeTime FindEscapeTime(Complex c, int maxIterations)
+        {
+            if (MandelbulbChecker.IsInsideBulbs(c))
+                return EscapeTime.Infinite;
+
+            var zReal = 0.0f;
+            var zImag = 0.0f;
+
+            var z2Real = 0.0f;
+            var z2Imag = 0.0f;
+
+            var oldZReal = 0.0f;
+            var oldZImag = 0.0f;
+
+            int stepsTaken = 0;
+            int stepLimit = 2;
+
+            for (int i = 0; i < maxIterations; i++)
+            {
+                stepsTaken++;
+
+                zImag = 2 * zReal * zImag + (float)c.Imaginary;
+                zReal = z2Real - z2Imag + (float)c.Real;
+
+                if (oldZReal == zReal && oldZImag == zImag)
+                    return EscapeTime.Infinite;
+
+                z2Real = zReal * zReal;
+                z2Imag = zImag * zImag;
+
+                if ((z2Real + z2Imag) > 4)
+                {
+                    return EscapeTime.Discrete(i);
+                }
+
+                if (stepsTaken == stepLimit)
+                {
+                    oldZReal = zReal;
+                    oldZImag = zImag;
+                    stepsTaken = 0;
+                    stepLimit = stepLimit << 1;
+                }
+            }
+
+            return EscapeTime.Infinite;
         }
     }
 }

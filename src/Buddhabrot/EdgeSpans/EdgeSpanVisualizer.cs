@@ -78,9 +78,9 @@ namespace Buddhabrot.EdgeSpans
             }
         }
 
-        public static void RenderSingleSpan(string edgeSpansPath, int spanIndex)
+        public static void RenderSingleSpan(string edgeSpansPath, int spanIndex, int sideResolution)
         {
-            var resolution = new Size(1024, 1024);
+            var resolution = new Size(sideResolution, sideResolution);
 
             using (var spans = EdgeSpanStream.Load(edgeSpansPath))
             using (var timer = TimedOperation.Start("Rendering edge span", reportProgress: true, totalWork: resolution.Area()))
@@ -91,14 +91,15 @@ namespace Buddhabrot.EdgeSpans
 
                 var imageFilePath = Path.Combine(
                     Path.GetDirectoryName(edgeSpansPath),
-                    Path.GetFileNameWithoutExtension(edgeSpansPath) + $"_{index}.png");
+                    Path.GetFileNameWithoutExtension(edgeSpansPath) + $"_{index}_{sideResolution}x{sideResolution}.png");
 
                 Log.Info($"Using edge span index {index:N0}");
                 Log.Info($"Output file: {imageFilePath}");
 
                 var span = spans.ElementAt(index).Span;
+                var spanLength = span.Length();
 
-                Log.Info($"Edge span: {span}");
+                Log.Info($"Edge span: {span} (length: {spanLength})");
 
                 var image = new FastImage(resolution);
 
@@ -109,9 +110,6 @@ namespace Buddhabrot.EdgeSpans
 
                 Point CorrectLocation(Point p) => new Point(p.X, resolution.Height - p.Y - 1);
 
-                var spanLength = span.Length();
-
-                Log.Info($"Edge span length: {spanLength}");
 
                 var positionInSet = positionCalculator.GetPosition(span.InSet);
                 var positionNotInSet = positionCalculator.GetPosition(span.NotInSet);
@@ -137,7 +135,7 @@ namespace Buddhabrot.EdgeSpans
                                 if (position.DistanceSquaredFrom(positionNotInSet) <= highlightPixelRadius)
                                     return Color.Green;
 
-                                var isInSet = ScalarDoubleKernel.FindEscapeTime(c).IsInfinite;
+                                var isInSet = ScalarDoubleKernel.FindEscapeTime(c, 30_000_000).IsInfinite;
                                 return isInSet ? Color.Black : Color.White;
                             }
 

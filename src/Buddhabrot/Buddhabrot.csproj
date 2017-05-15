@@ -66,6 +66,7 @@
     <Compile Include="Core\EscapeTime.cs" />
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
+    <Compile Include="IterationKernels\VectorDoubleKernel.cs" />
     <Compile Include="PointGrids\RowSetSegment.cs" />
     <Compile Include="Utility\TimedOperation.cs" />
     <Compile Include="EdgeSpans\EdgeSpanVisualizer.cs" />
@@ -75,7 +76,7 @@
     <Compile Include="EdgeSpans\EdgeSpan.cs" />
     <Compile Include="EdgeSpans\LogicalEdgeSpan.cs" />
     <Compile Include="Extensions\ComplexExtensions.cs" />
-    <Compile Include="IterationKernels\KernelType.cs" />
+    <Compile Include="IterationKernels\ComputationType.cs" />
     <Compile Include="IterationKernels\ScalarFloatKernel.cs" />
     <Compile Include="PointGrids\PointGrid.cs" />
     <Compile Include="PointGrids\PointGridVisualizer.cs" />

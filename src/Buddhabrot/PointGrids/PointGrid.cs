@@ -163,9 +163,9 @@ namespace Buddhabrot.PointGrids
                 switch (computationType)
                 {
                     case ComputationType.ScalarDouble:
-                        return c => ScalarDoubleKernel.FindEscapeTime(c).IsInfinite;
+                        return c => ScalarDoubleKernel.FindEscapeTime(c, Constant.IterationRange.Max).IsInfinite;
                     case ComputationType.ScalarFloat:
-                        return c => ScalarFloatKernel.FindEscapeTime(c).IsInfinite;
+                        return c => ScalarFloatKernel.FindEscapeTime(c, Constant.IterationRange.Max).IsInfinite;
                     default:
                         throw new ArgumentException("Unsupported computation type for this operation: " + computationType);
                 }
@@ -177,7 +177,7 @@ namespace Buddhabrot.PointGrids
             IEnumerable<bool> GetPointsInSet()
             {
                 var pointsInSet = new bool[viewPort.Resolution.Width];
-                using (var progress = TimedOperation.Start("Computing point grid", totalWork: viewPort.Resolution.Area()))
+                using (var progress = TimedOperation.Start("points", totalWork: viewPort.Resolution.Area()))
                 {
                     for (int row = 0; row < viewPort.Resolution.Height; row++)
                     {

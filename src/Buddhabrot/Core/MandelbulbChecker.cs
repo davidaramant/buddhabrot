@@ -34,7 +34,8 @@ namespace Buddhabrot.Core
             return
                 IsInsideCircle(new Complex(-1, 0), 0.25, number) ||
                 IsInsideCircle(new Complex(-0.125, 0.744), 0.092, number) ||
-                IsInsideCircle(new Complex(-0.125, -0.744), 0.092, number) ||
+                // Ignore stuff on the negative imaginary side
+                //IsInsideCircle(new Complex(-0.125, -0.744), 0.092, number) ||
                 IsInsideCircle(new Complex(-1.308, 0), 0.058, number);
         }
 

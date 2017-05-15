@@ -17,7 +17,7 @@ namespace Buddhabrot.PointGrids
             Log.Info($"Output image: {imageFilePath}");
 
             using (var grid = PointGrid.Load(gridFilePath))
-            using (var timer = TimedOperation.Start("Plotting point grid", totalWork: grid.ViewPort.Resolution.Area()))
+            using (var timer = TimedOperation.Start("points", totalWork: grid.ViewPort.Resolution.Area()))
             {
                 var image = new FastImage(grid.ViewPort.Resolution);
 

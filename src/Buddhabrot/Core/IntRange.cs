@@ -2,12 +2,12 @@
 {
     public sealed class IntRange
     {
-        public long Min { get; }
-        public long Max { get; }
-        public long StepSize { get; }
+        public int Min { get; }
+        public int Max { get; }
+        public int StepSize { get; }
         public bool ExclusiveMax { get; }
 
-        public IntRange(long min, long max, long stepSize = 1, bool maxIsExclusive = true)
+        public IntRange(int min, int max, int stepSize = 1, bool maxIsExclusive = true)
         {
             Min = min;
             Max = max;
@@ -15,7 +15,7 @@
             ExclusiveMax = maxIsExclusive;
         }
 
-        public bool IsInside(long value) =>
+        public bool IsInside(int value) =>
             value >= Min &&
             (ExclusiveMax ? value < Max : value <= Max);
 

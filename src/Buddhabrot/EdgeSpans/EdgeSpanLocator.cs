@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Buddhabrot.Core;
 using Buddhabrot.PointGrids;
@@ -18,7 +16,7 @@ namespace Buddhabrot.EdgeSpans
             string outputFilePath)
         {
             using (var pointGrid = PointGrid.Load(pointGridFilePath))
-            using (var timer = TimedOperation.Start("Finding edge spans", totalWork: pointGrid.ViewPort.Resolution.Height))
+            using (var timer = TimedOperation.Start("points", totalWork: pointGrid.ViewPort.Resolution.Height))
             {
                 EdgeSpanStream.Write(
                     outputFilePath,

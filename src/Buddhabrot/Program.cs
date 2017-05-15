@@ -89,18 +89,15 @@ namespace Buddhabrot
                 [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath,
                 [ArgDescription("Shows the directions of the edges."), ArgDefaultValue(false)] bool showDirections)
             {
-                using (TimedOperation.Start("Plotting edge spans"))
-                {
-                    var imageFilePath = Path.Combine(
-                        Path.GetDirectoryName(edgeSpansFilePath),
-                        Path.GetFileNameWithoutExtension(edgeSpansFilePath) + (showDirections ? ".withDirections" : "") + ".png");
+                var imageFilePath = Path.Combine(
+                    Path.GetDirectoryName(edgeSpansFilePath),
+                    Path.GetFileNameWithoutExtension(edgeSpansFilePath) + (showDirections ? ".withDirections" : "") + ".png");
 
-                    EdgeSpanVisualizer.RenderAllSpans(edgeSpansFilePath, imageFilePath, showDirections);
-                }
+                EdgeSpanVisualizer.RenderAllSpans(edgeSpansFilePath, imageFilePath, showDirections);
             }
 
             [ArgActionMethod, ArgDescription("Renders a single edge span to an image.")]
-            public void PlotEdgeSpan(
+            public void PlotSingleEdgeSpan(
                 [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath,
                 [ArgDescription("The index of the edge span to visualize.  If negative, a random one will be chosen."), ArgDefaultValue(-1)] int index,
                 [ArgDescription("Resolution of the image (it will be squared)"), ArgDefaultValue(1024)] int sideResolution)

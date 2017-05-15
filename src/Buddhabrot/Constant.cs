@@ -2,7 +2,7 @@
 
 namespace Buddhabrot
 {
-    static class Constant
+    public static class Constant
     {
         // The upper range is hard-coded in the OpenCL kernel
         public static readonly IntRange IterationRange = new IntRange(20_000_000, 30_000_000);

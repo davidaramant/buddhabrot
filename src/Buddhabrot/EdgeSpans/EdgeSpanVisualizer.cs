@@ -7,7 +7,6 @@ using Buddhabrot.Core;
 using Buddhabrot.Extensions;
 using Buddhabrot.Images;
 using Buddhabrot.IterationKernels;
-using Buddhabrot.PointGrids;
 using Buddhabrot.Utility;
 using log4net;
 
@@ -26,6 +25,7 @@ namespace Buddhabrot.EdgeSpans
             }
 
             using (var spans = EdgeSpanStream.Load(edgeSpansPath))
+            using (var timer = TimedOperation.Start("edge spans", totalWork: showDirections ? spans.Count * 2 : spans.Count))
             {
                 var scale = showDirections ? 3 : 1;
 
@@ -56,6 +56,7 @@ namespace Buddhabrot.EdgeSpans
                             locatedSpan.Location,
                             Color.Black);
                     }
+                    timer.AddWorkDone(1);
                 });
 
                 if (showDirections)
@@ -69,6 +70,7 @@ namespace Buddhabrot.EdgeSpans
                             pointingTo,
                             Color.Red);
 
+                        timer.AddWorkDone(1);
                     });
                 }
 
@@ -81,7 +83,7 @@ namespace Buddhabrot.EdgeSpans
             var resolution = new Size(sideResolution, sideResolution);
 
             using (var spans = EdgeSpanStream.Load(edgeSpansPath))
-            using (var timer = TimedOperation.Start("Rendering edge span", reportProgress: true, totalWork: resolution.Area()))
+            using (var timer = TimedOperation.Start("points", totalWork: resolution.Area()))
             {
                 var random = new Random();
 
@@ -104,8 +106,6 @@ namespace Buddhabrot.EdgeSpans
                 var viewPort = new ViewPort(GetArea(span), resolution);
                 Log.Info($"View port: {viewPort}");
 
-                Point CorrectLocation(Point p) => new Point(p.X, resolution.Height - p.Y - 1);
-
 
                 var positionInSet = viewPort.GetPosition(span.InSet);
                 var positionNotInSet = viewPort.GetPosition(span.NotInSet);
@@ -120,8 +120,6 @@ namespace Buddhabrot.EdgeSpans
                             var position = new Point(col, row);
 
                             var c = viewPort.GetComplex(position);
-                            var imagePosition = CorrectLocation(position);
-
 
                             Color PickColor()
                             {
@@ -131,12 +129,12 @@ namespace Buddhabrot.EdgeSpans
                                 if (position.DistanceSquaredFrom(positionNotInSet) <= highlightPixelRadius)
                                     return Color.Green;
 
-                                var isInSet = ScalarDoubleKernel.FindEscapeTime(c, 30_000_000).IsInfinite;
-                                return isInSet ? Color.Black : Color.White;
+                                var isInSet = ScalarDoubleKernel.FindEscapeTime(c, Constant.IterationRange.Max).IsInfinite;
+                                return isInSet ? Color.FromArgb(0x20, 0x20, 0x20) : Color.White;
                             }
 
 
-                            image.SetPixel(imagePosition, PickColor());
+                            image.SetPixel(position, PickColor());
                         });
 
                     timer.AddWorkDone(resolution.Width);

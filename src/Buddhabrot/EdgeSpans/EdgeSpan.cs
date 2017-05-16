@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Buddhabrot.IterationKernels;
 
 namespace Buddhabrot.EdgeSpans
 {
@@ -31,5 +32,28 @@ namespace Buddhabrot.EdgeSpans
         }
 
         public override string ToString() => $"(In Set: {InSet}, Not in Set: {NotInSet})";
+
+        public Complex FindBoundaryPoint(int iterationlimit) => FindBoundaryPoint(this, iterationlimit);
+
+        public static Complex FindBoundaryPoint(EdgeSpan span, int iterationLimit)
+        {
+            double lastLength = 0;
+            while (true)
+            {
+                var length = span.Length();
+                if (length == lastLength)
+                {
+                    return span.NotInSet;
+                }
+                lastLength = length;
+                var middle = span.GetMidPoint();
+
+                var escapeTime = ScalarDoubleKernel.FindEscapeTime(middle, iterationLimit);
+
+                span = escapeTime.IsInfinite
+                    ? new EdgeSpan(middle, span.NotInSet)
+                    : new EdgeSpan(span.InSet, middle);
+            }
+        }
     }
 }

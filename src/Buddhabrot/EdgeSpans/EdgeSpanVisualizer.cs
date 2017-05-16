@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;
@@ -110,7 +111,11 @@ namespace Buddhabrot.EdgeSpans
                 var positionInSet = viewPort.GetPosition(span.InSet);
                 var positionNotInSet = viewPort.GetPosition(span.NotInSet);
 
-                var highlightPixelRadius = 10.0;
+                var highlightPixelRadius = resolution.Width / 100;
+
+                var borderPoint = span.FindPointClosestToEdge(Constant.IterationRange.Max);
+                Log.Info($"Border point: {borderPoint} (escape time: {ScalarDoubleKernel.FindEscapeTime(borderPoint)})");
+                var borderPointPosition = viewPort.GetPosition(borderPoint);
 
                 for (int row = 0; row < resolution.Height; row++)
                 {
@@ -127,7 +132,10 @@ namespace Buddhabrot.EdgeSpans
                                     return Color.Red;
 
                                 if (position.DistanceSquaredFrom(positionNotInSet) <= highlightPixelRadius)
-                                    return Color.Green;
+                                    return Color.ForestGreen;
+
+                                if (position.DistanceSquaredFrom(borderPointPosition) <= highlightPixelRadius)
+                                    return Color.Fuchsia;
 
                                 var isInSet = ScalarDoubleKernel.FindEscapeTime(c, Constant.IterationRange.Max).IsInfinite;
                                 return isInSet ? Color.FromArgb(0x20, 0x20, 0x20) : Color.White;

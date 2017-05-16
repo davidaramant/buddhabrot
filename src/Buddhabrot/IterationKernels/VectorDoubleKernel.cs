@@ -5,7 +5,7 @@ namespace Buddhabrot.IterationKernels
 {
     public static class VectorDoubleKernel
     {
-        public static int VectorCapacity => Vector<double>.Count;
+        public static int Capacity => Vector<double>.Count;
 
         public static void FindEscapeTimes(double[] cReals, double[] cImags, int maxIterations, EscapeTime[] escapeTimes)
         {
@@ -14,7 +14,7 @@ namespace Buddhabrot.IterationKernels
 
             var vIterations = IteratePoints(cReal, cImag, maxIterations);
 
-            for (int i = 0; i < VectorCapacity; i++)
+            for (int i = 0; i < Capacity; i++)
             {
                 escapeTimes[i] = EscapeTime.Choose((int)vIterations[i]);
             }

@@ -158,11 +158,11 @@ namespace Buddhabrot.PointGrids
             Log.Info($"Area: {viewPort.Area}");
             Log.Info($"Computation type: {computationType}");
 
-            var kernel = KernelBuilder.BuildScalarKernel(computationType);
-
-            IEnumerable<bool> GetPointsInSet()
+            IEnumerable<bool> GetPointsInSetScalar()
             {
-                var pointsInSet = new bool[viewPort.Resolution.Width];
+                var kernel = KernelBuilder.BuildScalarKernel(computationType);
+
+                var rowPointsInSet = new bool[viewPort.Resolution.Width];
                 using (var progress = TimedOperation.Start("points", totalWork: viewPort.Resolution.Area()))
                 {
                     for (int row = 0; row < viewPort.Resolution.Height; row++)
@@ -170,11 +170,11 @@ namespace Buddhabrot.PointGrids
                         Parallel.For(
                             0,
                             viewPort.Resolution.Width,
-                            col => pointsInSet[col] = kernel.FindEscapeTime(viewPort.GetComplex(col, row), Constant.IterationRange.Max).IsInfinite);
+                            col => rowPointsInSet[col] = kernel.FindEscapeTime(viewPort.GetComplex(col, row), Constant.IterationRange.Max).IsInfinite);
 
                         for (int x = 0; x < viewPort.Resolution.Width; x++)
                         {
-                            yield return pointsInSet[x];
+                            yield return rowPointsInSet[x];
                         }
 
                         progress.AddWorkDone(viewPort.Resolution.Width);
@@ -182,7 +182,76 @@ namespace Buddhabrot.PointGrids
                 }
             }
 
-            Write(filePath, viewPort, computationType, GetPointsInSet());
+            IEnumerable<bool> GetPointsInSetVectorDoubles()
+            {
+                using (var progress = TimedOperation.Start("points", totalWork: viewPort.Resolution.Area()))
+                {
+                    var vWidth = VectorDoubleKernel.Capacity;
+
+                    var vectorBatches = viewPort.Resolution.Width / vWidth;
+                    var remainder = viewPort.Resolution.Width % vWidth;
+                    if (remainder != 0)
+                    {
+                        vectorBatches++;
+                    }
+                    var lastIndex = vectorBatches - 1;
+
+                    var rowPointsInSet = new bool[viewPort.Resolution.Width];
+                    for (int row = 0; row < viewPort.Resolution.Height; row++)
+                    {
+                        Parallel.For(
+                            0,
+                            vectorBatches,
+                            batchIndex =>
+                            {
+                                var realBatch = new double[vWidth];
+                                var imagBatch = new double[vWidth];
+                                var times = new EscapeTime[vWidth];
+
+                                var batchSize = (batchIndex == lastIndex) ? remainder : vWidth;
+
+                                for (int i = 0; i < batchSize; i++)
+                                {
+                                    var c = viewPort.GetComplex(batchIndex * vWidth + i, row);
+                                    realBatch[i] = c.Real;
+                                    imagBatch[i] = c.Imaginary;
+                                }
+
+                                VectorDoubleKernel.FindEscapeTimes(
+                                    realBatch, imagBatch, Constant.IterationRange.Max, times);
+
+                                for (int i = 0; i < batchSize; i++)
+                                {
+                                    rowPointsInSet[batchIndex * vWidth + i] = times[i].Iterations == Constant.IterationRange.Max;
+                                }
+                            });
+
+                        for (int x = 0; x < viewPort.Resolution.Width; x++)
+                        {
+                            yield return rowPointsInSet[x];
+                        }
+
+                        progress.AddWorkDone(viewPort.Resolution.Width);
+                    }
+                }
+            }
+
+            IEnumerable<bool> ChooseEnumerator()
+            {
+                switch (computationType)
+                {
+                    case ComputationType.ScalarDouble:
+                    case ComputationType.ScalarFloat:
+                        return GetPointsInSetScalar();
+
+                    case ComputationType.VectorDouble:
+                        return GetPointsInSetVectorDoubles();
+                    default:
+                        throw new ArgumentException("Unsupported computation type: " + computationType);
+                }
+            }
+
+            Write(filePath, viewPort, computationType, ChooseEnumerator());
         }
     }
 }

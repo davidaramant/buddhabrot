@@ -44,11 +44,9 @@ namespace Buddhabrot
             [ArgActionMethod, ArgDescription("Computes a point grid.")]
             public void ComputePointGrid(
                 [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
-                [ArgDescription("Use floats instead of doubles."), ArgDefaultValue(true)] bool useDoubles,
+                [ArgDescription("Computation type."), ArgDefaultValue(ComputationType.ScalarDouble)] ComputationType computationType,
                 [ArgDescription("The directory for the resulting grid file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
             {
-                var computationType = useDoubles ? ComputationType.ScalarDouble : ComputationType.ScalarFloat;
-
                 var viewPort = new ViewPort(
                     Constant.RenderingArea.GetPositiveImagArea(),
                     new Size(resolution, resolution / 2));

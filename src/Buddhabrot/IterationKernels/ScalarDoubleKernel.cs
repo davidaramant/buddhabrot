@@ -5,8 +5,11 @@ using Buddhabrot.Core;
 namespace Buddhabrot.IterationKernels
 {
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Cycle detection requires direct float comparisons.")]
-    public sealed class ScalarDoubleKernel
+    public sealed class ScalarDoubleKernel : IScalarKernel
     {
+        EscapeTime IScalarKernel.FindEscapeTime(Complex c, int maxIterations) => FindEscapeTime(c, maxIterations);
+        EscapeTime IScalarKernel.FindEscapeTime(Complex c) => FindEscapeTime(c);
+
         /// <summary>
         /// Determines whether the point is in the set, without using an arbitrary iteration limit.
         /// </summary>

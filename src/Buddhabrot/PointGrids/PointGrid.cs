@@ -158,21 +158,7 @@ namespace Buddhabrot.PointGrids
             Log.Info($"Area: {viewPort.Area}");
             Log.Info($"Computation type: {computationType}");
 
-            Func<Complex, bool> GetComputationMethod()
-            {
-                switch (computationType)
-                {
-                    case ComputationType.ScalarDouble:
-                        return c => ScalarDoubleKernel.FindEscapeTime(c, Constant.IterationRange.Max).IsInfinite;
-                    case ComputationType.ScalarFloat:
-                        return c => ScalarFloatKernel.FindEscapeTime(c, Constant.IterationRange.Max).IsInfinite;
-                    default:
-                        throw new ArgumentException("Unsupported computation type for this operation: " + computationType);
-                }
-            }
-
-            Func<Complex, bool> isInSet = GetComputationMethod();
-
+            var kernel = KernelBuilder.BuildScalarKernel(computationType);
 
             IEnumerable<bool> GetPointsInSet()
             {
@@ -184,7 +170,7 @@ namespace Buddhabrot.PointGrids
                         Parallel.For(
                             0,
                             viewPort.Resolution.Width,
-                            col => pointsInSet[col] = isInSet(viewPort.GetComplex(col, row)));
+                            col => pointsInSet[col] = kernel.FindEscapeTime(viewPort.GetComplex(col, row), Constant.IterationRange.Max).IsInfinite);
 
                         for (int x = 0; x < viewPort.Resolution.Width; x++)
                         {

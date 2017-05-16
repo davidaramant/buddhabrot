@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
+using Buddhabrot.Extensions;
 using Buddhabrot.IterationKernels;
 
 namespace Buddhabrot.EdgeSpans
@@ -18,6 +20,8 @@ namespace Buddhabrot.EdgeSpans
         }
 
         public double Length() => (InSet - NotInSet).Magnitude;
+
+        public double LengthSquared() => (InSet - NotInSet).MagnitudeSquared();
 
         public Complex GetMidPoint()
         {

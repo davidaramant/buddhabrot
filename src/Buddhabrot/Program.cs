@@ -104,9 +104,11 @@ namespace Buddhabrot
 
             [ArgActionMethod, ArgDescription("Finds border points from the edge spans.")]
             public void CalculateBorderPoints(
-                [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath)
+                [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath,
+                [ArgDescription("Number of edge spans to process.  Leave negative to do all of them."), ArgDefaultValue(-1)] int edgeSpanCount)
             {
-                BorderPointsLocator.LocatePoints(edgeSpansFilePath, edgeSpansFilePath + ".borderPoints.csv");
+                BorderPointsLocator.LocatePoints(
+                    edgeSpansFilePath, edgeSpansFilePath + ".borderPoints.csv", edgeSpanCount);
             }
 
             //[ArgActionMethod, ArgDescription("Finds points.")]

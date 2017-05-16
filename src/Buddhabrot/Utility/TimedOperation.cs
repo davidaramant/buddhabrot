@@ -12,7 +12,7 @@ namespace Buddhabrot.Utility
         private readonly Stopwatch _timer = Stopwatch.StartNew();
         private readonly string _workItemName;
 
-        private readonly long _totalWork;
+        public readonly long TotalWork;
         private long _workDone;
 
         private readonly TimeSpan _reportingInterval = TimeSpan.FromSeconds(30);
@@ -22,7 +22,7 @@ namespace Buddhabrot.Utility
         private TimedOperation(string workItemName, long totalWork)
         {
             _workItemName = workItemName;
-            _totalWork = totalWork;
+            TotalWork = totalWork;
             _reportingTimer = new Timer(LogProgress, null, _reportingInterval, _reportingInterval);
         }
 
@@ -30,7 +30,7 @@ namespace Buddhabrot.Utility
         {
             Log.Info($"--- Time spent: {_timer.Elapsed.Humanize(2)}");
 
-            if (_totalWork != 0)
+            if (TotalWork != 0)
             {
                 var workDone = _workDone;
 
@@ -40,16 +40,16 @@ namespace Buddhabrot.Utility
                 }
                 else
                 {
-                    var percentageComplete = (double)workDone / _totalWork;
+                    var percentageComplete = (double)workDone / TotalWork;
                     var rate = workDone / _timer.Elapsed.TotalSeconds;
 
-                    var remainingWork = _totalWork - workDone;
+                    var remainingWork = TotalWork - workDone;
 
                     var estimatedRemainingSeconds = remainingWork / rate;
 
                     var remaining = TimeSpan.FromSeconds(estimatedRemainingSeconds);
 
-                    Log.Info($"Work done: {workDone:N0}/{_totalWork:N0} ({percentageComplete:P})");
+                    Log.Info($"Work done: {workDone:N0}/{TotalWork:N0} ({percentageComplete:P})");
                     Log.Info($"Rate: {rate:N1} {_workItemName}/second");
                     Log.Info($"Estimated end time {DateTime.Now + remaining:t} ({remaining.Humanize(2)} remaining)");
                 }

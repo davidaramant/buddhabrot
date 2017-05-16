@@ -6,7 +6,6 @@ using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.PointGrids;
-using Buddhabrot.Utility;
 using PowerArgs;
 
 namespace Buddhabrot
@@ -101,6 +100,13 @@ namespace Buddhabrot
                 [ArgDescription("Resolution of the image (it will be squared)"), ArgDefaultValue(1024)] int sideResolution)
             {
                 EdgeSpanVisualizer.RenderSingleSpan(edgeSpansFilePath, index, sideResolution);
+            }
+
+            [ArgActionMethod, ArgDescription("Finds border points from the edge spans.")]
+            public void CalculateBorderPoints(
+                [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath)
+            {
+                BorderPointsLocator.LocatePoints(edgeSpansFilePath, edgeSpansFilePath + ".borderPoints.csv");
             }
 
             //[ArgActionMethod, ArgDescription("Finds points.")]

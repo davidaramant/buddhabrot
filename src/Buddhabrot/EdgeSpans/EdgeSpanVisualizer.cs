@@ -113,7 +113,7 @@ namespace Buddhabrot.EdgeSpans
 
                 var highlightPixelRadius = resolution.Width / 100;
 
-                var borderPoint = span.FindPointClosestToEdge(Constant.IterationRange.Max);
+                var borderPoint = span.FindBoundaryPoint(Constant.IterationRange.Max);
                 Log.Info($"Border point: {borderPoint} (escape time: {ScalarDoubleKernel.FindEscapeTime(borderPoint)})");
                 var borderPointPosition = viewPort.GetPosition(borderPoint);
 

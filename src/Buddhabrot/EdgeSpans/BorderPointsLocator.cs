@@ -8,11 +8,11 @@ namespace Buddhabrot.EdgeSpans
 {
     public static class BorderPointsLocator
     {
-        public static void LocatePoints(string edgeSpansPath, string outputPath, int pointsToCalculate)
+        public static void LocatePoints(string edgeSpansPath, int pointsToCalculate)
         {
             using (var edgeSpans = EdgeSpanStream.Load(edgeSpansPath))
             using (var timedOperation = TimedOperation.Start("edge spans", totalWork: pointsToCalculate > 0 ? pointsToCalculate : edgeSpansPath.Length))
-            using (var outputFile = File.OpenWrite(outputPath))
+            using (var outputFile = File.OpenWrite(edgeSpansPath + $".{timedOperation.TotalWork}.borderPoints.csv"))
             using (var textWriter = new StreamWriter(outputFile))
             using (var csv = new CsvWriter(textWriter))
             {
@@ -26,6 +26,7 @@ namespace Buddhabrot.EdgeSpans
                         timedOperation.AddWorkDone(1);
                         return
                         (
+                            Index: result.Index,
                             Location: result.Location,
                             Span: result.Span,
                             Point: borderPoint,
@@ -33,6 +34,7 @@ namespace Buddhabrot.EdgeSpans
                         );
                     });
 
+                csv.WriteField("Index");
                 csv.WriteField("Location");
                 csv.WriteField("Span");
                 csv.WriteField("Border Point");
@@ -41,6 +43,7 @@ namespace Buddhabrot.EdgeSpans
 
                 foreach (var result in sequence)
                 {
+                    csv.WriteField(result.Index);
                     csv.WriteField(result.Location);
                     csv.WriteField(result.Span);
                     csv.WriteField(result.Point);

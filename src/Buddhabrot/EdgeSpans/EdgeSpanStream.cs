@@ -10,7 +10,7 @@ using log4net;
 
 namespace Buddhabrot.EdgeSpans
 {
-    public sealed class EdgeSpanStream : IEnumerable<(Point Location, Direction Direction, EdgeSpan Span)>, IDisposable
+    public sealed class EdgeSpanStream : IEnumerable<(int Index, Point Location, Direction Direction, EdgeSpan Span)>, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeSpanStream));
         private const string HeaderText = "Edge Spans V2.00";
@@ -64,11 +64,12 @@ namespace Buddhabrot.EdgeSpans
             _spansPosition = spanStream.Position;
         }
 
-        public IEnumerator<(Point Location, Direction Direction, EdgeSpan Span)> GetEnumerator()
+        public IEnumerator<(int Index, Point Location, Direction Direction, EdgeSpan Span)> GetEnumerator()
         {
             _spanStream.Position = _spansPosition;
             using (var reader = new BinaryReader(_spanStream, Encoding.ASCII, leaveOpen: true))
             {
+                int index = 0;
                 while (_spanStream.Position < _spanStream.Length)
                 {
                     var x = reader.ReadInt32();
@@ -78,7 +79,9 @@ namespace Buddhabrot.EdgeSpans
                     var direction = (Direction)(packedY >> DirectionOffset & 0xFF);
 
                     var location = new Point(x, y);
-                    yield return (location,
+                    yield return (
+                        index++,
+                        location,
                         direction,
                         new EdgeSpan(
                             inSet: ViewPort.GetComplex(location),

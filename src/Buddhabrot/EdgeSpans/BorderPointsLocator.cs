@@ -8,7 +8,7 @@ namespace Buddhabrot.EdgeSpans
 {
     public static class BorderPointsLocator
     {
-        public static void LocatePoints(string edgeSpansPath, int pointsToCalculate)
+        public static void CalculateToCsv(string edgeSpansPath, int pointsToCalculate)
         {
             using (var edgeSpans = EdgeSpanStream.Load(edgeSpansPath))
             using (var timedOperation = TimedOperation.Start("edge spans", totalWork: pointsToCalculate > 0 ? pointsToCalculate : edgeSpansPath.Length))

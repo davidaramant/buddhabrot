@@ -41,7 +41,7 @@ namespace Buddhabrot
             public bool Help { get; set; }
 
             [ArgActionMethod, ArgDescription("Computes a point grid.")]
-            public void ComputePointGrid(
+            public void PointGrid_Compute(
                 [ArgDescription("The resolution (it will be squared)."), ArgRequired] int resolution,
                 [ArgDescription("Computation type."), ArgDefaultValue(ComputationType.ScalarDouble)] ComputationType computationType,
                 [ArgDescription("The directory for the resulting grid file."), ArgExistingDirectory, ArgDefaultValue(".")] string outputPath)
@@ -58,7 +58,7 @@ namespace Buddhabrot
             }
 
             [ArgActionMethod, ArgDescription("Plots a point grid.")]
-            public void PlotPointGrid(
+            public void PointGrid_Plot(
                 [ArgDescription("Input point grid file."), ArgRequired, ArgExistingFile] string pointGridPath)
             {
                 var imageFilePath = Path.Combine(
@@ -69,7 +69,7 @@ namespace Buddhabrot
             }
 
             [ArgActionMethod, ArgDescription("Finds line segments straddling the Mandelbrot set.")]
-            public void FindEdgeSpans(
+            public void EdgeSpans_Find(
                 [ArgDescription("Input point grid file."), ArgRequired, ArgExistingFile] string pointGridPath)
             {
                 var number = Path.GetFileNameWithoutExtension(pointGridPath).Remove(0, "pointGrid".Length);
@@ -82,7 +82,7 @@ namespace Buddhabrot
             }
 
             [ArgActionMethod, ArgDescription("Renders the edge spans to an image.")]
-            public void PlotEdgeSpans(
+            public void EdgeSpans_Plot(
                 [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath,
                 [ArgDescription("Shows the directions of the edges."), ArgDefaultValue(false)] bool showDirections)
             {
@@ -94,7 +94,7 @@ namespace Buddhabrot
             }
 
             [ArgActionMethod, ArgDescription("Renders a single edge span to an image.")]
-            public void PlotSingleEdgeSpan(
+            public void EdgeSpans_PlotSingle(
                 [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath,
                 [ArgDescription("The index of the edge span to visualize.  If negative, a random one will be chosen."), ArgDefaultValue(-1)] int index,
                 [ArgDescription("Resolution of the image (it will be squared)"), ArgDefaultValue(1024)] int sideResolution)
@@ -103,11 +103,11 @@ namespace Buddhabrot
             }
 
             [ArgActionMethod, ArgDescription("Finds border points from the edge spans.")]
-            public void CalculateBorderPoints(
+            public void BorderPoints_CreateCsv(
                 [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath,
                 [ArgDescription("Number of edge spans to process.  Leave negative to do all of them."), ArgDefaultValue(-1)] int edgeSpanCount)
             {
-                BorderPointsLocator.LocatePoints(edgeSpansFilePath, edgeSpanCount);
+                BorderPointsLocator.CalculateToCsv(edgeSpansFilePath, edgeSpanCount);
             }
 
             //[ArgActionMethod, ArgDescription("Finds points.")]

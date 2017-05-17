@@ -1,10 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
+using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.Utility;
 using CsvHelper;
 
-namespace Buddhabrot.EdgeSpans
+namespace Buddhabrot.Points
 {
     public static class BorderPointsLocator
     {

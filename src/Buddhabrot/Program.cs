@@ -6,6 +6,7 @@ using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.PointGrids;
+using Buddhabrot.Points;
 using PowerArgs;
 
 namespace Buddhabrot

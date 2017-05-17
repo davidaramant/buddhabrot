@@ -70,7 +70,7 @@
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
     <Compile Include="Core\ViewPort.cs" />
-    <Compile Include="EdgeSpans\BorderPointsLocator.cs" />
+    <Compile Include="Points\BorderPointsLocator.cs" />
     <Compile Include="IterationKernels\IScalarKernel.cs" />
     <Compile Include="IterationKernels\VectorDoubleKernel.cs" />
     <Compile Include="PointGrids\RowSetSegment.cs" />

@@ -67,6 +67,7 @@
     <Compile Include="Core\ComplexArea.cs" />
     <Compile Include="Core\DoubleRange.cs" />
     <Compile Include="Core\EscapeTime.cs" />
+    <Compile Include="Core\FComplex.cs" />
     <Compile Include="Core\IntRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
     <Compile Include="Core\ViewPort.cs" />
@@ -81,7 +82,7 @@
     <Compile Include="EdgeSpans\EdgeSpanStream.cs" />
     <Compile Include="EdgeSpans\EdgeSpan.cs" />
     <Compile Include="EdgeSpans\LogicalEdgeSpan.cs" />
-    <Compile Include="Extensions\ComplexExtensions.cs" />
+    <Compile Include="Core\ComplexExtensions.cs" />
     <Compile Include="IterationKernels\ComputationType.cs" />
     <Compile Include="IterationKernels\ScalarFloatKernel.cs" />
     <Compile Include="PointGrids\PointGrid.cs" />

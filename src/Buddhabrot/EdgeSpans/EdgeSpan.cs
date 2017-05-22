@@ -1,6 +1,5 @@
-﻿using System;
-using System.Numerics;
-using Buddhabrot.Extensions;
+﻿using System.Numerics;
+using Buddhabrot.Core;
 using Buddhabrot.IterationKernels;
 
 namespace Buddhabrot.EdgeSpans
@@ -37,9 +36,9 @@ namespace Buddhabrot.EdgeSpans
 
         public override string ToString() => $"(In Set: {InSet}, Not in Set: {NotInSet})";
 
-        public Complex FindBoundaryPoint(int iterationlimit) => FindBoundaryPoint(this, iterationlimit);
+        public Complex FindBoundaryPoint() => FindBoundaryPoint(this);
 
-        public static Complex FindBoundaryPoint(EdgeSpan span, int iterationLimit)
+        public static Complex FindBoundaryPoint(EdgeSpan span)
         {
             double lastLength = 0;
             while (true)
@@ -52,11 +51,39 @@ namespace Buddhabrot.EdgeSpans
                 lastLength = length;
                 var middle = span.GetMidPoint();
 
+                var escapeTime = ScalarDoubleKernel.FindEscapeTime(middle);
+
+                span = escapeTime.IsInfinite
+                    ? new EdgeSpan(middle, span.NotInSet)
+                    : new EdgeSpan(span.InSet, middle);
+            }
+        }
+
+
+        public Complex FindBoundaryPoint(int iterationlimit) => FindBoundaryPoint(this, iterationlimit);
+
+        public static Complex FindBoundaryPoint(EdgeSpan span, int iterationLimit)
+        {
+            double lastLength = 0;
+            const int bailout = 45;
+            int index = 0;
+            while (true)
+            {
+                var length = span.Length();
+                if (length == lastLength || index == bailout)
+                {
+                    return span.NotInSet;
+                }
+                lastLength = length;
+                var middle = span.GetMidPoint();
+
                 var escapeTime = ScalarDoubleKernel.FindEscapeTime(middle, iterationLimit);
 
                 span = escapeTime.IsInfinite
                     ? new EdgeSpan(middle, span.NotInSet)
                     : new EdgeSpan(span.InSet, middle);
+
+                index++;
             }
         }
     }

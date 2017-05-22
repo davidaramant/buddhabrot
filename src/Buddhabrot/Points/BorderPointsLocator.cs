@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.Utility;
@@ -22,7 +23,7 @@ namespace Buddhabrot.Points
                     AsParallel().
                     Select(result =>
                     {
-                        var borderPoint = result.Span.FindBoundaryPoint(Constant.IterationRange.Max);
+                        var borderPoint = result.Span.FindBoundaryPoint();
                         var escapeTime = ScalarDoubleKernel.FindEscapeTime(borderPoint, Constant.IterationRange.Max);
                         timedOperation.AddWorkDone(1);
                         return

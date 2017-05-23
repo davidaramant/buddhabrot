@@ -4,14 +4,11 @@ using System.Linq;
 using Buddhabrot.Core;
 using Buddhabrot.PointGrids;
 using Buddhabrot.Utility;
-using log4net;
 
 namespace Buddhabrot.EdgeSpans
 {
     static class EdgeSpanLocator
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeSpanLocator));
-
         public static void FindEdgeSpans(
             string pointGridFilePath,
             string outputFilePath)

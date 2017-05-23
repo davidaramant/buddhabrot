@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using Buddhabrot.Core;
 using Humanizer;
-using log4net;
 
 namespace Buddhabrot.Points
 {
     sealed class PointFinderStatistics : IDisposable
     {
         private readonly PointWriter _writer;
-        private static readonly ILog Log = LogManager.GetLogger(nameof(PointFinderStatistics));
+        private static readonly ILog Log = Logger.Create<PointFinderStatistics>();
         private readonly Stopwatch _timer = Stopwatch.StartNew();
         private long _pointTotal;
         private readonly TimeSpan _reportingInterval = TimeSpan.FromSeconds(30);

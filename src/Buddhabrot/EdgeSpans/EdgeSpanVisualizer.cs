@@ -2,20 +2,18 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;
 using Buddhabrot.Images;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.Utility;
-using log4net;
 
 namespace Buddhabrot.EdgeSpans
 {
     static class EdgeSpanVisualizer
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeSpanVisualizer));
+        private static readonly ILog Log = Logger.Create(nameof(EdgeSpanVisualizer));
 
         public static void RenderAllSpans(string edgeSpansPath, string imageFilePath, bool showDirections)
         {

@@ -8,13 +8,12 @@ using Buddhabrot.Core;
 using Buddhabrot.Extensions;
 using Buddhabrot.IterationKernels;
 using Buddhabrot.Utility;
-using log4net;
 
 namespace Buddhabrot.PointGrids
 {
     public sealed class PointGrid : IDisposable, IEnumerable<PointRow>
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(PointGrid));
+        private static readonly ILog Log = Logger.Create<PointGrid>();
         //                                 0123456789abcdef
         private const string HeaderText = "Point Grid V3.00";
 

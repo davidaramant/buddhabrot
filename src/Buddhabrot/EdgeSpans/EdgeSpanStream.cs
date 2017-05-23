@@ -7,13 +7,12 @@ using System.Text;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;
 using Buddhabrot.IterationKernels;
-using log4net;
 
 namespace Buddhabrot.EdgeSpans
 {
     public sealed class EdgeSpanStream : IEnumerable<LogicalEdgeSpan>, IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeSpanStream));
+        private static readonly ILog Log = Logger.Create<EdgeSpanStream>();
         private const string HeaderText = "Edge Spans V3.00";
 
         // Since the direction is only a byte, we'll pack it into the top of the Y position

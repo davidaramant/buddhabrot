@@ -15,7 +15,6 @@ namespace Buddhabrot
     {
         static void Main(string[] args)
         {
-            log4net.Config.XmlConfigurator.Configure();
             Args.InvokeAction<BuddhabrotProgram>(args);
         }
 

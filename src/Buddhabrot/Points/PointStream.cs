@@ -5,13 +5,12 @@ using System.Numerics;
 using System.Text;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;
-using log4net;
 
 namespace Buddhabrot.Points
 {
     public sealed class PointStream : IDisposable, IEnumerable<Complex>
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(PointStream));
+        private static readonly ILog Log = Logger.Create<PointStream>();
         //                                 0123456789abcdef
         private const string HeaderText = "Point List V1.00";
 

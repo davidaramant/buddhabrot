@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using Buddhabrot.Core;
 using Humanizer;
-using log4net;
 
 namespace Buddhabrot.Utility
 {
     sealed class TimedOperation : IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(TimedOperation));
+        private static readonly ILog Log = Logger.Create<TimedOperation>();
         private readonly Stopwatch _timer = Stopwatch.StartNew();
         private readonly string _workItemName;
 

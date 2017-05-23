@@ -4,14 +4,11 @@ using Buddhabrot.Core;
 using Buddhabrot.Extensions;
 using Buddhabrot.Images;
 using Buddhabrot.Utility;
-using log4net;
 
 namespace Buddhabrot.Points
 {
     public static class PointVisualizer
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(PointVisualizer));
-
         public static void Render(string pointFilePath, Size? resolution)
         {
             using (var points = PointStream.Load(pointFilePath))

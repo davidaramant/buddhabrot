@@ -1,16 +1,16 @@
 ﻿using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using Buddhabrot.Core;
 using Buddhabrot.Extensions;
 using Buddhabrot.Images;
 using Buddhabrot.Utility;
-using log4net;
 
 namespace Buddhabrot.PointGrids
 {
     static class PointGridVisualizer
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(PointGridVisualizer));
+        private static readonly ILog Log = Logger.Create(nameof(PointGridVisualizer));
 
         public static void Render(string gridFilePath, string imageFilePath)
         {

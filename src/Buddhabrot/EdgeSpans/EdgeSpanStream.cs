@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;
+using Buddhabrot.IterationKernels;
 using log4net;
 
 namespace Buddhabrot.EdgeSpans
@@ -13,7 +14,7 @@ namespace Buddhabrot.EdgeSpans
     public sealed class EdgeSpanStream : IEnumerable<LogicalEdgeSpan>, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeSpanStream));
-        private const string HeaderText = "Edge Spans V2.00";
+        private const string HeaderText = "Edge Spans V3.00";
 
         // Since the direction is only a byte, we'll pack it into the top of the Y position
         // This saves a byte of disk space and, uh, has better alignment?
@@ -21,6 +22,7 @@ namespace Buddhabrot.EdgeSpans
         private const int DirectionOffset = 8 * (sizeof(int) - sizeof(byte));
 
         public ViewPort ViewPort { get; }
+        public ComputationType ComputationType { get; }
         public int Count { get; }
         private readonly Stream _spanStream;
         private readonly long _spansPosition;
@@ -40,10 +42,11 @@ namespace Buddhabrot.EdgeSpans
                         throw new InvalidOperationException($"Unsupported edge span file format: {filePath}");
 
                     var viewPort = reader.ReadViewPort();
+                    var computationType = (ComputationType)reader.ReadInt32();
                     var count = reader.ReadInt32();
                     Log.Info($"Loaded edge spans with resolution ({viewPort.Resolution.Width:N0}x{viewPort.Resolution.Height:N0}), " +
                              $"area {viewPort.Area}, and {count:N0} edge spans.");
-                    return new EdgeSpanStream(viewPort, count, stream);
+                    return new EdgeSpanStream(viewPort, computationType,count, stream);
                 }
             }
             catch (Exception)
@@ -55,10 +58,12 @@ namespace Buddhabrot.EdgeSpans
 
         private EdgeSpanStream(
             ViewPort viewPort,
+            ComputationType computationType,
             int count,
             Stream spanStream)
         {
             ViewPort = viewPort;
+            ComputationType = computationType;
             Count = count;
             _spanStream = spanStream;
             _spansPosition = spanStream.Position;
@@ -89,6 +94,7 @@ namespace Buddhabrot.EdgeSpans
         public static void Write(
             string filePath,
             ViewPort viewPort,
+            ComputationType computationType,
             IEnumerable<LogicalEdgeSpan> spans)
         {
             if (viewPort.Resolution.Height > (1 << DirectionOffset))
@@ -101,6 +107,7 @@ namespace Buddhabrot.EdgeSpans
             {
                 writer.Write(HeaderText);
                 writer.WriteViewPort(viewPort);
+                writer.Write((int)computationType);
 
                 long countPosition = stream.Position;
                 stream.Position += sizeof(int);

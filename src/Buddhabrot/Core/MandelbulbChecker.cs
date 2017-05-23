@@ -20,6 +20,8 @@ namespace Buddhabrot.Core
                 IsInCircularBulbs(number);
         }
 
+        public static bool IsInsideBulbs(FComplex number) => IsInsideBulbs(number.ToDouble());
+
         static bool IsInLargerBulb(Complex number)
         {
             var realMinusFourth = number.Real - 0.25;

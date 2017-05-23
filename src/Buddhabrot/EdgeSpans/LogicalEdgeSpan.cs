@@ -18,8 +18,11 @@ namespace Buddhabrot.EdgeSpans
             ToOutside = toOutside;
         }
 
-        public EdgeSpan ToConcrete(ViewPort viewPort) => new EdgeSpan(
+        public EdgeSpan ToConcreteDouble(ViewPort viewPort) => new EdgeSpan(
                 inSet: viewPort.GetComplex(Location),
                 notInSet: viewPort.GetComplex(Location.OffsetIn(ToOutside)));
+        public FEdgeSpan ToConcreteFloat(ViewPort viewPort) => new FEdgeSpan(
+            inSet: viewPort.GetComplex(Location).ToFloat(),
+            notInSet: viewPort.GetComplex(Location.OffsetIn(ToOutside)).ToFloat());
     }
 }

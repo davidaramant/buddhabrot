@@ -97,7 +97,7 @@ namespace Buddhabrot.EdgeSpans
                 Log.Info($"Using edge span index {index:N0}");
                 Log.Info($"Output file: {imageFilePath}");
 
-                var span = spans.ElementAt(index).ToConcrete(spans.ViewPort);
+                var span = spans.ElementAt(index).ToConcreteDouble(spans.ViewPort);
                 var spanLength = span.Length();
 
                 Log.Info($"Edge span: {span} (length: {spanLength})");

@@ -2,6 +2,7 @@
 using System.Linq;
 using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
+using Buddhabrot.IterationKernels;
 using NUnit.Framework;
 
 namespace Tests.EdgeSpans
@@ -19,6 +20,7 @@ namespace Tests.EdgeSpans
                     viewPort: new ViewPort(
                         new ComplexArea(new DoubleRange(-1, 1), new DoubleRange(-1, 1)),
                         new Size(3, 3)),
+                    computationType: ComputationType.ScalarDouble,
                     spans: new[]
                     {
                         new LogicalEdgeSpan(new Point(1,1),toOutside:Direction.Up),

@@ -22,6 +22,7 @@ namespace Buddhabrot.EdgeSpans
                 EdgeSpanStream.Write(
                     outputFilePath,
                     pointGrid.ViewPort,
+                    pointGrid.ComputationType,
                     GetEdgeSpans(pointGrid, timer));
             }
         }

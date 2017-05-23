@@ -68,13 +68,16 @@
     <Compile Include="Core\DoubleRange.cs" />
     <Compile Include="Core\EscapeTime.cs" />
     <Compile Include="Core\FComplex.cs" />
-    <Compile Include="Core\IntRange.cs" />
+    <Compile Include="Core\IterationRange.cs" />
     <Compile Include="Core\MandelbulbChecker.cs" />
     <Compile Include="Core\ViewPort.cs" />
+    <Compile Include="EdgeSpans\FEdgeSpan.cs" />
     <Compile Include="Points\BorderPointsLocator.cs" />
     <Compile Include="IterationKernels\IScalarKernel.cs" />
     <Compile Include="IterationKernels\VectorDoubleKernel.cs" />
     <Compile Include="PointGrids\RowSetSegment.cs" />
+    <Compile Include="Points\PointStream.cs" />
+    <Compile Include="Points\PointVisualizer.cs" />
     <Compile Include="Utility\TimedOperation.cs" />
     <Compile Include="EdgeSpans\EdgeSpanVisualizer.cs" />
     <Compile Include="Core\Direction.cs" />

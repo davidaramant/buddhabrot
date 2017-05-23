@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Buddhabrot.Core;
 using Buddhabrot.PointGrids;
@@ -36,26 +37,26 @@ namespace Buddhabrot.EdgeSpans
                     if (aboveRow != null)
                     {
                         if (x > 0 && !aboveRow[x - 1])
-                            yield return new LogicalEdgeSpan(x, y, Direction.UpLeft);
+                            yield return new LogicalEdgeSpan(new Point(x, y), Direction.UpLeft);
                         if (!aboveRow[x])
-                            yield return new LogicalEdgeSpan(x, y, Direction.Up);
+                            yield return new LogicalEdgeSpan(new Point(x, y), Direction.Up);
                         if (x < maxX && !aboveRow[x + 1])
-                            yield return new LogicalEdgeSpan(x, y, Direction.UpRight);
+                            yield return new LogicalEdgeSpan(new Point(x, y), Direction.UpRight);
                     }
 
                     if (x > 0 && !currentRow[x - 1])
-                        yield return new LogicalEdgeSpan(x, y, Direction.Left);
+                        yield return new LogicalEdgeSpan(new Point(x, y), Direction.Left);
                     if (x < maxX && !currentRow[x + 1])
-                        yield return new LogicalEdgeSpan(x, y, Direction.Right);
+                        yield return new LogicalEdgeSpan(new Point(x, y), Direction.Right);
 
                     if (belowRow != null)
                     {
                         if (x > 0 && !belowRow[x - 1])
-                            yield return new LogicalEdgeSpan(x, y, Direction.DownLeft);
+                            yield return new LogicalEdgeSpan(new Point(x, y), Direction.DownLeft);
                         if (!belowRow[x])
-                            yield return new LogicalEdgeSpan(x, y, Direction.Down);
+                            yield return new LogicalEdgeSpan(new Point(x, y), Direction.Down);
                         if (x < maxX && !belowRow[x + 1])
-                            yield return new LogicalEdgeSpan(x, y, Direction.DownRight);
+                            yield return new LogicalEdgeSpan(new Point(x, y), Direction.DownRight);
                     }
                 }
                 timer.AddWorkDone(1);

@@ -10,7 +10,7 @@ using log4net;
 
 namespace Buddhabrot.EdgeSpans
 {
-    public sealed class EdgeSpanStream : IEnumerable<(int Index, Point Location, Direction Direction, EdgeSpan Span)>, IDisposable
+    public sealed class EdgeSpanStream : IEnumerable<LogicalEdgeSpan>, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(EdgeSpanStream));
         private const string HeaderText = "Edge Spans V2.00";
@@ -64,12 +64,11 @@ namespace Buddhabrot.EdgeSpans
             _spansPosition = spanStream.Position;
         }
 
-        public IEnumerator<(int Index, Point Location, Direction Direction, EdgeSpan Span)> GetEnumerator()
+        public IEnumerator<LogicalEdgeSpan> GetEnumerator()
         {
             _spanStream.Position = _spansPosition;
             using (var reader = new BinaryReader(_spanStream, Encoding.ASCII, leaveOpen: true))
             {
-                int index = 0;
                 while (_spanStream.Position < _spanStream.Length)
                 {
                     var x = reader.ReadInt32();
@@ -78,14 +77,7 @@ namespace Buddhabrot.EdgeSpans
                     var y = packedY & 0x00FFFFFF;
                     var direction = (Direction)(packedY >> DirectionOffset & 0xFF);
 
-                    var location = new Point(x, y);
-                    yield return (
-                        index++,
-                        location,
-                        direction,
-                        new EdgeSpan(
-                            inSet: ViewPort.GetComplex(location),
-                            notInSet: ViewPort.GetComplex(location.OffsetIn(direction))));
+                    yield return new LogicalEdgeSpan(new Point(x, y), direction);
                 }
             }
         }
@@ -119,8 +111,8 @@ namespace Buddhabrot.EdgeSpans
                 {
                     count++;
 
-                    writer.Write(span.X);
-                    writer.Write(span.Y | ((int)span.ToOutside << DirectionOffset));
+                    writer.Write(span.Location.X);
+                    writer.Write(span.Location.Y | ((int)span.ToOutside << DirectionOffset));
                 }
 
                 Log.Info($"Wrote {count:N0} edge spans.");

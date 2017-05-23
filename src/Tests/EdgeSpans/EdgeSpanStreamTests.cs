@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
 using NUnit.Framework;
@@ -22,7 +21,7 @@ namespace Tests.EdgeSpans
                         new Size(3, 3)),
                     spans: new[]
                     {
-                        new LogicalEdgeSpan(1,1,toOutside:Direction.Up),
+                        new LogicalEdgeSpan(new Point(1,1),toOutside:Direction.Up),
                     });
 
                 using (var stream = EdgeSpanStream.Load(tempFile.Path))
@@ -31,9 +30,9 @@ namespace Tests.EdgeSpans
 
                     Assert.That(spans, Has.Length.EqualTo(1), "Incorrect number of spans.");
 
-                    var span = spans.First().Span;
-                    Assert.That(span.InSet, Is.EqualTo(new Complex(0, 0)), "Wrong point in the set.");
-                    Assert.That(span.NotInSet, Is.EqualTo(new Complex(0, 1)), "Wrong point in the set.");
+                    var span = spans.First();
+                    Assert.That(span.Location, Is.EqualTo(new Point(1, 1)), "Wrong location.");
+                    Assert.That(span.ToOutside, Is.EqualTo(Direction.Up), "Wrong direction.");
                 }
             }
 

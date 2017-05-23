@@ -20,21 +20,23 @@ namespace Buddhabrot.Points
             {
                 var sequence =
                     edgeSpans.Take((int)timedOperation.TotalWork).
+                    Select((logicalSpan, index) => new { LogicalSpan = logicalSpan, Index = index }).
                     AsParallel().
                     Select(result =>
-                    {
-                        var borderPoint = result.Span.FindBoundaryPoint();
-                        var escapeTime = ScalarDoubleKernel.FindEscapeTime(borderPoint, Constant.IterationRange.Max);
-                        timedOperation.AddWorkDone(1);
-                        return
-                        (
-                            Index: result.Index,
-                            Location: result.Location,
-                            Span: result.Span,
-                            Point: borderPoint,
-                            EscapeTime: escapeTime
-                        );
-                    });
+                        {
+                            var span = result.LogicalSpan.ToConcrete(edgeSpans.ViewPort);
+                            var borderPoint = span.FindBoundaryPoint();
+                            var escapeTime = ScalarDoubleKernel.FindEscapeTime(borderPoint, Constant.IterationRange.Max);
+                            timedOperation.AddWorkDone(1);
+                            return
+                            (
+                                Index: result.Index,
+                                Location: result.LogicalSpan.Location,
+                                Span: span,
+                                Point: borderPoint,
+                                EscapeTime: escapeTime
+                            );
+                        });
 
                 csv.WriteField("Index");
                 csv.WriteField("Location");

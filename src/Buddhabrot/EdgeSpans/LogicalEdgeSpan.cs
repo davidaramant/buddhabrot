@@ -1,4 +1,6 @@
-﻿using Buddhabrot.Core;
+﻿using System.Drawing;
+using Buddhabrot.Core;
+using Buddhabrot.Extensions;
 
 namespace Buddhabrot.EdgeSpans
 {
@@ -7,15 +9,17 @@ namespace Buddhabrot.EdgeSpans
     /// </summary>
     public struct LogicalEdgeSpan
     {
-        public readonly int X;
-        public readonly int Y;
+        public readonly Point Location;
         public readonly Direction ToOutside;
 
-        public LogicalEdgeSpan(int x, int y, Direction toOutside)
+        public LogicalEdgeSpan(Point location, Direction toOutside)
         {
-            X = x;
-            Y = y;
+            Location = location;
             ToOutside = toOutside;
         }
+
+        public EdgeSpan ToConcrete(ViewPort viewPort) => new EdgeSpan(
+                inSet: viewPort.GetComplex(Location),
+                notInSet: viewPort.GetComplex(Location.OffsetIn(ToOutside)));
     }
 }

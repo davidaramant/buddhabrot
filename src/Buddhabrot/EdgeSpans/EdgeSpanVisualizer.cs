@@ -36,25 +36,25 @@ namespace Buddhabrot.EdgeSpans
 
                 image.Fill(Color.White);
 
-                Parallel.ForEach(spans, locatedSpan =>
+                Parallel.ForEach(spans, logicalSpan =>
                 {
                     if (showDirections)
                     {
-                        var scaledLocation = locatedSpan.Location.Scale(scale);
+                        var scaledLocation = logicalSpan.Location.Scale(scale);
                         for (int yDelta = 0; yDelta < 3; yDelta++)
                         {
                             for (int xDelta = 0; xDelta < 3; xDelta++)
                             {
                                 image.SetPixel(
                                     scaledLocation.OffsetBy(xDelta, yDelta),
-                                    (locatedSpan.Location.X + locatedSpan.Location.Y) % 2 == 1 ? Color.Black : Color.Gray);
+                                    (logicalSpan.Location.X + logicalSpan.Location.Y) % 2 == 1 ? Color.Black : Color.Gray);
                             }
                         }
                     }
                     else
                     {
                         image.SetPixel(
-                            locatedSpan.Location,
+                            logicalSpan.Location,
                             Color.Black);
                     }
                     timer.AddWorkDone(1);
@@ -65,7 +65,7 @@ namespace Buddhabrot.EdgeSpans
                     Parallel.ForEach(spans, locatedSpan =>
                     {
                         var scaledLocation = locatedSpan.Location.Scale(scale);
-                        var pointingTo = scaledLocation.OffsetBy(1, 1).OffsetIn(locatedSpan.Direction);
+                        var pointingTo = scaledLocation.OffsetBy(1, 1).OffsetIn(locatedSpan.ToOutside);
 
                         image.SetPixel(
                             pointingTo,
@@ -97,7 +97,7 @@ namespace Buddhabrot.EdgeSpans
                 Log.Info($"Using edge span index {index:N0}");
                 Log.Info($"Output file: {imageFilePath}");
 
-                var span = spans.ElementAt(index).Span;
+                var span = spans.ElementAt(index).ToConcrete(spans.ViewPort);
                 var spanLength = span.Length();
 
                 Log.Info($"Edge span: {span} (length: {spanLength})");

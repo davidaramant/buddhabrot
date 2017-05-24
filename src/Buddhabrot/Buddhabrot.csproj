@@ -115,7 +115,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <EmbeddedResource Include="IterationKernels\iterate_points.cl" />
+    <EmbeddedResource Include="IterationKernels\iterate_points_f.cl" />
+    <EmbeddedResource Include="IterationKernels\iterate_points_d.cl" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

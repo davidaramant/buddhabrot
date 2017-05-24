@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Buddhabrot.Core;
 
@@ -137,6 +138,48 @@ namespace Buddhabrot.IterationKernels
             }
 
             return EscapeTime.Infinite;
+        }
+
+        public static double FindDistance(Complex c, int maxIterations)
+        {
+            if (MandelbulbChecker.IsInsideBulbs(c))
+                return 0;
+
+            var z = Complex.Zero;
+
+            var oldZ = Complex.Zero;
+
+            var dZ = Complex.Zero;
+
+            int stepsTaken = 0;
+            int stepLimit = 2;
+
+            for (int i = 0; i < maxIterations; i++)
+            {
+                stepsTaken++;
+
+                dZ = 2 * z * dZ + 1;
+                z = z * z + c;
+
+                if (oldZ == z)
+                    return 0;
+
+                if (z.MagnitudeSquared() > 4)
+                {
+                    break;
+                }
+
+                if (stepsTaken == stepLimit)
+                {
+                    oldZ = z;
+                    stepsTaken = 0;
+                    stepLimit = stepLimit << 1;
+                }
+            }
+
+            var magZ = z.Magnitude;
+            var magDZ = dZ.Magnitude;
+            return 2 * Math.Log(magZ * magZ) * magZ / magDZ;
         }
     }
 }

@@ -5,10 +5,15 @@ namespace Buddhabrot.IterationKernels
 {
     static class OpenCLKernelSource
     {
-        private const string SourceName = "Buddhabrot.IterationKernels.iterate_points.cl";
-        private static readonly Lazy<string> SourceLoader = new Lazy<string>(() =>
+        private const string FloatSourceName = "Buddhabrot.IterationKernels.iterate_points_f.cl";
+        private static readonly Lazy<string> FloatSourceLoader = new Lazy<string>(() => ReadResource(FloatSourceName));
+
+        private const string DoubleSourceName = "Buddhabrot.IterationKernels.iterate_points_d.cl";
+        private static readonly Lazy<string> DoubleSourceLoader = new Lazy<string>(() => ReadResource(DoubleSourceName));
+
+        private static string ReadResource(string name)
         {
-            using (var stream = typeof(OpenCLKernelSource).Assembly.GetManifestResourceStream(SourceName))
+            using (var stream = typeof(OpenCLKernelSource).Assembly.GetManifestResourceStream(name))
             {
                 if (stream == null)
                 {
@@ -20,9 +25,9 @@ namespace Buddhabrot.IterationKernels
                     return streamReader.ReadToEnd();
                 }
             }
-        });
+        }
 
-
-        public static string Read() => SourceLoader.Value;
+        public static string ReadFloatVersion() => FloatSourceLoader.Value;
+        public static string ReadDoubleVersion() => DoubleSourceLoader.Value;
     }
 }

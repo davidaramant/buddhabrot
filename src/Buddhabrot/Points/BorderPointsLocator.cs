@@ -79,5 +79,27 @@ namespace Buddhabrot.Points
                 PointStream.Write(edgeSpansPath + $".{timedOperation.TotalWork}.floatPoints", edgeSpans.ViewPort, points.Select(p => p.ToDouble()));
             }
         }
+
+        public static void CalculateWithDoubles(string edgeSpansPath, int pointsToCalculate)
+        {
+            using (var edgeSpans = EdgeSpanStream.Load(edgeSpansPath))
+            using (var timedOperation = TimedOperation.Start("edge spans", totalWork: pointsToCalculate > 0 ? pointsToCalculate : edgeSpans.Count))
+            {
+                var points =
+                    edgeSpans.Take((int)timedOperation.TotalWork).
+                        AsParallel().
+                        Select(span => span.
+                            ToConcreteDouble(edgeSpans.ViewPort).
+                            FindBoundaryPoint(Constant.IterationRange.Max)).
+                        Where(point =>
+                        {
+                            var escapeTime = ScalarDoubleKernel.FindEscapeTime(point, Constant.IterationRange.Max);
+                            timedOperation.AddWorkDone(1);
+                            return Constant.IterationRange.IsInside(escapeTime);
+                        });
+
+                PointStream.Write(edgeSpansPath + $".{timedOperation.TotalWork}.doublePoints", edgeSpans.ViewPort, points);
+            }
+        }
     }
 }

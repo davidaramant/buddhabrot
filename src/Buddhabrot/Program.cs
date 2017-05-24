@@ -119,6 +119,14 @@ namespace Buddhabrot
             }
 
             [ArgActionMethod, ArgDescription("Finds border points from the edge spans.")]
+            public void BorderPoints_CalculateDoubles(
+                [ArgDescription("Edge spans file."), ArgRequired, ArgExistingFile] string edgeSpansFilePath,
+                [ArgDescription("Number of edge spans to process.  Leave negative to do all of them."), ArgDefaultValue(-1)] int edgeSpanCount)
+            {
+                BorderPointsLocator.CalculateWithDoubles(edgeSpansFilePath, edgeSpanCount);
+            }
+
+            [ArgActionMethod, ArgDescription("Finds border points from the edge spans.")]
             public void BorderPoints_Plot(
                 [ArgDescription("Points file."), ArgRequired, ArgExistingFile] string pointsFile,
                 [ArgDescription("Horizontal resolution.  Leave negative to use the stored viewport."), ArgDefaultValue(-1)] int horizontalResolution,

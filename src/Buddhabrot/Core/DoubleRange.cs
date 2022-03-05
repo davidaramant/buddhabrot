@@ -1,27 +1,26 @@
 ﻿using System;
 
-namespace Buddhabrot.Core
+namespace Buddhabrot.Core;
+
+public sealed class DoubleRange
 {
-    public sealed class DoubleRange
+    public double InclusiveMin { get; }
+    public double ExclusiveMax { get; }
+
+    public double Magnitude => Math.Abs(ExclusiveMax - InclusiveMin);
+
+    public DoubleRange(double inclusiveMin, double exclusiveMax)
     {
-        public double InclusiveMin { get; }
-        public double ExclusiveMax { get; }
-
-        public double Magnitude => Math.Abs(ExclusiveMax - InclusiveMin);
-
-        public DoubleRange(double inclusiveMin, double exclusiveMax)
-        {
-            InclusiveMin = inclusiveMin;
-            ExclusiveMax = exclusiveMax;
-        }
-
-        public bool IsInside(double value)
-        {
-            return
-                value >= InclusiveMin &&
-                value < ExclusiveMax;
-        }
-
-        public override string ToString() => $"[{InclusiveMin}, {ExclusiveMax})";
+        InclusiveMin = inclusiveMin;
+        ExclusiveMax = exclusiveMax;
     }
+
+    public bool IsInside(double value)
+    {
+        return
+            value >= InclusiveMin &&
+            value < ExclusiveMax;
+    }
+
+    public override string ToString() => $"[{InclusiveMin}, {ExclusiveMax})";
 }

@@ -1,11 +1,10 @@
 ﻿using System.Numerics;
 using Buddhabrot.Core;
 
-namespace Buddhabrot.IterationKernels
+namespace Buddhabrot.IterationKernels;
+
+public interface IScalarKernel
 {
-    public interface IScalarKernel
-    {
-        EscapeTime FindEscapeTime(Complex c);
-        EscapeTime FindEscapeTime(Complex c, int maxIterations);
-    }
+    EscapeTime FindEscapeTime(Complex c);
+    EscapeTime FindEscapeTime(Complex c, int maxIterations);
 }

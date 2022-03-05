@@ -2,53 +2,52 @@
 using Buddhabrot.PointGrids;
 using NUnit.Framework;
 
-namespace Tests.PointGrids
+namespace Tests.PointGrids;
+
+[TestFixture]
+public sealed class PointRowTests
 {
-    [TestFixture]
-    public sealed class PointRowTests
+    [Test]
+    public void ShouldReturnPointsInSet()
     {
-        [Test]
-        public void ShouldReturnPointsInSet()
+        //0123456789
+        //  SSS SSSS
+
+        var row = new PointRow(width: 10, y: 0, segments: new[]
         {
-            //0123456789
-            //  SSS SSSS
+            (false,2),
+            (true,3),
+            (false,1),
+            (true,4),
+        });
 
-            var row = new PointRow(width: 10, y: 0, segments: new[]
-            {
-                (false,2),
-                (true,3),
-                (false,1),
-                (true,4),
-            });
+        var edgeLocations = row.GetXPositionsOfSet().ToArray();
 
-            var edgeLocations = row.GetXPositionsOfSet().ToArray();
+        Assert.That(
+            edgeLocations,
+            Is.EqualTo(new[] { 2, 3, 4, 6, 7, 8, 9 }),
+            "Did not return set positions.");
+    }
 
-            Assert.That(
-                edgeLocations,
-                Is.EqualTo(new[] { 2, 3, 4, 6, 7, 8, 9 }),
-                "Did not return set positions.");
-        }
+    [Test]
+    public void ShouldReturnCorrectValuesFromIndexer()
+    {
+        //0123456789
+        //  SSS SSSS
 
-        [Test]
-        public void ShouldReturnCorrectValuesFromIndexer()
+        var row = new PointRow(width: 10, y: 0, segments: new[]
         {
-            //0123456789
-            //  SSS SSSS
+            (false,2),
+            (true,3),
+            (false,1),
+            (true,4),
+        });
 
-            var row = new PointRow(width: 10, y: 0, segments: new[]
-            {
-                (false,2),
-                (true,3),
-                (false,1),
-                (true,4),
-            });
+        var expected = row.ToArray();
 
-            var expected = row.ToArray();
-
-            for (int i = 0; i < row.Width; i++)
-            {
-                Assert.That(row[i], Is.EqualTo(expected[i]), $"Unexpected value at index {i}");
-            }
+        for (int i = 0; i < row.Width; i++)
+        {
+            Assert.That(row[i], Is.EqualTo(expected[i]), $"Unexpected value at index {i}");
         }
     }
 }

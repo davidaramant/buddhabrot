@@ -1,62 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Buddhabrot.Utility
+namespace Buddhabrot.Utility;
+
+/// <summary>
+/// Keeps track of remaining work.
+/// </summary>
+public sealed class WorkRemaining<T> : IDisposable
 {
-    /// <summary>
-    /// Keeps track of remaining work.
-    /// </summary>
-    public sealed class WorkRemaining<T> : IDisposable
+    private readonly IEnumerator<T> _enumerator;
+
+    // Stacks are fast since they are array based
+    // The order of the work is irrelevant, so the LIFO behavior doesn't matter
+    private readonly Stack<T> _addedWorkBuffer = new Stack<T>();
+
+    public WorkRemaining(IEnumerable<T> sequence)
     {
-        private readonly IEnumerator<T> _enumerator;
+        _enumerator = sequence.GetEnumerator();
+    }
 
-        // Stacks are fast since they are array based
-        // The order of the work is irrelevant, so the LIFO behavior doesn't matter
-        private readonly Stack<T> _addedWorkBuffer = new Stack<T>();
-
-        public WorkRemaining(IEnumerable<T> sequence)
+    /// <summary>
+    /// Adds additional work.  It will be consumed in a LIFO order.
+    /// </summary>
+    /// <param name="work">The work.</param>
+    public void AddAdditional(IEnumerable<T> work)
+    {
+        foreach (var item in work)
         {
-            _enumerator = sequence.GetEnumerator();
+            _addedWorkBuffer.Push(item);
+        }
+    }
+
+    public IEnumerable<T> Take(int batchSize)
+    {
+        int fromBuffer = Math.Min(batchSize, _addedWorkBuffer.Count);
+        int fromSequence = batchSize - _addedWorkBuffer.Count;
+        for(int i = 0; i < fromBuffer; i++)
+        {
+            yield return _addedWorkBuffer.Pop();
         }
 
-        /// <summary>
-        /// Adds additional work.  It will be consumed in a LIFO order.
-        /// </summary>
-        /// <param name="work">The work.</param>
-        public void AddAdditional(IEnumerable<T> work)
+        for (int i = 0; i < fromSequence; i++)
         {
-            foreach (var item in work)
+            if (_enumerator.MoveNext())
             {
-                _addedWorkBuffer.Push(item);
+                yield return _enumerator.Current;
             }
-        }
-
-        public IEnumerable<T> Take(int batchSize)
-        {
-            int fromBuffer = Math.Min(batchSize, _addedWorkBuffer.Count);
-            int fromSequence = batchSize - _addedWorkBuffer.Count;
-            for(int i = 0; i < fromBuffer; i++)
+            else
             {
-                yield return _addedWorkBuffer.Pop();
+                yield break;
             }
 
-            for (int i = 0; i < fromSequence; i++)
-            {
-                if (_enumerator.MoveNext())
-                {
-                    yield return _enumerator.Current;
-                }
-                else
-                {
-                    yield break;
-                }
-
-            }
         }
+    }
 
-        public void Dispose()
-        {
-            _enumerator.Dispose();
-        }
+    public void Dispose()
+    {
+        _enumerator.Dispose();
     }
 }

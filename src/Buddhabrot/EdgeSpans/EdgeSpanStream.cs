@@ -8,124 +8,123 @@ using Buddhabrot.Core;
 using Buddhabrot.Extensions;
 using Buddhabrot.IterationKernels;
 
-namespace Buddhabrot.EdgeSpans
+namespace Buddhabrot.EdgeSpans;
+
+public sealed class EdgeSpanStream : IEnumerable<LogicalEdgeSpan>, IDisposable
 {
-    public sealed class EdgeSpanStream : IEnumerable<LogicalEdgeSpan>, IDisposable
+    private static readonly ILog Log = Logger.Create<EdgeSpanStream>();
+    private const string HeaderText = "Edge Spans V3.00";
+
+    // Since the direction is only a byte, we'll pack it into the top of the Y position
+    // This saves a byte of disk space and, uh, has better alignment?
+    // Yes, it's pointless, but kind of fun!
+    private const int DirectionOffset = 8 * (sizeof(int) - sizeof(byte));
+
+    public ViewPort ViewPort { get; }
+    public ComputationType ComputationType { get; }
+    public int Count { get; }
+    private readonly Stream _spanStream;
+    private readonly long _spansPosition;
+
+    public static EdgeSpanStream Load(string filePath)
     {
-        private static readonly ILog Log = Logger.Create<EdgeSpanStream>();
-        private const string HeaderText = "Edge Spans V3.00";
+        FileStream stream = null;
 
-        // Since the direction is only a byte, we'll pack it into the top of the Y position
-        // This saves a byte of disk space and, uh, has better alignment?
-        // Yes, it's pointless, but kind of fun!
-        private const int DirectionOffset = 8 * (sizeof(int) - sizeof(byte));
-
-        public ViewPort ViewPort { get; }
-        public ComputationType ComputationType { get; }
-        public int Count { get; }
-        private readonly Stream _spanStream;
-        private readonly long _spansPosition;
-
-        public static EdgeSpanStream Load(string filePath)
+        try
         {
-            FileStream stream = null;
+            stream = File.OpenRead(filePath);
 
-            try
+            using (var reader = new BinaryReader(stream, Encoding.ASCII, leaveOpen: true))
             {
-                stream = File.OpenRead(filePath);
+                var readHeader = reader.ReadString(); ;
+                if (readHeader != HeaderText)
+                    throw new InvalidOperationException($"Unsupported edge span file format: {filePath}");
 
-                using (var reader = new BinaryReader(stream, Encoding.ASCII, leaveOpen: true))
-                {
-                    var readHeader = reader.ReadString(); ;
-                    if (readHeader != HeaderText)
-                        throw new InvalidOperationException($"Unsupported edge span file format: {filePath}");
-
-                    var viewPort = reader.ReadViewPort();
-                    var computationType = (ComputationType)reader.ReadInt32();
-                    var count = reader.ReadInt32();
-                    Log.Info($"Loaded edge spans with resolution ({viewPort.Resolution.Width:N0}x{viewPort.Resolution.Height:N0}), " +
-                             $"area {viewPort.Area}, and {count:N0} edge spans.");
-                    return new EdgeSpanStream(viewPort, computationType,count, stream);
-                }
-            }
-            catch (Exception)
-            {
-                stream?.Dispose();
-                throw;
+                var viewPort = reader.ReadViewPort();
+                var computationType = (ComputationType)reader.ReadInt32();
+                var count = reader.ReadInt32();
+                Log.Info($"Loaded edge spans with resolution ({viewPort.Resolution.Width:N0}x{viewPort.Resolution.Height:N0}), " +
+                         $"area {viewPort.Area}, and {count:N0} edge spans.");
+                return new EdgeSpanStream(viewPort, computationType,count, stream);
             }
         }
-
-        private EdgeSpanStream(
-            ViewPort viewPort,
-            ComputationType computationType,
-            int count,
-            Stream spanStream)
+        catch (Exception)
         {
-            ViewPort = viewPort;
-            ComputationType = computationType;
-            Count = count;
-            _spanStream = spanStream;
-            _spansPosition = spanStream.Position;
+            stream?.Dispose();
+            throw;
+        }
+    }
+
+    private EdgeSpanStream(
+        ViewPort viewPort,
+        ComputationType computationType,
+        int count,
+        Stream spanStream)
+    {
+        ViewPort = viewPort;
+        ComputationType = computationType;
+        Count = count;
+        _spanStream = spanStream;
+        _spansPosition = spanStream.Position;
+    }
+
+    public IEnumerator<LogicalEdgeSpan> GetEnumerator()
+    {
+        _spanStream.Position = _spansPosition;
+        using (var reader = new BinaryReader(_spanStream, Encoding.ASCII, leaveOpen: true))
+        {
+            while (_spanStream.Position < _spanStream.Length)
+            {
+                var x = reader.ReadInt32();
+                var packedY = reader.ReadInt32();
+
+                var y = packedY & 0x00FFFFFF;
+                var direction = (Direction)(packedY >> DirectionOffset & 0xFF);
+
+                yield return new LogicalEdgeSpan(new Point(x, y), direction);
+            }
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public void Dispose() => _spanStream.Dispose();
+
+    public static void Write(
+        string filePath,
+        ViewPort viewPort,
+        ComputationType computationType,
+        IEnumerable<LogicalEdgeSpan> spans)
+    {
+        if (viewPort.Resolution.Height > (1 << DirectionOffset))
+        {
+            throw new ArgumentOutOfRangeException(nameof(viewPort.Resolution), "That resolution is too damn big.");
         }
 
-        public IEnumerator<LogicalEdgeSpan> GetEnumerator()
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        using (var writer = new BinaryWriter(stream, Encoding.ASCII))
         {
-            _spanStream.Position = _spansPosition;
-            using (var reader = new BinaryReader(_spanStream, Encoding.ASCII, leaveOpen: true))
+            writer.Write(HeaderText);
+            writer.WriteViewPort(viewPort);
+            writer.Write((int)computationType);
+
+            long countPosition = stream.Position;
+            stream.Position += sizeof(int);
+
+            int count = 0;
+
+            foreach (var span in spans)
             {
-                while (_spanStream.Position < _spanStream.Length)
-                {
-                    var x = reader.ReadInt32();
-                    var packedY = reader.ReadInt32();
+                count++;
 
-                    var y = packedY & 0x00FFFFFF;
-                    var direction = (Direction)(packedY >> DirectionOffset & 0xFF);
-
-                    yield return new LogicalEdgeSpan(new Point(x, y), direction);
-                }
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        public void Dispose() => _spanStream.Dispose();
-
-        public static void Write(
-            string filePath,
-            ViewPort viewPort,
-            ComputationType computationType,
-            IEnumerable<LogicalEdgeSpan> spans)
-        {
-            if (viewPort.Resolution.Height > (1 << DirectionOffset))
-            {
-                throw new ArgumentOutOfRangeException(nameof(viewPort.Resolution), "That resolution is too damn big.");
+                writer.Write(span.Location.X);
+                writer.Write(span.Location.Y | ((int)span.ToOutside << DirectionOffset));
             }
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            using (var writer = new BinaryWriter(stream, Encoding.ASCII))
-            {
-                writer.Write(HeaderText);
-                writer.WriteViewPort(viewPort);
-                writer.Write((int)computationType);
+            Log.Info($"Wrote {count:N0} edge spans.");
 
-                long countPosition = stream.Position;
-                stream.Position += sizeof(int);
-
-                int count = 0;
-
-                foreach (var span in spans)
-                {
-                    count++;
-
-                    writer.Write(span.Location.X);
-                    writer.Write(span.Location.Y | ((int)span.ToOutside << DirectionOffset));
-                }
-
-                Log.Info($"Wrote {count:N0} edge spans.");
-
-                stream.Position = countPosition;
-                writer.Write(count);
-            }
+            stream.Position = countPosition;
+            writer.Write(count);
         }
     }
 }

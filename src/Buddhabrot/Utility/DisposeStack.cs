@@ -1,32 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Buddhabrot.Utility
+namespace Buddhabrot.Utility;
+
+sealed class DisposeStack : IDisposable
 {
-    sealed class DisposeStack : IDisposable
+    private readonly Stack<IDisposable> _objects = new Stack<IDisposable>();
+
+    public T Add<T>(T disposableObject) where T : IDisposable
     {
-        private readonly Stack<IDisposable> _objects = new Stack<IDisposable>();
+        _objects.Push(disposableObject);
+        return disposableObject;
+    }
 
-        public T Add<T>(T disposableObject) where T : IDisposable
+    public void AddMultiple<T>(IEnumerable<T> disposableObjects) where T : IDisposable
+    {
+        foreach (var d in disposableObjects)
         {
-            _objects.Push(disposableObject);
-            return disposableObject;
+            _objects.Push(d);
         }
+    }
 
-        public void AddMultiple<T>(IEnumerable<T> disposableObjects) where T : IDisposable
+    public void Dispose()
+    {
+        foreach (var d in _objects)
         {
-            foreach (var d in disposableObjects)
-            {
-                _objects.Push(d);
-            }
-        }
-
-        public void Dispose()
-        {
-            foreach (var d in _objects)
-            {
-                d.Dispose();
-            }
+            d.Dispose();
         }
     }
 }

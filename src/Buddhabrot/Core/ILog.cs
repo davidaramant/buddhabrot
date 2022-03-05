@@ -1,7 +1,6 @@
-﻿namespace Buddhabrot.Core
+﻿namespace Buddhabrot.Core;
+
+public interface ILog
 {
-    public interface ILog
-    {
-        void Info(string message);
-    }
+    void Info(string message);
 }

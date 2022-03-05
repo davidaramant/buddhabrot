@@ -1,23 +1,22 @@
 ﻿using System;
 using System.IO;
 
-namespace Tests
+namespace Tests;
+
+sealed class TempFile : IDisposable
 {
-    sealed class TempFile : IDisposable
+    public string Path { get; }
+
+    public TempFile()
     {
-        public string Path { get; }
+        Path = System.IO.Path.GetTempFileName();
+    }
 
-        public TempFile()
+    public void Dispose()
+    {
+        if (File.Exists(Path))
         {
-            Path = System.IO.Path.GetTempFileName();
-        }
-
-        public void Dispose()
-        {
-            if (File.Exists(Path))
-            {
-                File.Delete(Path);
-            }
+            File.Delete(Path);
         }
     }
 }

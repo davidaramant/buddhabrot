@@ -1,12 +1,11 @@
-﻿namespace Buddhabrot.IterationKernels
+﻿namespace Buddhabrot.IterationKernels;
+
+public enum ComputationType
 {
-    public enum ComputationType
-    {
-        ScalarFloat,
-        ScalarDouble,
-        VectorFloat,
-        VectorDouble,
-        OpenCLFloat,
-        OpenCLDouble,
-    }
+    ScalarFloat,
+    ScalarDouble,
+    VectorFloat,
+    VectorDouble,
+    OpenCLFloat,
+    OpenCLDouble,
 }

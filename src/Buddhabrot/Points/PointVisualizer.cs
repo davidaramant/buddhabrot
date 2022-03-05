@@ -5,37 +5,36 @@ using Buddhabrot.Extensions;
 using Buddhabrot.Images;
 using Buddhabrot.Utility;
 
-namespace Buddhabrot.Points
+namespace Buddhabrot.Points;
+
+public static class PointVisualizer
 {
-    public static class PointVisualizer
+    public static void Render(string pointFilePath, Size? resolution)
     {
-        public static void Render(string pointFilePath, Size? resolution)
+        using (var points = PointStream.Load(pointFilePath))
         {
-            using (var points = PointStream.Load(pointFilePath))
+            var viewPort = points.ViewPort;
+            var actualResolution = resolution ?? points.ViewPort.Resolution;
+            if (actualResolution != points.ViewPort.Resolution)
             {
-                var viewPort = points.ViewPort;
-                var actualResolution = resolution ?? points.ViewPort.Resolution;
-                if (actualResolution != points.ViewPort.Resolution)
+                viewPort = new ViewPort(viewPort.Area, actualResolution);
+            }
+
+            var imageFilePath = pointFilePath + $".{actualResolution.Width}x{actualResolution.Height}.png";
+
+            using (var timer = TimedOperation.Start("points", totalWork: actualResolution.Area()))
+            {
+                var image = new FastImage(actualResolution);
+
+                image.Fill(Color.White);
+
+                Parallel.ForEach(points, point =>
                 {
-                    viewPort = new ViewPort(viewPort.Area, actualResolution);
-                }
+                    image.SetPixel(viewPort.GetPosition(point), Color.Black);
+                    timer.AddWorkDone(1);
+                });
 
-                var imageFilePath = pointFilePath + $".{actualResolution.Width}x{actualResolution.Height}.png";
-
-                using (var timer = TimedOperation.Start("points", totalWork: actualResolution.Area()))
-                {
-                    var image = new FastImage(actualResolution);
-
-                    image.Fill(Color.White);
-
-                    Parallel.ForEach(points, point =>
-                    {
-                        image.SetPixel(viewPort.GetPosition(point), Color.Black);
-                        timer.AddWorkDone(1);
-                    });
-
-                    image.Save(imageFilePath);
-                }
+                image.Save(imageFilePath);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Linq;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
@@ -15,7 +16,7 @@ namespace Buddhabrot.Points
             using (var timedOperation = TimedOperation.Start("edge spans", totalWork: pointsToCalculate > 0 ? pointsToCalculate : edgeSpans.Count))
             using (var outputFile = File.OpenWrite(edgeSpansPath + $".{timedOperation.TotalWork}.borderPoints.csv"))
             using (var textWriter = new StreamWriter(outputFile))
-            using (var csv = new CsvWriter(textWriter))
+            using (var csv = new CsvWriter(textWriter, CultureInfo.InvariantCulture))
             {
                 //var kernel = KernelBuilder.BuildScalarKernel(edgeSpans.ComputationType);
 

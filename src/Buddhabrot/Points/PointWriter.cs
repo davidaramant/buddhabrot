@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Numerics;
+﻿using System.Numerics;
 using Buddhabrot.Extensions;
 
 namespace Buddhabrot.Points;
@@ -21,12 +19,10 @@ sealed class PointWriter
     {
         lock (_fileLock)
         {
-            using (var stream = File.Open(_filePath, FileMode.Append))
-            using (var writer = new BinaryWriter(stream))
-            {
-                writer.WriteComplex(point);
-                Count++;
-            }
+            using var stream = File.Open(_filePath, FileMode.Append);
+            using var writer = new BinaryWriter(stream);
+            writer.WriteComplex(point);
+            Count++;
         }
     }
 
@@ -34,14 +30,12 @@ sealed class PointWriter
     {
         lock (_fileLock)
         {
-            using (var stream = File.Open(_filePath, FileMode.Append))
-            using (var writer = new BinaryWriter(stream))
+            using var stream = File.Open(_filePath, FileMode.Append);
+            using var writer = new BinaryWriter(stream);
+            foreach (var point in points)
             {
-                foreach (var point in points)
-                {
-                    writer.WriteComplex(point);
-                    Count++;
-                }
+                writer.WriteComplex(point);
+                Count++;
             }
         }
     }

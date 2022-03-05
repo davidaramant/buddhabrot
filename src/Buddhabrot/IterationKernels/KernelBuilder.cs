@@ -2,16 +2,11 @@
 
 public static class KernelBuilder
 {
-    public static IScalarKernel BuildScalarKernel(ComputationType type)
-    {
-        switch (type)
+    public static IScalarKernel BuildScalarKernel(ComputationType type) =>
+        type switch
         {
-            case ComputationType.ScalarFloat:
-                return new ScalarFloatKernel();
-            case ComputationType.ScalarDouble:
-                return new ScalarDoubleKernel();
-            default:
-                throw new ArgumentException($"{type} is not a scalar type.");
-        }
-    }
+            ComputationType.ScalarFloat => new ScalarFloatKernel(),
+            ComputationType.ScalarDouble => new ScalarDoubleKernel(),
+            _ => throw new ArgumentException($"{type} is not a scalar type.")
+        };
 }

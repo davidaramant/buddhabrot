@@ -3,7 +3,7 @@
 /// <summary>
 /// A segment of points that are in the set.
 /// </summary>
-public struct RowSetSegment
+public readonly struct RowSetSegment
 {
     public readonly int StartCol;
     public readonly int Length;

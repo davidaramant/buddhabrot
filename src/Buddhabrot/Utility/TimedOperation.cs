@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading;
+﻿using System.Diagnostics;
 using Buddhabrot.Core;
 using Humanizer;
 
@@ -12,7 +10,7 @@ sealed class TimedOperation : IDisposable
     private readonly Stopwatch _timer = Stopwatch.StartNew();
     private readonly string _workItemName;
 
-    public readonly long TotalWork;
+    public long TotalWork { get; }
     private long _workDone;
 
     private readonly TimeSpan _reportingInterval = TimeSpan.FromSeconds(30);
@@ -26,7 +24,7 @@ sealed class TimedOperation : IDisposable
         _reportingTimer = new Timer(LogProgress, null, _reportingInterval, _reportingInterval);
     }
 
-    private void LogProgress(object notUsed)
+    private void LogProgress(object? notUsed)
     {
         Log.Info($"--- Time spent: {_timer.Elapsed.Humanize(2)}");
 
@@ -56,14 +54,9 @@ sealed class TimedOperation : IDisposable
         }
     }
 
-    public void AddWorkDone(int count)
-    {
-        Interlocked.Add(ref _workDone, count);
-    }
+    public void AddWorkDone(int count) => Interlocked.Add(ref _workDone, count);
 
-    public static TimedOperation Start(
-        string workItemName,
-        long totalWork = 0) => new TimedOperation(workItemName, totalWork);
+    public static TimedOperation Start(string workItemName, long totalWork = 0) => new(workItemName, totalWork);
 
     public void Dispose()
     {

@@ -7,7 +7,7 @@ namespace Buddhabrot.EdgeSpans;
 /// <summary>
 /// A line segment that spans across the set boundary.
 /// </summary>
-public struct EdgeSpan
+public readonly struct EdgeSpan
 {
     public readonly Complex InSet;
     public readonly Complex NotInSet;
@@ -22,17 +22,12 @@ public struct EdgeSpan
 
     public double LengthSquared() => (InSet - NotInSet).MagnitudeSquared();
 
-    public Complex GetMidPoint()
-    {
-        return new Complex(
+    public Complex GetMidPoint() =>
+        new(
             MidPointOf(InSet.Real, NotInSet.Real),
             MidPointOf(InSet.Imaginary, NotInSet.Imaginary));
-    }
 
-    private static double MidPointOf(double a, double b)
-    {
-        return a + 0.5 * (b - a);
-    }
+    private static double MidPointOf(double a, double b) => a + 0.5 * (b - a);
 
     public override string ToString() => $"(In Set: {InSet}, Not in Set: {NotInSet})";
 
@@ -60,7 +55,7 @@ public struct EdgeSpan
     }
 
 
-    public Complex FindBoundaryPoint(int iterationlimit) => FindBoundaryPoint(this, iterationlimit);
+    public Complex FindBoundaryPoint(int iterationLimit) => FindBoundaryPoint(this, iterationLimit);
 
     public static Complex FindBoundaryPoint(EdgeSpan span, int iterationLimit)
     {

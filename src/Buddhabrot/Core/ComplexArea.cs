@@ -19,5 +19,5 @@ public sealed class ComplexArea
 
     public override string ToString() => $"Real: {RealRange}, Imag: {ImagRange}";
 
-    public ComplexArea GetPositiveImagArea() => new ComplexArea(RealRange, new DoubleRange(0, ImagRange.ExclusiveMax));
+    public ComplexArea GetPositiveImagArea() => new(RealRange, new DoubleRange(0, ImagRange.ExclusiveMax));
 }

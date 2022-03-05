@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Buddhabrot.Utility;
+﻿namespace Buddhabrot.Utility;
 
 /// <summary>
 /// Keeps track of remaining work.
@@ -12,12 +9,9 @@ public sealed class WorkRemaining<T> : IDisposable
 
     // Stacks are fast since they are array based
     // The order of the work is irrelevant, so the LIFO behavior doesn't matter
-    private readonly Stack<T> _addedWorkBuffer = new Stack<T>();
+    private readonly Stack<T> _addedWorkBuffer = new();
 
-    public WorkRemaining(IEnumerable<T> sequence)
-    {
-        _enumerator = sequence.GetEnumerator();
-    }
+    public WorkRemaining(IEnumerable<T> sequence) => _enumerator = sequence.GetEnumerator();
 
     /// <summary>
     /// Adds additional work.  It will be consumed in a LIFO order.
@@ -54,8 +48,5 @@ public sealed class WorkRemaining<T> : IDisposable
         }
     }
 
-    public void Dispose()
-    {
-        _enumerator.Dispose();
-    }
+    public void Dispose() => _enumerator.Dispose();
 }

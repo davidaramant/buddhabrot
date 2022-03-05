@@ -25,7 +25,7 @@ public sealed class ViewPort
     private double GetRealValue(int x) => Area.RealRange.InclusiveMin + x * _realIncrement;
     private double GetImagValue(int y) => Area.ImagRange.InclusiveMin + FlipY(y) * _imagIncrement;
 
-    public Complex GetComplex(int x, int y) => new Complex(GetRealValue(x), GetImagValue(y));
+    public Complex GetComplex(int x, int y) => new (GetRealValue(x), GetImagValue(y));
     public Complex GetComplex(Point position) => GetComplex(position.X, position.Y);
 
     public Point GetPosition(Complex c) => new Point(

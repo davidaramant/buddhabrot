@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 namespace Buddhabrot.Extensions;
 
 public static class EnumerableExtensions
@@ -10,12 +8,10 @@ public static class EnumerableExtensions
         if (size <= 0)
             throw new ArgumentOutOfRangeException(nameof(size), "Must be greater than zero.");
 
-        using (IEnumerator<T> enumerator = sequence.GetEnumerator())
+        using IEnumerator<T> enumerator = sequence.GetEnumerator();
+        while (enumerator.MoveNext())
         {
-            while (enumerator.MoveNext())
-            {
-                yield return TakeIEnumerator(enumerator, size);
-            }
+            yield return TakeIEnumerator(enumerator, size);
         }
     }
 

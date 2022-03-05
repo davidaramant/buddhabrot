@@ -15,12 +15,9 @@ public sealed class DoubleRange
         ExclusiveMax = exclusiveMax;
     }
 
-    public bool IsInside(double value)
-    {
-        return
-            value >= InclusiveMin &&
-            value < ExclusiveMax;
-    }
+    public bool IsInside(double value) =>
+        value >= InclusiveMin &&
+        value < ExclusiveMax;
 
     public override string ToString() => $"[{InclusiveMin}, {ExclusiveMax})";
 }

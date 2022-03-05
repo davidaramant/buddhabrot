@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Threading;
+﻿using System.Numerics;
 using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;
@@ -11,17 +8,14 @@ namespace Buddhabrot.Points;
 public sealed class WorkBatch
 {
     private readonly Func<IPointBatch> _batchGetter;
-    private readonly List<EdgeSpan> _spans = new List<EdgeSpan>();
+    private readonly List<EdgeSpan> _spans = new();
     private IPointBatch _batch;
     private IPointBatchResults _results;
 
     public int Count => _batch?.Count ?? 0;
     public int Capacity => _batch?.Capacity ?? 0;
 
-    public WorkBatch(Func<IPointBatch> batchGetter)
-    {
-        _batchGetter = batchGetter;
-    }
+    public WorkBatch(Func<IPointBatch> batchGetter) => _batchGetter = batchGetter;
 
     public void Reset()
     {

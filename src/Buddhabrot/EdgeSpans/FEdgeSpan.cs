@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Buddhabrot.Core;
+﻿using Buddhabrot.Core;
 using Buddhabrot.IterationKernels;
 
 namespace Buddhabrot.EdgeSpans;
@@ -12,7 +6,7 @@ namespace Buddhabrot.EdgeSpans;
 /// <summary>
 /// A line segment that spans across the set boundary.
 /// </summary>
-public struct FEdgeSpan
+public readonly struct FEdgeSpan
 {
     public readonly FComplex InSet;
     public readonly FComplex NotInSet;
@@ -27,22 +21,17 @@ public struct FEdgeSpan
 
     public double LengthSquared() => (InSet - NotInSet).MagnitudeSquared();
 
-    public FComplex GetMidPoint()
-    {
-        return new FComplex(
+    public FComplex GetMidPoint() =>
+        new (
             MidPointOf(InSet.Real, NotInSet.Real),
             MidPointOf(InSet.Imaginary, NotInSet.Imaginary));
-    }
 
-    private static float MidPointOf(float a, float b)
-    {
-        return (a - a / 2) + b / 2;
-    }
+    private static float MidPointOf(float a, float b) => (a - a / 2) + b / 2;
 
     public override string ToString() => $"(In Set: {InSet}, Not in Set: {NotInSet})";
 
 
-    public FComplex FindBoundaryPoint(int iterationlimit) => FindBoundaryPoint(this, iterationlimit);
+    public FComplex FindBoundaryPoint(int iterationLimit) => FindBoundaryPoint(this, iterationLimit);
 
     public static FComplex FindBoundaryPoint(FEdgeSpan span, int iterationLimit)
     {

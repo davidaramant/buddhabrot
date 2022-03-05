@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Buddhabrot.Core;
+﻿namespace Buddhabrot.Core;
 
 public sealed class Logger : ILog
 {

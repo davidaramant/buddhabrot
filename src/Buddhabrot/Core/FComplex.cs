@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Numerics;
 
 namespace Buddhabrot.Core;
@@ -11,7 +10,7 @@ namespace Buddhabrot.Core;
 /// Adapted from Microsoft reference source for Complex: 
 /// http://referencesource.microsoft.com/#System.Numerics/System/Numerics/Complex.cs
 /// </remarks>
-public struct FComplex : IEquatable<FComplex>
+public readonly struct FComplex : IEquatable<FComplex>
 {
     public readonly float Real;
     public readonly float Imaginary;

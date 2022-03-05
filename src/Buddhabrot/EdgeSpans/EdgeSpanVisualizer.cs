@@ -1,8 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;
 using Buddhabrot.Images;
@@ -23,131 +19,128 @@ static class EdgeSpanVisualizer
             Log.Info("Displaying span directions as well.");
         }
 
-        using (var spans = EdgeSpanStream.Load(edgeSpansPath))
-        using (var timer = TimedOperation.Start("edge spans", totalWork: showDirections ? spans.Count * 2 : spans.Count))
+        using var spans = EdgeSpanStream.Load(edgeSpansPath);
+        using var timer = TimedOperation.Start("edge spans", totalWork: showDirections ? spans.Count * 2 : spans.Count);
+        var scale = showDirections ? 3 : 1;
+
+        var resolution = spans.ViewPort.Resolution.Scale(scale);
+
+        var image = new FastImage(resolution);
+
+        image.Fill(Color.White);
+
+        Parallel.ForEach(spans, logicalSpan =>
         {
-            var scale = showDirections ? 3 : 1;
-
-            var resolution = spans.ViewPort.Resolution.Scale(scale);
-
-            var image = new FastImage(resolution);
-
-            image.Fill(Color.White);
-
-            Parallel.ForEach(spans, logicalSpan =>
-            {
-                if (showDirections)
-                {
-                    var scaledLocation = logicalSpan.Location.Scale(scale);
-                    for (int yDelta = 0; yDelta < 3; yDelta++)
-                    {
-                        for (int xDelta = 0; xDelta < 3; xDelta++)
-                        {
-                            image.SetPixel(
-                                scaledLocation.OffsetBy(xDelta, yDelta),
-                                (logicalSpan.Location.X + logicalSpan.Location.Y) % 2 == 1 ? Color.Black : Color.Gray);
-                        }
-                    }
-                }
-                else
-                {
-                    image.SetPixel(
-                        logicalSpan.Location,
-                        Color.Black);
-                }
-                timer.AddWorkDone(1);
-            });
-
             if (showDirections)
             {
-                Parallel.ForEach(spans, locatedSpan =>
+                var scaledLocation = logicalSpan.Location.Scale(scale);
+                for (int yDelta = 0; yDelta < 3; yDelta++)
                 {
-                    var scaledLocation = locatedSpan.Location.Scale(scale);
-                    var pointingTo = scaledLocation.OffsetBy(1, 1).OffsetIn(locatedSpan.ToOutside);
-
-                    image.SetPixel(
-                        pointingTo,
-                        Color.Red);
-
-                    timer.AddWorkDone(1);
-                });
+                    for (int xDelta = 0; xDelta < 3; xDelta++)
+                    {
+                        image.SetPixel(
+                            scaledLocation.OffsetBy(xDelta, yDelta),
+                            (logicalSpan.Location.X + logicalSpan.Location.Y) % 2 == 1 ? Color.Black : Color.Gray);
+                    }
+                }
             }
+            else
+            {
+                image.SetPixel(
+                    logicalSpan.Location,
+                    Color.Black);
+            }
+            timer.AddWorkDone(1);
+        });
 
-            image.Save(imageFilePath);
+        if (showDirections)
+        {
+            Parallel.ForEach(spans, locatedSpan =>
+            {
+                var scaledLocation = locatedSpan.Location.Scale(scale);
+                var pointingTo = scaledLocation.OffsetBy(1, 1).OffsetIn(locatedSpan.ToOutside);
+
+                image.SetPixel(
+                    pointingTo,
+                    Color.Red);
+
+                timer.AddWorkDone(1);
+            });
         }
+
+        image.Save(imageFilePath);
     }
 
     public static void RenderSingleSpan(string edgeSpansPath, int spanIndex, int sideResolution)
     {
         var resolution = new Size(sideResolution, sideResolution);
 
-        using (var spans = EdgeSpanStream.Load(edgeSpansPath))
-        using (var timer = TimedOperation.Start("points", totalWork: resolution.Area()))
+        using var spans = EdgeSpanStream.Load(edgeSpansPath);
+        using var timer = TimedOperation.Start("points", totalWork: resolution.Area());
+        var random = new Random();
+
+        var index = spanIndex >= 0 ? spanIndex : random.Next(0, spans.Count);
+
+        var imageFilePath = Path.Combine(
+            Path.GetDirectoryName(edgeSpansPath) ?? throw new Exception($"Could not get directory name: {edgeSpansPath}"),
+            Path.GetFileNameWithoutExtension(edgeSpansPath) + $"_{index}_{sideResolution}x{sideResolution}.png");
+
+        Log.Info($"Using edge span index {index:N0}");
+        Log.Info($"Output file: {imageFilePath}");
+
+        var span = spans.ElementAt(index).ToConcreteDouble(spans.ViewPort);
+        var spanLength = span.Length();
+
+        Log.Info($"Edge span: {span} (length: {spanLength})");
+
+        var image = new FastImage(resolution);
+
+        var viewPort = new ViewPort(GetArea(span), resolution);
+        Log.Info($"View port: {viewPort}");
+
+
+        var positionInSet = viewPort.GetPosition(span.InSet);
+        var positionNotInSet = viewPort.GetPosition(span.NotInSet);
+
+        var highlightPixelRadius = resolution.Width / 100;
+
+        var borderPoint = span.FindBoundaryPoint(Constant.IterationRange.Max);
+        Log.Info($"Border point: {borderPoint} (escape time: {ScalarDoubleKernel.FindEscapeTime(borderPoint)})");
+        var borderPointPosition = viewPort.GetPosition(borderPoint);
+
+        // TODO: Why is the inner loop parallelized?
+        for (int row = 0; row < resolution.Height; row++)
         {
-            var random = new Random();
+            Parallel.For(0, resolution.Width,
+                col =>
+                {
+                    var position = new Point(col, row);
 
-            var index = spanIndex >= 0 ? spanIndex : random.Next(0, spans.Count);
+                    var c = viewPort.GetComplex(position);
 
-            var imageFilePath = Path.Combine(
-                Path.GetDirectoryName(edgeSpansPath),
-                Path.GetFileNameWithoutExtension(edgeSpansPath) + $"_{index}_{sideResolution}x{sideResolution}.png");
-
-            Log.Info($"Using edge span index {index:N0}");
-            Log.Info($"Output file: {imageFilePath}");
-
-            var span = spans.ElementAt(index).ToConcreteDouble(spans.ViewPort);
-            var spanLength = span.Length();
-
-            Log.Info($"Edge span: {span} (length: {spanLength})");
-
-            var image = new FastImage(resolution);
-
-            var viewPort = new ViewPort(GetArea(span), resolution);
-            Log.Info($"View port: {viewPort}");
-
-
-            var positionInSet = viewPort.GetPosition(span.InSet);
-            var positionNotInSet = viewPort.GetPosition(span.NotInSet);
-
-            var highlightPixelRadius = resolution.Width / 100;
-
-            var borderPoint = span.FindBoundaryPoint(Constant.IterationRange.Max);
-            Log.Info($"Border point: {borderPoint} (escape time: {ScalarDoubleKernel.FindEscapeTime(borderPoint)})");
-            var borderPointPosition = viewPort.GetPosition(borderPoint);
-
-            for (int row = 0; row < resolution.Height; row++)
-            {
-                Parallel.For(0, resolution.Width,
-                    col =>
+                    Color PickColor()
                     {
-                        var position = new Point(col, row);
+                        if (position.DistanceSquaredFrom(positionInSet) <= highlightPixelRadius)
+                            return Color.Red;
 
-                        var c = viewPort.GetComplex(position);
+                        if (position.DistanceSquaredFrom(positionNotInSet) <= highlightPixelRadius)
+                            return Color.ForestGreen;
 
-                        Color PickColor()
-                        {
-                            if (position.DistanceSquaredFrom(positionInSet) <= highlightPixelRadius)
-                                return Color.Red;
+                        if (position.DistanceSquaredFrom(borderPointPosition) <= highlightPixelRadius)
+                            return Color.Fuchsia;
 
-                            if (position.DistanceSquaredFrom(positionNotInSet) <= highlightPixelRadius)
-                                return Color.ForestGreen;
-
-                            if (position.DistanceSquaredFrom(borderPointPosition) <= highlightPixelRadius)
-                                return Color.Fuchsia;
-
-                            var isInSet = ScalarDoubleKernel.FindEscapeTime(c, Constant.IterationRange.Max).IsInfinite;
-                            return isInSet ? Color.FromArgb(0x20, 0x20, 0x20) : Color.White;
-                        }
+                        var isInSet = ScalarDoubleKernel.FindEscapeTime(c, Constant.IterationRange.Max).IsInfinite;
+                        return isInSet ? Color.FromArgb(0x20, 0x20, 0x20) : Color.White;
+                    }
 
 
-                        image.SetPixel(position, PickColor());
-                    });
+                    image.SetPixel(position, PickColor());
+                });
 
-                timer.AddWorkDone(resolution.Width);
-            }
-
-            image.Save(imageFilePath);
+            timer.AddWorkDone(resolution.Width);
         }
+
+        image.Save(imageFilePath);
     }
 
     private static ComplexArea GetArea(EdgeSpan span)

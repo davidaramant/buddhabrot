@@ -1,7 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
-using System.Threading;
+﻿using System.Drawing;
 using Buddhabrot.Core;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;

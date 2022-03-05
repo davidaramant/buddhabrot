@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+﻿using System.Drawing;
 using Buddhabrot.Core;
 using Buddhabrot.PointGrids;
 using Buddhabrot.Utility;
@@ -13,20 +11,18 @@ static class EdgeSpanLocator
         string pointGridFilePath,
         string outputFilePath)
     {
-        using (var pointGrid = PointGrid.Load(pointGridFilePath))
-        using (var timer = TimedOperation.Start("points", totalWork: pointGrid.ViewPort.Resolution.Height))
-        {
-            EdgeSpanStream.Write(
-                outputFilePath,
-                pointGrid.ViewPort,
-                pointGrid.ComputationType,
-                GetEdgeSpans(pointGrid, timer));
-        }
+        using var pointGrid = PointGrid.Load(pointGridFilePath);
+        using var timer = TimedOperation.Start("points", totalWork: pointGrid.ViewPort.Resolution.Height);
+        EdgeSpanStream.Write(
+            outputFilePath,
+            pointGrid.ViewPort,
+            pointGrid.ComputationType,
+            GetEdgeSpans(pointGrid, timer));
     }
 
     private static IEnumerable<LogicalEdgeSpan> GetEdgeSpans(IEnumerable<PointRow> rows, TimedOperation timer)
     {
-        IEnumerable<LogicalEdgeSpan> Process(PointRow aboveRow, PointRow currentRow, PointRow belowRow)
+        IEnumerable<LogicalEdgeSpan> Process(PointRow? aboveRow, PointRow? currentRow, PointRow? belowRow)
         {
             var y = currentRow.Y;
             int maxX = currentRow.Width - 1;
@@ -66,11 +62,11 @@ static class EdgeSpanLocator
                 SelectMany(rowBatch => Process(rowBatch.above, rowBatch.current, rowBatch.below));
     }
 
-    private static IEnumerable<(PointRow below, PointRow current, PointRow above)> GetRowBatches(
+    private static IEnumerable<(PointRow? below, PointRow? current, PointRow? above)> GetRowBatches(
         IEnumerable<PointRow> rows)
     {
-        PointRow row1 = null;
-        PointRow row0 = null;
+        PointRow? row1 = null;
+        PointRow? row0 = null;
 
         foreach (var row in rows)
         {

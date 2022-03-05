@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Buddhabrot.PointGrids;
+﻿namespace Buddhabrot.PointGrids;
 
 /// <summary>
 /// Stores whether the points in the row are inside the Mandelbrot set.
@@ -10,8 +6,7 @@ namespace Buddhabrot.PointGrids;
 public sealed class PointRow : IEnumerable<bool>
 {
     // TODO: This should use RowSetSegment
-    private readonly List<(bool inSet, int start, int length)> _segments =
-        new List<(bool inSet, int start, int length)>();
+    private readonly List<(bool inSet, int start, int length)> _segments = new();
 
     public int Y { get; }
     public int Width { get; }
@@ -49,23 +44,14 @@ public sealed class PointRow : IEnumerable<bool>
         }
     }
 
-    public IEnumerable<RowSetSegment> GetSegmentsInSet()
-    {
-        return _segments.Where(s => s.inSet).Select(s => new RowSetSegment(s.start, s.length));
-    }
+    public IEnumerable<RowSetSegment> GetSegmentsInSet() => 
+        _segments.Where(s => s.inSet).Select(s => new RowSetSegment(s.start, s.length));
 
-    public IEnumerable<int> GetXPositionsOfSet()
-    {
-        return _segments.Where(s => s.inSet).SelectMany(segment => Enumerable.Range(segment.start, segment.length));
-    }
+    public IEnumerable<int> GetXPositionsOfSet() => 
+        _segments.Where(s => s.inSet).SelectMany(segment => Enumerable.Range(segment.start, segment.length));
 
-    public IEnumerator<bool> GetEnumerator()
-    {
-        return _segments.SelectMany(segment => Enumerable.Repeat(segment.inSet, segment.length)).GetEnumerator();
-    }
+    public IEnumerator<bool> GetEnumerator() => 
+        _segments.SelectMany(segment => Enumerable.Repeat(segment.inSet, segment.length)).GetEnumerator();
 
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 }

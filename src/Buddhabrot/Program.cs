@@ -191,8 +191,6 @@ class Program
         //                return new ScalarKernel();
         //            case "vector":
         //                return new VectorKernel();
-        //            case "opencl":
-        //                return new KernelBuilder().BuildOpenCL();
         //            default:
         //                throw new ArgumentException("Unknown kernel type: " + name);
         //        }

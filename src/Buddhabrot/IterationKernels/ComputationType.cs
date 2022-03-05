@@ -6,6 +6,4 @@ public enum ComputationType
     ScalarDouble,
     VectorFloat,
     VectorDouble,
-    OpenCLFloat,
-    OpenCLDouble,
 }

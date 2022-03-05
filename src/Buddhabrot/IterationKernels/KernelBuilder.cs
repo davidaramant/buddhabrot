@@ -1,7 +1,4 @@
-﻿using System;
-using NOpenCL;
-
-namespace Buddhabrot.IterationKernels;
+﻿namespace Buddhabrot.IterationKernels;
 
 public static class KernelBuilder
 {
@@ -17,10 +14,4 @@ public static class KernelBuilder
                 throw new ArgumentException($"{type} is not a scalar type.");
         }
     }
-
-    //public IKernel BuildOpenCL()
-    //{
-    //    return null;
-    //    //return new OpenCLKernel(Platform.GetPlatforms()[0].GetDevices(DeviceType.Gpu).Single());
-    //}
 }

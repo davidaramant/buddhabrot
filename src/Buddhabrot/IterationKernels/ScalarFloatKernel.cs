@@ -22,7 +22,7 @@ public sealed class ScalarFloatKernel : IScalarKernel
     /// </returns>
     public static EscapeTime FindEscapeTime(Complex c)
     {
-        if (MandelbulbChecker.IsInsideBulbs(c))
+        if (BulbChecker.IsInsideBulbs(c))
             return EscapeTime.Infinite;
 
         var zReal = 0.0f;
@@ -69,7 +69,7 @@ public sealed class ScalarFloatKernel : IScalarKernel
 
     public static EscapeTime FindEscapeTime(Complex c, int maxIterations)
     {
-        if (MandelbulbChecker.IsInsideBulbs(c))
+        if (BulbChecker.IsInsideBulbs(c))
             return EscapeTime.Infinite;
 
         var zReal = 0.0f;
@@ -116,7 +116,7 @@ public sealed class ScalarFloatKernel : IScalarKernel
 
     public static EscapeTime FindEscapeTime(FComplex c, int maxIterations)
     {
-        if (MandelbulbChecker.IsInsideBulbs(c))
+        if (BulbChecker.IsInsideBulbs(c))
             return EscapeTime.Infinite;
 
         var zReal = 0.0f;

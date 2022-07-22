@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Linq;
 using BenchmarkDotNet.Attributes;
 using Buddhabrot.Core;
 using Buddhabrot.Extensions;

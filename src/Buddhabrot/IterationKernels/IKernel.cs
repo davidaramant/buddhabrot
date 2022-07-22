@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Buddhabrot.IterationKernels;
+﻿namespace Buddhabrot.IterationKernels;
 
 public interface IKernel : IDisposable
 {

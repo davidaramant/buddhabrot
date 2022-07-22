@@ -1,7 +1,4 @@
-﻿using System.Numerics;
-using System.Threading;
-using Buddhabrot.IterationKernels;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Tests.IterationKernels;
 

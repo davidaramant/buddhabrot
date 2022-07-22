@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using BenchmarkDotNet.Running;
+﻿using System.Diagnostics;
 using Humanizer;
 
 namespace Buddhabrot.Benchmarks;

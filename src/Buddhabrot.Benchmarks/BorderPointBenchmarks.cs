@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using BenchmarkDotNet.Attributes;
 using Buddhabrot.EdgeSpans;
 using Buddhabrot.IterationKernels;

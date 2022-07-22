@@ -8,7 +8,7 @@ namespace Buddhabrot.Benchmarks;
 
 public class BorderPointBenchmarks
 {
-    public static readonly EdgeSpan Span = new EdgeSpan(
+    public static readonly EdgeSpan Span = new(
         inSet: new Complex(0.326119203973466, 0.574384958997266),
         notInSet: new Complex(0.326119203973466, 0.574458297219815));
 

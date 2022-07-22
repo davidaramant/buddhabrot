@@ -10,7 +10,7 @@ namespace Buddhabrot.Benchmarks;
 public class AutomaticIterationLimitBenchmarks
 {
     private const int MaxIterations = 10000;
-    private readonly ViewPort _viewPort = new ViewPort(Constant.RenderingArea.GetPositiveImagArea(), new Size(100, 100).HalveVertically());
+    private readonly ViewPort _viewPort = new(Constant.RenderingArea.GetPositiveImagArea(), new Size(100, 100).HalveVertically());
 
     [Benchmark]
     public int FiniteIterationLimit()

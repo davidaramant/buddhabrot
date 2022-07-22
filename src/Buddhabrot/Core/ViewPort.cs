@@ -28,7 +28,7 @@ public sealed class ViewPort
     public Complex GetComplex(int x, int y) => new (GetRealValue(x), GetImagValue(y));
     public Complex GetComplex(Point position) => GetComplex(position.X, position.Y);
 
-    public Point GetPosition(Complex c) => new Point(
+    public Point GetPosition(Complex c) => new(
         (int)((c.Real - Area.RealRange.InclusiveMin) / _realIncrement),
         FlipY((int)((c.Imaginary - Area.ImagRange.InclusiveMin) / _imagIncrement)));
 

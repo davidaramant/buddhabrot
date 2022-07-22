@@ -18,9 +18,9 @@ public readonly struct FComplex : IEquatable<FComplex>
     public float Magnitude => FComplex.Abs(this);
     public float MagnitudeSquared() => Real * Real + Imaginary * Imaginary;
 
-    public static readonly FComplex Zero = new FComplex(0.0f, 0.0f);
-    public static readonly FComplex One = new FComplex(1.0f, 0.0f);
-    public static readonly FComplex ImaginaryOne = new FComplex(0.0f, 1.0f);
+    public static readonly FComplex Zero = new(0.0f, 0.0f);
+    public static readonly FComplex One = new(1.0f, 0.0f);
+    public static readonly FComplex ImaginaryOne = new(0.0f, 1.0f);
 
     public FComplex(float real, float imaginary)
     {
@@ -28,7 +28,7 @@ public readonly struct FComplex : IEquatable<FComplex>
         Imaginary = imaginary;
     }
 
-    public Complex ToDouble() => new Complex(Real, Imaginary);
+    public Complex ToDouble() => new(Real, Imaginary);
 
     // --------------SECTION: Arithmetic Operator(unary) Overloading -------------- //
     public static FComplex operator -(FComplex value)  /* Unary negation of a complex number */

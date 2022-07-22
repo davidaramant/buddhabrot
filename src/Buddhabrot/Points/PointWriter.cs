@@ -5,7 +5,7 @@ namespace Buddhabrot.Points;
 
 sealed class PointWriter
 {
-    private readonly object _fileLock = new object();
+    private readonly object _fileLock = new();
     private readonly string _filePath;
 
     public int Count { get; private set; }

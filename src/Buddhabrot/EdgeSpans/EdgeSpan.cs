@@ -7,17 +7,10 @@ namespace Buddhabrot.EdgeSpans;
 /// <summary>
 /// A line segment that spans across the set boundary.
 /// </summary>
-public readonly struct EdgeSpan
+public readonly record struct EdgeSpan(
+    Complex InSet,
+    Complex NotInSet)
 {
-    public readonly Complex InSet;
-    public readonly Complex NotInSet;
-
-    public EdgeSpan(Complex inSet, Complex notInSet)
-    {
-        InSet = inSet;
-        NotInSet = notInSet;
-    }
-
     public double Length() => (InSet - NotInSet).Magnitude;
 
     public double LengthSquared() => (InSet - NotInSet).MagnitudeSquared();
@@ -43,6 +36,7 @@ public readonly struct EdgeSpan
             {
                 return span.NotInSet;
             }
+
             lastLength = length;
             var middle = span.GetMidPoint();
 
@@ -69,6 +63,7 @@ public readonly struct EdgeSpan
             {
                 return span.NotInSet;
             }
+
             lastLength = length;
             var middle = span.GetMidPoint();
 

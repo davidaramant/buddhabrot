@@ -116,7 +116,7 @@ public readonly struct FComplex : IEquatable<FComplex>
         return ((left.Real != right.Real) || (left.Imaginary != right.Imaginary));
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (!(obj is FComplex)) return false;
         return this == ((FComplex)obj);

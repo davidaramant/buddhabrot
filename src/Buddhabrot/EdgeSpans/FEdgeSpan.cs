@@ -6,17 +6,10 @@ namespace Buddhabrot.EdgeSpans;
 /// <summary>
 /// A line segment that spans across the set boundary.
 /// </summary>
-public readonly struct FEdgeSpan
+public readonly record struct FEdgeSpan(
+    FComplex InSet,
+    FComplex NotInSet)
 {
-    public readonly FComplex InSet;
-    public readonly FComplex NotInSet;
-
-    public FEdgeSpan(FComplex inSet, FComplex notInSet)
-    {
-        InSet = inSet;
-        NotInSet = notInSet;
-    }
-
     public double Length() => (InSet - NotInSet).Magnitude;
 
     public double LengthSquared() => (InSet - NotInSet).MagnitudeSquared();

@@ -7,21 +7,14 @@ namespace Buddhabrot.EdgeSpans;
 /// <summary>
 /// The location of a point in the set and the direction to a point outside.
 /// </summary>
-public readonly struct LogicalEdgeSpan
+public readonly record struct LogicalEdgeSpan(
+    Point Location,
+    Direction ToOutside)
 {
-    public readonly Point Location;
-    public readonly Direction ToOutside;
-
-    public LogicalEdgeSpan(Point location, Direction toOutside)
-    {
-        Location = location;
-        ToOutside = toOutside;
-    }
-
     public EdgeSpan ToConcreteDouble(ViewPort viewPort) => new(
-        inSet: viewPort.GetComplex(Location),
-        notInSet: viewPort.GetComplex(Location.OffsetIn(ToOutside)));
+        InSet: viewPort.GetComplex(Location),
+        NotInSet: viewPort.GetComplex(Location.OffsetIn(ToOutside)));
     public FEdgeSpan ToConcreteFloat(ViewPort viewPort) => new(
-        inSet: viewPort.GetComplex(Location).ToFloat(),
-        notInSet: viewPort.GetComplex(Location.OffsetIn(ToOutside)).ToFloat());
+        InSet: viewPort.GetComplex(Location).ToFloat(),
+        NotInSet: viewPort.GetComplex(Location.OffsetIn(ToOutside)).ToFloat());
 }

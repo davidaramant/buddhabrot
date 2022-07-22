@@ -23,7 +23,7 @@ public sealed class EdgeSpanStreamTests
                 computationType: ComputationType.ScalarDouble,
                 spans: new[]
                 {
-                    new LogicalEdgeSpan(new Point(1,1),toOutside:Direction.Up),
+                    new LogicalEdgeSpan(new Point(1, 1), ToOutside: Direction.Up),
                 });
 
             using (var stream = EdgeSpanStream.Load(tempFile.Path))
@@ -37,6 +37,5 @@ public sealed class EdgeSpanStreamTests
                 Assert.That(span.ToOutside, Is.EqualTo(Direction.Up), "Wrong direction.");
             }
         }
-
     }
 }

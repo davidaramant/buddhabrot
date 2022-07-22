@@ -4,34 +4,25 @@ public sealed class Logger : ILog
 {
     private static int _count = 0;
     private readonly ConsoleColor _color;
+    private readonly string _context;
 
     public static ILog Create<T>() => new Logger(typeof(T).Name);
     public static ILog Create(string context) => new Logger(context);
-
-    private readonly string _context;
 
     private Logger(string context)
     {
         _context = context;
 
-        ConsoleColor PickColor()
-        {
-            switch (_count++ % 5)
+        ConsoleColor PickColor() =>
+            (_count++ % 5) switch
             {
-                case 0:
-                    return ConsoleColor.Green;
-                case 1:
-                    return ConsoleColor.Cyan;
-                case 2:
-                    return ConsoleColor.Red;
-                case 3:
-                    return ConsoleColor.Magenta;
-                case 4:
-                    return ConsoleColor.Yellow;
-                default:
-                    throw new Exception("WHAT");
-            }
-        }
+                0 => ConsoleColor.Green,
+                1 => ConsoleColor.Cyan,
+                2 => ConsoleColor.Red,
+                3 => ConsoleColor.Magenta,
+                4 => ConsoleColor.Yellow,
+                _ => throw new Exception("WHAT")
+            };
 
         _color = PickColor();
     }

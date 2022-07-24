@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot", "Buddhabrot\Buddhabrot.csproj", "{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{0D6E864E-E909-4AB2-8104-1C149A5F0913}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OldTests", "OldTests\OldTests.csproj", "{0D6E864E-E909-4AB2-8104-1C149A5F0913}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.Benchmarks", "Buddhabrot.Benchmarks\Buddhabrot.Benchmarks.csproj", "{E983D290-F91E-4BF6-AD58-19FA558C0560}"
 EndProject

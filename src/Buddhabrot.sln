@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.Benchmarks", "Bu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buddhabrot.Core", "Buddhabrot.Core\Buddhabrot.Core.csproj", "{2CAF96A9-247F-4FCC-9092-56470AEC2A93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoundaryFinder", "BoundaryFinder\BoundaryFinder.csproj", "{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,14 @@ Global
 		{2CAF96A9-247F-4FCC-9092-56470AEC2A93}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2CAF96A9-247F-4FCC-9092-56470AEC2A93}.Release|x64.ActiveCfg = Release|Any CPU
 		{2CAF96A9-247F-4FCC-9092-56470AEC2A93}.Release|x64.Build.0 = Release|Any CPU
+		{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}.Debug|x64.Build.0 = Debug|Any CPU
+		{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}.Release|x64.ActiveCfg = Release|Any CPU
+		{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

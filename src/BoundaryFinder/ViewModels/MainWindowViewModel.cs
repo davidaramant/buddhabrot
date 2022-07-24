@@ -1,6 +1,45 @@
-﻿namespace BoundaryFinder.ViewModels;
+﻿using ReactiveUI;
+
+namespace BoundaryFinder.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public string Greeting => "Welcome to Avalonia!";
+    private int _minimumIterations = 5_000_000;
+    private int _maximumIterations = 15_000_000;
+    private int _verticalDivisions = 1024;
+    private readonly ObservableAsPropertyHelper<double> _scanAreaWidth;
+    private readonly ObservableAsPropertyHelper<double> _scanArea;
+
+    public int VerticalDistance => HorizontalDistance / 2;
+    public int HorizontalDistance {get;} = 4;
+
+
+    public int MinimumIterations
+    {
+        get => _minimumIterations;
+        set => this.RaiseAndSetIfChanged(ref _minimumIterations, value);
+    }
+
+    public int MaximumIterations
+    {
+        get => _maximumIterations;
+        set => this.RaiseAndSetIfChanged(ref _maximumIterations, value);
+    }
+
+    public int VerticalDivisions
+    {
+        get => _verticalDivisions;
+        set => this.RaiseAndSetIfChanged(ref _verticalDivisions, value);
+    }
+
+    public double ScanAreaWidth => _scanAreaWidth.Value;
+    public double ScanArea => _scanArea.Value;
+
+    public MainWindowViewModel()
+    {
+        this.WhenAnyValue(x => x.VerticalDivisions, divisions => VerticalDistance / (double)divisions)
+            .ToProperty(this, x => x.ScanAreaWidth, out _scanAreaWidth);
+        this.WhenAnyValue(x => x.ScanAreaWidth, width => width * width)
+            .ToProperty(this, x => x.ScanArea, out _scanArea);
+    }
 }

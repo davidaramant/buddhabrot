@@ -5,13 +5,80 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="BoundaryFinder.Views.MainWindow"
+        x:CompileBindings="True"
         Icon="/Assets/avalonia-logo.ico"
-        Title="BoundaryFinder">
+        Title="Mandelbrot Set Boundary Finder"
+        x:DataType="vm:MainWindowViewModel">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid
+        ColumnDefinitions="Auto,Auto,*"
+        RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
+        <Grid.Styles>
+            <Style Selector="Label">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="4" />
+            </Style>
+            <Style Selector="NumericUpDown">
+                <Setter Property="Margin" Value="4" />
+                <Setter Property="Width" Value="200" />
+                <Setter Property="Increment" Value="1" />
+                <Setter Property="Minimum" Value="1" />
+                <Setter Property="ParsingNumberStyle" Value="Integer" />
+                <Setter Property="FormatString" Value="N0" />
+                <Setter Property="HorizontalContentAlignment" Value="Right" />
+            </Style>
+            <Style Selector="TextBlock">
+                <Setter Property="Margin" Value="4" />
+            </Style>
+        </Grid.Styles>
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Content="Iteration Minimum:" />
+        <NumericUpDown
+            Grid.Row="0"
+            Grid.Column="1"
+            Value="{Binding MinimumIterations}" />
+
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            Content="Iteration Maximum:" />
+        <NumericUpDown
+            Grid.Row="1"
+            Grid.Column="1"
+            Value="{Binding MaximumIterations}" />
+
+        <Label
+            Grid.Row="2"
+            Grid.Column="0"
+            Content="Vertical Divisions:" />
+        <NumericUpDown
+            Grid.Row="2"
+            Grid.Column="1"
+            Value="{Binding VerticalDivisions}" />
+
+        <Label
+            Grid.Row="3"
+            Grid.Column="0"
+            Content="Scan Area Width:" />
+        <TextBlock
+            Grid.Row="3"
+            Grid.Column="1"
+            Text="{Binding ScanAreaWidth, StringFormat=\{0:N10\}}" />
+
+        <Label
+            Grid.Row="4"
+            Grid.Column="0"
+            Content="Scan Area:" />
+        <TextBlock
+            Grid.Row="4"
+            Grid.Column="1"
+            Text="{Binding ScanArea, StringFormat=\{0:N10\}}" />
+    </Grid>
 
 </Window>

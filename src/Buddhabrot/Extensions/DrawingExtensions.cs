@@ -38,7 +38,7 @@ public static class DrawingExtensions
             _ => throw new ArgumentException($"Unknown direction: {direction}")
         };
 
-    public static Size HalveVertically(this Size size) => new(size.Width, size.Height / 2);
+    public static Size HalveVertically(this Size size) => size with { Height = size.Height / 2 };
 
     public static IEnumerable<Point> GetPositionsRowFirst(this Size resolution)
     {

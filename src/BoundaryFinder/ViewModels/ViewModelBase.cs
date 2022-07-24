@@ -1,8 +1,7 @@
 ﻿using ReactiveUI;
 
-namespace BoundaryFinder.ViewModels
+namespace BoundaryFinder.ViewModels;
+
+public class ViewModelBase : ReactiveObject
 {
-    public class ViewModelBase : ReactiveObject
-    {
-    }
 }

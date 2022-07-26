@@ -71,7 +71,7 @@ public class MainWindowViewModel : ViewModelBase
         var progress = new Progress<AreaId>(id => Dispatcher.UIThread.Post(() => Output += id + Environment.NewLine));
 
         var areas = await Task.Run(
-            () => BoundaryCalculator.FindBoundaryAreas(new AreaSizeInfo(VerticalDivisions), progress, cancelToken),
+            () => BoundaryCalculator.FindBoundaryAreasAsync(new AreaSizeInfo(VerticalDivisions), progress, cancelToken),
             cancelToken);
 
         Output = $"Num Areas: {areas.Count}";

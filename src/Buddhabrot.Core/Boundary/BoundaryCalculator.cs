@@ -1,41 +1,13 @@
-﻿using System.Collections.Concurrent;
-using System.Numerics;
-using Buddhabrot.Core.IterationKernels;
-
-namespace Buddhabrot.Core.Boundary;
+﻿namespace Buddhabrot.Core.Boundary;
 
 public static class BoundaryCalculator
 {
-    readonly record struct LatticePoint(int EncodedPosition)
-    {
-        public int X => ushort.MaxValue & EncodedPosition;
-        public int Y => EncodedPosition >> 16;
-
-        public LatticePoint(int x, int y) : this((y << 16) + x)
-        {
-        }
-    }
-
-    record AreaCorners(
-        bool LowerLeft,
-        bool LowerRight,
-        bool UpperRight,
-        bool UpperLeft)
-    {
-        public bool IsUpperEdge => UpperLeft != UpperRight;
-        public bool IsLowerEdge => LowerLeft != LowerRight;
-        public bool IsLeftEdge => LowerLeft != UpperLeft;
-        public bool IsRightEdge => LowerRight != UpperRight;
-
-        public bool ContainsBorder => IsUpperEdge || IsLowerEdge || IsLeftEdge || IsRightEdge;
-    }
-
-    public static async Task<IReadOnlyList<AreaId>> FindBoundaryAreas(
+    public static async Task<IReadOnlyList<AreaId>> FindBoundaryAreasAsync(
         AreaSizeInfo areaSizeInfo,
         IProgress<AreaId> progress,
         CancellationToken cancelToken = default)
     {
-        ConcurrentDictionary<LatticePoint, bool> isPointInSet = new();
+        var cornerComputer = new CornerComputer(areaSizeInfo);
         Dictionary<AreaId, bool> doesAreaContainBorder = new();
         Queue<AreaId> idsToCheck = new();
         idsToCheck.Enqueue(new AreaId(0, 0));
@@ -44,7 +16,7 @@ public static class BoundaryCalculator
         {
             var currentId = idsToCheck.Dequeue();
 
-            var corners = await GetAreaCorners(currentId);
+            var corners = await cornerComputer.GetAreaCornersAsync(currentId, cancelToken);
             
             doesAreaContainBorder.Add(currentId, corners.ContainsBorder);
 
@@ -84,37 +56,6 @@ public static class BoundaryCalculator
                 return;
             
             idsToCheck.Enqueue(id);
-        }
-
-        async Task<AreaCorners> GetAreaCorners(AreaId id)
-        {
-            var lowerLeftTask = IsPointInSet(new LatticePoint(id.X, id.Y));
-            var lowerRightTask = IsPointInSet(new LatticePoint(id.X + 1, id.Y));
-            var upperRightTask = IsPointInSet(new LatticePoint(id.X + 1, id.Y + 1));
-            var upperLeftTask = IsPointInSet(new LatticePoint(id.X, id.Y + 1));
-
-            await Task.WhenAll(lowerLeftTask, lowerRightTask, upperRightTask, upperLeftTask);
-
-            return new AreaCorners(
-                lowerLeftTask.Result,
-                lowerRightTask.Result,
-                upperRightTask.Result,
-                upperLeftTask.Result);
-        }
-
-        async Task<bool> IsPointInSet(LatticePoint point)
-        {
-            if (isPointInSet.TryGetValue(point, out var inSet))
-            {
-                return inSet;
-            }
-
-            Complex c = new Complex(
-                real: point.X * areaSizeInfo.SideLength - 2,
-                imaginary: point.Y * areaSizeInfo.SideLength);
-            inSet = await Task.Run(() => ScalarDoubleKernel.IsInSet(c), cancelToken);
-            isPointInSet.TryAdd(point, inSet);
-            return inSet;
         }
     }
 }

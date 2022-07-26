@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using Buddhabrot.Core.Boundary;
 using ReactiveUI;
 
@@ -15,10 +16,10 @@ public class MainWindowViewModel : ViewModelBase
     private int _verticalDivisions = 1024;
     private readonly ObservableAsPropertyHelper<double> _scanAreaWidth;
     private readonly ObservableAsPropertyHelper<double> _scanArea;
-    private CancellationTokenSource _cancelSource = new();
+    private string _output = string.Empty;
 
     public int VerticalDistance => HorizontalDistance / 2;
-    public int HorizontalDistance {get;} = 4;
+    public int HorizontalDistance { get; } = 4;
 
 
     public int MinimumIterations
@@ -41,9 +42,15 @@ public class MainWindowViewModel : ViewModelBase
 
     public double ScanAreaWidth => _scanAreaWidth.Value;
     public double ScanArea => _scanArea.Value;
-    
-    public ReactiveCommand<Unit,Unit> FindBoundary { get; }
-    public ReactiveCommand<Unit,Unit> CancelFindingBoundary { get; }
+
+    public ReactiveCommand<Unit, Unit> FindBoundary { get; }
+    public ReactiveCommand<Unit, Unit> CancelFindingBoundary { get; }
+
+    public string Output
+    {
+        get => _output;
+        private set => this.RaiseAndSetIfChanged(ref _output, value);
+    }
 
     public MainWindowViewModel()
     {
@@ -61,10 +68,12 @@ public class MainWindowViewModel : ViewModelBase
 
     private async Task FindBoundaryAsync(CancellationToken cancelToken)
     {
+        var progress = new Progress<AreaId>(id => Dispatcher.UIThread.Post(() => Output += id + Environment.NewLine));
+
         var areas = await Task.Run(
-            () => BoundaryCalculator.FindBoundaryAreas(new AreaSizeInfo(VerticalDivisions), cancelToken), 
+            () => BoundaryCalculator.FindBoundaryAreas(new AreaSizeInfo(VerticalDivisions), progress, cancelToken),
             cancelToken);
 
-        // TODO: What do I do with them?
+        Output = $"Num Areas: {areas.Count}";
     }
 }

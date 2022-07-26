@@ -6,7 +6,7 @@
 /// <remarks>
 /// Origin is the bottom-left (-2 + 0i)
 /// </remarks>
-public record struct AreaId(int EncodedPosition)
+public readonly record struct AreaId(int EncodedPosition)
 {
     public int X => ushort.MaxValue & EncodedPosition;
     public int Y => EncodedPosition >> 16;

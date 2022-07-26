@@ -16,10 +16,10 @@ public sealed class ScalarDoubleKernel
     /// <returns>
     /// The <see cref="EscapeTime"/> of the point.
     /// </returns>
-    public static EscapeTime FindEscapeTime(Complex c)
+    public static bool IsInSet(Complex c)
     {
         if (BulbChecker.IsInsideBulbs(c))
-            return EscapeTime.Infinite;
+            return true;
 
         var zReal = 0.0;
         var zImag = 0.0;
@@ -46,7 +46,7 @@ public sealed class ScalarDoubleKernel
             z2Imag = zImag * zImag;
 
             if (oldZReal == zReal && oldZImag == zImag)
-                return EscapeTime.Infinite;
+                return true;
 
             if (stepsTaken == stepLimit)
             {
@@ -57,7 +57,7 @@ public sealed class ScalarDoubleKernel
             }
         }
 
-        return EscapeTime.Discrete(iterations);
+        return false;
     }
 
     public static EscapeTime FindEscapeTime(Complex c, int maxIterations)

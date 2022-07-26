@@ -91,6 +91,17 @@
             Grid.Column="1"
             Content="Cancel"
             Command="{Binding CancelFindingBoundary}" />
+
+        <ScrollViewer
+            Grid.Row="6"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            VerticalAlignment="Stretch">
+            <TextBox
+                IsReadOnly="True"
+                VerticalAlignment="Stretch"
+                Text="{Binding Output, Mode=OneWay}"/>
+        </ScrollViewer>
     </Grid>
 
 </Window>

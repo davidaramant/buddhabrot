@@ -20,9 +20,12 @@
         <Grid.Styles>
             <Style Selector=":is(ContentControl)">
                 <Setter Property="Margin" Value="4" />
+            </Style>
+            <Style Selector="Label">
                 <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
             <Style Selector="NumericUpDown.integerInput">
+                <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="Width" Value="300" />
                 <Setter Property="Increment" Value="1" />
                 <Setter Property="Minimum" Value="1" />
@@ -92,16 +95,14 @@
             Content="Cancel"
             Command="{Binding CancelFindingBoundary}" />
 
-        <ScrollViewer
+        <TextBox
             Grid.Row="6"
             Grid.Column="0"
-            Grid.ColumnSpan="2"
-            VerticalAlignment="Stretch">
-            <TextBox
-                IsReadOnly="True"
-                VerticalAlignment="Stretch"
-                Text="{Binding Output, Mode=OneWay}"/>
-        </ScrollViewer>
+            Grid.ColumnSpan="3"
+            IsReadOnly="True"
+            TextWrapping="Wrap"
+            VerticalContentAlignment="Stretch"
+            Text="{Binding Output, Mode=OneWay}" />
     </Grid>
 
 </Window>

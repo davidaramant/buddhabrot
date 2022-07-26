@@ -4,7 +4,7 @@ public static class BoundaryCalculator
 {
     public static async Task<IReadOnlyList<AreaId>> FindBoundaryAreasAsync(
         PlotParameters plotParameters,
-        IProgress<AreaId> progress,
+        IProgress<AreaId>? progress,
         CancellationToken cancelToken = default)
     {
         var cornerComputer = new CornerComputer(plotParameters);
@@ -43,7 +43,7 @@ public static class BoundaryCalculator
                 AddIdToCheck(currentId.X + 1, currentId.Y);
             }
             
-            progress.Report(currentId);
+            progress?.Report(currentId);
         }
 
         return doesAreaContainBorder.Where(pair => pair.Value).Select(pair => pair.Key).ToList();

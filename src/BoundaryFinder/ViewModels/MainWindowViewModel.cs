@@ -76,7 +76,7 @@ public class MainWindowViewModel : ViewModelBase
 
             var areas = await Task.Run(
                 () => BoundaryCalculator.FindBoundaryAreasAsync(
-                    new AreaSizeInfo(VerticalDivisions, new IterationRange(MinimumIterations, MaximumIterations)),
+                    new PlotParameters(VerticalDivisions, new IterationRange(MinimumIterations, MaximumIterations)),
                     progress,
                     cancelToken),
                 cancelToken);

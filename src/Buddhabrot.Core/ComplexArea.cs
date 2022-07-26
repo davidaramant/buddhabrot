@@ -2,22 +2,13 @@
 
 namespace Buddhabrot.Core;
 
-public sealed class ComplexArea
+public sealed record ComplexArea(
+    DoubleRange RealRange,
+    DoubleRange ImagRange)
 {
-    public DoubleRange RealRange { get; }
-    public DoubleRange ImagRange { get; }
-
-    public ComplexArea(DoubleRange realRange, DoubleRange imagRange)
-    {
-        RealRange = realRange;
-        ImagRange = imagRange;
-    }
-
     public bool IsInside(Complex number) =>
         RealRange.IsInside(number.Real) &&
         ImagRange.IsInside(number.Imaginary);
-
-    public override string ToString() => $"Real: {RealRange}, Imag: {ImagRange}";
 
     public ComplexArea GetPositiveImagArea() => new(RealRange, new DoubleRange(0, ImagRange.ExclusiveMax));
 }

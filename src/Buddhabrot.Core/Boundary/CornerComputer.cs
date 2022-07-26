@@ -6,32 +6,32 @@ namespace Buddhabrot.Core.Boundary;
 
 public sealed class CornerComputer
 {
-    private readonly ConcurrentDictionary<CornerPoint, bool> _isPointInSet = new();
-    private readonly AreaSizeInfo _areaSizeInfo;
+    private readonly ConcurrentDictionary<CornerId, bool> _isCornerInSet = new();
+    private readonly PlotParameters _plotParameters;
 
-    public CornerComputer(AreaSizeInfo areaSizeInfo) => _areaSizeInfo = areaSizeInfo;
+    public CornerComputer(PlotParameters plotParameters) => _plotParameters = plotParameters;
 
-    private async Task<bool> IsPointInSetAsync(CornerPoint point, CancellationToken cancelToken = default)
+    private async Task<bool> IsCornerInSetAsync(CornerId corner, CancellationToken cancelToken = default)
     {
-        if (_isPointInSet.TryGetValue(point, out var inSet))
+        if (_isCornerInSet.TryGetValue(corner, out var inSet))
         {
             return inSet;
         }
 
-        Complex c = new Complex(
-            real: point.X * _areaSizeInfo.SideLength - 2,
-            imaginary: point.Y * _areaSizeInfo.SideLength);
-        inSet = await Task.Run(() => ScalarDoubleKernel.FindEscapeTime(c, _areaSizeInfo.IterationRange.Max) == EscapeTime.Infinite, cancelToken);
-        _isPointInSet.TryAdd(point, inSet);
+        Complex c = new(
+            real: corner.X * _plotParameters.SideLength - 2,
+            imaginary: corner.Y * _plotParameters.SideLength);
+        inSet = await Task.Run(() => ScalarDoubleKernel.FindEscapeTime(c, _plotParameters.IterationRange.Max) == EscapeTime.Infinite, cancelToken);
+        _isCornerInSet.TryAdd(corner, inSet);
         return inSet;
     }
     
     public async ValueTask<CornersInSet> GetAreaCornersAsync(AreaId id, CancellationToken cancelToken)
     {
-        var lowerLeftTask = IsPointInSetAsync(new CornerPoint(id.X, id.Y), cancelToken);
-        var lowerRightTask = IsPointInSetAsync(new CornerPoint(id.X + 1, id.Y), cancelToken);
-        var upperRightTask = IsPointInSetAsync(new CornerPoint(id.X + 1, id.Y + 1), cancelToken);
-        var upperLeftTask = IsPointInSetAsync(new CornerPoint(id.X, id.Y + 1), cancelToken);
+        var lowerLeftTask = IsCornerInSetAsync(new CornerId(id.X, id.Y), cancelToken);
+        var lowerRightTask = IsCornerInSetAsync(new CornerId(id.X + 1, id.Y), cancelToken);
+        var upperRightTask = IsCornerInSetAsync(new CornerId(id.X + 1, id.Y + 1), cancelToken);
+        var upperLeftTask = IsCornerInSetAsync(new CornerId(id.X, id.Y + 1), cancelToken);
 
         await Task.WhenAll(lowerLeftTask, lowerRightTask, upperRightTask, upperLeftTask);
 

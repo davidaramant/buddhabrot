@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using ReactiveUI;
 
@@ -74,7 +75,9 @@ public class MainWindowViewModel : ViewModelBase
                 new Progress<AreaId>(id => Dispatcher.UIThread.Post(() => Output += id + Environment.NewLine));
 
             var areas = await Task.Run(
-                () => BoundaryCalculator.FindBoundaryAreasAsync(new AreaSizeInfo(VerticalDivisions), progress,
+                () => BoundaryCalculator.FindBoundaryAreasAsync(
+                    new AreaSizeInfo(VerticalDivisions, new IterationRange(MinimumIterations, MaximumIterations)),
+                    progress,
                     cancelToken),
                 cancelToken);
 

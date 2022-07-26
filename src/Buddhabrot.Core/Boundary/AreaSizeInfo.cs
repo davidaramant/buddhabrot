@@ -1,7 +1,8 @@
 ﻿namespace Buddhabrot.Core.Boundary;
 
 public record AreaSizeInfo(
-    int VerticalDivisions)
+    int VerticalDivisions,
+    IterationRange IterationRange)
 {
     public double SideLength => 2.0 / VerticalDivisions;
 

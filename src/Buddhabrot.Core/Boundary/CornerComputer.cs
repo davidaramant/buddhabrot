@@ -21,7 +21,7 @@ public sealed class CornerComputer
         Complex c = new Complex(
             real: point.X * _areaSizeInfo.SideLength - 2,
             imaginary: point.Y * _areaSizeInfo.SideLength);
-        inSet = await Task.Run(() => ScalarDoubleKernel.IsInSet(c), cancelToken);
+        inSet = await Task.Run(() => ScalarDoubleKernel.FindEscapeTime(c, _areaSizeInfo.IterationRange.Max) == EscapeTime.Infinite, cancelToken);
         _isPointInSet.TryAdd(point, inSet);
         return inSet;
     }

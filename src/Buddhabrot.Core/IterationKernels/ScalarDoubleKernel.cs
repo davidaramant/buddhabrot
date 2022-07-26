@@ -4,7 +4,7 @@ using System.Numerics;
 namespace Buddhabrot.Core.IterationKernels;
 
 [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Cycle detection requires direct float comparisons.")]
-public sealed class ScalarDoubleKernel 
+public static class ScalarDoubleKernel 
 {
     /// <summary>
     /// Determines whether the point is in the set, without using an arbitrary iteration limit.

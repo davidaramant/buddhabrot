@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Buddhabrot.Core.Boundary;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
@@ -60,9 +61,10 @@ public class MainWindowViewModel : ViewModelBase
 
     private async Task FindBoundaryAsync(CancellationToken cancelToken)
     {
-        while (!cancelToken.IsCancellationRequested)
-        {
-            await Task.Delay(TimeSpan.FromMilliseconds(50));
-        }
+        var areas = await Task.Run(
+            () => BoundaryCalculator.FindBoundaryAreas(new AreaSizeInfo(VerticalDivisions), cancelToken), 
+            cancelToken);
+
+        // TODO: What do I do with them?
     }
 }

@@ -14,4 +14,6 @@ public readonly record struct AreaId(int EncodedPosition)
     public AreaId(int x, int y) : this((y << 16) + x)
     {
     }
+
+    public override string ToString() => $"Area({X}, {Y})";
 }

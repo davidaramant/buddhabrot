@@ -54,7 +54,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
-        this.WhenAnyValue(x => x.VerticalDivisions, divisions => VerticalDistance / (double)divisions)
+        this.WhenAnyValue(x => x.VerticalDivisions, divisions => VerticalDistance / (double) divisions)
             .ToProperty(this, x => x.ScanAreaWidth, out _scanAreaWidth);
         this.WhenAnyValue(x => x.ScanAreaWidth, width => width * width)
             .ToProperty(this, x => x.ScanArea, out _scanArea);
@@ -68,12 +68,21 @@ public class MainWindowViewModel : ViewModelBase
 
     private async Task FindBoundaryAsync(CancellationToken cancelToken)
     {
-        var progress = new Progress<AreaId>(id => Dispatcher.UIThread.Post(() => Output += id + Environment.NewLine));
+        try
+        {
+            var progress =
+                new Progress<AreaId>(id => Dispatcher.UIThread.Post(() => Output += id + Environment.NewLine));
 
-        var areas = await Task.Run(
-            () => BoundaryCalculator.FindBoundaryAreasAsync(new AreaSizeInfo(VerticalDivisions), progress, cancelToken),
-            cancelToken);
+            var areas = await Task.Run(
+                () => BoundaryCalculator.FindBoundaryAreasAsync(new AreaSizeInfo(VerticalDivisions), progress,
+                    cancelToken),
+                cancelToken);
 
-        Output = $"Num Areas: {areas.Count}";
+            Output = $"Num Areas: {areas.Count}";
+        }
+        catch (Exception e)
+        {
+            Output = e.ToString();
+        }
     }
 }

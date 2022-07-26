@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Boundary;
+namespace Buddhabrot.Core.Boundary;
 
 public static class BoundaryCalculator
 {
@@ -15,6 +15,9 @@ public static class BoundaryCalculator
         while (idsToCheck.Any())
         {
             var currentId = idsToCheck.Dequeue();
+            
+            if (doesAreaContainBorder.ContainsKey(currentId))
+                continue;
 
             var corners = await cornerComputer.GetAreaCornersAsync(currentId, cancelToken);
             

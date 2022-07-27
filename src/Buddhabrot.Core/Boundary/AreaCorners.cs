@@ -4,12 +4,12 @@ using Buddhabrot.Core.IterationKernels;
 
 namespace Buddhabrot.Core.Boundary;
 
-public sealed class CornerComputer
+public sealed class AreaCorners
 {
     private readonly ConcurrentDictionary<CornerId, bool> _isCornerInSet = new();
     private readonly PlotParameters _plotParameters;
 
-    public CornerComputer(PlotParameters plotParameters) => _plotParameters = plotParameters;
+    public AreaCorners(PlotParameters plotParameters) => _plotParameters = plotParameters;
 
     private async Task<bool> IsCornerInSetAsync(CornerId corner, CancellationToken cancelToken = default)
     {

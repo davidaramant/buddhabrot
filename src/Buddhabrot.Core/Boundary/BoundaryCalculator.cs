@@ -7,7 +7,7 @@ public static class BoundaryCalculator
         IProgress<AreaId>? progress,
         CancellationToken cancelToken = default)
     {
-        var cornerComputer = new CornerComputer(plotParameters);
+        var cornerComputer = new AreaCorners(plotParameters);
         Dictionary<AreaId, bool> doesAreaContainBorder = new();
         Queue<AreaId> idsToCheck = new();
         idsToCheck.Enqueue(new AreaId(0, 0));
@@ -50,7 +50,7 @@ public static class BoundaryCalculator
 
         void AddIdToCheck(int x, int y)
         {
-            if (x < 0 || y < 0 || x >= plotParameters.VerticalDivisions * 2 || y >= plotParameters.VerticalDivisions)
+            if (x < 0 || y < 0 || x >= (plotParameters.VerticalDivisions * 2) || y >= plotParameters.VerticalDivisions)
                 return;
 
             var id = new AreaId(x, y);

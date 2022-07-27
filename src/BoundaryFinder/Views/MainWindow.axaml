@@ -16,7 +16,7 @@
 
     <Grid
         ColumnDefinitions="Auto,Auto,*"
-        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*">
+        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
         <Grid.Styles>
             <Style Selector=":is(ContentControl)">
                 <Setter Property="Margin" Value="4" />
@@ -84,19 +84,29 @@
             IsReadOnly="True"
             Text="{Binding ScanArea, StringFormat=\{0:N10\}, Mode=OneWay}" />
 
-        <Button
+        <Label
             Grid.Row="5"
+            Grid.Column="0"
+            Content="Border Areas Found:"/>
+        <TextBox
+            Grid.Row="5"
+            Grid.Column="1"
+            IsReadOnly="True"
+            Text="{Binding NumBorderAreasFound, StringFormat=\{0:N0\}, Mode=OneWay}" />
+        
+        <Button
+            Grid.Row="6"
             Grid.Column="0"
             Content="Find Boundary"
             Command="{Binding FindBoundary}" />
         <Button
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.Column="1"
             Content="Cancel"
             Command="{Binding CancelFindingBoundary}" />
 
         <TextBox
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             IsReadOnly="True"

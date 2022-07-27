@@ -3,11 +3,11 @@ namespace Buddhabrot.Core.Boundary;
 public static class BoundaryCalculator
 {
     public static async Task<IReadOnlyList<AreaId>> FindBoundaryAreasAsync(
-        PlotParameters plotParameters,
+        BoundaryParameters boundaryParameters,
         IProgress<AreaId>? progress,
         CancellationToken cancelToken = default)
     {
-        var cornerComputer = new AreaCorners(plotParameters);
+        var cornerComputer = new AreaCorners(boundaryParameters);
         Dictionary<AreaId, bool> doesAreaContainBorder = new();
         Queue<AreaId> idsToCheck = new();
         idsToCheck.Enqueue(new AreaId(0, 0));
@@ -50,7 +50,7 @@ public static class BoundaryCalculator
 
         void AddIdToCheck(int x, int y)
         {
-            if (x < 0 || y < 0 || x >= (plotParameters.VerticalDivisions * 2) || y >= plotParameters.VerticalDivisions)
+            if (x < 0 || y < 0 || x >= (boundaryParameters.VerticalDivisions * 2) || y >= boundaryParameters.VerticalDivisions)
                 return;
 
             var id = new AreaId(x, y);

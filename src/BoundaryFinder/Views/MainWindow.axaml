@@ -15,32 +15,37 @@
     </Design.DataContext>
 
     <TabControl>
+        <TabControl.Styles>
+            <Style Selector=":is(ContentControl)">
+                <Setter Property="Margin" Value="4" />
+            </Style>
+            <Style Selector="Label">
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style Selector="NumericUpDown.integerInput">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Width" Value="300" />
+                <Setter Property="Increment" Value="1" />
+                <Setter Property="Minimum" Value="1" />
+                <Setter Property="ParsingNumberStyle" Value="Integer" />
+                <Setter Property="FormatString" Value="N0" />
+                <Setter Property="HorizontalContentAlignment" Value="Right" />
+            </Style>
+        </TabControl.Styles>
         
         <TabItem Header="Border Data">
-            <Label>Todo</Label>
+            <Grid RowDefinitions="*,Auto">
+                <ListBox>
+                    
+                </ListBox>
+                <Button Grid.Row="1" Content="Load Boundary Set"/>
+            </Grid>
         </TabItem>
         
         <TabItem Header="Calculate New Borders">
             <Grid
                 ColumnDefinitions="Auto,Auto,*"
                 RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
-                <Grid.Styles>
-                    <Style Selector=":is(ContentControl)">
-                        <Setter Property="Margin" Value="4" />
-                    </Style>
-                    <Style Selector="Label">
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                    </Style>
-                    <Style Selector="NumericUpDown.integerInput">
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                        <Setter Property="Width" Value="300" />
-                        <Setter Property="Increment" Value="1" />
-                        <Setter Property="Minimum" Value="1" />
-                        <Setter Property="ParsingNumberStyle" Value="Integer" />
-                        <Setter Property="FormatString" Value="N0" />
-                        <Setter Property="HorizontalContentAlignment" Value="Right" />
-                    </Style>
-                </Grid.Styles>
                 <Label
                     Grid.Row="0"
                     Grid.Column="0"

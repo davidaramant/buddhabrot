@@ -66,7 +66,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
-        this.WhenAnyValue(x => x.VerticalDivisions, divisions => VerticalDistance / (double)divisions)
+        this.WhenAnyValue(x => x.VerticalDivisions, divisions => VerticalDistance / (double) divisions)
             .ToProperty(this, x => x.ScanAreaWidth, out _scanAreaWidth);
         this.WhenAnyValue(x => x.ScanAreaWidth, width => width * width)
             .ToProperty(this, x => x.ScanArea, out _scanArea);
@@ -90,7 +90,7 @@ public class MainWindowViewModel : ViewModelBase
 
             var areas = await Task.Run(
                 () => BoundaryCalculator.FindBoundaryAreasAsync(
-                    new PlotParameters(VerticalDivisions, new IterationRange(MinimumIterations, MaximumIterations)),
+                    new BoundaryParameters(VerticalDivisions, MaximumIterations),
                     progress,
                     cancelToken),
                 cancelToken);

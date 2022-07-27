@@ -7,9 +7,9 @@ namespace Buddhabrot.Core.Boundary;
 public sealed class AreaCorners
 {
     private readonly ConcurrentDictionary<CornerId, bool> _isCornerInSet = new();
-    private readonly PlotParameters _plotParameters;
+    private readonly BoundaryParameters _boundaryParams;
 
-    public AreaCorners(PlotParameters plotParameters) => _plotParameters = plotParameters;
+    public AreaCorners(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
 
     private async Task<bool> IsCornerInSetAsync(CornerId corner, CancellationToken cancelToken = default)
     {
@@ -19,9 +19,11 @@ public sealed class AreaCorners
         }
 
         Complex c = new(
-            real: corner.X * _plotParameters.SideLength - 2,
-            imaginary: corner.Y * _plotParameters.SideLength);
-        inSet = await Task.Run(() => ScalarDoubleKernel.FindEscapeTime(c, _plotParameters.IterationRange.Max) == EscapeTime.Infinite, cancelToken);
+            real: corner.X * _boundaryParams.SideLength - 2,
+            imaginary: corner.Y * _boundaryParams.SideLength);
+        inSet = await Task.Run(
+            () => ScalarDoubleKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite, 
+            cancelToken);
         _isCornerInSet.TryAdd(corner, inSet);
         return inSet;
     }

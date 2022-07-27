@@ -14,105 +14,113 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid
-        ColumnDefinitions="Auto,Auto,*"
-        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
-        <Grid.Styles>
-            <Style Selector=":is(ContentControl)">
-                <Setter Property="Margin" Value="4" />
-            </Style>
-            <Style Selector="Label">
-                <Setter Property="VerticalAlignment" Value="Center" />
-            </Style>
-            <Style Selector="NumericUpDown.integerInput">
-                <Setter Property="VerticalAlignment" Value="Center" />
-                <Setter Property="Width" Value="300" />
-                <Setter Property="Increment" Value="1" />
-                <Setter Property="Minimum" Value="1" />
-                <Setter Property="ParsingNumberStyle" Value="Integer" />
-                <Setter Property="FormatString" Value="N0" />
-                <Setter Property="HorizontalContentAlignment" Value="Right" />
-            </Style>
-        </Grid.Styles>
-        <Label
-            Grid.Row="0"
-            Grid.Column="0"
-            Content="Iteration Minimum:" />
-        <NumericUpDown
-            Grid.Row="0"
-            Grid.Column="1"
-            Classes="integerInput"
-            Value="{Binding MinimumIterations}" />
-
-        <Label
-            Grid.Row="1"
-            Grid.Column="0"
-            Content="Iteration Maximum:" />
-        <NumericUpDown
-            Grid.Row="1"
-            Grid.Column="1"
-            Classes="integerInput"
-            Value="{Binding MaximumIterations}" />
-
-        <Label
-            Grid.Row="2"
-            Grid.Column="0"
-            Content="Vertical Divisions:" />
-        <NumericUpDown
-            Grid.Row="2"
-            Grid.Column="1"
-            Classes="integerInput"
-            Value="{Binding VerticalDivisions}" />
-
-        <Label
-            Grid.Row="3"
-            Grid.Column="0"
-            Content="Scan Area Width:" />
-        <TextBox
-            Grid.Row="3"
-            Grid.Column="1"
-            IsReadOnly="True"
-            Text="{Binding ScanAreaWidth, StringFormat=\{0:N10\}, Mode=OneWay}" />
-
-        <Label
-            Grid.Row="4"
-            Grid.Column="0"
-            Content="Scan Area:" />
-        <TextBox
-            Grid.Row="4"
-            Grid.Column="1"
-            IsReadOnly="True"
-            Text="{Binding ScanArea, StringFormat=\{0:N10\}, Mode=OneWay}" />
-
-        <Label
-            Grid.Row="5"
-            Grid.Column="0"
-            Content="Border Areas Found:"/>
-        <TextBox
-            Grid.Row="5"
-            Grid.Column="1"
-            IsReadOnly="True"
-            Text="{Binding NumBorderAreasFound, StringFormat=\{0:N0\}, Mode=OneWay}" />
+    <TabControl>
         
-        <Button
-            Grid.Row="6"
-            Grid.Column="0"
-            Content="Find Boundary"
-            Command="{Binding FindBoundary}" />
-        <Button
-            Grid.Row="6"
-            Grid.Column="1"
-            Content="Cancel"
-            Command="{Binding CancelFindingBoundary}" />
+        <TabItem Header="Border Data">
+            <Label>Todo</Label>
+        </TabItem>
+        
+        <TabItem Header="Calculate New Borders">
+            <Grid
+                ColumnDefinitions="Auto,Auto,*"
+                RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
+                <Grid.Styles>
+                    <Style Selector=":is(ContentControl)">
+                        <Setter Property="Margin" Value="4" />
+                    </Style>
+                    <Style Selector="Label">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+                    <Style Selector="NumericUpDown.integerInput">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Width" Value="300" />
+                        <Setter Property="Increment" Value="1" />
+                        <Setter Property="Minimum" Value="1" />
+                        <Setter Property="ParsingNumberStyle" Value="Integer" />
+                        <Setter Property="FormatString" Value="N0" />
+                        <Setter Property="HorizontalContentAlignment" Value="Right" />
+                    </Style>
+                </Grid.Styles>
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Content="Iteration Minimum:" />
+                <NumericUpDown
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Classes="integerInput"
+                    Value="{Binding MinimumIterations}" />
 
-        <TextBox
-            Grid.Row="7"
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
-            IsReadOnly="True"
-            TextWrapping="Wrap"
-            VerticalContentAlignment="Stretch"
-            Text="{Binding Output, Mode=OneWay}" />
-    </Grid>
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Content="Iteration Maximum:" />
+                <NumericUpDown
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Classes="integerInput"
+                    Value="{Binding MaximumIterations}" />
 
+                <Label
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Content="Vertical Divisions:" />
+                <NumericUpDown
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Classes="integerInput"
+                    Value="{Binding VerticalDivisions}" />
+
+                <Label
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Content="Scan Area Width:" />
+                <TextBox
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    IsReadOnly="True"
+                    Text="{Binding ScanAreaWidth, StringFormat=\{0:N10\}, Mode=OneWay}" />
+
+                <Label
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Content="Scan Area:" />
+                <TextBox
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    IsReadOnly="True"
+                    Text="{Binding ScanArea, StringFormat=\{0:N10\}, Mode=OneWay}" />
+
+                <Label
+                    Grid.Row="5"
+                    Grid.Column="0"
+                    Content="Border Areas Found:" />
+                <TextBox
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    IsReadOnly="True"
+                    Text="{Binding NumBorderAreasFound, StringFormat=\{0:N0\}, Mode=OneWay}" />
+
+                <Button
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Content="Find Boundary"
+                    Command="{Binding FindBoundary}" />
+                <Button
+                    Grid.Row="6"
+                    Grid.Column="1"
+                    Content="Cancel"
+                    Command="{Binding CancelFindingBoundary}" />
+
+                <TextBox
+                    Grid.Row="7"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    IsReadOnly="True"
+                    TextWrapping="Wrap"
+                    VerticalContentAlignment="Stretch"
+                    Text="{Binding Output, Mode=OneWay}" />
+            </Grid>
+        </TabItem>
+    </TabControl>
 </Window>

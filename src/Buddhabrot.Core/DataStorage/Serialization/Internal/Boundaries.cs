@@ -1,6 +1,6 @@
 ﻿using ProtoBuf;
 
-namespace Buddhabrot.Core.Serialization.Internal;
+namespace Buddhabrot.Core.DataStorage.Serialization.Internal;
 
 [ProtoContract]
 public sealed class Boundaries

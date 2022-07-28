@@ -1,7 +1,7 @@
 ﻿using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Serialization.Internal;
+using Buddhabrot.Core.DataStorage.Serialization.Internal;
 
-namespace Buddhabrot.Core.Serialization;
+namespace Buddhabrot.Core.DataStorage.Serialization;
 
 public static class BoundarySerializer
 {

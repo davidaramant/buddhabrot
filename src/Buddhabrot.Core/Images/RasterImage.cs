@@ -83,7 +83,7 @@ public sealed class RasterImage : IDisposable
                 ".png" => newImg.Encode(SKEncodedImageFormat.Png, quality: 100),
                 _ => throw new ArgumentException("Unsupported file format.")
             };
-
+            
             data.SaveTo(stream);
         }
         else

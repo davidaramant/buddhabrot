@@ -32,16 +32,24 @@
                 <Setter Property="HorizontalContentAlignment" Value="Right" />
             </Style>
         </TabControl.Styles>
-        
-        <TabItem Header="Border Data">
-            <Grid RowDefinitions="*,Auto">
-                <ListBox>
-                    
-                </ListBox>
-                <Button Grid.Row="1" Content="Load Boundary Set"/>
-            </Grid>
+
+        <TabItem Header="Data Source">
+            <StackPanel Orientation="Vertical">
+                <Expander Header="Options">
+                    <TextBox IsReadOnly="True" Text="{Binding DataSource.DataSetPath, Mode=OneWay}" />
+                </Expander>
+                <Button Content="Load Data Source" Command="{Binding DataSource.LoadFileData}" />
+            </StackPanel>
         </TabItem>
-        
+
+        <TabItem Header="Border Data">
+            <StackPanel Orientation="Vertical">
+                <Button Content="Refresh List of Data Sets" Command="{Binding BorderData.LoadDataSets}" />
+                <ListBox Items="{Binding BorderData.Boundaries}" />
+                <Button Content="Load Boundary Set" />
+            </StackPanel>
+        </TabItem>
+
         <TabItem Header="Calculate New Borders">
             <Grid
                 ColumnDefinitions="Auto,Auto,*"
@@ -54,7 +62,7 @@
                     Grid.Row="0"
                     Grid.Column="1"
                     Classes="integerInput"
-                    Value="{Binding MinimumIterations}" />
+                    Value="{Binding FindNewBoundary.MinimumIterations}" />
 
                 <Label
                     Grid.Row="1"
@@ -64,7 +72,7 @@
                     Grid.Row="1"
                     Grid.Column="1"
                     Classes="integerInput"
-                    Value="{Binding MaximumIterations}" />
+                    Value="{Binding FindNewBoundary.MaximumIterations}" />
 
                 <Label
                     Grid.Row="2"
@@ -74,7 +82,7 @@
                     Grid.Row="2"
                     Grid.Column="1"
                     Classes="integerInput"
-                    Value="{Binding VerticalDivisions}" />
+                    Value="{Binding FindNewBoundary.VerticalDivisions}" />
 
                 <Label
                     Grid.Row="3"
@@ -84,7 +92,7 @@
                     Grid.Row="3"
                     Grid.Column="1"
                     IsReadOnly="True"
-                    Text="{Binding ScanAreaWidth, StringFormat=\{0:N10\}, Mode=OneWay}" />
+                    Text="{Binding FindNewBoundary.ScanAreaWidth, StringFormat=\{0:N10\}, Mode=OneWay}" />
 
                 <Label
                     Grid.Row="4"
@@ -94,7 +102,7 @@
                     Grid.Row="4"
                     Grid.Column="1"
                     IsReadOnly="True"
-                    Text="{Binding ScanArea, StringFormat=\{0:N10\}, Mode=OneWay}" />
+                    Text="{Binding FindNewBoundary.ScanArea, StringFormat=\{0:N10\}, Mode=OneWay}" />
 
                 <Label
                     Grid.Row="5"
@@ -104,18 +112,18 @@
                     Grid.Row="5"
                     Grid.Column="1"
                     IsReadOnly="True"
-                    Text="{Binding NumBorderAreasFound, StringFormat=\{0:N0\}, Mode=OneWay}" />
+                    Text="{Binding FindNewBoundary.NumBorderAreasFound, StringFormat=\{0:N0\}, Mode=OneWay}" />
 
                 <Button
                     Grid.Row="6"
                     Grid.Column="0"
                     Content="Find Boundary"
-                    Command="{Binding FindBoundary}" />
+                    Command="{Binding FindNewBoundary.FindBoundary}" />
                 <Button
                     Grid.Row="6"
                     Grid.Column="1"
                     Content="Cancel"
-                    Command="{Binding CancelFindingBoundary}" />
+                    Command="{Binding FindNewBoundary.CancelFindingBoundary}" />
 
                 <TextBox
                     Grid.Row="7"
@@ -124,7 +132,7 @@
                     IsReadOnly="True"
                     TextWrapping="Wrap"
                     VerticalContentAlignment="Stretch"
-                    Text="{Binding Output, Mode=OneWay}" />
+                    Text="{Binding FindNewBoundary.Output, Mode=OneWay}" />
             </Grid>
         </TabItem>
     </TabControl>

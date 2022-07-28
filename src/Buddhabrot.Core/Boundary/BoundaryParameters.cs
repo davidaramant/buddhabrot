@@ -5,4 +5,7 @@ public record BoundaryParameters(
     int MaxIterations)
 {
     public double SideLength => 2.0 / VerticalDivisions;
+
+    public override string ToString() =>
+        $"Vertical Divisions: {VerticalDivisions:N0}, Max Iterations: {MaxIterations:N0}";
 }

@@ -43,11 +43,33 @@
         </TabItem>
 
         <TabItem Header="Border Data">
-            <StackPanel Orientation="Vertical">
-                <Button Content="Refresh List of Data Sets" Command="{Binding BorderData.LoadDataSets}" />
-                <ListBox Items="{Binding BorderData.Boundaries}" />
-                <Button Content="Load Boundary Set" />
-            </StackPanel>
+            <Grid 
+                RowDefinitions="Auto,*,Auto,Auto"
+                ColumnDefinitions="*,*">
+                <Button 
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2"
+                    Content="Refresh List of Data Sets" 
+                    Command="{Binding BorderData.LoadDataSets}" />
+                <ListBox 
+                    Grid.Row="1" 
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Items="{Binding BorderData.Boundaries}" />
+                <Button
+                    Grid.Row="2" 
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Content="Load Boundary Set" />
+                <Button
+                    Grid.Row="3" 
+                    Grid.Column="0"
+                    Content="Render Area" />
+                <NumericUpDown
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Classes="integerInput"/>
+            </Grid>
         </TabItem>
 
         <TabItem Header="Calculate New Borders">

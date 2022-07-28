@@ -20,16 +20,16 @@ public sealed class BorderDataViewModel : ViewModelBase
     private int _verticalDivisions;
     private IReadOnlyList<AreaId> _areas = Array.Empty<AreaId>();
 
+    public ReactiveCommand<Unit, Unit> LoadDataSets { get; }
+    
+    public ObservableCollection<BoundaryParameters> Boundaries { get; } = new();
+
     public int VerticalDivisions
     {
         get => _verticalDivisions;
         private set => this.RaiseAndSetIfChanged(ref _verticalDivisions, value);
     }
-
-    public ReactiveCommand<Unit, Unit> LoadDataSets { get; }
     
-    public ObservableCollection<BoundaryParameters> Boundaries { get; } = new();
-
     public BorderDataViewModel(DataSourceManager dataSourceManager)
     {
         _dataSourceManager = dataSourceManager;

@@ -76,7 +76,7 @@ public sealed class BorderDataViewModel : ViewModelBase
         try
         {
             using var img = BoundaryVisualizer.RenderBorderRegions(_regions);
-
+            
             // TODO: This should be saved in the local data path
             img.Save(SelectedParameters!.ToFilePrefix() + ".png");
         }

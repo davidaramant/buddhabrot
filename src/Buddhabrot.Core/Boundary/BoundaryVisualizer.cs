@@ -10,7 +10,7 @@ public static class BoundaryVisualizer
         var maxBounds = regions.Aggregate<RegionId, (int X, int Y)>((0, 0),
             (max, areaId) => (Math.Max(max.X, areaId.X), Math.Max(max.Y, areaId.Y)));
 
-        using var img = new RasterImage(width: maxBounds.X + 1, height: maxBounds.Y + 1);
+        var img = new RasterImage(width: maxBounds.X + 1, height: maxBounds.Y + 1);
         img.Fill(Color.White);
         foreach (var region in regions)
         {

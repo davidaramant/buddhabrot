@@ -36,37 +36,48 @@
         <TabItem Header="Data Source">
             <StackPanel Orientation="Vertical">
                 <Expander Header="Options">
-                    <TextBox IsReadOnly="True" Text="{Binding DataSource.DataSetPath, Mode=OneWay}" />
+                    <TextBox IsReadOnly="True" Text="{Binding ConfigureDataSource.DataSetPath, Mode=OneWay}" />
                 </Expander>
-                <Button Content="Load Data Source" Command="{Binding DataSource.LoadFileData}" />
+                <Button Content="Load Data Source" Command="{Binding ConfigureDataSource.LoadFileData}" />
             </StackPanel>
         </TabItem>
 
         <TabItem Header="Border Data">
             <Grid 
-                RowDefinitions="Auto,*,Auto,Auto"
+                RowDefinitions="Auto,*,Auto,Auto,Auto"
                 ColumnDefinitions="*,*">
                 <Button 
                     Grid.Row="0"
                     Grid.ColumnSpan="2"
                     Content="Refresh List of Data Sets" 
-                    Command="{Binding BorderData.LoadDataSets}" />
+                    Command="{Binding BorderData.LoadDataSetsCommand}" />
                 <ListBox 
                     Grid.Row="1" 
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
-                    Items="{Binding BorderData.Boundaries}" />
+                    Items="{Binding BorderData.Boundaries}"
+                    SelectedItem="{Binding BorderData.SelectedParameters}"/>
                 <Button
                     Grid.Row="2" 
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
-                    Content="Load Boundary Set" />
-                <Button
-                    Grid.Row="3" 
-                    Grid.Column="0"
-                    Content="Render Area" />
-                <NumericUpDown
+                    Content="Load Boundary Set"
+                    Command="{Binding BorderData.SelectDataSetCommand}"/>
+                <TextBlock
                     Grid.Row="3"
+                    Grid.Column="0"
+                    Text="{Binding BorderData.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}}"/>
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Text="{Binding BorderData.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}}"/>
+                <Button
+                    Grid.Row="4" 
+                    Grid.Column="0"
+                    Content="Render Border Regions"
+                    Command="{Binding BorderData.RenderBorderRegionsCommand}"/>
+                <NumericUpDown
+                    Grid.Row="4"
                     Grid.Column="1"
                     Classes="integerInput"/>
             </Grid>

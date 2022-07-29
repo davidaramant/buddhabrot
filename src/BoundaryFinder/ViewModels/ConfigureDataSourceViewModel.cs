@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
 
-public sealed class DataSourceViewModel : ViewModelBase
+public sealed class ConfigureDataSourceViewModel : ViewModelBase
 {
     private string _dataSetPath;
 
@@ -18,7 +18,7 @@ public sealed class DataSourceViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> LoadFileData { get; }
     
-    public DataSourceViewModel(DataSourceManager dataSourceManager)
+    public ConfigureDataSourceViewModel(DataSourceManager dataSourceManager)
     {
         _dataSetPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 

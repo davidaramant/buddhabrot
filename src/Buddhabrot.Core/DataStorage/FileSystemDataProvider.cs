@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Text.RegularExpressions;
-using Buddhabrot.Core.Boundary;
+﻿using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage.Serialization;
 
 namespace Buddhabrot.Core.DataStorage;
@@ -24,16 +22,10 @@ public sealed class FileSystemDataProvider : IDataProvider
             return WrapList(Array.Empty<BoundaryParameters>());
         }
 
-        return WrapList(Directory.GetFiles(_baseDirectory, "*.boundaries")
-            .Select(filePath =>
-            {
-                var fileName = Path.GetFileNameWithoutExtension(filePath);
-                var nameRegex = new Regex(@"v([\d,]+)_i([\d\,]+)", RegexOptions.Compiled);
-                var match = nameRegex.Match(fileName);
-                return new BoundaryParameters(
-                    VerticalDivisions: int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands),
-                    MaxIterations: int.Parse(match.Groups[2].Value, NumberStyles.AllowThousands));
-            }).ToList());
+        return WrapList(
+            Directory.GetFiles(_baseDirectory, "*.boundaries")
+            .Select(filePath => BoundaryParameters.FromFilePrefix(Path.GetFileNameWithoutExtension(filePath)))
+            .ToList());
     }
 
     public Task<IReadOnlyList<RegionId>> GetBoundaryRegionsAsync(BoundaryParameters parameters)
@@ -56,5 +48,5 @@ public sealed class FileSystemDataProvider : IDataProvider
     }
 
     private static string ToFileName(BoundaryParameters parameters) =>
-        $"v{parameters.VerticalDivisions:N0}_i{parameters.MaxIterations:N0}.boundaries";
+        parameters.ToFilePrefix() + ".boundaries";
 }

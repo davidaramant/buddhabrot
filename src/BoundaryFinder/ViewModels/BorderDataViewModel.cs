@@ -73,9 +73,15 @@ public sealed class BorderDataViewModel : ViewModelBase
 
     private void RenderBoundary()
     {
-        using var img = BoundaryVisualizer.RenderBorderRegions(_regions);
-        
-        // TODO: This should be saved in the local data path
-        img.Save(SelectedParameters!.ToFilePrefix() + ".png");
+        try
+        {
+            using var img = BoundaryVisualizer.RenderBorderRegions(_regions);
+
+            // TODO: This should be saved in the local data path
+            img.Save(SelectedParameters!.ToFilePrefix() + ".png");
+        }
+        catch (Exception e)
+        {
+        }
     }
 }

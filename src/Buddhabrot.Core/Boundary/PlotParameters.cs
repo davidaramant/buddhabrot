@@ -6,7 +6,7 @@ public record PlotParameters(
 {
     public double SideLength => 2.0 / VerticalDivisions;
     
-    public ComplexArea GetAreaOfId(AreaId id)
+    public ComplexArea GetAreaOfId(RegionId id)
     {
         var realStart = -2 + id.X * SideLength;
         var imagStart = id.Y * SideLength;

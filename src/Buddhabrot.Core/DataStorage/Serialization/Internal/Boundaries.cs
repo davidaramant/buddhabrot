@@ -10,7 +10,7 @@ public sealed class Boundaries
     [ProtoMember(2)]
     public int MaximumIterations { get; set; }
     [ProtoMember(3)] 
-    public int[] AreaIds { get; set; } = Array.Empty<int>();
+    public int[] Regions { get; set; } = Array.Empty<int>();
 
     public void Save(Stream stream) => Serializer.Serialize(stream, this);
     public static Boundaries Load(Stream stream) => Serializer.Deserialize<Boundaries>(stream);

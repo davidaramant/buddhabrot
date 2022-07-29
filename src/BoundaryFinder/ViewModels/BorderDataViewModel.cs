@@ -18,7 +18,7 @@ public sealed class BorderDataViewModel : ViewModelBase
 {
     private readonly DataSourceManager _dataSourceManager;
     private int _verticalDivisions;
-    private IReadOnlyList<AreaId> _areas = Array.Empty<AreaId>();
+    private IReadOnlyList<RegionId> _regions = Array.Empty<RegionId>();
 
     public ReactiveCommand<Unit, Unit> LoadDataSets { get; }
     
@@ -47,12 +47,12 @@ public sealed class BorderDataViewModel : ViewModelBase
     
     private void VisualizeBorder()
     {
-        var maxBounds = _areas.Aggregate<AreaId, (int X, int Y)>((0, 0),
+        var maxBounds = _regions.Aggregate<RegionId, (int X, int Y)>((0, 0),
             (max, areaId) => (Math.Max(max.X, areaId.X), Math.Max(max.Y, areaId.Y)));
 
         using var img = new RasterImage(width: maxBounds.X + 1, height: maxBounds.Y + 1);
         img.Fill(Color.White);
-        foreach (var area in _areas)
+        foreach (var area in _regions)
         {
             var y = img.Height - area.Y - 1;
             img.SetPixel(area.X, y, Color.Red);

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -9,7 +7,6 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Images;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
@@ -23,7 +20,6 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
     private readonly ObservableAsPropertyHelper<double> _scanAreaWidth;
     private readonly ObservableAsPropertyHelper<double> _scanArea;
     private string _output = string.Empty;
-    private int _numBorderAreasFound;
 
     public int VerticalDistance => HorizontalDistance / 2;
     public int HorizontalDistance { get; } = 4;
@@ -45,12 +41,6 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
     {
         get => _verticalDivisions;
         set => this.RaiseAndSetIfChanged(ref _verticalDivisions, value);
-    }
-
-    public int NumBorderAreasFound
-    {
-        get => _numBorderAreasFound;
-        set => this.RaiseAndSetIfChanged(ref _numBorderAreasFound, value);
     }
 
     public double ScanAreaWidth => _scanAreaWidth.Value;
@@ -84,24 +74,20 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
     {
         try
         {
+            // TODO: busy indicator using unicode? ◐ ◓ ◑ ◒
             var stopwatch = Stopwatch.StartNew();
-            NumBorderAreasFound = 0;
-
-            var progress =
-                new Progress<AreaId>(id => NumBorderAreasFound++);
 
             var boundaryParameters = new BoundaryParameters(VerticalDivisions, MaximumIterations);
             
-            var areas = await Task.Run(
-                () => BoundaryCalculator.FindBoundaryAreasAsync(
+            var regions = await Task.Run(
+                () => BoundaryCalculator.FindBoundaryAsync(
                     boundaryParameters,
-                    progress,
                     cancelToken),
                 cancelToken);
 
-            Log($"Took {stopwatch.Elapsed}");
+            Log($"Took {stopwatch.Elapsed}, Found {regions.Count} border regions");
 
-            await _dataSourceManager.DataProvider.SaveBoundaryAreasAsync(boundaryParameters, areas);
+            await _dataSourceManager.DataProvider.SaveBoundaryRegionsAsync(boundaryParameters, regions);
         }
         catch (OperationCanceledException)
         {

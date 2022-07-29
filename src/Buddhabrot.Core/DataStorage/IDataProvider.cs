@@ -6,7 +6,7 @@ public interface IDataProvider
 {
     Task<IReadOnlyList<BoundaryParameters>> GetBoundaryParametersAsync();
 
-    Task<IReadOnlyList<AreaId>> GetBoundaryAreasAsync(BoundaryParameters parameters);
+    Task<IReadOnlyList<RegionId>> GetBoundaryRegionsAsync(BoundaryParameters parameters);
 
-    Task SaveBoundaryAreasAsync(BoundaryParameters parameters, IEnumerable<AreaId> boundaryAreas);
+    Task SaveBoundaryRegionsAsync(BoundaryParameters parameters, IEnumerable<RegionId> regions);
 }

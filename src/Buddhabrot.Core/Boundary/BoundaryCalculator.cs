@@ -2,63 +2,52 @@ namespace Buddhabrot.Core.Boundary;
 
 public static class BoundaryCalculator
 {
-    public static async Task<IReadOnlyList<AreaId>> FindBoundaryAreasAsync(
+    public static async Task<IReadOnlyList<RegionId>> FindBoundaryAsync(
         BoundaryParameters boundaryParameters,
-        IProgress<AreaId>? progress,
         CancellationToken cancelToken = default)
     {
-        var cornerComputer = new AreaCorners(boundaryParameters);
-        Dictionary<AreaId, bool> doesAreaContainBorder = new();
-        Queue<AreaId> idsToCheck = new();
-        idsToCheck.Enqueue(new AreaId(0, 0));
-
-        while (idsToCheck.Any())
+        var cornerComputer = new RegionCorners(boundaryParameters);
+        Dictionary<RegionId, bool> doesRegionContainBorder = new();
+        Queue<RegionId> regionsToCheck = new();
+        regionsToCheck.Enqueue(new RegionId(0, 0));
+        
+        while (regionsToCheck.Any())
         {
-            var currentId = idsToCheck.Dequeue();
-            
-            if (doesAreaContainBorder.ContainsKey(currentId))
+            var currentRegion = regionsToCheck.Dequeue();
+
+            if (doesRegionContainBorder.ContainsKey(currentRegion))
                 continue;
 
-            var corners = await cornerComputer.GetAreaCornersAsync(currentId, cancelToken);
-            
-            doesAreaContainBorder.Add(currentId, corners.ContainsBorder);
+            var corners = await cornerComputer.GetRegionCornersAsync(currentRegion, cancelToken);
 
-            if (corners.IsUpperEdge)
-            {
-                AddIdToCheck(currentId.X, currentId.Y + 1);
-            }
+            doesRegionContainBorder.Add(currentRegion, corners.ContainsBorder);
 
-            if (corners.IsLowerEdge)
-            {
-                AddIdToCheck(currentId.X, currentId.Y - 1);
-            }
-
-            if (corners.IsLeftEdge)
-            {
-                AddIdToCheck(currentId.X - 1, currentId.Y);
-            }
-
-            if (corners.IsRightEdge)
-            {
-                AddIdToCheck(currentId.X + 1, currentId.Y);
-            }
-            
-            progress?.Report(currentId);
+            AddRegionToCheckIfTrue(corners.IsUpperEdge, currentRegion.MoveUp);
+            AddRegionToCheckIfTrue(corners.IsLowerEdge, currentRegion.MoveDown);
+            AddRegionToCheckIfTrue(corners.IsLeftEdge, currentRegion.MoveLeft);
+            AddRegionToCheckIfTrue(corners.IsRightEdge, currentRegion.MoveRight);
         }
 
-        return doesAreaContainBorder.Where(pair => pair.Value).Select(pair => pair.Key).ToList();
+        return doesRegionContainBorder.Where(pair => pair.Value).Select(pair => pair.Key).ToList();
 
-        void AddIdToCheck(int x, int y)
+        void AddRegionToCheckIfTrue(bool value, Func<RegionId> regionGetter)
         {
-            if (x < 0 || y < 0 || x >= (boundaryParameters.VerticalDivisions * 2) || y >= boundaryParameters.VerticalDivisions)
-                return;
+            if (value)
+            {
+                AddRegionToCheck(regionGetter());
+            }
+        }
 
-            var id = new AreaId(x, y);
-            
-            if (doesAreaContainBorder.ContainsKey(id))
-                return;
-            
-            idsToCheck.Enqueue(id);
+        void AddRegionToCheck(RegionId region)
+        {
+            if (region.X >= 0 &&
+                region.Y >= 0 &&
+                region.X < (boundaryParameters.VerticalDivisions * 2) &&
+                region.Y < boundaryParameters.VerticalDivisions &&
+                !doesRegionContainBorder.ContainsKey(region))
+            {
+                regionsToCheck.Enqueue(region);
+            }
         }
     }
 }

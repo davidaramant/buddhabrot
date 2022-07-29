@@ -5,22 +5,22 @@ namespace Buddhabrot.Core.DataStorage.Serialization;
 
 public static class BoundarySerializer
 {
-    public static void Save(BoundaryParameters parameters, IEnumerable<AreaId> areas, Stream stream)
+    public static void Save(BoundaryParameters parameters, IEnumerable<RegionId> regions, Stream stream)
     {
         var boundaries = new Boundaries
         {
             VerticalDivisions = parameters.VerticalDivisions,
             MaximumIterations = parameters.MaxIterations,
-            AreaIds = areas.Select(a => a.EncodedPosition).ToArray(),
+            Regions = regions.Select(a => a.EncodedPosition).ToArray(),
         };
         boundaries.Save(stream);
     }
 
-    public static (BoundaryParameters Parameters, IReadOnlyList<AreaId> AreaIds) Load(Stream stream)
+    public static (BoundaryParameters Parameters, IReadOnlyList<RegionId> Regions) Load(Stream stream)
     {
         var boundaries = Boundaries.Load(stream);
         return (
             new BoundaryParameters(boundaries.VerticalDivisions, boundaries.MaximumIterations),
-            boundaries.AreaIds.Select(pos => new AreaId(pos)).ToList());
+            boundaries.Regions.Select(pos => new RegionId(pos)).ToList());
     }
 }

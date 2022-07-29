@@ -85,7 +85,7 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
                     cancelToken),
                 cancelToken);
 
-            Log($"Took {stopwatch.Elapsed}, Found {regions.Count} border regions");
+            Log($"Took {stopwatch.Elapsed}, Found {regions.Count:N0} border regions");
 
             await _dataSourceManager.DataProvider.SaveBoundaryRegionsAsync(boundaryParameters, regions);
         }

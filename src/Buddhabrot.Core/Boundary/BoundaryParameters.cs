@@ -12,7 +12,7 @@ public record BoundaryParameters(
     public override string ToString() =>
         $"Vertical Divisions: {VerticalDivisions:N0} Max Iterations: {MaxIterations:N0}";
 
-    public string ToFilePrefix() => $"v{VerticalDivisions:N0}_i{MaxIterations:N0}";
+    public string Description => $"v{VerticalDivisions:N0}_i{MaxIterations:N0}";
 
     public static BoundaryParameters FromFilePrefix(string filePrefix)
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Reactive;
-using System.Threading.Tasks;
-using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.DataStorage;
 using DynamicData;
 using ReactiveUI;
 
@@ -12,7 +12,7 @@ namespace BoundaryFinder.ViewModels;
 
 public sealed class BorderDataViewModel : ViewModelBase
 {
-    private readonly DataSourceManager _dataSourceManager;
+    private readonly DataProvider _dataProvider;
     private BoundaryParameters? _selectedParameters;
     private int _verticalDivisions;
     private IReadOnlyList<RegionId> _regions = Array.Empty<RegionId>();
@@ -44,28 +44,28 @@ public sealed class BorderDataViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> RenderBorderRegionsCommand { get; }
 
-    public BorderDataViewModel(DataSourceManager dataSourceManager)
+    public BorderDataViewModel(DataProvider dataProvider)
     {
-        _dataSourceManager = dataSourceManager;
-        LoadDataSetsCommand = ReactiveCommand.CreateFromTask(LoadDataSetsAsync);
-        SelectDataSetCommand = ReactiveCommand.CreateFromTask(SelectDataSetAsync);
+        _dataProvider = dataProvider;
+        LoadDataSetsCommand = ReactiveCommand.Create(LoadDataSets);
+        SelectDataSetCommand = ReactiveCommand.Create(SelectDataSet);
         RenderBorderRegionsCommand = ReactiveCommand.Create(RenderBoundary);
     }
 
-    private async Task LoadDataSetsAsync()
+    private void LoadDataSets()
     {
         Boundaries.Clear();
 
-        var dataSets = await _dataSourceManager.DataProvider.GetBoundaryParametersAsync();
+        var dataSets = _dataProvider.GetBoundaryParameters();
 
         Boundaries.AddRange(dataSets);
     }
 
-    private async Task SelectDataSetAsync()
+    private void SelectDataSet()
     {
         if (SelectedParameters != null)
         {
-            _regions = await _dataSourceManager.DataProvider.GetBoundaryRegionsAsync(SelectedParameters);
+            _regions = _dataProvider.GetBoundaryRegions(SelectedParameters);
             VerticalDivisions = SelectedParameters.VerticalDivisions;
             NumberOfRegions = _regions.Count;
         }
@@ -76,9 +76,10 @@ public sealed class BorderDataViewModel : ViewModelBase
         try
         {
             using var img = BoundaryVisualizer.RenderBorderRegions(_regions);
-            
-            // TODO: This should be saved in the local data path
-            img.Save(SelectedParameters!.ToFilePrefix() + ".png");
+
+            var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
+
+            img.Save(Path.Combine(dirPath, SelectedParameters!.Description + ".png"));
         }
         catch (Exception e)
         {

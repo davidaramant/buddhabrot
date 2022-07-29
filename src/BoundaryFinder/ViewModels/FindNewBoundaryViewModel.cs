@@ -5,15 +5,15 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
-using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.DataStorage;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
 
 public sealed class FindNewBoundaryViewModel : ViewModelBase
 {
-    private readonly DataSourceManager _dataSourceManager;
+    private readonly DataProvider _dataProvider;
     private int _minimumIterations = 5_000_000;
     private int _maximumIterations = 15_000_000;
     private int _verticalDivisions = 1024;
@@ -55,9 +55,9 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _output, value);
     }
 
-    public FindNewBoundaryViewModel(DataSourceManager dataSourceManager)
+    public FindNewBoundaryViewModel(DataProvider dataProvider)
     {
-        _dataSourceManager = dataSourceManager;
+        _dataProvider = dataProvider;
         this.WhenAnyValue(x => x.VerticalDivisions, divisions => VerticalDistance / (double)divisions)
             .ToProperty(this, x => x.ScanAreaWidth, out _scanAreaWidth);
         this.WhenAnyValue(x => x.ScanAreaWidth, width => width * width)
@@ -87,7 +87,7 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
 
             Log($"Took {stopwatch.Elapsed}, Found {regions.Count:N0} border regions");
 
-            await _dataSourceManager.DataProvider.SaveBoundaryRegionsAsync(boundaryParameters, regions);
+            _dataProvider.SaveBoundaryRegions(boundaryParameters, regions);
         }
         catch (OperationCanceledException)
         {

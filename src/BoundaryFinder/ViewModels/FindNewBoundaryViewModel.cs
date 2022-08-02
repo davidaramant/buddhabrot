@@ -14,12 +14,12 @@ namespace BoundaryFinder.ViewModels;
 public sealed class FindNewBoundaryViewModel : ViewModelBase
 {
     private readonly DataProvider _dataProvider;
+    private readonly Action<string> _log;
     private int _minimumIterations = 5_000_000;
     private int _maximumIterations = 15_000_000;
     private int _verticalDivisions = 1024;
     private readonly ObservableAsPropertyHelper<double> _scanAreaWidth;
     private readonly ObservableAsPropertyHelper<double> _scanArea;
-    private string _output = string.Empty;
 
     public int VerticalDistance => HorizontalDistance / 2;
     public int HorizontalDistance { get; } = 4;
@@ -49,15 +49,10 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> FindBoundary { get; }
     public ReactiveCommand<Unit, Unit> CancelFindingBoundary { get; }
 
-    public string Output
-    {
-        get => _output;
-        private set => this.RaiseAndSetIfChanged(ref _output, value);
-    }
-
-    public FindNewBoundaryViewModel(DataProvider dataProvider)
+    public FindNewBoundaryViewModel(DataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
+        _log = log;
         this.WhenAnyValue(x => x.VerticalDivisions, divisions => VerticalDistance / (double)divisions)
             .ToProperty(this, x => x.ScanAreaWidth, out _scanAreaWidth);
         this.WhenAnyValue(x => x.ScanAreaWidth, width => width * width)
@@ -85,7 +80,7 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
                     cancelToken),
                 cancelToken);
 
-            Log($"Took {stopwatch.Elapsed}, Found {regions.Count:N0} border regions");
+            _log($"Found boundary for {boundaryParameters}. Took {stopwatch.Elapsed}, Found {regions.Count:N0} border regions");
 
             _dataProvider.SaveBoundaryRegions(boundaryParameters, regions);
         }
@@ -95,9 +90,7 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Log(e.ToString());
+            _log(e.ToString());
         }
     }
-
-    private void Log(string msg) => Dispatcher.UIThread.Post(() => Output += msg + Environment.NewLine);
 }

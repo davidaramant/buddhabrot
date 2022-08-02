@@ -23,7 +23,7 @@ public sealed class SettingsViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> UpdateFilePathCommand { get; }
     
-    public SettingsViewModel(DataProvider dataProvider)
+    public SettingsViewModel(DataProvider dataProvider, Action<string> log)
     {
         if (string.IsNullOrWhiteSpace(dataProvider.LocalDataStoragePath))
         {

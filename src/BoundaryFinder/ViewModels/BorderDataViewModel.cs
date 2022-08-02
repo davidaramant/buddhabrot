@@ -13,6 +13,7 @@ namespace BoundaryFinder.ViewModels;
 public sealed class BorderDataViewModel : ViewModelBase
 {
     private readonly DataProvider _dataProvider;
+    private readonly Action<string> _log;
     private BoundaryParameters? _selectedParameters;
     private int _verticalDivisions;
     private IReadOnlyList<RegionId> _regions = Array.Empty<RegionId>();
@@ -44,9 +45,10 @@ public sealed class BorderDataViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> RenderBorderRegionsCommand { get; }
 
-    public BorderDataViewModel(DataProvider dataProvider)
+    public BorderDataViewModel(DataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
+        _log = log;
         LoadDataSetsCommand = ReactiveCommand.Create(LoadDataSets);
         SelectDataSetCommand = ReactiveCommand.Create(SelectDataSet);
         RenderBorderRegionsCommand = ReactiveCommand.Create(RenderBoundary);
@@ -83,6 +85,7 @@ public sealed class BorderDataViewModel : ViewModelBase
         }
         catch (Exception e)
         {
+            _log(e.ToString());
         }
     }
 }

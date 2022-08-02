@@ -18,6 +18,7 @@ public sealed class BorderDataViewModel : ViewModelBase
     private int _verticalDivisions;
     private IReadOnlyList<RegionId> _regions = Array.Empty<RegionId>();
     private int _numberOfRegions;
+    private int _minimumIterations = 5_000_000;
 
     public ReactiveCommand<Unit, Unit> LoadDataSetsCommand { get; }
 
@@ -44,6 +45,12 @@ public sealed class BorderDataViewModel : ViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> RenderBorderRegionsCommand { get; }
+    
+    public int MinimumIterations
+    {
+        get => _minimumIterations;
+        set => this.RaiseAndSetIfChanged(ref _minimumIterations, value);
+    }
 
     public BorderDataViewModel(DataProvider dataProvider, Action<string> log)
     {

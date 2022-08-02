@@ -15,22 +15,14 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
 {
     private readonly DataProvider _dataProvider;
     private readonly Action<string> _log;
-    private int _minimumIterations = 5_000_000;
     private int _maximumIterations = 15_000_000;
-    private int _verticalDivisions = 1024;
+    private int _verticalDivisions = 1000;
     private readonly ObservableAsPropertyHelper<double> _scanAreaWidth;
     private readonly ObservableAsPropertyHelper<double> _scanArea;
 
     public int VerticalDistance => HorizontalDistance / 2;
     public int HorizontalDistance { get; } = 4;
-
-
-    public int MinimumIterations
-    {
-        get => _minimumIterations;
-        set => this.RaiseAndSetIfChanged(ref _minimumIterations, value);
-    }
-
+    
     public int MaximumIterations
     {
         get => _maximumIterations;

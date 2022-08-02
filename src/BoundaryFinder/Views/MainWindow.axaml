@@ -36,42 +36,54 @@
 
             <TabItem Header="Border Data">
                 <Grid
-                    RowDefinitions="Auto,*,Auto,Auto,Auto,Auto"
-                    ColumnDefinitions="*,*">
+                    RowDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto"
+                    ColumnDefinitions="*,*,*">
                     <Button
                         Grid.Row="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="3"
                         Content="Refresh List of Data Sets"
                         Command="{Binding BorderData.LoadDataSetsCommand}" />
                     <ListBox
                         Grid.Row="1"
                         Grid.Column="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="3"
                         Items="{Binding BorderData.Boundaries}"
                         SelectedItem="{Binding BorderData.SelectedParameters}" />
                     <Button
                         Grid.Row="2"
                         Grid.Column="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="3"
                         Content="Load Boundary Set"
                         Command="{Binding BorderData.SelectDataSetCommand}" />
                     <TextBlock
                         Grid.Row="3"
                         Grid.Column="0"
+                        VerticalAlignment="Center"
                         Text="{Binding BorderData.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}}" />
                     <TextBlock
                         Grid.Row="3"
                         Grid.Column="1"
+                        VerticalAlignment="Center"
                         Text="{Binding BorderData.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}}" />
                     <Button
+                        Grid.Row="3"
+                        Grid.Column="2"
+                        Content="Render Boundary"
+                        Command="{Binding BorderData.RenderBoundaryCommand}" />
+                    <TextBlock
                         Grid.Row="4"
                         Grid.Column="0"
-                        Content="Render Border Regions"
-                        Command="{Binding BorderData.RenderBorderRegionsCommand}" />
-                    <NumericUpDown
+                        VerticalAlignment="Center"
+                        Text="{Binding BorderData.RegionImageSize, StringFormat=Region Image Size: \{0:N0\}}" />
+                    <Slider
                         Grid.Row="4"
                         Grid.Column="1"
-                        Classes="integerInput" />
+                        Minimum="1"
+                        Maximum="20"
+                        IsSnapToTickEnabled="True"
+                        TickPlacement="BottomRight"
+                        TickFrequency="1"
+                        Value="{Binding BorderData.RegionImageSizeMultiplier}"/>
                     <Label
                         Grid.Row="5"
                         Grid.Column="0"
@@ -82,7 +94,13 @@
                         Classes="integerInput"
                         Increment="1000000"
                         Value="{Binding BorderData.MinimumIterations}" />
-
+                    <Button
+                        Grid.Row="6"
+                        Grid.Column="2"
+                        Content="Render Region(s)"
+                        Command="{Binding BorderData.RenderRegionsCommand}" />
+                    
+                    
                 </Grid>
             </TabItem>
 
@@ -163,7 +181,7 @@
             HorizontalAlignment="Center"
             IsHitTestVisible="False"
             FontWeight="Bold"
-            Content="· · ·"/>
+            Content="· · ·" />
 
         <TextBox
             Grid.Row="2"

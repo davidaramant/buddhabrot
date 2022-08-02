@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive;
+using System.Threading.Tasks;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage;
 using DynamicData;
@@ -19,6 +20,8 @@ public sealed class BorderDataViewModel : ViewModelBase
     private IReadOnlyList<RegionId> _regions = Array.Empty<RegionId>();
     private int _numberOfRegions;
     private int _minimumIterations = 5_000_000;
+    private int _regionImageSizeMultiplier = 10;
+    private readonly ObservableAsPropertyHelper<int> _regionImageSize;
 
     public ReactiveCommand<Unit, Unit> LoadDataSetsCommand { get; }
 
@@ -44,13 +47,23 @@ public sealed class BorderDataViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _numberOfRegions, value);
     }
 
-    public ReactiveCommand<Unit, Unit> RenderBorderRegionsCommand { get; }
-    
+    public ReactiveCommand<Unit, Unit> RenderBoundaryCommand { get; }
+
+    public int RegionImageSizeMultiplier
+    {
+        get => _regionImageSizeMultiplier;
+        set => this.RaiseAndSetIfChanged(ref _regionImageSizeMultiplier, value);
+    }
+
+    public int RegionImageSize => _regionImageSize.Value;
+
     public int MinimumIterations
     {
         get => _minimumIterations;
         set => this.RaiseAndSetIfChanged(ref _minimumIterations, value);
     }
+
+    public ReactiveCommand<Unit, Unit> RenderRegionsCommand { get; }
 
     public BorderDataViewModel(DataProvider dataProvider, Action<string> log)
     {
@@ -58,7 +71,12 @@ public sealed class BorderDataViewModel : ViewModelBase
         _log = log;
         LoadDataSetsCommand = ReactiveCommand.Create(LoadDataSets);
         SelectDataSetCommand = ReactiveCommand.Create(SelectDataSet);
-        RenderBorderRegionsCommand = ReactiveCommand.Create(RenderBoundary);
+        RenderBoundaryCommand = ReactiveCommand.CreateFromTask(RenderBoundaryAsync);
+
+        this.WhenAnyValue(x => x.RegionImageSizeMultiplier, multiplier => multiplier * 100)
+            .ToProperty(this, x => x.RegionImageSize, out _regionImageSize);
+
+        RenderRegionsCommand = ReactiveCommand.CreateFromTask(RenderRegionsAsync);
     }
 
     private void LoadDataSets()
@@ -80,19 +98,35 @@ public sealed class BorderDataViewModel : ViewModelBase
         }
     }
 
-    private void RenderBoundary()
+    private Task RenderBoundaryAsync() =>
+        Task.Run(() =>
+        {
+            try
+            {
+                using var img = BoundaryVisualizer.RenderBorderRegions(_regions);
+
+                var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
+
+                img.Save(Path.Combine(dirPath, SelectedParameters!.Description + ".png"));
+            }
+            catch (Exception e)
+            {
+                _log(e.ToString());
+            }
+        });
+
+    private Task RenderRegionsAsync()
     {
-        try
+        return Task.Run(() =>
         {
-            using var img = BoundaryVisualizer.RenderBorderRegions(_regions);
-
-            var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
-
-            img.Save(Path.Combine(dirPath, SelectedParameters!.Description + ".png"));
-        }
-        catch (Exception e)
-        {
-            _log(e.ToString());
-        }
+            try
+            {
+                var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
+            }
+            catch (Exception e)
+            {
+                _log(e.ToString());
+            }
+        });
     }
 }

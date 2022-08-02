@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage;
 using DynamicData;
@@ -103,7 +106,7 @@ public sealed class BorderDataViewModel : ViewModelBase
         {
             try
             {
-                using var img = BoundaryVisualizer.RenderBorderRegions(_regions);
+                using var img = BoundaryVisualizer.RenderBoundary(_regions);
 
                 var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
 
@@ -121,7 +124,18 @@ public sealed class BorderDataViewModel : ViewModelBase
         {
             try
             {
+                var plotParameters = new PlotParameters(SelectedParameters!.VerticalDivisions,
+                    new IterationRange(MinimumIterations, SelectedParameters!.MaxIterations));
+
                 var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
+
+                var region = _regions.First();
+
+                using var img = BoundaryVisualizer.RenderBorderRegion(
+                    new ViewPort(plotParameters.GetAreaOfId(region),
+                        new Size(RegionImageSize, RegionImageSize)), plotParameters.IterationRange);
+
+                img.Save(Path.Combine(dirPath, $"region_{region.X}_{region.Y}.png"));
             }
             catch (Exception e)
             {

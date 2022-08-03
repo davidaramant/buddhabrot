@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using BoundaryFinder.RandomExtensions;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage;
@@ -25,6 +27,8 @@ public sealed class BorderDataViewModel : ViewModelBase
     private int _minimumIterations = 5_000_000;
     private int _regionImageSizeMultiplier = 10;
     private readonly ObservableAsPropertyHelper<int> _regionImageSize;
+    private int _numRegionsToRender = 1;
+    private int _numRegionsRendered = 0;
 
     public ReactiveCommand<Unit, Unit> LoadDataSetsCommand { get; }
 
@@ -68,6 +72,18 @@ public sealed class BorderDataViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> RenderRegionsCommand { get; }
 
+    public int NumRegionsToRender
+    {
+        get => _numRegionsToRender;
+        set => this.RaiseAndSetIfChanged(ref _numRegionsToRender, value);
+    }
+
+    public int NumRegionsRendered
+    {
+        get => _numRegionsRendered;
+        set => this.RaiseAndSetIfChanged(ref _numRegionsRendered, value);
+    }
+
     public BorderDataViewModel(DataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
@@ -108,9 +124,7 @@ public sealed class BorderDataViewModel : ViewModelBase
             {
                 using var img = BoundaryVisualizer.RenderBoundary(_regions);
 
-                var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
-
-                img.Save(Path.Combine(dirPath, SelectedParameters!.Description + ".png"));
+                img.Save(Path.Combine(_dataProvider.LocalDataStoragePath, SelectedParameters!.Description + ".png"));
             }
             catch (Exception e)
             {
@@ -129,13 +143,32 @@ public sealed class BorderDataViewModel : ViewModelBase
 
                 var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
 
-                var region = _regions.First();
+                var random = new Random();
 
-                using var img = BoundaryVisualizer.RenderBorderRegion(
-                    new ViewPort(plotParameters.GetAreaOfId(region),
-                        new Size(RegionImageSize, RegionImageSize)), plotParameters.IterationRange);
+                const int samples = 10;
+                NumRegionsToRender = samples;
+                NumRegionsRendered = 0;
+                
+                var stopwatch = Stopwatch.StartNew();
+                
+                foreach (var region in _regions.GetRandomSequence(random).Take(samples))
+                {
+                    _log($"Visualizing {region}...");
 
-                img.Save(Path.Combine(dirPath, $"region_{region.X}_{region.Y}.png"));
+                    var viewPort = new ViewPort(plotParameters.GetAreaOfId(region),
+                        new Size(RegionImageSize, RegionImageSize));
+
+                    using var img = BoundaryVisualizer.RenderBorderRegion(
+                        viewPort,
+                        plotParameters.IterationRange);
+
+                    img.Save(Path.Combine(dirPath,
+                        $"l{MinimumIterations:N0}_x{region.X}_y{region.Y}_size{RegionImageSize}.png"));
+
+                    NumRegionsRendered++;
+                }
+
+                _log($"Took {stopwatch.Elapsed}");
             }
             catch (Exception e)
             {

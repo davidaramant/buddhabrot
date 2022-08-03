@@ -3,12 +3,16 @@
 namespace Buddhabrot.Core;
 
 public sealed record ComplexArea(
-    DoubleRange RealRange,
-    DoubleRange ImagRange)
+    Range RealRange,
+    Range ImagRange)
 {
+    public static ComplexArea SquareFromLowerLeft(Complex lowerLeft, double sideLength) =>
+        new(Range.FromMinAndLength(lowerLeft.Real, sideLength),
+            Range.FromMinAndLength(lowerLeft.Imaginary, sideLength));
+    
     public bool IsInside(Complex number) =>
         RealRange.IsInside(number.Real) &&
         ImagRange.IsInside(number.Imaginary);
 
-    public ComplexArea GetPositiveImagArea() => new(RealRange, new DoubleRange(0, ImagRange.ExclusiveMax));
+    public ComplexArea GetPositiveImagArea() => new(RealRange, new Range(0, ImagRange.ExclusiveMax));
 }

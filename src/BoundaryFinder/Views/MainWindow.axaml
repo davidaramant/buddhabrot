@@ -94,6 +94,15 @@
                         Classes="integerInput"
                         Increment="1000000"
                         Value="{Binding BorderData.MinimumIterations}" />
+                    
+                    <ProgressBar
+                        Grid.Row="6"
+                        Grid.Column="1"
+                        Margin="4"
+                        Minimum="0"
+                        Maximum="{Binding BorderData.NumRegionsToRender}"
+                        Value="{Binding BorderData.NumRegionsRendered}"/>
+                    
                     <Button
                         Grid.Row="6"
                         Grid.Column="2"

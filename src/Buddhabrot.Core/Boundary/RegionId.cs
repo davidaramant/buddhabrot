@@ -15,7 +15,7 @@ public readonly record struct RegionId(int EncodedPosition)
     {
     }
 
-    public override string ToString() => $"Area({X}, {Y})";
+    public override string ToString() => $"Region ({X}, {Y})";
 
     public RegionId MoveUp() => new(X, Y - 1);
     public RegionId MoveDown() => new(X, Y + 1);

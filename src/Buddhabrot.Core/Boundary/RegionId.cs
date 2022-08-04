@@ -6,14 +6,10 @@
 /// <remarks>
 /// Origin is the top left (-2 + 0i). Increasing Y goes DOWN
 /// </remarks>
-public readonly record struct RegionId(int EncodedPosition)
+public readonly record struct RegionId(int X, int Y)
 {
-    public int X => ushort.MaxValue & EncodedPosition;
-    public int Y => EncodedPosition >> 16;
-
-    public RegionId(int x, int y) : this((y << 16) + x)
-    {
-    }
+    public static RegionId FromEncodedPosition(int encodedPosition) =>
+        new(encodedPosition & ushort.MaxValue, encodedPosition >> 16);
 
     public override string ToString() => $"Region ({X}, {Y})";
 

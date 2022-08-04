@@ -11,7 +11,7 @@ public static class BoundarySerializer
         {
             VerticalDivisions = parameters.VerticalDivisions,
             MaximumIterations = parameters.MaxIterations,
-            Regions = regions.Select(a => a.EncodedPosition).ToArray(),
+            Regions = regions.Select(r => new RegionLocation {X = r.X, Y = r.Y}).ToArray(),
         };
         boundaries.Save(stream);
     }
@@ -21,6 +21,7 @@ public static class BoundarySerializer
         var boundaries = Boundaries.Load(stream);
         return (
             new BoundaryParameters(boundaries.VerticalDivisions, boundaries.MaximumIterations),
-            boundaries.Regions.Select(pos => new RegionId(pos)).ToList());
+            boundaries.EncodedRegions.Select(RegionId.FromEncodedPosition)
+                .Concat(boundaries.Regions.Select(rl => new RegionId(X: rl.X, Y: rl.Y))).ToList());
     }
 }

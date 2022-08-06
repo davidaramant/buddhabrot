@@ -14,10 +14,11 @@ public sealed class DataProvider
             return Array.Empty<BoundaryParameters>();
         }
 
-        return 
+        return
             Directory.GetFiles(LocalDataStoragePath, "*.boundaries")
-            .Select(filePath => BoundaryParameters.FromFilePrefix(Path.GetFileNameWithoutExtension(filePath)))
-            .ToList();
+                .Select(filePath => BoundaryParameters.FromFilePrefix(Path.GetFileNameWithoutExtension(filePath)))
+                .OrderByDescending(bp => bp.VerticalDivisions)
+                .ToList();
     }
 
     public IReadOnlyList<RegionId> GetBoundaryRegions(BoundaryParameters parameters)
@@ -47,7 +48,7 @@ public sealed class DataProvider
 
         return path;
     }
-    
+
     private static string ToFileName(BoundaryParameters parameters) =>
         parameters.Description + ".boundaries";
 }

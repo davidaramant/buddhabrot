@@ -3,6 +3,7 @@
         xmlns:vm="using:BoundaryFinder.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:BoundaryFinder.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="BoundaryFinder.Views.MainWindow"
         x:CompileBindings="True"
@@ -36,35 +37,38 @@
 
             <TabItem Header="Border Data">
                 <Grid
-                    RowDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto"
+                    RowDefinitions="Auto,*,Auto,Auto,Auto,Auto"
                     ColumnDefinitions="*,*,*">
                     <Button
                         Grid.Row="0"
-                        Grid.ColumnSpan="3"
+                        Grid.Column="0"
                         Content="Refresh List of Data Sets"
                         Command="{Binding BorderData.LoadDataSetsCommand}" />
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Content="Load Boundary Set"
+                        Command="{Binding BorderData.SelectDataSetCommand}" />
                     <ListBox
                         Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
                         Items="{Binding BorderData.Boundaries}"
                         SelectedItem="{Binding BorderData.SelectedParameters}" />
-                    <Button
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="3"
-                        Content="Load Boundary Set"
-                        Command="{Binding BorderData.SelectDataSetCommand}" />
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="{Binding BorderData.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}}" />
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        VerticalAlignment="Center"
-                        Text="{Binding BorderData.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}}" />
+
+                    <WrapPanel Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Text="{Binding BorderData.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Text="{Binding BorderData.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}}" />
+                        <views:LabeledIntegerUpDown 
+                            Text="Iteration Minimum:"
+                            Increment="1000000"
+                            Value="{Binding BorderData.MinimumIterations}" />
+                    </WrapPanel>
+                    
                     <Button
                         Grid.Row="3"
                         Grid.Column="2"
@@ -84,19 +88,10 @@
                         TickPlacement="BottomRight"
                         TickFrequency="1"
                         Value="{Binding BorderData.RegionImageSizeMultiplier}"/>
-                    <Label
-                        Grid.Row="5"
-                        Grid.Column="0"
-                        Content="Iteration Minimum:" />
-                    <NumericUpDown
-                        Grid.Row="5"
-                        Grid.Column="1"
-                        Classes="integerInput"
-                        Increment="1000000"
-                        Value="{Binding BorderData.MinimumIterations}" />
+                    
                     
                     <ProgressBar
-                        Grid.Row="6"
+                        Grid.Row="5"
                         Grid.Column="1"
                         Margin="4"
                         Minimum="0"
@@ -104,7 +99,7 @@
                         Value="{Binding BorderData.NumRegionsRendered}"/>
                     
                     <Button
-                        Grid.Row="6"
+                        Grid.Row="5"
                         Grid.Column="2"
                         Content="Render Region(s)"
                         Command="{Binding BorderData.RenderRegionsCommand}" />

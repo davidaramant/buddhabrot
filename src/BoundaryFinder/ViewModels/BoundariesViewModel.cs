@@ -16,7 +16,7 @@ using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
 
-public sealed class BorderDataViewModel : ViewModelBase
+public sealed class BoundariesViewModel : ViewModelBase
 {
     private readonly DataProvider _dataProvider;
     private readonly Action<string> _log;
@@ -84,7 +84,7 @@ public sealed class BorderDataViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _numRegionsRendered, value);
     }
 
-    public BorderDataViewModel(DataProvider dataProvider, Action<string> log)
+    public BoundariesViewModel(DataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
         _log = log;

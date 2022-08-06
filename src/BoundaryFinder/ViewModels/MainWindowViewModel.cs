@@ -10,8 +10,8 @@ public class MainWindowViewModel : ViewModelBase
     private readonly DataProvider _dataProvider = new();
     private string _logOutput = string.Empty;
 
-    public BorderDataViewModel BorderData { get; }
-    public FindNewBoundaryViewModel FindNewBoundary { get; }
+    public BoundariesViewModel Boundaries { get; }
+    public CalculateBoundaryViewModel CalculateBoundary { get; }
     public SettingsViewModel Settings { get; }
 
     public string LogOutput
@@ -22,8 +22,8 @@ public class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
-        BorderData = new BorderDataViewModel(_dataProvider, Log);
-        FindNewBoundary = new FindNewBoundaryViewModel(_dataProvider, Log);
+        Boundaries = new BoundariesViewModel(_dataProvider, Log);
+        CalculateBoundary = new CalculateBoundaryViewModel(_dataProvider, Log);
         Settings = new SettingsViewModel(_dataProvider, Log);
     }
     

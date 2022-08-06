@@ -35,7 +35,7 @@
                 </Style>
             </TabControl.Styles>
 
-            <TabItem Header="Border Data">
+            <TabItem Header="Boundaries">
                 <Grid
                     RowDefinitions="Auto,*,Auto,Auto,Auto,Auto"
                     ColumnDefinitions="*,*,*">
@@ -43,42 +43,42 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         Content="Refresh List of Data Sets"
-                        Command="{Binding BorderData.LoadDataSetsCommand}" />
+                        Command="{Binding Boundaries.LoadDataSetsCommand}" />
                     <Button
                         Grid.Row="0"
                         Grid.Column="2"
                         Content="Load Boundary Set"
-                        Command="{Binding BorderData.SelectDataSetCommand}" />
+                        Command="{Binding Boundaries.SelectDataSetCommand}" />
                     <ListBox
                         Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
-                        Items="{Binding BorderData.Boundaries}"
-                        SelectedItem="{Binding BorderData.SelectedParameters}" />
+                        Items="{Binding Boundaries.Boundaries}"
+                        SelectedItem="{Binding Boundaries.SelectedParameters}" />
 
                     <WrapPanel Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0">
                         <TextBlock
                             VerticalAlignment="Center"
-                            Text="{Binding BorderData.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}}" />
+                            Text="{Binding Boundaries.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}}" />
                         <TextBlock
                             VerticalAlignment="Center"
-                            Text="{Binding BorderData.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}}" />
+                            Text="{Binding Boundaries.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}}" />
                         <views:LabeledIntegerUpDown 
                             Text="Iteration Minimum:"
                             Increment="1000000"
-                            Value="{Binding BorderData.MinimumIterations}" />
+                            Value="{Binding Boundaries.MinimumIterations}" />
                     </WrapPanel>
                     
                     <Button
                         Grid.Row="3"
                         Grid.Column="2"
                         Content="Render Boundary"
-                        Command="{Binding BorderData.RenderBoundaryCommand}" />
+                        Command="{Binding Boundaries.RenderBoundaryCommand}" />
                     <TextBlock
                         Grid.Row="4"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Text="{Binding BorderData.RegionImageSize, StringFormat=Region Image Size: \{0:N0\}}" />
+                        Text="{Binding Boundaries.RegionImageSize, StringFormat=Region Image Size: \{0:N0\}}" />
                     <Slider
                         Grid.Row="4"
                         Grid.Column="1"
@@ -87,7 +87,7 @@
                         IsSnapToTickEnabled="True"
                         TickPlacement="BottomRight"
                         TickFrequency="1"
-                        Value="{Binding BorderData.RegionImageSizeMultiplier}"/>
+                        Value="{Binding Boundaries.RegionImageSizeMultiplier}"/>
                     
                     
                     <ProgressBar
@@ -95,20 +95,20 @@
                         Grid.Column="1"
                         Margin="4"
                         Minimum="0"
-                        Maximum="{Binding BorderData.NumRegionsToRender}"
-                        Value="{Binding BorderData.NumRegionsRendered}"/>
+                        Maximum="{Binding Boundaries.NumRegionsToRender}"
+                        Value="{Binding Boundaries.NumRegionsRendered}"/>
                     
                     <Button
                         Grid.Row="5"
                         Grid.Column="2"
                         Content="Render Region(s)"
-                        Command="{Binding BorderData.RenderRegionsCommand}" />
+                        Command="{Binding Boundaries.RenderRegionsCommand}" />
                     
                     
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Calculate New Borders">
+            <TabItem Header="Calculate Boundary">
                 <Grid
                     ColumnDefinitions="Auto,Auto,*"
                     RowDefinitions="Auto,Auto,Auto,Auto,Auto">
@@ -122,7 +122,7 @@
                         Grid.Column="1"
                         Classes="integerInput"
                         Increment="1000000"
-                        Value="{Binding FindNewBoundary.MaximumIterations}" />
+                        Value="{Binding CalculateBoundary.MaximumIterations}" />
 
                     <Label
                         Grid.Row="1"
@@ -133,7 +133,7 @@
                         Grid.Column="1"
                         Classes="integerInput"
                         Increment="1000"
-                        Value="{Binding FindNewBoundary.VerticalDivisions}" />
+                        Value="{Binding CalculateBoundary.VerticalDivisions}" />
 
                     <Label
                         Grid.Row="2"
@@ -143,7 +143,7 @@
                         Grid.Row="2"
                         Grid.Column="1"
                         IsReadOnly="True"
-                        Text="{Binding FindNewBoundary.ScanAreaWidth, StringFormat=\{0:N10\}, Mode=OneWay}" />
+                        Text="{Binding CalculateBoundary.ScanAreaWidth, StringFormat=\{0:N10\}, Mode=OneWay}" />
 
                     <Label
                         Grid.Row="3"
@@ -153,19 +153,23 @@
                         Grid.Row="3"
                         Grid.Column="1"
                         IsReadOnly="True"
-                        Text="{Binding FindNewBoundary.ScanArea, StringFormat=\{0:N10\}, Mode=OneWay}" />
+                        Text="{Binding CalculateBoundary.ScanArea, StringFormat=\{0:N10\}, Mode=OneWay}" />
 
                     <Button
                         Grid.Row="4"
                         Grid.Column="0"
                         Content="Find Boundary"
-                        Command="{Binding FindNewBoundary.FindBoundary}" />
+                        Command="{Binding CalculateBoundary.FindBoundary}" />
                     <Button
                         Grid.Row="4"
                         Grid.Column="1"
                         Content="Cancel"
-                        Command="{Binding FindNewBoundary.CancelFindingBoundary}" />
+                        Command="{Binding CalculateBoundary.CancelFindingBoundary}" />
                 </Grid>
+            </TabItem>
+            
+            <TabItem Header="Visualize">
+                
             </TabItem>
 
             <TabItem Header="Settings">

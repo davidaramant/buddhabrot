@@ -11,7 +11,7 @@ using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
 
-public sealed class FindNewBoundaryViewModel : ViewModelBase
+public sealed class CalculateBoundaryViewModel : ViewModelBase
 {
     private readonly DataProvider _dataProvider;
     private readonly Action<string> _log;
@@ -41,7 +41,7 @@ public sealed class FindNewBoundaryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> FindBoundary { get; }
     public ReactiveCommand<Unit, Unit> CancelFindingBoundary { get; }
 
-    public FindNewBoundaryViewModel(DataProvider dataProvider, Action<string> log)
+    public CalculateBoundaryViewModel(DataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
         _log = log;

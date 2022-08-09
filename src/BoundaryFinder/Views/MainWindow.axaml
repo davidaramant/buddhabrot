@@ -35,6 +35,39 @@
                 </Style>
             </TabControl.Styles>
 
+            <TabItem Header="Visualize">
+                <Grid
+                    ColumnDefinitions="Auto,*,Auto"
+                    RowDefinitions="Auto,*,Auto">
+                    <ComboBox
+                        Margin="4"
+                        VerticalAlignment="Center"
+                        Grid.Column="0"
+                        Grid.Row="0" />
+                    <Label
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        HorizontalAlignment="Right"
+                        Margin="4"
+                        Content="Minimum Iterations:" />
+                    <NumericUpDown
+                        Grid.Column="2"
+                        Grid.Row="0"
+                        Classes="integerInput"
+                        Increment="1000000" />
+                    
+                    <Canvas
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Background="Red" />
+                    
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="0" />
+                </Grid>
+            </TabItem>
+
             <TabItem Header="Boundaries">
                 <Grid
                     RowDefinitions="Auto,*,Auto,Auto,Auto,Auto"
@@ -63,12 +96,12 @@
                         <TextBlock
                             VerticalAlignment="Center"
                             Text="{Binding Boundaries.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}}" />
-                        <views:LabeledIntegerUpDown 
+                        <views:LabeledIntegerUpDown
                             Text="Iteration Minimum:"
                             Increment="1000000"
                             Value="{Binding Boundaries.MinimumIterations}" />
                     </WrapPanel>
-                    
+
                     <Button
                         Grid.Row="3"
                         Grid.Column="2"
@@ -87,24 +120,24 @@
                         IsSnapToTickEnabled="True"
                         TickPlacement="BottomRight"
                         TickFrequency="1"
-                        Value="{Binding Boundaries.RegionImageSizeMultiplier}"/>
-                    
-                    
+                        Value="{Binding Boundaries.RegionImageSizeMultiplier}" />
+
+
                     <ProgressBar
                         Grid.Row="5"
                         Grid.Column="1"
                         Margin="4"
                         Minimum="0"
                         Maximum="{Binding Boundaries.NumRegionsToRender}"
-                        Value="{Binding Boundaries.NumRegionsRendered}"/>
-                    
+                        Value="{Binding Boundaries.NumRegionsRendered}" />
+
                     <Button
                         Grid.Row="5"
                         Grid.Column="2"
                         Content="Render Region(s)"
                         Command="{Binding Boundaries.RenderRegionsCommand}" />
-                    
-                    
+
+
                 </Grid>
             </TabItem>
 
@@ -166,10 +199,6 @@
                         Content="Cancel"
                         Command="{Binding CalculateBoundary.CancelFindingBoundary}" />
                 </Grid>
-            </TabItem>
-            
-            <TabItem Header="Visualize">
-                
             </TabItem>
 
             <TabItem Header="Settings">

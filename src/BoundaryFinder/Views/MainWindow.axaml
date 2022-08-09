@@ -40,11 +40,13 @@
                     ColumnDefinitions="Auto,*,Auto"
                     RowDefinitions="Auto,*,Auto">
                     <ComboBox
+                        x:Name="BoundariesComboBox"
                         Margin="4"
                         VerticalAlignment="Center"
                         Grid.Column="0"
                         Grid.Row="0"
-                        Items="{Binding Visualize.SavedBoundaries}" />
+                        Items="{Binding Visualize.SavedBoundaries}"
+                        SelectedItem="{Binding Visualize.SelectedParameters}" />
                     <Label
                         Grid.Column="1"
                         Grid.Row="0"
@@ -54,8 +56,11 @@
                     <NumericUpDown
                         Grid.Column="2"
                         Grid.Row="0"
+                        IsEnabled="{Binding SelectedItem, ElementName=BoundariesComboBox, Converter={x:Static ObjectConverters.IsNotNull}}"
                         Classes="integerInput"
-                        Increment="1000000" />
+                        Increment="1000000"
+                        Value="{Binding Visualize.MinimumIterations}"
+                        Maximum="{Binding Visualize.MinimumIterationsCap}" />
 
                     <Canvas
                         Grid.Row="1"
@@ -65,7 +70,8 @@
 
                     <Label
                         Grid.Row="2"
-                        Grid.Column="0" />
+                        Grid.Column="0"
+                        Content="{Binding Visualize.MinimumIterationsCap}" />
                 </Grid>
             </TabItem>
 

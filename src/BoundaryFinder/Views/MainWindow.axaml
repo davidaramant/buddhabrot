@@ -43,7 +43,8 @@
                         Margin="4"
                         VerticalAlignment="Center"
                         Grid.Column="0"
-                        Grid.Row="0" />
+                        Grid.Row="0"
+                        Items="{Binding Visualize.SavedBoundaries}" />
                     <Label
                         Grid.Column="1"
                         Grid.Row="0"
@@ -55,13 +56,13 @@
                         Grid.Row="0"
                         Classes="integerInput"
                         Increment="1000000" />
-                    
+
                     <Canvas
                         Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
                         Background="Red" />
-                    
+
                     <Label
                         Grid.Row="2"
                         Grid.Column="0" />

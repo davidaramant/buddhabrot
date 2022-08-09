@@ -4,16 +4,15 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Threading;
+using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.DataStorage;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
 
 public sealed class CalculateBoundaryViewModel : ViewModelBase
 {
-    private readonly DataProvider _dataProvider;
+    private readonly BorderDataProvider _dataProvider;
     private readonly Action<string> _log;
     private int _maximumIterations = 15_000_000;
     private int _verticalDivisions = 1000;
@@ -41,7 +40,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> FindBoundary { get; }
     public ReactiveCommand<Unit, Unit> CancelFindingBoundary { get; }
 
-    public CalculateBoundaryViewModel(DataProvider dataProvider, Action<string> log)
+    public CalculateBoundaryViewModel(BorderDataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
         _log = log;
@@ -74,7 +73,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
 
             _log($"Found boundary for {boundaryParameters}. Took {stopwatch.Elapsed}, Found {regions.Count:N0} border regions");
 
-            _dataProvider.SaveBoundaryRegions(boundaryParameters, regions);
+            _dataProvider.SaveBorderData(boundaryParameters, regions);
         }
         catch (OperationCanceledException)
         {

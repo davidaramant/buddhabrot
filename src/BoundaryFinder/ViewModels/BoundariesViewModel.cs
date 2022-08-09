@@ -7,10 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using BoundaryFinder.Models;
 using BoundaryFinder.RandomExtensions;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.DataStorage;
 using DynamicData;
 using ReactiveUI;
 
@@ -18,7 +18,7 @@ namespace BoundaryFinder.ViewModels;
 
 public sealed class BoundariesViewModel : ViewModelBase
 {
-    private readonly DataProvider _dataProvider;
+    private readonly BorderDataProvider _dataProvider;
     private readonly Action<string> _log;
     private BoundaryParameters? _selectedParameters;
     private int _verticalDivisions;
@@ -84,7 +84,7 @@ public sealed class BoundariesViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _numRegionsRendered, value);
     }
 
-    public BoundariesViewModel(DataProvider dataProvider, Action<string> log)
+    public BoundariesViewModel(BorderDataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
         _log = log;
@@ -102,7 +102,7 @@ public sealed class BoundariesViewModel : ViewModelBase
     {
         Boundaries.Clear();
 
-        var dataSets = _dataProvider.GetBoundaryParameters();
+        var dataSets = _dataProvider.SavedBoundaries;
 
         Boundaries.AddRange(dataSets);
     }
@@ -111,7 +111,7 @@ public sealed class BoundariesViewModel : ViewModelBase
     {
         if (SelectedParameters != null)
         {
-            _regions = _dataProvider.GetBoundaryRegions(SelectedParameters);
+            //_regions = _dataProvider.GetBoundaryRegions(SelectedParameters);
             VerticalDivisions = SelectedParameters.VerticalDivisions;
             NumberOfRegions = _regions.Count;
         }
@@ -120,16 +120,16 @@ public sealed class BoundariesViewModel : ViewModelBase
     private Task RenderBoundaryAsync() =>
         Task.Run(() =>
         {
-            try
-            {
-                using var img = BoundaryVisualizer.RenderBoundary(_regions);
-
-                img.Save(Path.Combine(_dataProvider.LocalDataStoragePath, SelectedParameters!.Description + ".png"));
-            }
-            catch (Exception e)
-            {
-                _log(e.ToString());
-            }
+            // try
+            // {
+            //     using var img = BoundaryVisualizer.RenderBoundary(_regions);
+            //
+            //     img.Save(Path.Combine(_dataProvider.LocalDataStoragePath, SelectedParameters!.Description + ".png"));
+            // }
+            // catch (Exception e)
+            // {
+            //     _log(e.ToString());
+            // }
         });
 
     private Task RenderRegionsAsync()
@@ -138,37 +138,37 @@ public sealed class BoundariesViewModel : ViewModelBase
         {
             try
             {
-                var plotParameters = new PlotParameters(SelectedParameters!.VerticalDivisions,
-                    new IterationRange(MinimumIterations, SelectedParameters!.MaxIterations));
+                // var plotParameters = new PlotParameters(SelectedParameters!.VerticalDivisions,
+                //     new IterationRange(MinimumIterations, SelectedParameters!.MaxIterations));
+                //
+                // var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
+                //
+                // var random = new Random();
+                //
+                // const int samples = 10;
+                // NumRegionsToRender = samples;
+                // NumRegionsRendered = 0;
+                //
+                // var stopwatch = Stopwatch.StartNew();
+                //
+                // foreach (var region in _regions.GetRandomSequence(random).Take(samples))
+                // {
+                //     _log($"Visualizing {region}...");
+                //
+                //     var viewPort = new ViewPort(plotParameters.GetAreaOfId(region),
+                //         new Size(RegionImageSize, RegionImageSize));
+                //
+                //     using var img = BoundaryVisualizer.RenderBorderRegion(
+                //         viewPort,
+                //         plotParameters.IterationRange);
+                //
+                //     img.Save(Path.Combine(dirPath,
+                //         $"l{MinimumIterations:N0}_x{region.X}_y{region.Y}_size{RegionImageSize}.png"));
+                //
+                //     NumRegionsRendered++;
+                // }
 
-                var dirPath = _dataProvider.GetBoundaryParameterLocation(SelectedParameters!);
-
-                var random = new Random();
-
-                const int samples = 10;
-                NumRegionsToRender = samples;
-                NumRegionsRendered = 0;
-                
-                var stopwatch = Stopwatch.StartNew();
-                
-                foreach (var region in _regions.GetRandomSequence(random).Take(samples))
-                {
-                    _log($"Visualizing {region}...");
-
-                    var viewPort = new ViewPort(plotParameters.GetAreaOfId(region),
-                        new Size(RegionImageSize, RegionImageSize));
-
-                    using var img = BoundaryVisualizer.RenderBorderRegion(
-                        viewPort,
-                        plotParameters.IterationRange);
-
-                    img.Save(Path.Combine(dirPath,
-                        $"l{MinimumIterations:N0}_x{region.X}_y{region.Y}_size{RegionImageSize}.png"));
-
-                    NumRegionsRendered++;
-                }
-
-                _log($"Took {stopwatch.Elapsed}");
+                // _log($"Took {stopwatch.Elapsed}");
             }
             catch (Exception e)
             {

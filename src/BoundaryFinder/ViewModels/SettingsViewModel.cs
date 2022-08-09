@@ -1,18 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Reactive;
-using Buddhabrot.Core.DataStorage;
+using BoundaryFinder.Models;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
 
 public sealed class SettingsViewModel : ViewModelBase
 {
-    private readonly string _defaultDataSetPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
-        "Buddhabrot",
-        "Mandelbrot Set Boundaries");
-    
     private string _dataSetPath;
 
     public string DataSetPath
@@ -23,18 +17,13 @@ public sealed class SettingsViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> UpdateFilePathCommand { get; }
     
-    public SettingsViewModel(DataProvider dataProvider, Action<string> log)
+    public SettingsViewModel(BorderDataProvider dataProvider, Action<string> log)
     {
-        if (string.IsNullOrWhiteSpace(dataProvider.LocalDataStoragePath))
-        {
-            dataProvider.LocalDataStoragePath = _defaultDataSetPath;
-        }
-
         _dataSetPath = dataProvider.LocalDataStoragePath;
         
         UpdateFilePathCommand = ReactiveCommand.Create(() =>
         {
-            dataProvider.LocalDataStoragePath = _dataSetPath;
+            dataProvider.UpdateDataStoragePath(_dataSetPath);
         });
     }
 }

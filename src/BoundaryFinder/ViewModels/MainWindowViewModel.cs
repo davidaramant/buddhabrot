@@ -1,5 +1,6 @@
 ﻿using System;
 using Avalonia.Threading;
+using BoundaryFinder.Models;
 using Buddhabrot.Core.DataStorage;
 using ReactiveUI;
 
@@ -7,7 +8,7 @@ namespace BoundaryFinder.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    private readonly DataProvider _dataProvider = new();
+    private readonly BorderDataProvider _dataProvider = new(new DataProvider());
     private string _logOutput = string.Empty;
 
     public VisualizeViewModel Visualize { get; }
@@ -23,7 +24,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
-        Visualize = new VisualizeViewModel();
+        Visualize = new VisualizeViewModel(_dataProvider);
         Boundaries = new BoundariesViewModel(_dataProvider, Log);
         CalculateBoundary = new CalculateBoundaryViewModel(_dataProvider, Log);
         Settings = new SettingsViewModel(_dataProvider, Log);

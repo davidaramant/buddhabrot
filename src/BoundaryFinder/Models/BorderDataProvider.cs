@@ -49,4 +49,7 @@ public sealed class BorderDataProvider
         _dataProvider.LocalDataStoragePath = newPath;
         RefreshSavedBoundaries();
     }
+
+    public IReadOnlyList<RegionId> LoadRegions(BoundaryParameters parameters) =>
+        _dataProvider.GetBoundaryRegions(parameters);
 }

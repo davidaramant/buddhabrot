@@ -71,7 +71,7 @@
                     <Label
                         Grid.Row="2"
                         Grid.Column="0"
-                        Content="{Binding Visualize.MinimumIterationsCap}" />
+                        Content="{Binding Visualize.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}, Mode=OneWay}" />
                 </Grid>
             </TabItem>
 

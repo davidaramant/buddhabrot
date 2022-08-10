@@ -62,11 +62,11 @@
                         Value="{Binding Visualize.MinimumIterations}"
                         Maximum="{Binding Visualize.MinimumIterationsCap}" />
 
-                    <Canvas
+                    <views:MandelbrotRenderer
                         Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
-                        Background="Red" />
+                        LogicalArea="{Binding Visualize.LogicalArea}"/>
 
                     <Label
                         Grid.Row="2"

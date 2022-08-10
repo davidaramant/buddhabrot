@@ -66,7 +66,7 @@
                         Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
-                        LogicalArea="{Binding Visualize.LogicalArea}"/>
+                        LogicalArea="{Binding Visualize.LogicalArea}" />
 
                     <Label
                         Grid.Row="2"
@@ -149,63 +149,37 @@
             </TabItem>
 
             <TabItem Header="Calculate Boundary">
-                <Grid
-                    ColumnDefinitions="Auto,Auto,*"
-                    RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-
-                    <Label
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Content="Iteration Maximum:" />
-                    <NumericUpDown
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Classes="integerInput"
+                <StackPanel Orientation="Vertical" MaxWidth="800" Spacing="8">
+                    <views:LabeledIntegerUpDown
+                        Text="Iteration Maximum:"
                         Increment="1000000"
                         Value="{Binding CalculateBoundary.MaximumIterations}" />
 
-                    <Label
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Content="Vertical Divisions:" />
-                    <NumericUpDown
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Classes="integerInput"
-                        Increment="1000"
-                        Value="{Binding CalculateBoundary.VerticalDivisions}" />
+                    <views:LabeledIntegerUpDown
+                        Text="Vertical Division Power:"
+                        Increment="1"
+                        Value="{Binding CalculateBoundary.VerticalDivisionPower}" />
 
-                    <Label
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Content="Scan Area Width:" />
-                    <TextBox
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        IsReadOnly="True"
-                        Text="{Binding CalculateBoundary.ScanAreaWidth, StringFormat=\{0:N10\}, Mode=OneWay}" />
+                    <TextBlock
+                        Text="{Binding CalculateBoundary.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}, Mode=OneWay}" />
+                    
+                    <TextBlock
+                        Text="{Binding CalculateBoundary.ScanAreaWidth, StringFormat=Scan Area Width: \{0\}, Mode=OneWay}" />
 
-                    <Label
-                        Grid.Row="3"
-                        Grid.Column="0"
-                        Content="Scan Area:" />
-                    <TextBox
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        IsReadOnly="True"
-                        Text="{Binding CalculateBoundary.ScanArea, StringFormat=\{0:N10\}, Mode=OneWay}" />
+                    <TextBlock
+                        Text="{Binding CalculateBoundary.ScanArea, StringFormat=Scan Area: \{0\}, Mode=OneWay}" />
 
                     <Button
-                        Grid.Row="4"
-                        Grid.Column="0"
                         Content="Find Boundary"
                         Command="{Binding CalculateBoundary.FindBoundary}" />
                     <Button
-                        Grid.Row="4"
-                        Grid.Column="1"
                         Content="Cancel"
                         Command="{Binding CalculateBoundary.CancelFindingBoundary}" />
-                </Grid>
+
+                    <ProgressBar
+                        IsIndeterminate="True"
+                        IsVisible="{Binding CalculateBoundary.IsFindingBoundary}" />
+                </StackPanel>
             </TabItem>
 
             <TabItem Header="Settings">

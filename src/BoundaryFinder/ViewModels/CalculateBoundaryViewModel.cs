@@ -15,9 +15,12 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     private readonly BorderDataProvider _dataProvider;
     private readonly Action<string> _log;
     private int _maximumIterations = 15_000_000;
-    private int _verticalDivisions = 1000;
+    private int _verticalDivisionPower = 1;
+    private readonly ObservableAsPropertyHelper<int> _verticalDivisions;
     private readonly ObservableAsPropertyHelper<double> _scanAreaWidth;
     private readonly ObservableAsPropertyHelper<double> _scanArea;
+    private readonly ObservableAsPropertyHelper<bool> _isFindingBoundary;
+
 
     public int VerticalDistance => HorizontalDistance / 2;
     public int HorizontalDistance { get; } = 4;
@@ -28,22 +31,27 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _maximumIterations, value);
     }
 
-    public int VerticalDivisions
+    public int VerticalDivisionPower
     {
-        get => _verticalDivisions;
-        set => this.RaiseAndSetIfChanged(ref _verticalDivisions, value);
+        get => _verticalDivisionPower;
+        set => this.RaiseAndSetIfChanged(ref _verticalDivisionPower, value);
     }
+
+    public int VerticalDivisions => _verticalDivisions.Value;
 
     public double ScanAreaWidth => _scanAreaWidth.Value;
     public double ScanArea => _scanArea.Value;
 
     public ReactiveCommand<Unit, Unit> FindBoundary { get; }
     public ReactiveCommand<Unit, Unit> CancelFindingBoundary { get; }
-
+    public bool IsFindingBoundary => _isFindingBoundary.Value;
+    
     public CalculateBoundaryViewModel(BorderDataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
         _log = log;
+        this.WhenAnyValue(x => x.VerticalDivisionPower, power => 1 << power)
+            .ToProperty(this, x => x.VerticalDivisions, out _verticalDivisions);
         this.WhenAnyValue(x => x.VerticalDivisions, divisions => VerticalDistance / (double)divisions)
             .ToProperty(this, x => x.ScanAreaWidth, out _scanAreaWidth);
         this.WhenAnyValue(x => x.ScanAreaWidth, width => width * width)
@@ -53,6 +61,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             () => Observable
                 .StartAsync(FindBoundaryAsync)
                 .TakeUntil(CancelFindingBoundary!));
+        FindBoundary.IsExecuting.ToProperty(this,x=>x.IsFindingBoundary, out _isFindingBoundary);
         CancelFindingBoundary = ReactiveCommand.Create(() => { }, FindBoundary.IsExecuting);
     }
 
@@ -60,7 +69,6 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     {
         try
         {
-            // TODO: busy indicator using unicode? ◐ ◓ ◑ ◒
             var stopwatch = Stopwatch.StartNew();
 
             var boundaryParameters = new BoundaryParameters(VerticalDivisions, MaximumIterations);

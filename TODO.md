@@ -4,6 +4,12 @@
 
 - [x] Refactor data storage stuff
   - [ ] Allow changing local files location 
-- [ ] Better busy indicator
+- [x] Better busy indicator
 - [ ] Integrate DE in boundary scanning?
-- [ ] Render individual regions
+- [ ] Real-Time Visualizations
+  - [x] Working Canvas
+  - [ ] Switch to power-of-two divisions
+  - [ ] QuadTree for regions
+  - [ ] Render regions
+  - [ ] Zooming & panning
+  - [ ] Render region interiors

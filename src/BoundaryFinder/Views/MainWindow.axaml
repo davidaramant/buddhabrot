@@ -28,7 +28,6 @@
                     <Setter Property="VerticalAlignment" Value="Center" />
                     <Setter Property="Width" Value="300" />
                     <Setter Property="Increment" Value="1" />
-                    <Setter Property="Minimum" Value="1" />
                     <Setter Property="ParsingNumberStyle" Value="Integer" />
                     <Setter Property="FormatString" Value="N0" />
                     <Setter Property="HorizontalContentAlignment" Value="Right" />
@@ -155,14 +154,21 @@
                         Increment="1000000"
                         Value="{Binding CalculateBoundary.MaximumIterations}" />
 
-                    <views:LabeledIntegerUpDown
-                        Text="Vertical Division Power:"
-                        Increment="1"
+                    <Label Content="Vertical Division 2^n Power:" />
+                    <Slider 
+                        Minimum="1" 
+                        Maximum="30"
+                        TickFrequency="1"
+                        TickPlacement="Outside"
+                        IsSnapToTickEnabled="True"
                         Value="{Binding CalculateBoundary.VerticalDivisionPower}" />
 
                     <TextBlock
-                        Text="{Binding CalculateBoundary.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}, Mode=OneWay}" />
+                        Text="{Binding CalculateBoundary.VerticalDivisionPower, StringFormat=Power: \{0:N0\}, Mode=OneWay}" />
                     
+                    <TextBlock
+                        Text="{Binding CalculateBoundary.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}, Mode=OneWay}" />
+
                     <TextBlock
                         Text="{Binding CalculateBoundary.ScanAreaWidth, StringFormat=Scan Area Width: \{0\}, Mode=OneWay}" />
 

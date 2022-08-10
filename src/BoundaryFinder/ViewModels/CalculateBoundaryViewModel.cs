@@ -71,7 +71,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
         {
             var stopwatch = Stopwatch.StartNew();
 
-            var boundaryParameters = new BoundaryParameters(VerticalDivisions, MaximumIterations);
+            var boundaryParameters = new BoundaryParameters(VerticalDivisionPower, MaximumIterations);
             
             var regions = await Task.Run(
                 () => BoundaryCalculator.FindBoundaryAsync(

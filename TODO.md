@@ -8,7 +8,7 @@
 - [ ] Integrate DE in boundary scanning?
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
-  - [ ] Switch to power-of-two divisions
+  - [x] Switch to power-of-two divisions
   - [ ] QuadTree for regions
   - [ ] Render regions
   - [ ] Zooming & panning

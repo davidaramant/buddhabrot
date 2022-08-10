@@ -3,9 +3,10 @@
 namespace Buddhabrot.Core.Boundary;
 
 public record PlotParameters(
-    int VerticalDivisions,
+    int VerticalDivisionsPower,
     IterationRange IterationRange)
 {
+    public int VerticalDivisions => 1 << VerticalDivisionsPower;
     public double SideLength => 2.0 / VerticalDivisions;
 
     public ComplexArea GetAreaOfId(RegionId id)

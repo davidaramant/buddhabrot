@@ -8,15 +8,23 @@ public sealed record Range(
 
     public double Magnitude => Math.Abs(ExclusiveMax - InclusiveMin);
 
-    public bool IsInside(double value) =>
+    public Range FirstHalf() => FromMinAndLength(InclusiveMin,Magnitude/2);
+
+    public Range LastHalf()
+    {
+        var halfMagnitude = Magnitude / 2;
+        return FromMinAndLength(InclusiveMin + halfMagnitude, halfMagnitude);
+    }
+    
+    public bool Contains(double value) =>
         value >= InclusiveMin &&
         value < ExclusiveMax;
 
     public bool OverlapsWith(Range otherRange) => 
-        IsInside(otherRange.InclusiveMin) ||
-        IsInside(otherRange.ExclusiveMax) ||
-        otherRange.IsInside(InclusiveMin) || 
-        otherRange.IsInside(ExclusiveMax);
+        Contains(otherRange.InclusiveMin) ||
+        Contains(otherRange.ExclusiveMax) ||
+        otherRange.Contains(InclusiveMin) || 
+        otherRange.Contains(ExclusiveMax);
 
     public override string ToString() => $"[{InclusiveMin}, {ExclusiveMax})";
 }

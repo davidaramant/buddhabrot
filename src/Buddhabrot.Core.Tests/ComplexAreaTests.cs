@@ -44,4 +44,15 @@ public class ComplexAreaTests
         area1.OverlapsWith(area2).Should().Be(shouldIntersect);
         area2.OverlapsWith(area1).Should().Be(shouldIntersect);
     }
+
+    [Fact]
+    public void ShouldDetermineQuadrants()
+    {
+        var area = new ComplexArea(new Range(-1, 1), new Range(-1, 1));
+
+        area.GetNW().Should().Be(new ComplexArea(new Range(-1, 0), new Range(0, 1)));
+        area.GetNE().Should().Be(new ComplexArea(new Range(0, 1), new Range(0, 1)));
+        area.GetSE().Should().Be(new ComplexArea(new Range(0, 1), new Range(-1, 0)));
+        area.GetSW().Should().Be(new ComplexArea(new Range(-1, 0), new Range(-1, 0)));
+    }
 }

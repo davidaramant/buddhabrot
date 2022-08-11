@@ -14,4 +14,14 @@ public class RangeTests
         range1.OverlapsWith(range2).Should().Be(shouldIntersect);
         range2.OverlapsWith(range1).Should().Be(shouldIntersect);
     }
+
+    [Theory]
+    [InlineData(0, 2, 1)]
+    [InlineData(-2, -1, -1.5)]
+    public void ShouldGetFirstAndLastHalf(double min, double max, double midPoint)
+    {
+        var range = new Range(min, max);
+        range.FirstHalf().Should().Be(new Range(min, midPoint));
+        range.LastHalf().Should().Be(new Range(midPoint, max));
+    }
 }

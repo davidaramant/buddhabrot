@@ -12,7 +12,7 @@ public sealed record Range(
         value >= InclusiveMin &&
         value < ExclusiveMax;
 
-    public bool Intersects(Range otherRange) => 
+    public bool OverlapsWith(Range otherRange) => 
         IsInside(otherRange.InclusiveMin) ||
         IsInside(otherRange.ExclusiveMax) ||
         otherRange.IsInside(InclusiveMin) || 

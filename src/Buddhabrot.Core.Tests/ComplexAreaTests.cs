@@ -2,7 +2,7 @@
 
 public class ComplexAreaTests
 {
-    public static IEnumerable<object[]> GetIntersectionData()
+    public static IEnumerable<object[]> GetOverlapData()
     {
         // Not overlapping
         yield return new object[]
@@ -11,7 +11,14 @@ public class ComplexAreaTests
             new ComplexArea(new Range(2, 3), new Range(2, 3)),
             false
         };
-        // Overlapping
+        // Equal
+        yield return new object[]
+        {
+            new ComplexArea(new Range(0, 1), new Range(0, 1)),
+            new ComplexArea(new Range(0, 1), new Range(0, 1)),
+            true
+        };
+        // Partially overlapping
         yield return new object[]
         {
             new ComplexArea(new Range(0, 2), new Range(0, 2)),
@@ -28,13 +35,13 @@ public class ComplexAreaTests
     }
 
     [Theory]
-    [MemberData(nameof(GetIntersectionData))]
-    public void ShouldDetermineAreaIntersections(
+    [MemberData(nameof(GetOverlapData))]
+    public void ShouldDetermineIfAreasOverlap(
         ComplexArea area1,
         ComplexArea area2,
         bool shouldIntersect)
     {
-        area1.Intersects(area2).Should().Be(shouldIntersect);
-        area2.Intersects(area1).Should().Be(shouldIntersect);
+        area1.OverlapsWith(area2).Should().Be(shouldIntersect);
+        area2.OverlapsWith(area1).Should().Be(shouldIntersect);
     }
 }

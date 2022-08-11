@@ -42,9 +42,34 @@ public sealed class RegionMap
         _top = cache.Transform((Quad.Empty, Quad.Empty, quads[new RegionId(0, 0)], quads[new RegionId(1, 0)]));
     }
 
-    public IEnumerable<ComplexArea> GetIntersectingRegions(ComplexArea searchArea)
+    public IReadOnlyList<ComplexArea> GetVisibleAreas(ComplexArea searchArea)
     {
+        var visibleAreas = new List<ComplexArea>();
         
-        throw new NotImplementedException();
+        var toCheck = new Queue<(ComplexArea, Quad)>();
+        toCheck.Enqueue((_topLevelArea, _top));
+
+        while (toCheck.Any())
+        {
+            var (quadArea, currentQuad) = toCheck.Dequeue();
+
+            if (currentQuad != Quad.Empty &&
+                searchArea.OverlapsWith(quadArea))
+            {
+                if (currentQuad == Quad.Border)
+                {
+                    visibleAreas.Add(quadArea.Intersect(searchArea));
+                }
+                else
+                {
+                    toCheck.Enqueue((quadArea.GetNW(), currentQuad.NW));
+                    toCheck.Enqueue((quadArea.GetNE(), currentQuad.NE));
+                    toCheck.Enqueue((quadArea.GetSE(), currentQuad.SE));
+                    toCheck.Enqueue((quadArea.GetSW(), currentQuad.SW));
+                }
+            }
+        }
+
+        return visibleAreas;
     }
 }

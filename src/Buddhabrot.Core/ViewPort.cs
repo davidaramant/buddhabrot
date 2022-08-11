@@ -31,8 +31,8 @@ public sealed class ViewPort
     public Rectangle GetRectangle(ComplexArea area) =>
         new Rectangle(
             GetPosition(area.TopLeftCorner),
-            new Size((int) Math.Ceiling(area.RealRange.Magnitude * RealPixelSize),
-                (int) Math.Ceiling(area.ImagRange.Magnitude * ImagPixelSize)));
+            new Size((int) Math.Ceiling(area.RealRange.Magnitude / RealPixelSize),
+                (int) Math.Ceiling(area.ImagRange.Magnitude / ImagPixelSize)));
 
     public Point GetPosition(Complex c) => new(
         (int) ((c.Real - Area.RealRange.InclusiveMin) / RealPixelSize),

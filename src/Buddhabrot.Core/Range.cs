@@ -36,5 +36,7 @@ public readonly record struct Range(
         return min >= max ? Empty : new(min, max);
     }
 
+    public Range OffsetBy(double delta) => new(InclusiveMin + delta, ExclusiveMax + delta);
+    
     public override string ToString() => $"[{InclusiveMin}, {ExclusiveMax})";
 }

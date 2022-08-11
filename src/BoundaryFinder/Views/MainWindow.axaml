@@ -36,36 +36,35 @@
 
             <TabItem Header="Visualize">
                 <Grid
-                    ColumnDefinitions="Auto,*,Auto"
+                    ColumnDefinitions="*"
                     RowDefinitions="Auto,*,Auto">
-                    <ComboBox
-                        x:Name="BoundariesComboBox"
-                        Margin="4"
-                        VerticalAlignment="Center"
-                        Grid.Column="0"
-                        Grid.Row="0"
-                        Items="{Binding Visualize.SavedBoundaries}"
-                        SelectedItem="{Binding Visualize.SelectedParameters}" />
-                    <Label
-                        Grid.Column="1"
-                        Grid.Row="0"
-                        HorizontalAlignment="Right"
-                        Margin="4"
-                        Content="Minimum Iterations:" />
-                    <NumericUpDown
-                        Grid.Column="2"
-                        Grid.Row="0"
-                        IsEnabled="{Binding SelectedItem, ElementName=BoundariesComboBox, Converter={x:Static ObjectConverters.IsNotNull}}"
-                        Classes="integerInput"
-                        Increment="1000000"
-                        Value="{Binding Visualize.MinimumIterations}"
-                        Maximum="{Binding Visualize.MinimumIterationsCap}" />
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox
+                            x:Name="BoundariesComboBox"
+                            Margin="4"
+                            VerticalAlignment="Center"
+                            Items="{Binding Visualize.SavedBoundaries}"
+                            SelectedItem="{Binding Visualize.SelectedParameters}" />
+                        <Button 
+                            Content="Reset View" 
+                            Command="{Binding #Renderer.ResetViewCommand}" />
+
+                        <Label
+                            HorizontalAlignment="Right"
+                            Margin="4"
+                            Content="Minimum Iterations:" />
+                        <NumericUpDown
+                            IsEnabled="{Binding SelectedItem, ElementName=BoundariesComboBox, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Classes="integerInput"
+                            Increment="1000000"
+                            Value="{Binding Visualize.MinimumIterations}"
+                            Maximum="{Binding Visualize.MinimumIterationsCap}" />
+                    </StackPanel>
 
 
                     <Border
                         Grid.Row="1"
                         Grid.Column="0"
-                        Grid.ColumnSpan="3"
                         BorderBrush="LightGray"
                         BorderThickness="1">
                         <views:MandelbrotRenderer

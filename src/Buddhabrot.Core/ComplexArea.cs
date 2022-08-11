@@ -32,6 +32,9 @@ public readonly record struct ComplexArea(
 
         return new(realIntersection, imagIntersection);
     }
+
+    public ComplexArea OffsetBy(double realDelta, double imagDelta) =>
+        new(RealRange.OffsetBy(realDelta), ImagRange.OffsetBy(imagDelta));
     
     public ComplexArea GetNW() => new(RealRange.FirstHalf(), ImagRange.LastHalf());
     public ComplexArea GetNE() => new(RealRange.LastHalf(), ImagRange.LastHalf());

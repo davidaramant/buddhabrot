@@ -1,5 +1,7 @@
-﻿using Avalonia;
+﻿using System.Reactive;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary.RegionQuadTree;
@@ -9,22 +11,8 @@ namespace BoundaryFinder.Views;
 
 public sealed class MandelbrotRenderer : Control
 {
-    static MandelbrotRenderer()
-    {
-        AffectsRender<MandelbrotRenderer>(RegionsProperty);
-    }
-
-    public MandelbrotRenderer()
-    {
-        // HACK: I'm sure there is some fancy Reactive way to do this
-        this.PropertyChanged += (s, e) =>
-        {
-            if (e.Property.Name == nameof(Regions))
-            {
-                ResetLogicalArea();
-            }
-        };
-    }
+    private bool _panning = false;
+    private Point _panningStartPoint = new Point();
 
     public static readonly StyledProperty<ComplexArea> LogicalAreaProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, ComplexArea>(nameof(LogicalArea));
@@ -43,15 +31,74 @@ public sealed class MandelbrotRenderer : Control
         get => GetValue(RegionsProperty);
         set => SetValue(RegionsProperty, value);
     }
+    
+    public ReactiveCommand<Unit,Unit> ResetViewCommand { get; }
+    
+    static MandelbrotRenderer()
+    {
+        AffectsRender<MandelbrotRenderer>(RegionsProperty);
+        AffectsRender<MandelbrotRenderer>(LogicalAreaProperty);
+    }
+
+    public MandelbrotRenderer()
+    {
+        // HACK: I'm sure there is some fancy Reactive way to do this
+        this.PropertyChanged += (s, e) =>
+        {
+            if (e.Property.Name == nameof(Regions))
+            {
+                ResetLogicalArea();
+            }
+        };
+
+        ResetViewCommand = ReactiveCommand.Create(ResetLogicalArea);
+    }
+
+    protected override void OnPointerPressed(PointerPressedEventArgs e)
+    {
+        _panning = true;
+        _panningStartPoint = e.GetPosition(this);
+        base.OnPointerPressed(e);
+    }
+
+    protected override void OnPointerReleased(PointerReleasedEventArgs e)
+    {
+        _panning = false;
+        base.OnPointerReleased(e);
+    }
+
+    protected override void OnPointerMoved(PointerEventArgs e)
+    {
+        if (_panning)
+        {
+            // HACK: This seems weird, but it's functional enough
+            var dampingFactor = 0.03d;
+            var currentPos = e.GetPosition(this);
+            var deltaX = dampingFactor * (currentPos.X - _panningStartPoint.X);
+            var deltaY = dampingFactor * (currentPos.Y - _panningStartPoint.Y);
+
+            var viewPort = GetCurrentViewPort();
+
+            LogicalArea = LogicalArea.OffsetBy(-deltaX * viewPort.RealPixelSize, deltaY * viewPort.ImagPixelSize);
+        }
+
+        base.OnPointerMoved(e);
+    }
+
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        _panning = false;
+        base.OnPointerCaptureLost(e);
+    }
+
+    private ViewPort GetCurrentViewPort() =>
+        new(LogicalArea, new System.Drawing.Size((int) Bounds.Width, (int) Bounds.Height));
 
     public override void Render(DrawingContext context)
     {
         context.FillRectangle(Brushes.White, new Rect(Bounds.Size));
         AdjustLogicalArea(Bounds.Size);
-        var width = Bounds.Width;
-        var height = Bounds.Height;
-
-        var viewPort = new ViewPort(LogicalArea, new System.Drawing.Size((int) width, (int) height));
+        var viewPort = GetCurrentViewPort();
 
         var areasToDraw = Regions.GetVisibleAreas(LogicalArea);
         foreach (var area in areasToDraw)

@@ -24,7 +24,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
-        Visualize = new VisualizeViewModel(_dataProvider);
+        Visualize = new VisualizeViewModel(_dataProvider, Log);
         Boundaries = new BoundariesViewModel(_dataProvider, Log);
         CalculateBoundary = new CalculateBoundaryViewModel(_dataProvider, Log);
         Settings = new SettingsViewModel(_dataProvider, Log);

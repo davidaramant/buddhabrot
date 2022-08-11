@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
 using BoundaryFinder.Models;
-using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.RegionQuadTree;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
@@ -10,16 +12,16 @@ namespace BoundaryFinder.ViewModels;
 public sealed class VisualizeViewModel : ViewModelBase
 {
     private readonly BorderDataProvider _dataProvider;
-    private BoundaryParameters? _selectedParameters;
+    private readonly Action<string> _log;
+    private BoundaryParameters _selectedParameters = new(0, 0);
     private readonly ObservableAsPropertyHelper<int> _minimumIterationsCap;
     private int _minimumIterations = 0;
-    private readonly ObservableAsPropertyHelper<int> _numberOfRegions;
-    private readonly List<RegionId> _regions = new();
-    private ComplexArea _logicalArea = new(new Range(0,1),new Range(0,1));
+    private int _numberOfRegions;
+    private RegionMap _regions = RegionMap.Empty;
 
     public ObservableCollection<BoundaryParameters> SavedBoundaries => _dataProvider.SavedBoundaries;
 
-    public BoundaryParameters? SelectedParameters
+    public BoundaryParameters SelectedParameters
     {
         get => _selectedParameters;
         set => this.RaiseAndSetIfChanged(ref _selectedParameters, value);
@@ -33,30 +35,42 @@ public sealed class VisualizeViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _minimumIterations, value);
     }
 
-    public int NumberOfRegions => _numberOfRegions.Value;
-
-    public ComplexArea LogicalArea
+    public int NumberOfRegions
     {
-        get => _logicalArea;
-        set => this.RaiseAndSetIfChanged(ref _logicalArea, value);
+        get => _numberOfRegions;
+        private set => this.RaiseAndSetIfChanged(ref _numberOfRegions, value);
     }
 
-    public VisualizeViewModel(BorderDataProvider dataProvider)
+    public RegionMap Regions
+    {
+        get => _regions;
+        private set => this.RaiseAndSetIfChanged(ref _regions, value);
+    }
+
+    public VisualizeViewModel(BorderDataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
+        _log = log;
+
+        var loadRegionsCommand = ReactiveCommand.CreateFromTask<BoundaryParameters>(LoadRegionsAsync);
 
         this.WhenAnyValue(x => x.SelectedParameters,
                 bp => bp?.MaxIterations - 1 ?? 0)
             .ToProperty(this, x => x.MinimumIterationsCap, out _minimumIterationsCap);
 
-        // Is this how you're supposed to do side effects?
-        this.WhenAnyValue(x => x.SelectedParameters, bp =>
-        {
-            if (bp == null) return 0;
-            _regions.Clear();
-            _regions.AddRange(_dataProvider.LoadRegions(bp));
-            LogicalArea = new ComplexArea(new Range(-2, 2), new Range(-1, 0));
-            return _regions.Count;
-        }).ToProperty(this, x => x.NumberOfRegions, out _numberOfRegions);
+        this.WhenAnyValue(x => x.SelectedParameters)
+            .InvokeCommand(loadRegionsCommand);
+    }
+
+    private async Task LoadRegionsAsync(BoundaryParameters parameters, CancellationToken cancelToken)
+    {
+        var regions = _dataProvider.LoadRegions(SelectedParameters);
+
+        NumberOfRegions = regions.Count;
+
+        var regionMap = await Task.Run(() =>
+            new RegionMap(SelectedParameters.VerticalDivisionsPower, regions, log: _log), cancelToken);
+
+        Regions = regionMap;
     }
 }

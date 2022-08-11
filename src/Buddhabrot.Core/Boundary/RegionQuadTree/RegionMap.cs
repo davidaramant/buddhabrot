@@ -8,6 +8,10 @@ public sealed class RegionMap
     private readonly Quad _top;
     private readonly ComplexArea _topLevelArea = new(new Range(-2, 2), new Range(-2, 2));
 
+    public static readonly RegionMap Empty = new();
+    
+    private RegionMap() => _top = Quad.Empty;
+
     public RegionMap(int verticalPower, IEnumerable<RegionId> regions, Action<string>? log = default)
     {
         TransformCache<(Quad NW, Quad NE, Quad SE, Quad SW), Quad> cache = new(quarters =>

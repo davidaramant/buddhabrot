@@ -1,6 +1,6 @@
 ﻿namespace Buddhabrot.Core;
 
-public sealed record Range(
+public readonly record struct Range(
     double InclusiveMin,
     double ExclusiveMax)
 {

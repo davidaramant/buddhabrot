@@ -2,7 +2,7 @@
 
 namespace Buddhabrot.Core;
 
-public sealed record ComplexArea(
+public readonly record struct ComplexArea(
     Range RealRange,
     Range ImagRange)
 {

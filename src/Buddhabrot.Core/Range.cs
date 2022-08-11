@@ -4,6 +4,8 @@ public readonly record struct Range(
     double InclusiveMin,
     double ExclusiveMax)
 {
+    public static readonly Range Empty = new(0, 0);
+    
     public static Range FromMinAndLength(double min, double length) => new(min, min + length);
 
     public double Magnitude => Math.Abs(ExclusiveMax - InclusiveMin);
@@ -25,6 +27,14 @@ public readonly record struct Range(
         Contains(otherRange.ExclusiveMax) ||
         otherRange.Contains(InclusiveMin) || 
         otherRange.Contains(ExclusiveMax);
+
+    public Range Intersect(Range other)
+    {
+        var min = Math.Max(InclusiveMin, other.InclusiveMin);
+        var max = Math.Min(ExclusiveMax, other.ExclusiveMax);
+
+        return min >= max ? Empty : new(min, max);
+    }
 
     public override string ToString() => $"[{InclusiveMin}, {ExclusiveMax})";
 }

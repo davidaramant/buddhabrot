@@ -6,7 +6,7 @@ namespace Buddhabrot.Core.Boundary.RegionQuadTree;
 public sealed class RegionMap
 {
     private readonly Quad _top;
-    private const int _widthOfQuarter = 2;
+    private readonly ComplexArea _topLevelArea = new(new Range(-2, 2), new Range(-2, 2));
 
     public RegionMap(int verticalPower, IEnumerable<RegionId> regions, Action<string>? log = default)
     {
@@ -34,7 +34,7 @@ public sealed class RegionMap
             nextLevel = new Dictionary<RegionId, Quad>();
         }
 
-        log?.Invoke($"Cache count: {cache.Count}");
+        log?.Invoke($"Cache size: {cache.Size}, num times cached value used: {cache.NumCachedValuesUsed}");
 
         // We should end up with only two quads
         Debug.Assert(quads.Count == 2);
@@ -44,6 +44,7 @@ public sealed class RegionMap
 
     public IEnumerable<ComplexArea> GetIntersectingRegions(ComplexArea searchArea)
     {
+        
         throw new NotImplementedException();
     }
 }

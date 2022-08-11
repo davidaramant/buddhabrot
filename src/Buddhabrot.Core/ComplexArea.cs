@@ -14,5 +14,9 @@ public sealed record ComplexArea(
         RealRange.IsInside(number.Real) &&
         ImagRange.IsInside(number.Imaginary);
 
+    public bool Intersects(ComplexArea otherArea) =>
+        RealRange.Intersects(otherArea.RealRange) &&
+        ImagRange.Intersects(otherArea.ImagRange);
+
     public ComplexArea GetPositiveImagArea() => new(RealRange, new Range(0, ImagRange.ExclusiveMax));
 }

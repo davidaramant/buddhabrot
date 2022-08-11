@@ -9,7 +9,7 @@
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
   - [x] Switch to power-of-two divisions
-  - [ ] QuadTree for regions
-  - [ ] Render regions
-  - [ ] Zooming & panning
+  - [x] QuadTree for regions
+  - [x] Render regions
+  - [x] Zooming & panning
   - [ ] Render region interiors

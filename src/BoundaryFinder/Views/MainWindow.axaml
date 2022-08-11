@@ -48,6 +48,9 @@
                         <Button 
                             Content="Reset View" 
                             Command="{Binding #Renderer.ResetViewCommand}" />
+                        <Button 
+                            Content="Zoom Out" 
+                            Command="{Binding #Renderer.ZoomOutCommand}" />
 
                         <Label
                             HorizontalAlignment="Right"

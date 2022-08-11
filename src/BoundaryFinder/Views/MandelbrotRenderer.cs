@@ -31,9 +31,10 @@ public sealed class MandelbrotRenderer : Control
         get => GetValue(RegionsProperty);
         set => SetValue(RegionsProperty, value);
     }
-    
-    public ReactiveCommand<Unit,Unit> ResetViewCommand { get; }
-    
+
+    public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
+    public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
+
     static MandelbrotRenderer()
     {
         AffectsRender<MandelbrotRenderer>(RegionsProperty);
@@ -52,6 +53,7 @@ public sealed class MandelbrotRenderer : Control
         };
 
         ResetViewCommand = ReactiveCommand.Create(ResetLogicalArea);
+        ZoomOutCommand = ReactiveCommand.Create(() => { LogicalArea = LogicalArea.Scale(1.25); });
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)

@@ -56,8 +56,17 @@ public sealed class MandelbrotRenderer : Control
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
-        _panning = true;
-        _panningStartPoint = e.GetPosition(this);
+        if (e.ClickCount == 1)
+        {
+            _panning = true;
+            _panningStartPoint = e.GetPosition(this);
+        }
+        else if (e.ClickCount == 2)
+        {
+            _panning = false;
+            LogicalArea = LogicalArea.Scale(0.75);
+        }
+
         base.OnPointerPressed(e);
     }
 

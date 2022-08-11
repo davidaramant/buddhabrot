@@ -37,6 +37,12 @@ public readonly record struct Range(
     }
 
     public Range OffsetBy(double delta) => new(InclusiveMin + delta, ExclusiveMax + delta);
+
+    public Range Scale(double percentage)
+    {
+        var halfNewMagnitude = (1-percentage) * Magnitude * 0.5;
+        return new Range(InclusiveMin + halfNewMagnitude, ExclusiveMax - halfNewMagnitude);
+    }
     
     public override string ToString() => $"[{InclusiveMin}, {ExclusiveMax})";
 }

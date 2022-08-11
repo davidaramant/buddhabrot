@@ -35,6 +35,9 @@ public readonly record struct ComplexArea(
 
     public ComplexArea OffsetBy(double realDelta, double imagDelta) =>
         new(RealRange.OffsetBy(realDelta), ImagRange.OffsetBy(imagDelta));
+
+    public ComplexArea Scale(double scale) =>
+        new(RealRange.Scale(scale), ImagRange.Scale(scale));
     
     public ComplexArea GetNW() => new(RealRange.FirstHalf(), ImagRange.LastHalf());
     public ComplexArea GetNE() => new(RealRange.LastHalf(), ImagRange.LastHalf());

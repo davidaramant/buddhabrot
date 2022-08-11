@@ -46,4 +46,12 @@ public class RangeTests
         range1.Intersect(range2).Should().Be(expectedIntersection);
         range2.Intersect(range1).Should().Be(expectedIntersection);
     }
+
+    [Theory]
+    [InlineData(0, 100, 0.5, 25, 75)]
+    public void ShouldZoom(double min, double max, double zoom, double newMin, double newMax)
+    {
+        var range = new Range(min, max);
+        range.Scale(zoom).Should().Be(new Range(newMin, newMax));
+    }
 }

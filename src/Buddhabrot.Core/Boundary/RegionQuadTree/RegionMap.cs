@@ -9,7 +9,7 @@ public sealed class RegionMap
     private readonly ComplexArea _topLevelArea = new(new Range(-2, 2), new Range(-2, 2));
 
     public static readonly RegionMap Empty = new();
-    
+
     private RegionMap() => _top = Quad.Empty;
 
     public RegionMap(int verticalPower, IEnumerable<RegionId> regions, Action<string>? log = default)
@@ -43,13 +43,17 @@ public sealed class RegionMap
         // We should end up with only two quads
         Debug.Assert(quads.Count == 2);
 
-        _top = cache.Transform((Quad.Empty, Quad.Empty, quads[new RegionId(0, 0)], quads[new RegionId(1, 0)]));
+        _top = cache.Transform((
+                NW: Quad.Empty,
+                NE: Quad.Empty,
+                SE: quads[new RegionId(1, 0)],
+                SW: quads[new RegionId(0, 0)]));
     }
 
     public IReadOnlyList<ComplexArea> GetVisibleAreas(ComplexArea searchArea)
     {
         var visibleAreas = new List<ComplexArea>();
-        
+
         var toCheck = new Queue<(ComplexArea, Quad)>();
         toCheck.Enqueue((_topLevelArea, _top));
 

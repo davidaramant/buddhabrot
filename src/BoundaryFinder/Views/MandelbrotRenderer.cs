@@ -47,24 +47,41 @@ public sealed class MandelbrotRenderer : Control
     public override void Render(DrawingContext context)
     {
         context.FillRectangle(Brushes.White, new Rect(Bounds.Size));
+        AdjustLogicalArea(Bounds.Size);
+        var width = Bounds.Width;
+        var height = Bounds.Height;
 
-        var topLeft = new Point(0, 0);
-        var topRight = new Point(Bounds.Width, 0);
-        var bottomLeft = new Point(0, Bounds.Height);
-        var bottomRight = new Point(Bounds.Width, Bounds.Height);
+        var viewPort = new ViewPort(LogicalArea, new System.Drawing.Size((int) width, (int) height));
 
-        context.DrawLine(new Pen(Brushes.Green), topLeft, bottomRight);
+        var areasToDraw = Regions.GetVisibleAreas(LogicalArea);
+        foreach (var area in areasToDraw)
+        {
+            var rect = viewPort.GetRectangle(area);
+
+            context.FillRectangle(Brushes.Red, new Rect(rect.X, rect.Y, rect.Width, rect.Height));
+        }
     }
 
     private void ResetLogicalArea()
     {
         var realRange = new Range(-2, 2);
 
-        var ratio = Height / Width;
+        var ratio = Bounds.Height / Bounds.Width;
 
         var imagRange = new Range(-(4 * ratio), 0);
 
         LogicalArea = new ComplexArea(realRange, imagRange);
+    }
+
+    private void AdjustLogicalArea(Size bounds)
+    {
+        var ratio = bounds.Height / bounds.Width;
+        var imagMagnitude = LogicalArea.RealRange.Magnitude * ratio;
+
+        LogicalArea = LogicalArea with
+        {
+            ImagRange = Range.FromMinAndLength(LogicalArea.ImagRange.ExclusiveMax - imagMagnitude, imagMagnitude)
+        };
     }
 
     protected override Size MeasureOverride(Size availableSize) => availableSize;

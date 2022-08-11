@@ -7,10 +7,12 @@ public readonly record struct ComplexArea(
     Range ImagRange)
 {
     public static readonly ComplexArea Empty = new(Range.Empty, Range.Empty);
-    
+
     public static ComplexArea SquareFromLowerLeft(Complex lowerLeft, double sideLength) =>
         new(Range.FromMinAndLength(lowerLeft.Real, sideLength),
             Range.FromMinAndLength(lowerLeft.Imaginary, sideLength));
+    
+    public Complex TopLeftCorner => new Complex(RealRange.InclusiveMin, ImagRange.ExclusiveMax);
     
     public bool Contains(Complex number) =>
         RealRange.Contains(number.Real) &&
@@ -35,4 +37,6 @@ public readonly record struct ComplexArea(
     public ComplexArea GetNE() => new(RealRange.LastHalf(), ImagRange.LastHalf());
     public ComplexArea GetSE() => new(RealRange.LastHalf(), ImagRange.FirstHalf());
     public ComplexArea GetSW() => new(RealRange.FirstHalf(), ImagRange.FirstHalf());
+
+    public override string ToString() => $"R:{RealRange}, I:{ImagRange}";
 }

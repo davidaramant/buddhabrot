@@ -61,16 +61,26 @@
                         Value="{Binding Visualize.MinimumIterations}"
                         Maximum="{Binding Visualize.MinimumIterationsCap}" />
 
-                    <views:MandelbrotRenderer
+
+                    <Border
                         Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
-                        Regions="{Binding Visualize.Regions}" />
+                        BorderBrush="LightGray"
+                        BorderThickness="1">
+                        <views:MandelbrotRenderer
+                            x:Name="Renderer"
+                            Regions="{Binding Visualize.Regions}" />
+                    </Border>
 
-                    <Label
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Content="{Binding Visualize.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}, Mode=OneWay}" />
+                    <StackPanel Orientation="Horizontal"
+                                Grid.Row="2"
+                                Grid.Column="0">
+                        <Label
+                            Content="{Binding Visualize.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}, Mode=OneWay}" />
+                        <Label
+                            Content="{Binding #Renderer.LogicalArea}" />
+                    </StackPanel>
                 </Grid>
             </TabItem>
 

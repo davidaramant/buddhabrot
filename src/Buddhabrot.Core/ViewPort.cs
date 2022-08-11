@@ -25,12 +25,18 @@ public sealed class ViewPort
     private double GetRealValue(int x) => Area.RealRange.InclusiveMin + x * _realIncrement;
     private double GetImagValue(int y) => Area.ImagRange.InclusiveMin + FlipY(y) * _imagIncrement;
 
-    public Complex GetComplex(int x, int y) => new (GetRealValue(x), GetImagValue(y));
+    public Complex GetComplex(int x, int y) => new(GetRealValue(x), GetImagValue(y));
     public Complex GetComplex(Point position) => GetComplex(position.X, position.Y);
 
+    public Rectangle GetRectangle(ComplexArea area) =>
+        new Rectangle(
+            GetPosition(area.TopLeftCorner),
+            new Size((int) Math.Ceiling(area.RealRange.Magnitude * _realIncrement),
+                (int) Math.Ceiling(area.ImagRange.Magnitude * _imagIncrement)));
+
     public Point GetPosition(Complex c) => new(
-        (int)((c.Real - Area.RealRange.InclusiveMin) / _realIncrement),
-        FlipY((int)((c.Imaginary - Area.ImagRange.InclusiveMin) / _imagIncrement)));
+        (int) ((c.Real - Area.RealRange.InclusiveMin) / _realIncrement),
+        FlipY((int) ((c.Imaginary - Area.ImagRange.InclusiveMin) / _imagIncrement)));
 
     public override string ToString() => $"Area: {Area}, Resolution: {Resolution.Width}x{Resolution.Height}";
 }

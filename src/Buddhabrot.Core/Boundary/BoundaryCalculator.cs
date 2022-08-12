@@ -1,3 +1,5 @@
+using Buddhabrot.Core.Boundary.Corners;
+
 namespace Buddhabrot.Core.Boundary;
 
 public static class BoundaryCalculator

@@ -43,7 +43,7 @@ public class RegionMapTests
         var visibleAreas = regionMap.GetVisibleAreas(
             new ComplexArea(
                 new Range(-0.5, 0.5),
-                new Range(-1, 0)));
+                new Range(0, 1)));
 
         visibleAreas.Should().HaveCount(1);
     }

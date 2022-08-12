@@ -2,7 +2,7 @@
 using System.Numerics;
 using Buddhabrot.Core.IterationKernels;
 
-namespace Buddhabrot.Core.Boundary;
+namespace Buddhabrot.Core.Boundary.Corners;
 
 public sealed class RegionCorners
 {
@@ -20,7 +20,7 @@ public sealed class RegionCorners
 
         Complex c = new(
             real: corner.X * _boundaryParams.SideLength - 2,
-            imaginary: -corner.Y * _boundaryParams.SideLength);
+            imaginary: corner.Y * _boundaryParams.SideLength);
         inSet = await Task.Run(
             () => ScalarDoubleKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite,
             cancelToken);

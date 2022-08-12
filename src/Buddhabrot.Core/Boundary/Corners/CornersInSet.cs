@@ -1,4 +1,4 @@
-namespace Buddhabrot.Core.Boundary;
+namespace Buddhabrot.Core.Boundary.Corners;
 
 public sealed record CornersInSet(
     bool LowerLeft,

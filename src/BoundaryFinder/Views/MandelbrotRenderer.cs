@@ -141,7 +141,7 @@ public sealed class MandelbrotRenderer : Control
             var imagPaddedMagnitude = populatedArea.ImagRange.Magnitude * (populatedAreaRatio / viewRatio);
             LogicalArea = populatedArea with
             {
-                ImagRange = new Range(-imagPaddedMagnitude, 0)
+                ImagRange = new Range(0, imagPaddedMagnitude)
             };
         }
     }
@@ -150,10 +150,10 @@ public sealed class MandelbrotRenderer : Control
     {
         var aspectRatio = bounds.Width / bounds.Height;
         var imagMagnitude = LogicalArea.RealRange.Magnitude / aspectRatio;
-        
+
         LogicalArea = LogicalArea with
         {
-            ImagRange = new Range(LogicalArea.ImagRange.ExclusiveMax - imagMagnitude, LogicalArea.ImagRange.ExclusiveMax)
+            ImagRange = Range.FromMinAndLength(LogicalArea.ImagRange.InclusiveMin, imagMagnitude)
         };
     }
 

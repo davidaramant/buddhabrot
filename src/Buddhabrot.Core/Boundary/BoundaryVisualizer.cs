@@ -8,6 +8,7 @@ public static class BoundaryVisualizer
 {
     public static RasterImage RenderBoundary(IReadOnlyList<RegionId> regions)
     {
+        // TODO: Deal with flipped Y
         var maxBounds = regions.Aggregate<RegionId, (int X, int Y)>((0, 0),
             (max, areaId) => (Math.Max(max.X, areaId.X), Math.Max(max.Y, areaId.Y)));
 

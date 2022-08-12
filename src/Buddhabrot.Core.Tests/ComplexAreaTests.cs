@@ -50,10 +50,10 @@ public class ComplexAreaTests
     {
         var area = new ComplexArea(new Range(-1, 1), new Range(-1, 1));
 
-        area.GetNW().Should().Be(new ComplexArea(new Range(-1, 0), new Range(0, 1)));
-        area.GetNE().Should().Be(new ComplexArea(new Range(0, 1), new Range(0, 1)));
-        area.GetSE().Should().Be(new ComplexArea(new Range(0, 1), new Range(-1, 0)));
-        area.GetSW().Should().Be(new ComplexArea(new Range(-1, 0), new Range(-1, 0)));
+        area.GetNWQuadrant().Should().Be(new ComplexArea(new Range(-1, 0), new Range(0, 1)));
+        area.GetNEQuadrant().Should().Be(new ComplexArea(new Range(0, 1), new Range(0, 1)));
+        area.GetSEQuadrant().Should().Be(new ComplexArea(new Range(0, 1), new Range(-1, 0)));
+        area.GetSWQuadrant().Should().Be(new ComplexArea(new Range(-1, 0), new Range(-1, 0)));
     }
 
     public sealed record IntersectionData(

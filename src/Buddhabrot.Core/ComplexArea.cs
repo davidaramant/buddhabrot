@@ -8,12 +8,8 @@ public readonly record struct ComplexArea(
 {
     public static readonly ComplexArea Empty = new(Range.Empty, Range.Empty);
 
-    public static ComplexArea SquareFromLowerLeft(Complex lowerLeft, double sideLength) =>
-        new(Range.FromMinAndLength(lowerLeft.Real, sideLength),
-            Range.FromMinAndLength(lowerLeft.Imaginary, sideLength));
-    
-    public Complex TopLeftCorner => new Complex(RealRange.InclusiveMin, ImagRange.ExclusiveMax);
-    
+    public Complex TopLeftCorner => new(RealRange.InclusiveMin, ImagRange.ExclusiveMax);
+
     public bool Contains(Complex number) =>
         RealRange.Contains(number.Real) &&
         ImagRange.Contains(number.Imaginary);
@@ -38,11 +34,11 @@ public readonly record struct ComplexArea(
 
     public ComplexArea Scale(double scale) =>
         new(RealRange.Scale(scale), ImagRange.Scale(scale));
-    
-    public ComplexArea GetNW() => new(RealRange.FirstHalf(), ImagRange.LastHalf());
-    public ComplexArea GetNE() => new(RealRange.LastHalf(), ImagRange.LastHalf());
-    public ComplexArea GetSE() => new(RealRange.LastHalf(), ImagRange.FirstHalf());
-    public ComplexArea GetSW() => new(RealRange.FirstHalf(), ImagRange.FirstHalf());
+
+    public ComplexArea GetNWQuadrant() => new(RealRange.FirstHalf(), ImagRange.LastHalf());
+    public ComplexArea GetNEQuadrant() => new(RealRange.LastHalf(), ImagRange.LastHalf());
+    public ComplexArea GetSEQuadrant() => new(RealRange.LastHalf(), ImagRange.FirstHalf());
+    public ComplexArea GetSWQuadrant() => new(RealRange.FirstHalf(), ImagRange.FirstHalf());
 
     public override string ToString() => $"R:{RealRange}, I:{ImagRange}";
 }

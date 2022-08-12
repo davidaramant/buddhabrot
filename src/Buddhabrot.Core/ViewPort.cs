@@ -29,7 +29,7 @@ public sealed class ViewPort
     public Complex GetComplex(Point position) => GetComplex(position.X, position.Y);
 
     public Rectangle GetRectangle(ComplexArea area) =>
-        new Rectangle(
+        new (
             GetPosition(area.TopLeftCorner),
             new Size((int) Math.Ceiling(area.RealRange.Magnitude / RealPixelSize),
                 (int) Math.Ceiling(area.ImagRange.Magnitude / ImagPixelSize)));

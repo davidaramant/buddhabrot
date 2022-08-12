@@ -38,7 +38,7 @@ public sealed class RegionMap
             nextLevel = new Dictionary<RegionId, Quad>();
         }
 
-        log?.Invoke($"Cache size: {cache.Size}, num times cached value used: {cache.NumCachedValuesUsed}");
+        log?.Invoke($"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}");
 
         // We should end up with only two quads
         Debug.Assert(quads.Count == 2);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using BoundaryFinder.Models;
@@ -18,6 +19,7 @@ public sealed class VisualizeViewModel : ViewModelBase
     private int _minimumIterations = 0;
     private int _numberOfRegions;
     private RegionMap _regions = RegionMap.Empty;
+    private bool _isLoadingBoundary;
 
     public ObservableCollection<BoundaryParameters> SavedBoundaries => _dataProvider.SavedBoundaries;
 
@@ -25,6 +27,12 @@ public sealed class VisualizeViewModel : ViewModelBase
     {
         get => _selectedParameters;
         set => this.RaiseAndSetIfChanged(ref _selectedParameters, value);
+    }
+
+    public bool IsLoadingBoundary
+    {
+        get => _isLoadingBoundary;
+        private set => this.RaiseAndSetIfChanged(ref _isLoadingBoundary, value);
     }
 
     public int MinimumIterationsCap => _minimumIterationsCap.Value;
@@ -64,13 +72,24 @@ public sealed class VisualizeViewModel : ViewModelBase
 
     private async Task LoadRegionsAsync(BoundaryParameters parameters, CancellationToken cancelToken)
     {
-        var regions = _dataProvider.LoadRegions(SelectedParameters);
+        try
+        {
+            IsLoadingBoundary = true;
+            var regions = _dataProvider.LoadRegions(SelectedParameters);
 
-        NumberOfRegions = regions.Count;
+            NumberOfRegions = regions.Count;
 
-        var regionMap = await Task.Run(() =>
-            new RegionMap(SelectedParameters.VerticalDivisionsPower, regions, log: _log), cancelToken);
-
-        Regions = regionMap;
+            _log("Creating quad tree...");
+            var timer = Stopwatch.StartNew();
+            var regionMap = await Task.Run(() =>
+                new RegionMap(SelectedParameters.VerticalDivisionsPower, regions, log: _log), cancelToken);
+            _log($"Constructed quad tree in {timer.Elapsed}");
+            
+            Regions = regionMap;
+        }
+        finally
+        {
+            IsLoadingBoundary = false;
+        }
     }
 }

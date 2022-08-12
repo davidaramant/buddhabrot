@@ -12,7 +12,6 @@ public class MainWindowViewModel : ViewModelBase
     private string _logOutput = string.Empty;
 
     public VisualizeViewModel Visualize { get; }
-    public BoundariesViewModel Boundaries { get; }
     public CalculateBoundaryViewModel CalculateBoundary { get; }
     public SettingsViewModel Settings { get; }
 
@@ -25,7 +24,6 @@ public class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel()
     {
         Visualize = new VisualizeViewModel(_dataProvider, Log);
-        Boundaries = new BoundariesViewModel(_dataProvider, Log);
         CalculateBoundary = new CalculateBoundaryViewModel(_dataProvider, Log);
         Settings = new SettingsViewModel(_dataProvider, Log);
     }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.RegionQuadTree;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
@@ -66,7 +68,9 @@ public sealed class VisualizeViewModel : ViewModelBase
                 bp => bp?.MaxIterations - 1 ?? 0)
             .ToProperty(this, x => x.MinimumIterationsCap, out _minimumIterationsCap);
 
-        this.WhenAnyValue(x => x.SelectedParameters)
+        this.WhenPropertyChanged(x => x.SelectedParameters, notifyOnInitialValue: false)
+            .Where(x => x.Value != null)
+            .Select(x => x.Value!)
             .InvokeCommand(loadRegionsCommand);
     }
 
@@ -84,8 +88,12 @@ public sealed class VisualizeViewModel : ViewModelBase
             var regionMap = await Task.Run(() =>
                 new RegionMap(SelectedParameters.VerticalDivisionsPower, regions, log: _log), cancelToken);
             _log($"Constructed quad tree in {timer.Elapsed}");
-            
+
             Regions = regionMap;
+        }
+        catch (Exception e)
+        {
+            _log(e.ToString());
         }
         finally
         {

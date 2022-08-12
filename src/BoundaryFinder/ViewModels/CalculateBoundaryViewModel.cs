@@ -15,7 +15,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     private readonly BorderDataProvider _dataProvider;
     private readonly Action<string> _log;
     private int _maximumIterations = 15_000_000;
-    private int _verticalDivisionPower = 1;
+    private int _verticalDivisionPower = 0;
     private readonly ObservableAsPropertyHelper<int> _verticalDivisions;
     private readonly ObservableAsPropertyHelper<double> _scanAreaWidth;
     private readonly ObservableAsPropertyHelper<double> _scanArea;

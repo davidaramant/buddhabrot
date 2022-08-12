@@ -38,12 +38,15 @@ public sealed class RegionMap
             Range.FromMinAndLength(-2, (maxX + 1) * sideLength),
             new Range(0, (maxY + 1) * sideLength));
 
-
         Quad BuildQuad(int level, int xOffset, int yOffset)
         {
-            if (level == -1)
+            if (level == 0)
             {
-                return LookupLocation(xOffset, yOffset);
+                return cache.MakeQuad(
+                    sw: LookupLocation(xOffset, yOffset),
+                    se: LookupLocation(xOffset + 1, yOffset),
+                    ne: LookupLocation(xOffset + 1, yOffset + 1),
+                    nw: LookupLocation(xOffset, yOffset + 1));
             }
 
             var levelWidth = 1 << level;

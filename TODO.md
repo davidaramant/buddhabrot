@@ -12,4 +12,7 @@
   - [x] QuadTree for regions
   - [x] Render regions
   - [x] Zooming & panning
+  - [ ] Region region optimizations
+    - [ ] Halt quad tree search based on pixel size? No need to grab sub-pixel stuff
+    - [ ] Building quad tree is too slow
   - [ ] Render region interiors

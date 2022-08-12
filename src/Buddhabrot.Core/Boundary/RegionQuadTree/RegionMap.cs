@@ -1,3 +1,5 @@
+using System.Reflection.Metadata;
+
 namespace Buddhabrot.Core.Boundary.RegionQuadTree;
 
 public sealed class RegionMap
@@ -58,7 +60,12 @@ public sealed class RegionMap
                 nw: BuildQuad(level - 1, xOffset, yOffset + levelWidth));
         }
 
-        _top = BuildQuad(verticalPower, 0, 0);
+        var topLevelWidth = 1 << verticalPower;
+        _top = cache.MakeQuad(
+            nw: Quad.Empty,
+            ne: Quad.Empty,
+            sw: BuildQuad(verticalPower - 1, 0, 0),
+            se: BuildQuad(verticalPower - 1, topLevelWidth, 0));
         log?.Invoke($"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}");
     }
 

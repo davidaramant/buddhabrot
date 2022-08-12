@@ -8,16 +8,35 @@ public sealed class RegionMap
     private readonly Quad _top;
     private readonly ComplexArea _topLevelArea = new(new Range(-2, 2), new Range(-2, 2));
 
+    public ComplexArea PopulatedArea { get; }
+    
     public static readonly RegionMap Empty = new();
 
-    private RegionMap() => _top = Quad.Empty;
+    private RegionMap()
+    {
+        _top = Quad.Empty;
+        PopulatedArea = ComplexArea.Empty;
+    }
 
     public RegionMap(int verticalPower, IEnumerable<RegionId> regions, Action<string>? log = default)
     {
-        TransformCache<(Quad NW, Quad NE, Quad SE, Quad SW), Quad> cache = new(quarters =>
-            Quad.Make(nw: quarters.NW, ne: quarters.NE, se: quarters.SE, sw: quarters.SW));
+        QuadCache cache = new();
 
-        var quads = regions.ToDictionary(r => r, _ => Quad.Border);
+        Dictionary<RegionId, Quad> quads = new();
+        int maxX = 0;
+        int maxY = 0;
+        foreach (var region in regions)
+        {
+            quads.Add(region, Quad.Border);
+            maxX = Math.Max(maxX, region.X);
+            maxY = Math.Max(maxY, region.Y);
+        }
+
+        var sideLength = 2.0 / (1 << verticalPower);
+        PopulatedArea = new ComplexArea(
+            Range.FromMinAndLength(-2, maxX * sideLength), 
+            new Range(-maxY * sideLength, 0));
+        
         Dictionary<RegionId, Quad> nextLevel = new();
 
         for (int level = verticalPower; level > 0; level--)
@@ -26,12 +45,13 @@ public sealed class RegionMap
             {
                 var nextLevelPosition = quads.Keys.First().Halve();
 
-                var nw = quads.RemoveOr(nextLevelPosition.Double(), Quad.Empty);
-                var ne = quads.RemoveOr(nextLevelPosition.Double().MoveRight(), Quad.Empty);
-                var se = quads.RemoveOr(nextLevelPosition.Double().MoveRight().MoveDown(), Quad.Empty);
-                var sw = quads.RemoveOr(nextLevelPosition.Double().MoveDown(), Quad.Empty);
+                var levelTopLeft = nextLevelPosition.Double();
+                var nw = quads.RemoveOr(levelTopLeft, Quad.Empty);
+                var ne = quads.RemoveOr(levelTopLeft.MoveRight(), Quad.Empty);
+                var se = quads.RemoveOr(levelTopLeft.MoveRight().MoveDown(), Quad.Empty);
+                var sw = quads.RemoveOr(levelTopLeft.MoveDown(), Quad.Empty);
 
-                nextLevel.Add(nextLevelPosition, cache.Transform((nw, ne, se, sw)));
+                nextLevel.Add(nextLevelPosition, cache.MakeQuad(nw, ne, se, sw));
             }
 
             quads = nextLevel;
@@ -43,11 +63,11 @@ public sealed class RegionMap
         // We should end up with only two quads
         Debug.Assert(quads.Count == 2);
 
-        _top = cache.Transform((
-                NW: Quad.Empty,
-                NE: Quad.Empty,
-                SE: quads[new RegionId(1, 0)],
-                SW: quads[new RegionId(0, 0)]));
+        _top = cache.MakeQuad(
+            nw: Quad.Empty,
+            ne: Quad.Empty,
+            se: quads[new RegionId(1, 0)],
+            sw: quads[new RegionId(0, 0)]);
     }
 
     public IReadOnlyList<ComplexArea> GetVisibleAreas(ComplexArea searchArea)

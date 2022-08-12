@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using Buddhabrot.Core.ExtensionMethods.Collections;
-
 namespace Buddhabrot.Core.Boundary.RegionQuadTree;
 
 public sealed class RegionMap
@@ -22,12 +19,16 @@ public sealed class RegionMap
     {
         QuadCache cache = new();
 
-        Dictionary<RegionId, Quad> quads = new();
+        HashSet<RegionId> regionLookup = new();
+
+        Quad LookupLocation(int x, int y) =>
+            regionLookup.Contains(new RegionId(x, y)) ? Quad.Border : Quad.Empty;
+
         int maxX = 0;
         int maxY = 0;
         foreach (var region in regions)
         {
-            quads.Add(region, Quad.Border);
+            regionLookup.Add(region);
             maxX = Math.Max(maxX, region.X);
             maxY = Math.Max(maxY, region.Y);
         }
@@ -37,37 +38,25 @@ public sealed class RegionMap
             Range.FromMinAndLength(-2, maxX * sideLength),
             new Range(0, maxY * sideLength));
 
-        Dictionary<RegionId, Quad> nextLevel = new();
 
-        for (int level = verticalPower; level > 0; level--)
+        Quad BuildQuad(int level, int xOffset, int yOffset)
         {
-            while (quads.Any())
+            if (level == -1)
             {
-                var nextLevelPosition = quads.Keys.First().Halve();
-
-                var levelBottomLeft = nextLevelPosition.Double();
-                var sw = quads.RemoveOr(levelBottomLeft, Quad.Empty);
-                var se = quads.RemoveOr(levelBottomLeft.MoveRight(), Quad.Empty);
-                var ne = quads.RemoveOr(levelBottomLeft.MoveRight().MoveUp(), Quad.Empty);
-                var nw = quads.RemoveOr(levelBottomLeft.MoveUp(), Quad.Empty);
-
-                nextLevel.Add(nextLevelPosition, cache.MakeQuad(nw: nw, ne: ne, se: se, sw: sw));
+                return LookupLocation(xOffset, yOffset);
             }
 
-            quads = nextLevel;
-            nextLevel = new Dictionary<RegionId, Quad>();
+            var levelWidth = 1 << level;
+
+            return cache.MakeQuad(
+                sw: BuildQuad(level - 1, xOffset, yOffset),
+                se: BuildQuad(level - 1, xOffset + levelWidth, yOffset),
+                ne: BuildQuad(level - 1, xOffset + levelWidth, yOffset + levelWidth),
+                nw: BuildQuad(level - 1, xOffset, yOffset + levelWidth));
         }
 
+        _top = BuildQuad(verticalPower, 0, 0);
         log?.Invoke($"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}");
-
-        // We should end up with only two quads
-        Debug.Assert(quads.Count == 2);
-
-        _top = cache.MakeQuad(
-            nw: Quad.Empty,
-            ne: Quad.Empty,
-            se: quads[new RegionId(1, 0)],
-            sw: quads[new RegionId(0, 0)]);
     }
 
     public IReadOnlyList<ComplexArea> GetVisibleAreas(ComplexArea searchArea)

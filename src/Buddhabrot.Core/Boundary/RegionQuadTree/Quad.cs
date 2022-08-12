@@ -14,19 +14,6 @@ sealed class Quad
 
     public override string ToString() => Type.ToString();
 
-    public static Quad Make(Quad nw, Quad ne, Quad se, Quad sw)
-    {
-        if (nw == ne &&
-            ne == se &&
-            se == sw &&
-            sw == Border)
-        {
-            return Border;
-        }
-
-        return new(nw, ne, se, sw);
-    }
-
     private Quad(QuadType type)
     {
         Type = type;
@@ -36,7 +23,7 @@ sealed class Quad
         SW = default!;
     }
 
-    private Quad(Quad nw, Quad ne, Quad se, Quad sw)
+    public Quad(Quad nw, Quad ne, Quad se, Quad sw)
     {
         Type = QuadType.Mixed;
         NW = nw;

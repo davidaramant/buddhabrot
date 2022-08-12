@@ -35,8 +35,8 @@ public sealed class RegionMap
 
         var sideLength = 2.0 / (1 << verticalPower);
         PopulatedArea = new ComplexArea(
-            Range.FromMinAndLength(-2, maxX * sideLength),
-            new Range(0, maxY * sideLength));
+            Range.FromMinAndLength(-2, (maxX + 1) * sideLength),
+            new Range(0, (maxY + 1) * sideLength));
 
 
         Quad BuildQuad(int level, int xOffset, int yOffset)

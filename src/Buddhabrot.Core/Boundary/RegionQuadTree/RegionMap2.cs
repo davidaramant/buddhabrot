@@ -1,28 +1,27 @@
-namespace Buddhabrot.Core.Boundary.RegionQuadTree;
+﻿namespace Buddhabrot.Core.Boundary.RegionQuadTree;
 
-public sealed class RegionMap : IRegionMap
+public sealed class RegionMap2 : IRegionMap
 {
+    private readonly List<Quad> _nodes = new();
     private readonly Quad _top;
     private readonly ComplexArea _topLevelArea = new(new Range(-2, 2), new Range(0, 4));
 
+    public static readonly RegionMap2 Empty = new();
     public ComplexArea PopulatedArea { get; }
 
-    public static readonly RegionMap Empty = new();
-
-    private RegionMap()
+    private RegionMap2()
     {
-        _top = Quad.Empty;
         PopulatedArea = ComplexArea.Empty;
     }
 
-    public RegionMap(
-        int verticalPower, 
-        IEnumerable<RegionId> regions, 
+    public RegionMap2(
+        int verticalPower,
+        IReadOnlyList<RegionId> regions,
         Action<string>? log = default)
     {
-        QuadCache cache = new();
+        QuadCache cache = new(_nodes);
 
-        HashSet<RegionId> regionLookup = new();
+        HashSet<RegionId> regionLookup = new(regions.Count);
 
         Quad LookupLocation(int x, int y) =>
             regionLookup.Contains(new RegionId(x, y)) ? Quad.Border : Quad.Empty;
@@ -72,38 +71,16 @@ public sealed class RegionMap : IRegionMap
 
     public IReadOnlyList<ComplexArea> GetVisibleAreas(ComplexArea searchArea)
     {
-        var visibleAreas = new List<ComplexArea>();
-
-        var toCheck = new Queue<(ComplexArea, Quad)>();
-        toCheck.Enqueue((_topLevelArea, _top));
-
-        while (toCheck.Any())
-        {
-            var (quadArea, currentQuad) = toCheck.Dequeue();
-
-            if (currentQuad != Quad.Empty &&
-                searchArea.OverlapsWith(quadArea))
-            {
-                if (currentQuad == Quad.Border)
-                {
-                    visibleAreas.Add(quadArea.Intersect(searchArea));
-                }
-                else
-                {
-                    toCheck.Enqueue((quadArea.GetNWQuadrant(), currentQuad.NW));
-                    toCheck.Enqueue((quadArea.GetNEQuadrant(), currentQuad.NE));
-                    toCheck.Enqueue((quadArea.GetSEQuadrant(), currentQuad.SE));
-                    toCheck.Enqueue((quadArea.GetSWQuadrant(), currentQuad.SW));
-                }
-            }
-        }
-
-        return visibleAreas;
+        return Array.Empty<ComplexArea>();
     }
-    
+
     sealed class QuadCache
     {
-        private readonly Dictionary<int, Quad> _dict = new();
+        private readonly List<Quad> _nodes;
+        private readonly Dictionary<int, int> _dict = new();
+
+        public QuadCache(List<Quad> nodes) => _nodes = nodes;
+
         public int Size => _dict.Count;
         public int NumCachedValuesUsed { get; private set; }
 
@@ -118,53 +95,44 @@ public sealed class RegionMap : IRegionMap
 
                 if (nw == Quad.Border)
                     return Quad.Border;
+
+                if (nw == Quad.Filament)
+                    return Quad.Filament;
             }
 
             var key = HashCode.Combine(nw, ne, se, sw);
-            if (!_dict.TryGetValue(key, out var cachedQuad))
+            if (!_dict.TryGetValue(key, out var index))
             {
-                cachedQuad = new Quad(nw, ne, se, sw);
-                _dict.Add(key, cachedQuad);
+                index = _nodes.Count;
+                _nodes.Add(new Quad(index));
+                _nodes.Add(nw);
+                _nodes.Add(ne);
+                _nodes.Add(se);
+                _nodes.Add(sw);
+                
+                _dict.Add(key, index);
             }
             else
             {
                 NumCachedValuesUsed++;
             }
 
-            return cachedQuad;
+            return _nodes[index];
         }
     }
-    
-    sealed class Quad
+
+    readonly record struct Quad(int ChildIndex)
     {
-        public static readonly Quad Empty = new(QuadType.Empty);
-        public static readonly Quad Border = new(QuadType.Border);
+        public static readonly Quad Empty = new(-1);
+        public static readonly Quad Border = new(-2);
+        public static readonly Quad Filament = new(-3);
 
-        public QuadType Type { get; }
-
-        public Quad NW { get; }
-        public Quad NE { get; }
-        public Quad SE { get; }
-        public Quad SW { get; }
-
-        public override string ToString() => Type.ToString();
-
-        private Quad(QuadType type)
+        public QuadType Type => ChildIndex switch
         {
-            Type = type;
-            NW = default!;
-            NE = default!;
-            SE = default!;
-            SW = default!;
-        }
-
-        public Quad(Quad nw, Quad ne, Quad se, Quad sw)
-        {
-            Type = QuadType.Mixed;
-            NW = nw;
-            NE = ne;
-            SE = se;
-            SW = sw;
-        }
+            -1 => QuadType.Empty,
+            -2 => QuadType.Border,
+            -3 => QuadType.Filament,
+            _ => QuadType.Mixed
+        };
     }
 }

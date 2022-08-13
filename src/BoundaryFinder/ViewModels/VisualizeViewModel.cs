@@ -20,7 +20,7 @@ public sealed class VisualizeViewModel : ViewModelBase
     private readonly ObservableAsPropertyHelper<int> _minimumIterationsCap;
     private int _minimumIterations = 0;
     private int _numberOfRegions;
-    private RegionMap _regions = RegionMap.Empty;
+    private IRegionMap _regions = RegionMap2.Empty;
     private bool _isLoadingBoundary;
 
     public ObservableCollection<BoundaryParameters> SavedBoundaries => _dataProvider.SavedBoundaries;
@@ -51,7 +51,7 @@ public sealed class VisualizeViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _numberOfRegions, value);
     }
 
-    public RegionMap Regions
+    public IRegionMap Regions
     {
         get => _regions;
         private set => this.RaiseAndSetIfChanged(ref _regions, value);
@@ -86,7 +86,7 @@ public sealed class VisualizeViewModel : ViewModelBase
             _log("Creating quad tree...");
             var timer = Stopwatch.StartNew();
             var regionMap = await Task.Run(() =>
-                new RegionMap(SelectedParameters.VerticalDivisionsPower, regions, log: _log), cancelToken);
+                new RegionMap2(SelectedParameters.VerticalDivisionsPower, regions, log: _log), cancelToken);
             _log($"Constructed quad tree in {timer.Elapsed}");
 
             Regions = regionMap;

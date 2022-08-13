@@ -23,10 +23,10 @@ public sealed class MandelbrotRenderer : Control
         set => SetValue(LogicalAreaProperty, value);
     }
 
-    public static readonly StyledProperty<RegionMap> RegionsProperty =
-        AvaloniaProperty.Register<MandelbrotRenderer, RegionMap>(nameof(Regions));
+    public static readonly StyledProperty<IRegionMap> RegionsProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, IRegionMap>(nameof(Regions));
 
-    public RegionMap Regions
+    public IRegionMap Regions
     {
         get => GetValue(RegionsProperty);
         set => SetValue(RegionsProperty, value);

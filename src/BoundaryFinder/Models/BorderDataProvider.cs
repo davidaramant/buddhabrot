@@ -31,9 +31,9 @@ public sealed class BorderDataProvider
         RefreshSavedBoundaries();
     }
 
-    public void SaveBorderData(BoundaryParameters parameters, IEnumerable<RegionId> regions)
+    public void SaveBorderData(BoundaryParameters parameters, IEnumerable<RegionId> regions, RegionLookup lookup)
     {
-        _dataProvider.SaveBoundaryRegions(parameters, regions);
+        _dataProvider.SaveBoundaryRegions(parameters, regions, lookup);
 
         RefreshSavedBoundaries();
     }
@@ -52,4 +52,6 @@ public sealed class BorderDataProvider
 
     public IReadOnlyList<RegionId> LoadRegions(BoundaryParameters parameters) =>
         _dataProvider.GetBoundaryRegions(parameters);
+
+    public RegionLookup LoadLookup(BoundaryParameters parameters) => _dataProvider.GetLookup(parameters);
 }

@@ -18,8 +18,7 @@ public sealed class VisualizeViewModel : ViewModelBase
     private BoundaryParameters _selectedParameters = new(0, 0);
     private readonly ObservableAsPropertyHelper<int> _minimumIterationsCap;
     private int _minimumIterations = 0;
-    private int _numberOfRegions;
-    private RegionLookup _regions = RegionLookup.Empty;
+    private RegionLookup _lookup = RegionLookup.Empty;
     private bool _isLoadingBoundary;
 
     public ObservableCollection<BoundaryParameters> SavedBoundaries => _dataProvider.SavedBoundaries;
@@ -44,16 +43,10 @@ public sealed class VisualizeViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _minimumIterations, value);
     }
 
-    public int NumberOfRegions
+    public RegionLookup Lookup
     {
-        get => _numberOfRegions;
-        private set => this.RaiseAndSetIfChanged(ref _numberOfRegions, value);
-    }
-
-    public RegionLookup Regions
-    {
-        get => _regions;
-        private set => this.RaiseAndSetIfChanged(ref _regions, value);
+        get => _lookup;
+        private set => this.RaiseAndSetIfChanged(ref _lookup, value);
     }
 
     public VisualizeViewModel(BorderDataProvider dataProvider, Action<string> log)
@@ -61,7 +54,7 @@ public sealed class VisualizeViewModel : ViewModelBase
         _dataProvider = dataProvider;
         _log = log;
 
-        var loadRegionsCommand = ReactiveCommand.CreateFromTask<BoundaryParameters>(LoadRegionsAsync);
+        var loadLookupCommand = ReactiveCommand.Create<BoundaryParameters>(LoadLookup);
 
         this.WhenAnyValue(x => x.SelectedParameters,
                 bp => bp?.MaxIterations - 1 ?? 0)
@@ -70,25 +63,17 @@ public sealed class VisualizeViewModel : ViewModelBase
         this.WhenPropertyChanged(x => x.SelectedParameters, notifyOnInitialValue: false)
             .Where(x => x.Value != null)
             .Select(x => x.Value!)
-            .InvokeCommand(loadRegionsCommand);
+            .InvokeCommand(loadLookupCommand);
     }
 
-    private async Task LoadRegionsAsync(BoundaryParameters parameters, CancellationToken cancelToken)
+    private void LoadLookup(BoundaryParameters parameters)
     {
         try
         {
             IsLoadingBoundary = true;
-            var regions = _dataProvider.LoadRegions(SelectedParameters);
-
-            NumberOfRegions = regions.Count;
-
-            _log("Creating quad tree...");
-            var timer = Stopwatch.StartNew();
-            var regionMap = await Task.Run(() =>
-                new RegionLookup(SelectedParameters.VerticalDivisionsPower, regions, log: _log), cancelToken);
-            _log($"Constructed quad tree in {timer.Elapsed}");
-
-            Regions = regionMap;
+            var lookup = _dataProvider.LoadLookup(SelectedParameters);
+            
+            Lookup = lookup;
         }
         catch (Exception e)
         {

@@ -27,7 +27,13 @@ public sealed class DataProvider
         return BoundarySerializer.Load(stream).Regions;
     }
 
-    public void SaveBoundaryRegions(BoundaryParameters parameters, IEnumerable<RegionId> regions)
+    public RegionLookup GetLookup(BoundaryParameters parameters)
+    {
+        using var stream = File.OpenRead(Path.Combine(LocalDataStoragePath, ToFileName(parameters)));
+        return BoundarySerializer.Load(stream).Lookup;
+    }
+    
+    public void SaveBoundaryRegions(BoundaryParameters parameters, IEnumerable<RegionId> regions, RegionLookup lookup)
     {
         if (!Directory.Exists(LocalDataStoragePath))
         {
@@ -35,7 +41,7 @@ public sealed class DataProvider
         }
 
         using var stream = File.Open(Path.Combine(LocalDataStoragePath, ToFileName(parameters)), FileMode.Create);
-        BoundarySerializer.Save(parameters, regions, stream);
+        BoundarySerializer.Save(parameters, regions, lookup, stream);
     }
 
     public string GetBoundaryParameterLocation(BoundaryParameters parameters)

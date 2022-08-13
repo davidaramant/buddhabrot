@@ -23,13 +23,13 @@ public sealed class MandelbrotRenderer : Control
         set => SetValue(LogicalAreaProperty, value);
     }
 
-    public static readonly StyledProperty<RegionLookup> RegionsProperty =
-        AvaloniaProperty.Register<MandelbrotRenderer, RegionLookup>(nameof(Regions));
+    public static readonly StyledProperty<RegionLookup> LookupProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, RegionLookup>(nameof(Lookup));
 
-    public RegionLookup Regions
+    public RegionLookup Lookup
     {
-        get => GetValue(RegionsProperty);
-        set => SetValue(RegionsProperty, value);
+        get => GetValue(LookupProperty);
+        set => SetValue(LookupProperty, value);
     }
 
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
@@ -37,7 +37,7 @@ public sealed class MandelbrotRenderer : Control
 
     static MandelbrotRenderer()
     {
-        AffectsRender<MandelbrotRenderer>(RegionsProperty);
+        AffectsRender<MandelbrotRenderer>(LookupProperty);
         AffectsRender<MandelbrotRenderer>(LogicalAreaProperty);
     }
 
@@ -46,7 +46,7 @@ public sealed class MandelbrotRenderer : Control
         // HACK: I'm sure there is some fancy Reactive way to do this
         this.PropertyChanged += (s, e) =>
         {
-            if (e.Property.Name == nameof(Regions))
+            if (e.Property.Name == nameof(Lookup))
             {
                 ResetLogicalArea();
             }
@@ -111,7 +111,7 @@ public sealed class MandelbrotRenderer : Control
         AdjustLogicalArea(Bounds.Size);
         var viewPort = GetCurrentViewPort();
 
-        var areasToDraw = Regions.GetVisibleAreas(LogicalArea);
+        var areasToDraw = Lookup.GetVisibleAreas(LogicalArea);
         foreach (var area in areasToDraw)
         {
             var rect = viewPort.GetRectangle(area);
@@ -122,7 +122,7 @@ public sealed class MandelbrotRenderer : Control
 
     private void ResetLogicalArea()
     {
-        var populatedArea = Regions.PopulatedArea;
+        var populatedArea = Lookup.PopulatedArea;
         var populatedAreaRatio = populatedArea.RealRange.Magnitude / populatedArea.ImagRange.Magnitude;
         var viewRatio = Bounds.Width / Bounds.Height;
 

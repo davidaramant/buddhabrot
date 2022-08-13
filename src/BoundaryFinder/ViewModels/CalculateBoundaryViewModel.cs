@@ -80,8 +80,14 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
                 cancelToken);
 
             _log($"Found boundary for {boundaryParameters}. Took {stopwatch.Elapsed}, Found {regions.Count:N0} border regions");
+            stopwatch.Restart();
 
-            _dataProvider.SaveBorderData(boundaryParameters, regions);
+            var lookup =
+                await Task.Run(() => new RegionLookup(boundaryParameters.VerticalDivisionsPower, regions, _log), cancelToken);
+
+            _log($"Constructed quad tree. Took {stopwatch.Elapsed}");
+            
+            _dataProvider.SaveBorderData(boundaryParameters, regions, lookup);
         }
         catch (OperationCanceledException)
         {

@@ -5,23 +5,31 @@ namespace Buddhabrot.Core.DataStorage.Serialization;
 
 public static class BoundarySerializer
 {
-    public static void Save(BoundaryParameters parameters, IEnumerable<RegionId> regions, Stream stream)
+    public static void Save(
+        BoundaryParameters parameters,
+        IEnumerable<RegionId> regions,
+        RegionLookup lookup,
+        Stream stream)
     {
         var boundaries = new Boundaries
         {
-            VerticalDivisions = parameters.VerticalDivisions,
+            VerticalPower = parameters.VerticalDivisionsPower,
             MaximumIterations = parameters.MaxIterations,
             Regions = regions.Select(r => new RegionLocation {X = r.X, Y = r.Y}).ToArray(),
+            MaxX = lookup.MaxX,
+            MaxY = lookup.MaxY,
+            QuadTreeNodes = lookup.GetRawNodes(),
         };
         boundaries.Save(stream);
     }
 
-    public static (BoundaryParameters Parameters, IReadOnlyList<RegionId> Regions) Load(Stream stream)
+    public static (BoundaryParameters Parameters, IReadOnlyList<RegionId> Regions, RegionLookup Lookup) Load(
+        Stream stream)
     {
         var boundaries = Boundaries.Load(stream);
         return (
-            new BoundaryParameters(boundaries.VerticalDivisions, boundaries.MaximumIterations),
-            boundaries.EncodedRegions.Select(RegionId.FromEncodedPosition)
-                .Concat(boundaries.Regions.Select(rl => new RegionId(X: rl.X, Y: rl.Y))).ToList());
+            new BoundaryParameters(boundaries.VerticalPower, boundaries.MaximumIterations),
+            boundaries.Regions.Select(rl => new RegionId(X: rl.X, Y: rl.Y)).ToList(),
+            new RegionLookup(boundaries.VerticalPower, boundaries.MaxX, boundaries.MaxY, boundaries.QuadTreeNodes));
     }
 }

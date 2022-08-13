@@ -17,12 +17,28 @@ public sealed class RegionLookup
     }
 
     public static readonly RegionLookup Empty = new();
+    public int MaxX { get; }
+    public int MaxY { get; }
     public ComplexArea PopulatedArea { get; }
 
     private RegionLookup()
     {
         _nodes.Add(Quad.Empty);
+        MaxX = 0;
+        MaxY = 0;
         PopulatedArea = ComplexArea.Empty;
+    }
+
+    public RegionLookup(
+        int verticalPower,
+        int maxX,
+        int maxY,
+        IEnumerable<int> rawNodes)
+    {
+        MaxX = maxX;
+        MaxY = maxY;
+        _nodes = rawNodes.Select(i => new Quad(i)).ToList();
+        PopulatedArea = ComputePopulatedArea(verticalPower, maxX, maxY);
     }
 
     public RegionLookup(
@@ -46,10 +62,9 @@ public sealed class RegionLookup
             maxY = Math.Max(maxY, region.Y);
         }
 
-        var sideLength = 2.0 / (1 << verticalPower);
-        PopulatedArea = new ComplexArea(
-            Range.FromMinAndLength(-2, (maxX + 1) * sideLength),
-            new Range(0, (maxY + 1) * sideLength));
+        MaxX = maxX;
+        MaxY = maxY;
+        PopulatedArea = ComputePopulatedArea(verticalPower, maxX, maxY);
 
         Quad BuildQuad(int level, int xOffset, int yOffset)
         {
@@ -77,7 +92,15 @@ public sealed class RegionLookup
             nw: Quad.Empty,
             ne: Quad.Empty,
             se: BuildQuad(verticalPower - 1, topLevelWidth, 0)));
-        log?.Invoke($"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}");
+        log?.Invoke($"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}, Num nodes: {_nodes.Count:N0}");
+    }
+
+    private static ComplexArea ComputePopulatedArea(int verticalPower, int maxX, int maxY)
+    {
+        var sideLength = 2.0 / (1 << verticalPower);
+        return new ComplexArea(
+            Range.FromMinAndLength(-2, (maxX + 1) * sideLength),
+            new Range(0, (maxY + 1) * sideLength));
     }
 
     public IReadOnlyList<ComplexArea> GetVisibleAreas(ComplexArea searchArea)
@@ -114,6 +137,8 @@ public sealed class RegionLookup
 
         return visibleAreas;
     }
+
+    public int[] GetRawNodes() => _nodes.Select(n => n.ChildIndex).ToArray();
 
     sealed class QuadCache
     {

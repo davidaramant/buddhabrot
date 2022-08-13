@@ -1,9 +1,8 @@
 ﻿using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.RegionQuadTree;
 
-namespace Buddhabrot.Core.Tests.Boundary.RegionQuadTree;
+namespace Buddhabrot.Core.Tests.Boundary;
 
-public class RegionMapTests
+public class RegionLookupTests
 {
     private readonly IReadOnlyList<RegionId> _power2Regions =
         new[] {(0, 0), (1, 0), (2, 0), (2, 1), (3, 1), (3, 2), (4, 2), (4, 1), (4, 0)}
@@ -20,15 +19,15 @@ public class RegionMapTests
     [Fact]
     public void ShouldConstructQuadTreeFromRealBoundaries()
     {
-        var _ = new RegionMap(verticalPower: 2, regions: _power2Regions);
-        _ = new RegionMap(verticalPower: 3, regions: _power3Regions);
+        var _ = new RegionLookup(verticalPower: 2, regions: _power2Regions);
+        _ = new RegionLookup(verticalPower: 3, regions: _power3Regions);
     }
 
     [Fact]
     public void ShouldReturnEveryAreaIfSearchAreaIsEqualToBounds()
     {
-        var regionMap = new RegionMap(2, new[] {new RegionId(0, 0), new RegionId(4, 1)});
-        var visibleAreas = regionMap.GetVisibleAreas(
+        var lookup = new RegionLookup(2, new[] {new RegionId(0, 0), new RegionId(4, 1)});
+        var visibleAreas = lookup.GetVisibleAreas(
             new ComplexArea(
                 new Range(-2, 2),
                 new Range(-2, 2)));
@@ -39,8 +38,8 @@ public class RegionMapTests
     [Fact]
     public void ShouldReturnIntersectionsWithSearchArea()
     {
-        var regionMap = new RegionMap(2, new[] {new RegionId(0, 0), new RegionId(4, 1)});
-        var visibleAreas = regionMap.GetVisibleAreas(
+        var lookup = new RegionLookup(2, new[] {new RegionId(0, 0), new RegionId(4, 1)});
+        var visibleAreas = lookup.GetVisibleAreas(
             new ComplexArea(
                 new Range(-0.5, 0.5),
                 new Range(0, 1)));

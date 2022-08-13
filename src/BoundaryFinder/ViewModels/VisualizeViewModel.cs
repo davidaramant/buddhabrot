@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.RegionQuadTree;
 using DynamicData.Binding;
 using ReactiveUI;
 
@@ -20,7 +19,7 @@ public sealed class VisualizeViewModel : ViewModelBase
     private readonly ObservableAsPropertyHelper<int> _minimumIterationsCap;
     private int _minimumIterations = 0;
     private int _numberOfRegions;
-    private IRegionMap _regions = RegionMap2.Empty;
+    private RegionLookup _regions = RegionLookup.Empty;
     private bool _isLoadingBoundary;
 
     public ObservableCollection<BoundaryParameters> SavedBoundaries => _dataProvider.SavedBoundaries;
@@ -51,7 +50,7 @@ public sealed class VisualizeViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _numberOfRegions, value);
     }
 
-    public IRegionMap Regions
+    public RegionLookup Regions
     {
         get => _regions;
         private set => this.RaiseAndSetIfChanged(ref _regions, value);
@@ -86,7 +85,7 @@ public sealed class VisualizeViewModel : ViewModelBase
             _log("Creating quad tree...");
             var timer = Stopwatch.StartNew();
             var regionMap = await Task.Run(() =>
-                new RegionMap2(SelectedParameters.VerticalDivisionsPower, regions, log: _log), cancelToken);
+                new RegionLookup(SelectedParameters.VerticalDivisionsPower, regions, log: _log), cancelToken);
             _log($"Constructed quad tree in {timer.Elapsed}");
 
             Regions = regionMap;

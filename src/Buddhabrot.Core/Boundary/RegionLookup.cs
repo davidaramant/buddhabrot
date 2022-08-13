@@ -1,9 +1,8 @@
-﻿namespace Buddhabrot.Core.Boundary.RegionQuadTree;
+﻿namespace Buddhabrot.Core.Boundary;
 
-public sealed class RegionMap2 : IRegionMap
+public sealed class RegionLookup
 {
     private readonly List<Quad> _nodes = new();
-    private readonly Quad _top;
 
     private readonly ComplexArea _topLevelArea = new(
         new Range(-2, 2),
@@ -17,16 +16,16 @@ public sealed class RegionMap2 : IRegionMap
         SouthEast,
     }
 
-    public static readonly RegionMap2 Empty = new();
+    public static readonly RegionLookup Empty = new();
     public ComplexArea PopulatedArea { get; }
 
-    private RegionMap2()
+    private RegionLookup()
     {
-        _top = Quad.Empty;
+        _nodes.Add(Quad.Empty);
         PopulatedArea = ComplexArea.Empty;
     }
 
-    public RegionMap2(
+    public RegionLookup(
         int verticalPower,
         IReadOnlyList<RegionId> regions,
         Action<string>? log = default)
@@ -73,11 +72,11 @@ public sealed class RegionMap2 : IRegionMap
         }
 
         var topLevelWidth = 1 << verticalPower;
-        _top = cache.MakeQuad(
+        _nodes.Add(cache.MakeQuad(
             sw: BuildQuad(verticalPower - 1, 0, 0),
             nw: Quad.Empty,
             ne: Quad.Empty,
-            se: BuildQuad(verticalPower - 1, topLevelWidth, 0));
+            se: BuildQuad(verticalPower - 1, topLevelWidth, 0)));
         log?.Invoke($"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}");
     }
 
@@ -86,7 +85,7 @@ public sealed class RegionMap2 : IRegionMap
         var visibleAreas = new List<ComplexArea>();
 
         var toCheck = new Queue<(ComplexArea, Quad)>();
-        toCheck.Enqueue((_topLevelArea, _top));
+        toCheck.Enqueue((_topLevelArea, _nodes.Last()));
 
         while (toCheck.Any())
         {

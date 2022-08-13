@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Buddhabrot.Core;
-using Buddhabrot.Core.Boundary.RegionQuadTree;
+using Buddhabrot.Core.Boundary;
 using ReactiveUI;
 
 namespace BoundaryFinder.Views;
@@ -23,10 +23,10 @@ public sealed class MandelbrotRenderer : Control
         set => SetValue(LogicalAreaProperty, value);
     }
 
-    public static readonly StyledProperty<IRegionMap> RegionsProperty =
-        AvaloniaProperty.Register<MandelbrotRenderer, IRegionMap>(nameof(Regions));
+    public static readonly StyledProperty<RegionLookup> RegionsProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, RegionLookup>(nameof(Regions));
 
-    public IRegionMap Regions
+    public RegionLookup Regions
     {
         get => GetValue(RegionsProperty);
         set => SetValue(RegionsProperty, value);

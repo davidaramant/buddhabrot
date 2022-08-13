@@ -99,4 +99,71 @@ public sealed class RegionMap
 
         return visibleAreas;
     }
+    
+    sealed class QuadCache
+    {
+        private readonly Dictionary<int, Quad> _dict = new();
+        public int Size => _dict.Count;
+        public int NumCachedValuesUsed { get; private set; }
+
+        public Quad MakeQuad(Quad nw, Quad ne, Quad se, Quad sw)
+        {
+            if (nw == ne &&
+                ne == se &&
+                se == sw)
+            {
+                if (nw == Quad.Empty)
+                    return Quad.Empty;
+
+                if (nw == Quad.Border)
+                    return Quad.Border;
+            }
+
+            var key = HashCode.Combine(nw, ne, se, sw);
+            if (!_dict.TryGetValue(key, out var cachedQuad))
+            {
+                cachedQuad = new Quad(nw, ne, se, sw);
+                _dict.Add(key, cachedQuad);
+            }
+            else
+            {
+                NumCachedValuesUsed++;
+            }
+
+            return cachedQuad;
+        }
+    }
+    
+    sealed class Quad
+    {
+        public static readonly Quad Empty = new(QuadType.Empty);
+        public static readonly Quad Border = new(QuadType.Border);
+
+        public QuadType Type { get; }
+
+        public Quad NW { get; }
+        public Quad NE { get; }
+        public Quad SE { get; }
+        public Quad SW { get; }
+
+        public override string ToString() => Type.ToString();
+
+        private Quad(QuadType type)
+        {
+            Type = type;
+            NW = default!;
+            NE = default!;
+            SE = default!;
+            SW = default!;
+        }
+
+        public Quad(Quad nw, Quad ne, Quad se, Quad sw)
+        {
+            Type = QuadType.Mixed;
+            NW = nw;
+            NE = ne;
+            SE = se;
+            SW = sw;
+        }
+    }
 }

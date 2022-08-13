@@ -35,10 +35,10 @@ public readonly record struct ComplexArea(
     public ComplexArea Scale(double scale) =>
         new(RealRange.Scale(scale), ImagRange.Scale(scale));
 
+    public ComplexArea GetSWQuadrant() => new(RealRange.FirstHalf(), ImagRange.FirstHalf());
     public ComplexArea GetNWQuadrant() => new(RealRange.FirstHalf(), ImagRange.LastHalf());
     public ComplexArea GetNEQuadrant() => new(RealRange.LastHalf(), ImagRange.LastHalf());
     public ComplexArea GetSEQuadrant() => new(RealRange.LastHalf(), ImagRange.FirstHalf());
-    public ComplexArea GetSWQuadrant() => new(RealRange.FirstHalf(), ImagRange.FirstHalf());
 
     public override string ToString() => $"R:{RealRange}, I:{ImagRange}";
 }

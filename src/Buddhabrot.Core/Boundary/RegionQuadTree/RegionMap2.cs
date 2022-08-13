@@ -2,7 +2,8 @@
 
 public sealed class RegionMap2 : IRegionMap
 {
-    private readonly List<Quad> _nodes = new() {Quad.Empty};
+    private readonly List<Quad> _nodes = new();
+    private readonly Quad _top;
 
     private readonly ComplexArea _topLevelArea = new(
         new Range(-2, 2),
@@ -11,9 +12,9 @@ public sealed class RegionMap2 : IRegionMap
     private enum Quadrant
     {
         SouthWest,
-        SouthEast,
-        NorthEast,
         NorthWest,
+        NorthEast,
+        SouthEast,
     }
 
     public static readonly RegionMap2 Empty = new();
@@ -21,6 +22,7 @@ public sealed class RegionMap2 : IRegionMap
 
     private RegionMap2()
     {
+        _top = Quad.Empty;
         PopulatedArea = ComplexArea.Empty;
     }
 
@@ -29,66 +31,20 @@ public sealed class RegionMap2 : IRegionMap
         IReadOnlyList<RegionId> regions,
         Action<string>? log = default)
     {
+        QuadCache cache = new(_nodes);
+
+        HashSet<RegionId> regionLookup = new(regions.Count);
+
+        Quad LookupLocation(int x, int y) =>
+            regionLookup.Contains(new RegionId(x, y)) ? Quad.Border : Quad.Empty;
+
         int maxX = 0;
         int maxY = 0;
-
-        // TODO: This is awful. Write an insert method and test it, then use that in the constructor
-        
         foreach (var region in regions)
         {
+            regionLookup.Add(region);
             maxX = Math.Max(maxX, region.X);
             maxY = Math.Max(maxY, region.Y);
-
-            var quadIndex = 0;
-            var quad = _nodes[quadIndex];
-
-            int xOffset = 0;
-            int yOffset = 0;
-            for (int level = verticalPower; level >= 0; level--)
-            {
-                if (quad.Type == QuadType.Empty)
-                {
-                    int index = _nodes.Count;
-                    _nodes.Add(Quad.Empty);
-                    _nodes.Add(Quad.Empty);
-                    _nodes.Add(Quad.Empty);
-                    _nodes.Add(Quad.Empty);
-                    quad = new Quad(index);
-                    _nodes[quadIndex] = quad;
-                }
-
-                // figure out which quadrant it's in
-                var halfWidth = 1 << level;
-                var xSmall = region.X < (xOffset + halfWidth);
-                var ySmall = region.Y < (yOffset + halfWidth);
-                var quadrant = (xSmall, ySmall) switch
-                {
-                    (true, true) => Quadrant.SouthWest,
-                    (false, true) => Quadrant.SouthEast,
-                    (true, false) => Quadrant.NorthWest,
-                    (false, false) => Quadrant.NorthEast,
-                };
-
-                switch (quadrant)
-                {
-                    case Quadrant.NorthEast:
-                        xOffset += halfWidth;
-                        yOffset += halfWidth;
-                        break;
-                    case Quadrant.SouthWest:
-                        xOffset += halfWidth;
-                        break;
-                    case Quadrant.NorthWest:
-                        yOffset += halfWidth;
-                        break;
-                    case Quadrant.SouthEast:
-                        break;
-                }
-                quadIndex = quad.GetQuadrantIndex(quadrant);
-                quad = _nodes[quadIndex];
-            }
-
-            _nodes[quadIndex] = Quad.Border;
         }
 
         var sideLength = 2.0 / (1 << verticalPower);
@@ -96,7 +52,33 @@ public sealed class RegionMap2 : IRegionMap
             Range.FromMinAndLength(-2, (maxX + 1) * sideLength),
             new Range(0, (maxY + 1) * sideLength));
 
-        log?.Invoke($"Quad tree nodes: {_nodes.Count:N0}");
+        Quad BuildQuad(int level, int xOffset, int yOffset)
+        {
+            if (level == 0)
+            {
+                return cache.MakeQuad(
+                    sw: LookupLocation(xOffset, yOffset),
+                    nw: LookupLocation(xOffset, yOffset + 1),
+                    ne: LookupLocation(xOffset + 1, yOffset + 1),
+                    se: LookupLocation(xOffset + 1, yOffset));
+            }
+
+            var levelWidth = 1 << level;
+
+            return cache.MakeQuad(
+                sw: BuildQuad(level - 1, xOffset, yOffset),
+                nw: BuildQuad(level - 1, xOffset, yOffset + levelWidth),
+                ne: BuildQuad(level - 1, xOffset + levelWidth, yOffset + levelWidth),
+                se: BuildQuad(level - 1, xOffset + levelWidth, yOffset));
+        }
+
+        var topLevelWidth = 1 << verticalPower;
+        _top = cache.MakeQuad(
+            sw: BuildQuad(verticalPower - 1, 0, 0),
+            nw: Quad.Empty,
+            ne: Quad.Empty,
+            se: BuildQuad(verticalPower - 1, topLevelWidth, 0));
+        log?.Invoke($"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}");
     }
 
     public IReadOnlyList<ComplexArea> GetVisibleAreas(ComplexArea searchArea)
@@ -104,29 +86,29 @@ public sealed class RegionMap2 : IRegionMap
         var visibleAreas = new List<ComplexArea>();
 
         var toCheck = new Queue<(ComplexArea, Quad)>();
-        toCheck.Enqueue((_topLevelArea, _nodes[0]));
+        toCheck.Enqueue((_topLevelArea, _top));
 
         while (toCheck.Any())
         {
             var (quadArea, currentQuad) = toCheck.Dequeue();
 
-            if (currentQuad != Quad.Empty &&
+            if (!currentQuad.IsEmpty &&
                 searchArea.OverlapsWith(quadArea))
             {
-                if (currentQuad == Quad.Border)
+                if (currentQuad.IsBorder)
                 {
                     visibleAreas.Add(quadArea.Intersect(searchArea));
                 }
                 else
                 {
                     toCheck.Enqueue(
+                        (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
+                    toCheck.Enqueue(
                         (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
                     toCheck.Enqueue(
                         (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
                     toCheck.Enqueue(
                         (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
-                    toCheck.Enqueue(
-                        (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
                 }
             }
         }
@@ -137,47 +119,44 @@ public sealed class RegionMap2 : IRegionMap
     sealed class QuadCache
     {
         private readonly List<Quad> _nodes;
-        private readonly Dictionary<int, int> _dict = new();
+        private readonly Dictionary<(Quad NW, Quad NE, Quad SE, Quad SW), Quad> _dict = new();
 
         public QuadCache(List<Quad> nodes) => _nodes = nodes;
 
         public int Size => _dict.Count;
         public int NumCachedValuesUsed { get; private set; }
 
-        public Quad MakeQuad(Quad nw, Quad ne, Quad se, Quad sw)
+        public Quad MakeQuad(Quad sw, Quad nw, Quad ne, Quad se)
         {
-            if (nw == ne &&
-                ne == se &&
-                se == sw)
+            if (sw == nw &&
+                nw == ne &&
+                ne == se)
             {
-                if (nw == Quad.Empty)
+                if (sw.IsEmpty)
                     return Quad.Empty;
 
-                if (nw == Quad.Border)
+                if (sw.IsBorder)
                     return Quad.Border;
-
-                if (nw == Quad.Filament)
-                    return Quad.Filament;
             }
 
-            var key = HashCode.Combine(nw, ne, se, sw);
-            if (!_dict.TryGetValue(key, out var index))
+            var key = (sw, nw, ne, se);
+            if (!_dict.TryGetValue(key, out var quad))
             {
-                index = _nodes.Count;
-                _nodes.Add(new Quad(index));
+                var index = _nodes.Count;
+                quad = new Quad(index);
+                _nodes.Add(sw);
                 _nodes.Add(nw);
                 _nodes.Add(ne);
                 _nodes.Add(se);
-                _nodes.Add(sw);
 
-                _dict.Add(key, index);
+                _dict.Add(key, quad);
             }
             else
             {
                 NumCachedValuesUsed++;
             }
 
-            return _nodes[index];
+            return quad;
         }
     }
 
@@ -185,16 +164,17 @@ public sealed class RegionMap2 : IRegionMap
     {
         public static readonly Quad Empty = new(-1);
         public static readonly Quad Border = new(-2);
-        public static readonly Quad Filament = new(-3);
 
-        public QuadType Type => ChildIndex switch
-        {
-            -1 => QuadType.Empty,
-            -2 => QuadType.Border,
-            -3 => QuadType.Filament,
-            _ => QuadType.Mixed
-        };
+        public bool IsEmpty => ChildIndex == -1;
+        public bool IsBorder => ChildIndex == -2;
 
         public int GetQuadrantIndex(Quadrant child) => ChildIndex + (int) child;
+
+        public override string ToString()
+        {
+            if (IsEmpty) return "Empty";
+            if (IsBorder) return "Border";
+            return ChildIndex.ToString();
+        }
     }
 }

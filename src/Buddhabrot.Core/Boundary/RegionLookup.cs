@@ -103,7 +103,7 @@ public sealed class RegionLookup
             new Range(0, (maxY + 1) * sideLength));
     }
 
-    public IReadOnlyList<ComplexArea> GetVisibleAreas(ComplexArea searchArea)
+    public IReadOnlyList<ComplexArea> GetVisibleAreas(ComplexArea searchArea, double minVisibleWidth)
     {
         var visibleAreas = new List<ComplexArea>();
 
@@ -117,7 +117,9 @@ public sealed class RegionLookup
             if (!currentQuad.IsEmpty &&
                 searchArea.OverlapsWith(quadArea))
             {
-                if (currentQuad.IsBorder)
+                var nextWidth = quadArea.Width / 2d;
+
+                if (currentQuad.IsBorder || nextWidth < minVisibleWidth)
                 {
                     visibleAreas.Add(quadArea.Intersect(searchArea));
                 }

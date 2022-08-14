@@ -6,6 +6,9 @@ public readonly record struct ComplexArea(
     Range RealRange,
     Range ImagRange)
 {
+    public double Width => RealRange.Magnitude;
+    public double Height => ImagRange.Magnitude;
+    
     public static readonly ComplexArea Empty = new(Range.Empty, Range.Empty);
 
     public Complex TopLeftCorner => new(RealRange.InclusiveMin, ImagRange.ExclusiveMax);

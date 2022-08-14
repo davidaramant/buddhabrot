@@ -111,7 +111,7 @@ public sealed class MandelbrotRenderer : Control
         AdjustLogicalArea(Bounds.Size);
         var viewPort = GetCurrentViewPort();
 
-        var areasToDraw = Lookup.GetVisibleAreas(LogicalArea);
+        var areasToDraw = Lookup.GetVisibleAreas(LogicalArea, viewPort.RealPixelSize);
         foreach (var area in areasToDraw)
         {
             var rect = viewPort.GetRectangle(area);

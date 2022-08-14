@@ -18,6 +18,7 @@ public sealed class VisualizeViewModel : ViewModelBase
     private BoundaryParameters _selectedParameters = new(0, 0);
     private readonly ObservableAsPropertyHelper<int> _minimumIterationsCap;
     private int _minimumIterations = 0;
+    private int _numberOfRegions;
     private RegionLookup _lookup = RegionLookup.Empty;
     private bool _isLoadingBoundary;
 
@@ -43,6 +44,12 @@ public sealed class VisualizeViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _minimumIterations, value);
     }
 
+    public int NumberOfRegions
+    {
+        get => _numberOfRegions;
+        private set => this.RaiseAndSetIfChanged(ref _numberOfRegions, value);
+    }
+	
     public RegionLookup Lookup
     {
         get => _lookup;
@@ -71,8 +78,9 @@ public sealed class VisualizeViewModel : ViewModelBase
         try
         {
             IsLoadingBoundary = true;
-            var lookup = _dataProvider.LoadLookup(SelectedParameters);
+            var (lookup, numRegions) = _dataProvider.LoadLookup(SelectedParameters);
             
+			NumberOfRegions = numRegions;
             Lookup = lookup;
         }
         catch (Exception e)

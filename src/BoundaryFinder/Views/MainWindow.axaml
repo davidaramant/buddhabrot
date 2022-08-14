@@ -95,6 +95,8 @@
                         Grid.Column="0"
                         Grid.ColumnSpan="6">
                         <Label
+                            Content="{Binding Visualize.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}, Mode=OneWay}" />
+                        <Label
                             Content="{Binding #MandelbrotRenderer.LogicalArea}" />
                     </StackPanel>
                 </Grid>

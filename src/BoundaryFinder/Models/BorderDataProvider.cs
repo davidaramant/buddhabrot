@@ -53,5 +53,5 @@ public sealed class BorderDataProvider
     public IReadOnlyList<RegionId> LoadRegions(BoundaryParameters parameters) =>
         _dataProvider.GetBoundaryRegions(parameters);
 
-    public RegionLookup LoadLookup(BoundaryParameters parameters) => _dataProvider.GetLookup(parameters);
+    public (RegionLookup, int NumRegions) LoadLookup(BoundaryParameters parameters) => _dataProvider.GetLookup(parameters);
 }

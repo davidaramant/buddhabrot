@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
@@ -43,6 +44,7 @@ public sealed class MandelbrotRenderer : Control
 
     public MandelbrotRenderer()
     {
+        ClipToBounds = true;
         // HACK: I'm sure there is some fancy Reactive way to do this
         this.PropertyChanged += (s, e) =>
         {
@@ -107,15 +109,19 @@ public sealed class MandelbrotRenderer : Control
 
     public override void Render(DrawingContext context)
     {
-        context.FillRectangle(Brushes.White, new Rect(Bounds.Size));
+        context.FillRectangle(Brushes.LightGray, new Rect(Bounds.Size));
         AdjustLogicalArea(Bounds.Size);
         var viewPort = GetCurrentViewPort();
 
-        var areasToDraw = Lookup.GetVisibleAreas(LogicalArea, viewPort.RealPixelSize);
-        foreach (var area in areasToDraw)
-        {
-            var rect = viewPort.GetRectangle(area);
+        var center = viewPort.GetPosition(Complex.Zero);
+        var radius = 2 / viewPort.RealPixelSize;
+        context.DrawEllipse(Brushes.White, null, new Point(center.X, center.Y), radius, radius);
 
+        var areasToDraw = Lookup.GetVisibleAreas(LogicalArea, viewPort.RealPixelSize);
+        for (var index = 0; index < areasToDraw.Count; index++)
+        {
+            var area = areasToDraw[index];
+            var rect = viewPort.GetRectangle(area);
             context.FillRectangle(Brushes.Red, new Rect(rect.X, rect.Y, rect.Width, rect.Height));
         }
     }

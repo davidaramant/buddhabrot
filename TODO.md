@@ -14,8 +14,9 @@
   - [x] Render regions
   - [x] Zooming & panning
   - [x] Aspect ratio is WRONG
-  - [ ] Region drawing optimizations
-    - [ ] Halt quad tree search based on pixel size? No need to grab sub-pixel stuff
-    - [ ] Building quad tree is too slow
+  - [x] Region drawing optimizations
+    - [x] Halt quad tree search based on pixel size? No need to grab sub-pixel stuff
+    - [x] Building quad tree is too slow
+      - [ ] Optimize this for real - saving it off is a hack
   - [ ] Render region interiors
     - [ ] Multi-threaded rendering

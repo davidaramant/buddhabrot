@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Boundary;
+namespace Buddhabrot.Core.Boundary;
 
 public sealed class RegionLookup
 {
@@ -6,7 +6,7 @@ public sealed class RegionLookup
 
     private readonly ComplexArea _topLevelArea = new(
         new Range(-2, 2),
-        new Range(0, 4));
+        new Range(-2, 2));
 
     private enum Quadrant
     {
@@ -88,10 +88,10 @@ public sealed class RegionLookup
 
         var topLevelWidth = 1 << verticalPower;
         _nodes.Add(cache.MakeQuad(
-            sw: BuildQuad(verticalPower - 1, 0, 0),
-            nw: Quad.Empty,
-            ne: Quad.Empty,
-            se: BuildQuad(verticalPower - 1, topLevelWidth, 0)));
+            sw: Quad.Empty,
+            nw: BuildQuad(verticalPower - 1, 0, 0),
+            ne: BuildQuad(verticalPower - 1, topLevelWidth, 0),
+            se: Quad.Empty));
         log?.Invoke($"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}, Num nodes: {_nodes.Count:N0}");
     }
 
@@ -133,6 +133,36 @@ public sealed class RegionLookup
                         (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
                     toCheck.Enqueue(
                         (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
+                }
+            }
+        }
+        
+        // Check the mirrored values to get build the bottom of the set
+        toCheck.Enqueue((_topLevelArea, _nodes.Last()));
+        
+        while (toCheck.Any())
+        {
+            var (quadArea, currentQuad) = toCheck.Dequeue();
+        
+            if (!currentQuad.IsEmpty &&
+                searchArea.OverlapsWith(quadArea))
+            {
+                var nextWidth = quadArea.Width / 2d;
+        
+                if (currentQuad.IsBorder || nextWidth < minVisibleWidth)
+                {
+                    visibleAreas.Add(quadArea.Intersect(searchArea));
+                }
+                else
+                {
+                    toCheck.Enqueue(
+                        (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
                 }
             }
         }

@@ -1,0 +1,76 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:BoundaryFinder.Views"
+             xmlns:vm="using:BoundaryFinder.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoundaryFinder.Views.VisualizeTab"
+             x:CompileBindings="True"
+             x:DataType="vm:VisualizeViewModel">
+    <Grid
+        ColumnDefinitions="2*,*,Auto,Auto,Auto,Auto"
+        RowDefinitions="Auto,*,Auto">
+        <ComboBox
+            x:Name="BoundariesComboBox"
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="4"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            Items="{Binding SavedBoundaries}"
+            SelectedItem="{Binding SelectedParameters}" />
+        <ProgressBar
+            Grid.Row="0"
+            Grid.Column="1"
+            IsIndeterminate="True"
+            IsVisible="{Binding IsLoadingBoundary}" />
+        <Button
+            Grid.Row="0"
+            Grid.Column="2"
+            Content="Reset View"
+            Command="{Binding #MandelbrotRenderer.ResetViewCommand}" />
+        <Button
+            Grid.Row="0"
+            Grid.Column="3"
+            Content="Zoom Out"
+            Command="{Binding #MandelbrotRenderer.ZoomOutCommand}" />
+
+        <Label
+            Grid.Row="0"
+            Grid.Column="4"
+            HorizontalAlignment="Right"
+            Margin="4"
+            Content="Minimum Iterations:" />
+        <NumericUpDown
+            Grid.Row="0"
+            Grid.Column="5"
+            IsEnabled="{Binding SelectedItem, ElementName=BoundariesComboBox, Converter={x:Static ObjectConverters.IsNotNull}}"
+            Classes="integerInput"
+            Increment="1000000"
+            Value="{Binding MinimumIterations}"
+            Maximum="{Binding MinimumIterationsCap}" />
+
+        <Border
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="6"
+            BorderBrush="LightGray"
+            BorderThickness="1">
+            <views:MandelbrotRenderer
+                x:Name="MandelbrotRenderer"
+                Lookup="{Binding Lookup}" />
+        </Border>
+
+        <StackPanel
+            Orientation="Horizontal"
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="6">
+            <Label
+                Content="{Binding NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}, Mode=OneWay}" />
+            <Label
+                Content="{Binding #MandelbrotRenderer.LogicalArea}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

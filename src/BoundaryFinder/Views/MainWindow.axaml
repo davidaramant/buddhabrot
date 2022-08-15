@@ -35,119 +35,15 @@
             </TabControl.Styles>
 
             <TabItem Header="Visualize">
-                <Grid
-                    ColumnDefinitions="2*,*,Auto,Auto,Auto,Auto"
-                    RowDefinitions="Auto,*,Auto">
-                    <ComboBox
-                        x:Name="BoundariesComboBox"
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Margin="4"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Stretch"
-                        Items="{Binding Visualize.SavedBoundaries}"
-                        SelectedItem="{Binding Visualize.SelectedParameters}" />
-                    <ProgressBar
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        IsIndeterminate="True"
-                        IsVisible="{Binding Visualize.IsLoadingBoundary}" />
-                    <Button
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        Content="Reset View"
-                        Command="{Binding #MandelbrotRenderer.ResetViewCommand}" />
-                    <Button
-                        Grid.Row="0"
-                        Grid.Column="3"
-                        Content="Zoom Out"
-                        Command="{Binding #MandelbrotRenderer.ZoomOutCommand}" />
-
-                    <Label
-                        Grid.Row="0"
-                        Grid.Column="4"
-                        HorizontalAlignment="Right"
-                        Margin="4"
-                        Content="Minimum Iterations:" />
-                    <NumericUpDown
-                        Grid.Row="0"
-                        Grid.Column="5"
-                        IsEnabled="{Binding SelectedItem, ElementName=BoundariesComboBox, Converter={x:Static ObjectConverters.IsNotNull}}"
-                        Classes="integerInput"
-                        Increment="1000000"
-                        Value="{Binding Visualize.MinimumIterations}"
-                        Maximum="{Binding Visualize.MinimumIterationsCap}" />
-
-                    <Border
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="6"
-                        BorderBrush="LightGray"
-                        BorderThickness="1">
-                        <views:MandelbrotRenderer
-                            x:Name="MandelbrotRenderer"
-                            Lookup="{Binding Visualize.Lookup}" />
-                    </Border>
-
-                    <StackPanel
-                        Orientation="Horizontal"
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="6">
-                        <Label
-                            Content="{Binding Visualize.NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}, Mode=OneWay}" />
-                        <Label
-                            Content="{Binding #MandelbrotRenderer.LogicalArea}" />
-                    </StackPanel>
-                </Grid>
+                <views:VisualizeTab DataContext="{Binding Visualize}" />
             </TabItem>
 
             <TabItem Header="Calculate Boundary">
-                <StackPanel Orientation="Vertical" MaxWidth="800" Spacing="8">
-                    <views:LabeledIntegerUpDown
-                        Text="Iteration Maximum:"
-                        Increment="1000000"
-                        Value="{Binding CalculateBoundary.MaximumIterations}" />
-
-                    <Label Content="Vertical Division 2^n Power:" />
-                    <Slider
-                        Minimum="0"
-                        Maximum="30"
-                        TickFrequency="1"
-                        TickPlacement="Outside"
-                        IsSnapToTickEnabled="True"
-                        Value="{Binding CalculateBoundary.VerticalDivisionPower}" />
-
-                    <TextBlock
-                        Text="{Binding CalculateBoundary.VerticalDivisionPower, StringFormat=Power: \{0:N0\}, Mode=OneWay}" />
-
-                    <TextBlock
-                        Text="{Binding CalculateBoundary.VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}, Mode=OneWay}" />
-
-                    <TextBlock
-                        Text="{Binding CalculateBoundary.ScanAreaWidth, StringFormat=Scan Area Width: \{0\}, Mode=OneWay}" />
-
-                    <TextBlock
-                        Text="{Binding CalculateBoundary.ScanArea, StringFormat=Scan Area: \{0\}, Mode=OneWay}" />
-
-                    <Button
-                        Content="Find Boundary"
-                        Command="{Binding CalculateBoundary.FindBoundary}" />
-                    <Button
-                        Content="Cancel"
-                        Command="{Binding CalculateBoundary.CancelFindingBoundary}" />
-
-                    <ProgressBar
-                        IsIndeterminate="True"
-                        IsVisible="{Binding CalculateBoundary.IsFindingBoundary}" />
-                </StackPanel>
+                <views:CalculateBoundaryTab DataContext="{Binding CalculateBoundary}" />
             </TabItem>
 
             <TabItem Header="Settings">
-                <StackPanel Orientation="Vertical">
-                    <TextBox IsReadOnly="True" Text="{Binding Settings.DataSetPath, Mode=OneWay}" />
-                    <Button Content="Change File Path" Command="{Binding Settings.UpdateFilePathCommand}" />
-                </StackPanel>
+                <views:SettingsTab DataContext="{Binding Settings}" />
             </TabItem>
 
         </TabControl>

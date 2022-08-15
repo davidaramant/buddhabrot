@@ -122,7 +122,7 @@ public sealed class MandelbrotRenderer : Control
         {
             var area = areasToDraw[index];
             var rect = viewPort.GetRectangle(area);
-            context.FillRectangle(Brushes.Red, new Rect(rect.X, rect.Y, rect.Width, rect.Height));
+            context.FillRectangle(Brushes.DarkSlateBlue, new Rect(rect.X, rect.Y, rect.Width, rect.Height));
         }
     }
 

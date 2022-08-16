@@ -24,15 +24,16 @@ public class RegionLookupTests
     }
 
     [Fact]
-    public void ShouldReturnEveryAreaIfSearchAreaIsEqualToBounds()
+    public void ShouldReturnEveryAreaPlusMirrorsIfSearchAreaIsEqualToBounds()
     {
         var lookup = new RegionLookup(2, new[] {new RegionId(0, 0), new RegionId(4, 1)});
         var visibleAreas = lookup.GetVisibleAreas(
             new ComplexArea(
                 new Range(-2, 2),
-                new Range(-2, 2)));
-
-        visibleAreas.Should().HaveCount(2);
+                new Range(-2, 2)),
+            0.00001);
+        
+        visibleAreas.Should().HaveCount(4);
     }
 
     [Fact]
@@ -42,7 +43,8 @@ public class RegionLookupTests
         var visibleAreas = lookup.GetVisibleAreas(
             new ComplexArea(
                 new Range(-0.5, 0.5),
-                new Range(0, 1)));
+                new Range(0, 1)),
+            0.000001);
 
         visibleAreas.Should().HaveCount(1);
     }

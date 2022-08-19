@@ -7,6 +7,7 @@
 - [x] Better busy indicator
 - [ ] Integrate DE in boundary scanning?
 - [x] Flip Y again - regions going down isn't helpful anymore
+- [x] Allow log area to be hidden
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
   - [x] Switch to power-of-two divisions
@@ -21,6 +22,7 @@
     - [x] Building quad tree is too slow
       - [ ] Optimize this for real - saving it off is a hack
   - [x] Show entire set boundary
+  - [ ] There is an unstable 1-pixel gap between regions
   - [ ] Render region interiors
     - [ ] Multi-threaded rendering
   - [ ] Nicer aesthetics

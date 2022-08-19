@@ -8,6 +8,9 @@ public readonly record struct Range(
 
     public static Range FromMinAndLength(double min, double length) => new(min, min + length);
 
+    public static Range FromCenterAndLength(double center, double length) =>
+        new(center - length / 2, center + length / 2);
+
     public double Magnitude => Math.Abs(ExclusiveMax - InclusiveMin);
 
     public Range FirstHalf() => FromMinAndLength(InclusiveMin, Magnitude / 2);

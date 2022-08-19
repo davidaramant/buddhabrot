@@ -16,7 +16,7 @@
   - [x] Zooming & panning
     - [ ] Zoom where the cursor was clicked
   - [x] Aspect ratio is WRONG
-    - [ ] Just show 4x4 area instead of populated area
+    - [x] Just show 4x4 area instead of populated area
   - [x] Region drawing optimizations
     - [x] Halt quad tree search based on pixel size? No need to grab sub-pixel stuff
     - [x] Building quad tree is too slow

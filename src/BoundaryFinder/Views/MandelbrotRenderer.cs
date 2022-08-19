@@ -105,7 +105,7 @@ public sealed class MandelbrotRenderer : Control
     }
 
     private ViewPort GetCurrentViewPort() =>
-        new(LogicalArea, new System.Drawing.Size((int) Bounds.Width, (int) Bounds.Height));
+        new(LogicalArea, new System.Drawing.Size((int)Bounds.Width, (int)Bounds.Height));
 
     public override void Render(DrawingContext context)
     {
@@ -128,26 +128,25 @@ public sealed class MandelbrotRenderer : Control
 
     private void ResetLogicalArea()
     {
-        var populatedArea = Lookup.PopulatedArea;
-        var populatedAreaRatio = populatedArea.RealRange.Magnitude / populatedArea.ImagRange.Magnitude;
+        var defaultView = new ComplexArea(new Range(-2, 2), new Range(-2, 2));
         var viewRatio = Bounds.Width / Bounds.Height;
 
-        if (viewRatio >= populatedAreaRatio)
+        if (viewRatio >= 1)
         {
             // Use vertical, pad horizontal
-            var realPaddedMagnitude = populatedArea.RealRange.Magnitude * (viewRatio / populatedAreaRatio);
-            LogicalArea = populatedArea with
+            var realPaddedMagnitude = defaultView.RealRange.Magnitude * viewRatio;
+            LogicalArea = defaultView with
             {
-                RealRange = Range.FromMinAndLength(-2, realPaddedMagnitude)
+                RealRange = Range.FromCenterAndLength(0, realPaddedMagnitude)
             };
         }
         else
         {
             // Use horizontal, pad vertical
-            var imagPaddedMagnitude = populatedArea.ImagRange.Magnitude * (populatedAreaRatio / viewRatio);
-            LogicalArea = populatedArea with
+            var imagPaddedMagnitude = defaultView.ImagRange.Magnitude / viewRatio;
+            LogicalArea = defaultView with
             {
-                ImagRange = new Range(0, imagPaddedMagnitude)
+                ImagRange = Range.FromCenterAndLength(0, imagPaddedMagnitude)
             };
         }
     }

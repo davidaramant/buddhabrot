@@ -15,7 +15,7 @@
             x:Name="BoundariesComboBox"
             Grid.Row="0"
             Grid.Column="0"
-            Margin="4"
+            Margin="0,4"
             VerticalAlignment="Center"
             HorizontalAlignment="Stretch"
             Items="{Binding SavedBoundaries}"
@@ -55,7 +55,7 @@
             Grid.Row="1"
             Grid.Column="0"
             Grid.ColumnSpan="6"
-            BorderBrush="LightGray"
+            BorderBrush="Black"
             BorderThickness="1">
             <views:MandelbrotRenderer
                 x:Name="MandelbrotRenderer"

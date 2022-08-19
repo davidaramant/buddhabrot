@@ -8,5 +8,16 @@
 
     <Application.Styles>
         <FluentTheme Mode="Light"/>
+        <Style Selector="Label">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="NumericUpDown.integerInput">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Width" Value="300" />
+            <Setter Property="Increment" Value="1" />
+            <Setter Property="ParsingNumberStyle" Value="Integer" />
+            <Setter Property="FormatString" Value="N0" />
+            <Setter Property="HorizontalContentAlignment" Value="Right" />
+        </Style>
     </Application.Styles>
 </Application>

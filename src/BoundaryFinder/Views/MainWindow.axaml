@@ -10,30 +10,12 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="Mandelbrot Set Boundary Finder"
         x:DataType="vm:MainWindowViewModel">
-
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
     <Grid RowDefinitions="2*,Auto,*" x:Name="GridLayout">
         <TabControl Grid.Row="0">
-            <TabControl.Styles>
-                <Style Selector=":is(ContentControl)">
-                    <Setter Property="Margin" Value="4" />
-                </Style>
-                <Style Selector="Label">
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                </Style>
-                <Style Selector="NumericUpDown.integerInput">
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="Width" Value="300" />
-                    <Setter Property="Increment" Value="1" />
-                    <Setter Property="ParsingNumberStyle" Value="Integer" />
-                    <Setter Property="FormatString" Value="N0" />
-                    <Setter Property="HorizontalContentAlignment" Value="Right" />
-                </Style>
-            </TabControl.Styles>
-
             <TabItem Header="Visualize">
                 <views:VisualizeTab DataContext="{Binding Visualize}" />
             </TabItem>

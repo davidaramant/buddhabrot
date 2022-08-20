@@ -5,7 +5,10 @@
 - [x] Refactor data storage stuff
   - [ ] Allow changing local files location 
 - [x] Better busy indicator
-- [ ] Integrate DE in boundary scanning?
+- [ ] Integrate DE in boundary scanning
+  - [ ] Update algorithm
+  - [ ] Persist filament regions
+  - [ ] Render filament regions
 - [x] Flip Y again - regions going down isn't helpful anymore
 - [x] Allow log area to be hidden
 - [ ] Real-Time Visualizations
@@ -25,4 +28,5 @@
   - [ ] There is an unstable 1-pixel gap between regions
   - [ ] Render region interiors
     - [ ] Multi-threaded rendering
-  - [ ] Nicer aesthetics
+  - [ ] Nicer aesthetic
+- [ ] NUnit test project for manual "tests"

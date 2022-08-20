@@ -9,12 +9,13 @@
         x:CompileBindings="True"
         Icon="/Assets/avalonia-logo.ico"
         Title="Mandelbrot Set Boundary Finder"
+        WindowState="Maximized"
         x:DataType="vm:MainWindowViewModel">
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="2*,Auto,*" x:Name="GridLayout">
+    <Grid RowDefinitions="*,Auto,0" x:Name="GridLayout">
         <TabControl Grid.Row="0">
             <TabItem Header="Visualize">
                 <views:VisualizeTab DataContext="{Binding Visualize}" />
@@ -49,6 +50,7 @@
         <TextBox
             x:Name="LogBox"
             Grid.Row="2"
+            IsVisible="False"
             Margin="4"
             IsReadOnly="True"
             TextWrapping="Wrap"

@@ -5,8 +5,8 @@ public sealed class RegionLookup
     private readonly List<Quad> _nodes = new();
 
     private readonly ComplexArea _topLevelArea = new(
-        new Range(-2, 2),
-        new Range(-2, 2));
+        new Interval(-2, 2),
+        new Interval(-2, 2));
 
     public static readonly RegionLookup Empty = new();
     public int MaxX { get; }
@@ -97,8 +97,8 @@ public sealed class RegionLookup
     {
         var sideLength = 2.0 / (1 << verticalPower);
         return new ComplexArea(
-            Range.FromMinAndLength(-2, (maxX + 1) * sideLength),
-            new Range(0, (maxY + 1) * sideLength));
+            Interval.FromMinAndLength(-2, (maxX + 1) * sideLength),
+            new Interval(0, (maxY + 1) * sideLength));
     }
 
     public IReadOnlyList<(ComplexArea Area, RegionType Type)> GetVisibleAreas(ComplexArea searchArea,

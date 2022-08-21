@@ -134,25 +134,25 @@ public sealed class MandelbrotRenderer : Control
 
     private void ResetLogicalArea()
     {
-        var defaultView = new ComplexArea(new Range(-2, 2), new Range(-2, 2));
+        var defaultView = new ComplexArea(new Interval(-2, 2), new Interval(-2, 2));
         var viewRatio = Bounds.Width / Bounds.Height;
 
         if (viewRatio >= 1)
         {
             // Use vertical, pad horizontal
-            var realPaddedMagnitude = defaultView.RealRange.Magnitude * viewRatio;
+            var realPaddedMagnitude = defaultView.RealInterval.Magnitude * viewRatio;
             LogicalArea = defaultView with
             {
-                RealRange = Range.FromCenterAndLength(0, realPaddedMagnitude)
+                RealInterval = Interval.FromCenterAndLength(0, realPaddedMagnitude)
             };
         }
         else
         {
             // Use horizontal, pad vertical
-            var imagPaddedMagnitude = defaultView.ImagRange.Magnitude / viewRatio;
+            var imagPaddedMagnitude = defaultView.ImagInterval.Magnitude / viewRatio;
             LogicalArea = defaultView with
             {
-                ImagRange = Range.FromCenterAndLength(0, imagPaddedMagnitude)
+                ImagInterval = Interval.FromCenterAndLength(0, imagPaddedMagnitude)
             };
         }
     }
@@ -160,11 +160,11 @@ public sealed class MandelbrotRenderer : Control
     private void AdjustLogicalArea(Size bounds)
     {
         var aspectRatio = bounds.Width / bounds.Height;
-        var imagMagnitude = LogicalArea.RealRange.Magnitude / aspectRatio;
+        var imagMagnitude = LogicalArea.RealInterval.Magnitude / aspectRatio;
 
         LogicalArea = LogicalArea with
         {
-            ImagRange = Range.FromMinAndLength(LogicalArea.ImagRange.InclusiveMin, imagMagnitude)
+            ImagInterval = Interval.FromMinAndLength(LogicalArea.ImagInterval.InclusiveMin, imagMagnitude)
         };
     }
 

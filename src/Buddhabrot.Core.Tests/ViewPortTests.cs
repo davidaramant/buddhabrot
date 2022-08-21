@@ -10,8 +10,8 @@ public sealed class ViewPortTests
     {
         var viewPort = new ViewPort(
             new ComplexArea(
-                new Range(-1, 1),
-                new Range(-1, 1)),
+                new Interval(-1, 1),
+                new Interval(-1, 1)),
             new Size(101, 101));
 
         var middle = viewPort.GetPosition(new Complex());
@@ -24,8 +24,8 @@ public sealed class ViewPortTests
     {
         var viewPort = new ViewPort(
             new ComplexArea(
-                new Range(-1, 1),
-                new Range(-1, 1)),
+                new Interval(-1, 1),
+                new Interval(-1, 1)),
             new Size(101, 101));
 
         var topLeft = viewPort.GetPosition(new Complex(-1, 1));
@@ -38,8 +38,8 @@ public sealed class ViewPortTests
     {
         var viewPort = new ViewPort(
             new ComplexArea(
-                new Range(-1, 1),
-                new Range(-1, 1)),
+                new Interval(-1, 1),
+                new Interval(-1, 1)),
             new Size(101, 101));
 
         var c = new Complex(-1, 1);
@@ -53,8 +53,8 @@ public sealed class ViewPortTests
     {
         var viewPort = new ViewPort(
             new ComplexArea(
-                new Range(-1, 1),
-                new Range(-1, 1)),
+                new Interval(-1, 1),
+                new Interval(-1, 1)),
             new Size(101, 101));
 
         var point = new Point(-1, 1);

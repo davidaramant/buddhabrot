@@ -29,8 +29,8 @@ public class RegionLookupTests
         var lookup = new RegionLookup(2, new[] {(new RegionId(0, 0), RegionType.Border), (new RegionId(4, 1), RegionType.Border)});
         var visibleAreas = lookup.GetVisibleAreas(
             new ComplexArea(
-                new Range(-2, 2),
-                new Range(-2, 2)),
+                new Interval(-2, 2),
+                new Interval(-2, 2)),
             0.00001);
         
         visibleAreas.Should().HaveCount(4);
@@ -42,8 +42,8 @@ public class RegionLookupTests
         var lookup = new RegionLookup(2, new[] {(new RegionId(0, 0), RegionType.Border), (new RegionId(4, 1), RegionType.Border)});
         var visibleAreas = lookup.GetVisibleAreas(
             new ComplexArea(
-                new Range(-0.5, 0.5),
-                new Range(0, 1)),
+                new Interval(-0.5, 0.5),
+                new Interval(0, 1)),
             0.000001);
 
         visibleAreas.Should().HaveCount(1);

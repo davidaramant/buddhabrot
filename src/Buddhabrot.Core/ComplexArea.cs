@@ -3,45 +3,45 @@
 namespace Buddhabrot.Core;
 
 public readonly record struct ComplexArea(
-    Range RealRange,
-    Range ImagRange)
+    Interval RealInterval,
+    Interval ImagInterval)
 {
-    public double Width => RealRange.Magnitude;
-    public double Height => ImagRange.Magnitude;
+    public double Width => RealInterval.Magnitude;
+    public double Height => ImagInterval.Magnitude;
     
-    public static readonly ComplexArea Empty = new(Range.Empty, Range.Empty);
+    public static readonly ComplexArea Empty = new(Interval.Empty, Interval.Empty);
 
-    public Complex TopLeftCorner => new(RealRange.InclusiveMin, ImagRange.ExclusiveMax);
+    public Complex TopLeftCorner => new(RealInterval.InclusiveMin, ImagInterval.ExclusiveMax);
 
     public bool Contains(Complex number) =>
-        RealRange.Contains(number.Real) &&
-        ImagRange.Contains(number.Imaginary);
+        RealInterval.Contains(number.Real) &&
+        ImagInterval.Contains(number.Imaginary);
 
     public bool OverlapsWith(ComplexArea otherArea) =>
-        RealRange.OverlapsWith(otherArea.RealRange) &&
-        ImagRange.OverlapsWith(otherArea.ImagRange);
+        RealInterval.OverlapsWith(otherArea.RealInterval) &&
+        ImagInterval.OverlapsWith(otherArea.ImagInterval);
 
     public ComplexArea Intersect(ComplexArea otherArea)
     {
-        var realIntersection = RealRange.Intersect(otherArea.RealRange);
-        var imagIntersection = ImagRange.Intersect(otherArea.ImagRange);
+        var realIntersection = RealInterval.Intersect(otherArea.RealInterval);
+        var imagIntersection = ImagInterval.Intersect(otherArea.ImagInterval);
 
-        if (realIntersection == Range.Empty || imagIntersection == Range.Empty)
+        if (realIntersection == Interval.Empty || imagIntersection == Interval.Empty)
             return Empty;
 
         return new(realIntersection, imagIntersection);
     }
 
     public ComplexArea OffsetBy(double realDelta, double imagDelta) =>
-        new(RealRange.OffsetBy(realDelta), ImagRange.OffsetBy(imagDelta));
+        new(RealInterval.OffsetBy(realDelta), ImagInterval.OffsetBy(imagDelta));
 
     public ComplexArea Scale(double scale) =>
-        new(RealRange.Scale(scale), ImagRange.Scale(scale));
+        new(RealInterval.Scale(scale), ImagInterval.Scale(scale));
 
-    public ComplexArea GetSWQuadrant() => new(RealRange.FirstHalf(), ImagRange.FirstHalf());
-    public ComplexArea GetNWQuadrant() => new(RealRange.FirstHalf(), ImagRange.LastHalf());
-    public ComplexArea GetNEQuadrant() => new(RealRange.LastHalf(), ImagRange.LastHalf());
-    public ComplexArea GetSEQuadrant() => new(RealRange.LastHalf(), ImagRange.FirstHalf());
+    public ComplexArea GetSWQuadrant() => new(RealInterval.FirstHalf(), ImagInterval.FirstHalf());
+    public ComplexArea GetNWQuadrant() => new(RealInterval.FirstHalf(), ImagInterval.LastHalf());
+    public ComplexArea GetNEQuadrant() => new(RealInterval.LastHalf(), ImagInterval.LastHalf());
+    public ComplexArea GetSEQuadrant() => new(RealInterval.LastHalf(), ImagInterval.FirstHalf());
 
-    public override string ToString() => $"R:{RealRange}, I:{ImagRange}";
+    public override string ToString() => $"R:{RealInterval}, I:{ImagInterval}";
 }

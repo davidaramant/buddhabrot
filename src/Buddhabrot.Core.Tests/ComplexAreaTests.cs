@@ -7,29 +7,29 @@ public class ComplexAreaTests
         // Not overlapping
         yield return new object[]
         {
-            new ComplexArea(new Range(0, 1), new Range(0, 1)),
-            new ComplexArea(new Range(2, 3), new Range(2, 3)),
+            new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
+            new ComplexArea(new Interval(2, 3), new Interval(2, 3)),
             false
         };
         // Equal
         yield return new object[]
         {
-            new ComplexArea(new Range(0, 1), new Range(0, 1)),
-            new ComplexArea(new Range(0, 1), new Range(0, 1)),
+            new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
+            new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
             true
         };
         // Partially overlapping
         yield return new object[]
         {
-            new ComplexArea(new Range(0, 2), new Range(0, 2)),
-            new ComplexArea(new Range(1, 3), new Range(1, 3)),
+            new ComplexArea(new Interval(0, 2), new Interval(0, 2)),
+            new ComplexArea(new Interval(1, 3), new Interval(1, 3)),
             true
         };
         // Area 2 inside of area 1
         yield return new object[]
         {
-            new ComplexArea(new Range(0, 10), new Range(0, 10)),
-            new ComplexArea(new Range(1, 3), new Range(1, 3)),
+            new ComplexArea(new Interval(0, 10), new Interval(0, 10)),
+            new ComplexArea(new Interval(1, 3), new Interval(1, 3)),
             true
         };
     }
@@ -48,12 +48,12 @@ public class ComplexAreaTests
     [Fact]
     public void ShouldDetermineQuadrants()
     {
-        var area = new ComplexArea(new Range(-1, 1), new Range(-1, 1));
+        var area = new ComplexArea(new Interval(-1, 1), new Interval(-1, 1));
 
-        area.GetNWQuadrant().Should().Be(new ComplexArea(new Range(-1, 0), new Range(0, 1)));
-        area.GetNEQuadrant().Should().Be(new ComplexArea(new Range(0, 1), new Range(0, 1)));
-        area.GetSEQuadrant().Should().Be(new ComplexArea(new Range(0, 1), new Range(-1, 0)));
-        area.GetSWQuadrant().Should().Be(new ComplexArea(new Range(-1, 0), new Range(-1, 0)));
+        area.GetNWQuadrant().Should().Be(new ComplexArea(new Interval(-1, 0), new Interval(0, 1)));
+        area.GetNEQuadrant().Should().Be(new ComplexArea(new Interval(0, 1), new Interval(0, 1)));
+        area.GetSEQuadrant().Should().Be(new ComplexArea(new Interval(0, 1), new Interval(-1, 0)));
+        area.GetSWQuadrant().Should().Be(new ComplexArea(new Interval(-1, 0), new Interval(-1, 0)));
     }
 
     public sealed record IntersectionData(
@@ -70,33 +70,33 @@ public class ComplexAreaTests
         yield return new object[]
         {
             new IntersectionData(
-                Area1: new ComplexArea(new Range(0, 1), new Range(0, 1)),
-                Area2: new ComplexArea(new Range(0, 1), new Range(0, 1)),
-                Expected: new ComplexArea(new Range(0, 1), new Range(0, 1)),
+                Area1: new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
+                Area2: new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
+                Expected: new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
                 Description: "Same area")
         };
         yield return new object[]
         {
             new IntersectionData(
-                Area1: new ComplexArea(new Range(0, 1), new Range(0, 1)),
-                Area2: new ComplexArea(new Range(2, 3), new Range(2, 3)),
+                Area1: new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
+                Area2: new ComplexArea(new Interval(2, 3), new Interval(2, 3)),
                 Expected: ComplexArea.Empty, 
                 Description: "Distinct")
         };
         yield return new object[]
         {
             new IntersectionData(
-                Area1: new ComplexArea(new Range(0, 10), new Range(0, 10)),
-                Area2: new ComplexArea(new Range(2, 3), new Range(2, 3)),
-                Expected: new ComplexArea(new Range(2, 3), new Range(2, 3)), 
+                Area1: new ComplexArea(new Interval(0, 10), new Interval(0, 10)),
+                Area2: new ComplexArea(new Interval(2, 3), new Interval(2, 3)),
+                Expected: new ComplexArea(new Interval(2, 3), new Interval(2, 3)), 
                 Description: "Subset")
         };
         yield return new object[]
         {
             new IntersectionData(
-                Area1: new ComplexArea(new Range(0, 2), new Range(0, 2)),
-                Area2: new ComplexArea(new Range(1, 3), new Range(1, 3)),
-                Expected: new ComplexArea(new Range(1, 2), new Range(1, 2)),
+                Area1: new ComplexArea(new Interval(0, 2), new Interval(0, 2)),
+                Area2: new ComplexArea(new Interval(1, 3), new Interval(1, 3)),
+                Expected: new ComplexArea(new Interval(1, 2), new Interval(1, 2)),
                 Description: "Overlap")
         };
     }

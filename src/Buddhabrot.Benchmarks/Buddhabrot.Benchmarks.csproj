@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Buddhabrot\Buddhabrot.csproj" />
+    <ProjectReference Include="..\BuddhabrotLegacy\BuddhabrotLegacy.csproj" />
   </ItemGroup>
 
 </Project>

@@ -120,7 +120,6 @@ public static class ScalarKernel
 
         var magZ = z.Magnitude;
         var magDZ = dZ.Magnitude;
-        // Where did 2 come from?????
-        return 2 * Math.Log(magZ * magZ) * magZ / magDZ;
+        return Math.Log(magZ * magZ) * magZ / magDZ;
     }
 }

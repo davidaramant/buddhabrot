@@ -29,4 +29,4 @@
   - [ ] Render region interiors
     - [ ] Multi-threaded rendering
   - [ ] Nicer aesthetic
-- [ ] NUnit test project for manual "tests"
+- [x] NUnit test project for manual "tests"

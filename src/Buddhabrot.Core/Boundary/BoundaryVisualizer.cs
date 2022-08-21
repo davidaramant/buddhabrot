@@ -31,7 +31,7 @@ public static class BoundaryVisualizer
             for (int x = 0; x < img.Width; x++)
             {
                 img.SetPixel(x, y,
-                    ScalarDoubleKernel.FindEscapeTime(viewPort.GetComplex(x, y), iterationRange.Max) switch
+                    ScalarKernel.FindEscapeTime(viewPort.GetComplex(x, y), iterationRange.Max) switch
                     {
                         {IsInfinite: true} => Color.LightSteelBlue,
                         var et when et.Iterations >= iterationRange.Min => Color.Red,

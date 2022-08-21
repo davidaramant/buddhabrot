@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Numerics;
 using Buddhabrot.Core.IterationKernels;
 
@@ -22,7 +22,7 @@ public sealed class RegionCorners
             real: corner.X * _boundaryParams.SideLength - 2,
             imaginary: corner.Y * _boundaryParams.SideLength);
         inSet = await Task.Run(
-            () => ScalarDoubleKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite,
+            () => ScalarKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite,
             cancelToken);
         _isCornerInSet.TryAdd(corner, inSet);
         return inSet;

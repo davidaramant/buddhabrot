@@ -4,7 +4,7 @@ using System.Numerics;
 namespace Buddhabrot.Core.IterationKernels;
 
 [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Cycle detection requires direct float comparisons.")]
-public static class ScalarDoubleKernel 
+public static class ScalarKernel 
 {
     public static EscapeTime FindEscapeTime(Complex c, int maxIterations)
     {
@@ -81,10 +81,10 @@ public static class ScalarDoubleKernel
         return EscapeTime.Infinite;
     }
 
-    public static double FindDistance(Complex c, int maxIterations)
+    public static double FindExteriorDistance(Complex c, int maxIterations)
     {
         if (BulbChecker.IsInsideBulbs(c))
-            return 0;
+            return double.MaxValue;
 
         var z = Complex.Zero;
 
@@ -103,7 +103,7 @@ public static class ScalarDoubleKernel
             z = z * z + c;
 
             if (oldZ == z)
-                return 0;
+                return double.MaxValue;
 
             if (z.MagnitudeSquared() > 4)
             {
@@ -114,12 +114,13 @@ public static class ScalarDoubleKernel
             {
                 oldZ = z;
                 stepsTaken = 0;
-                stepLimit = stepLimit << 1;
+                stepLimit <<= 1;
             }
         }
 
         var magZ = z.Magnitude;
         var magDZ = dZ.Magnitude;
+        // Where did 2 come from?????
         return 2 * Math.Log(magZ * magZ) * magZ / magDZ;
     }
 }

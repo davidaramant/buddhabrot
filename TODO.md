@@ -30,3 +30,4 @@
     - [ ] Multi-threaded rendering
   - [ ] Nicer aesthetic
 - [x] NUnit test project for manual "tests"
+- [ ] CI builds on GitHub

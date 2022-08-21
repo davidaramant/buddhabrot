@@ -17,7 +17,7 @@ public sealed class Boundaries
     [ProtoMember(3)] public RegionLocation[] Regions { get; set; } = Array.Empty<RegionLocation>();
     [ProtoMember(4)] public int MaxX { get; set; }
     [ProtoMember(5)] public int MaxY { get; set; }
-    [ProtoMember(6)] public int[] QuadTreeNodes { get; set; } = Array.Empty<int>();
+    [ProtoMember(6)] public uint[] QuadTreeNodes { get; set; } = Array.Empty<uint>();
 
     public void Save(Stream stream) => Serializer.Serialize(stream, this);
     public static Boundaries Load(Stream stream) => Serializer.Deserialize<Boundaries>(stream);

@@ -120,9 +120,15 @@ public sealed class MandelbrotRenderer : Control
         var areasToDraw = Lookup.GetVisibleAreas(LogicalArea, viewPort.RealPixelSize);
         for (var index = 0; index < areasToDraw.Count; index++)
         {
-            var area = areasToDraw[index];
+            var (area, type) = areasToDraw[index];
             var rect = viewPort.GetRectangle(area);
-            context.FillRectangle(Brushes.DarkSlateBlue, new Rect(rect.X, rect.Y, rect.Width, rect.Height));
+            var brush = type switch
+            {
+                RegionType.Border => Brushes.DarkSlateBlue,
+                RegionType.Filament => Brushes.DarkSlateGray,
+                _ => Brushes.White,
+            };
+            context.FillRectangle(brush, new Rect(rect.X, rect.Y, rect.Width, rect.Height));
         }
     }
 

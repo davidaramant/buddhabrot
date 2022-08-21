@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -24,7 +25,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
 
     public int VerticalDistance => HorizontalDistance / 2;
     public int HorizontalDistance { get; } = 4;
-    
+
     public int MaximumIterations
     {
         get => _maximumIterations;
@@ -45,7 +46,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> FindBoundary { get; }
     public ReactiveCommand<Unit, Unit> CancelFindingBoundary { get; }
     public bool IsFindingBoundary => _isFindingBoundary.Value;
-    
+
     public CalculateBoundaryViewModel(BorderDataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
@@ -61,7 +62,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             () => Observable
                 .StartAsync(FindBoundaryAsync)
                 .TakeUntil(CancelFindingBoundary!));
-        FindBoundary.IsExecuting.ToProperty(this,x=>x.IsFindingBoundary, out _isFindingBoundary);
+        FindBoundary.IsExecuting.ToProperty(this, x => x.IsFindingBoundary, out _isFindingBoundary);
         CancelFindingBoundary = ReactiveCommand.Create(() => { }, FindBoundary.IsExecuting);
     }
 
@@ -72,22 +73,27 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             var stopwatch = Stopwatch.StartNew();
 
             var boundaryParameters = new BoundaryParameters(VerticalDivisionPower, MaximumIterations);
-            
+
             var regions = await Task.Run(
-                () => BoundaryCalculator.FindBoundaryAsync(
+                () => BoundaryCalculator.FindBoundaryAndFilamentsAsync(
                     boundaryParameters,
                     cancelToken),
                 cancelToken);
 
-            _log($"Found boundary for {boundaryParameters}. Took {stopwatch.Elapsed}, Found {regions.Count:N0} border regions");
+            _log(
+                $"Found boundary for {boundaryParameters}. Took {stopwatch.Elapsed}, Found {regions.Count:N0} border regions");
             stopwatch.Restart();
 
             var lookup =
-                await Task.Run(() => new RegionLookup(boundaryParameters.VerticalDivisionsPower, regions, _log), cancelToken);
+                await Task.Run(() => new RegionLookup(boundaryParameters.VerticalDivisionsPower, regions, _log),
+                    cancelToken);
 
             _log($"Constructed quad tree. Took {stopwatch.Elapsed}");
-            
-            _dataProvider.SaveBorderData(boundaryParameters, regions, lookup);
+
+            _dataProvider.SaveBorderData(
+                boundaryParameters, 
+                regions.Where(pair=>pair.Type == RegionType.Border).Select(pair=>pair.Region).ToList(), 
+                lookup);
         }
         catch (OperationCanceledException)
         {

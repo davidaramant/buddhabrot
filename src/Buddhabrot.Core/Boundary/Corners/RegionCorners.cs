@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Numerics;
 using Buddhabrot.Core.IterationKernels;
 
@@ -42,5 +42,16 @@ public sealed class RegionCorners
             UpperRight: upperRightTask.Result,
             LowerRight: lowerRightTask.Result,
             LowerLeft: lowerLeftTask.Result);
+    }
+
+    public bool DoesRegionContainFilaments(RegionId region)
+    {
+        var halfSideLength = _boundaryParams.SideLength / 2;
+        var center = new Complex(
+            region.X * _boundaryParams.SideLength + halfSideLength,
+            region.Y * _boundaryParams.SideLength + halfSideLength);
+
+        var distanceToSet = ScalarKernel.FindExteriorDistance(center, _boundaryParams.MaxIterations);
+        return distanceToSet <= halfSideLength;
     }
 }

@@ -16,7 +16,7 @@
 
         <Label Content="Vertical Division 2^n Power:" />
         <Slider
-            Minimum="0"
+            Minimum="1"
             Maximum="30"
             TickFrequency="1"
             TickPlacement="Outside"

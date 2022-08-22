@@ -10,20 +10,22 @@ public static class BoundaryCalculator
             CancellationToken cancelToken = default)
     {
         var cornerComputer = new RegionCorners(boundaryParameters);
-        Dictionary<RegionId, RegionType> regionLookup = new();
+        HashSet<RegionId> visitedRegions = new();
         Queue<RegionId> regionsToCheck = new();
         regionsToCheck.Enqueue(new RegionId(0, 0));
 
+        var returnList = new List<(RegionId, RegionType)>();
+
         while (regionsToCheck.Any())
         {
-            var currentRegion = regionsToCheck.Dequeue();
+            var region = regionsToCheck.Dequeue();
 
-            if (regionLookup.ContainsKey(currentRegion))
+            if (visitedRegions.Contains(region))
                 continue;
 
-            var corners = await cornerComputer.GetRegionCornersAsync(currentRegion, cancelToken);
+            var corners = await cornerComputer.GetRegionCornersAsync(region, cancelToken);
 
-            bool containsFilament = corners.ContainsBorder || cornerComputer.DoesRegionContainFilaments(currentRegion);
+            bool containsFilament = corners.ContainsBorder || cornerComputer.DoesRegionContainFilaments(region);
 
             var regionType = (corners.ContainsBorder, containsFilament) switch
             {
@@ -32,21 +34,25 @@ public static class BoundaryCalculator
                 _ => RegionType.Empty,
             };
 
-            regionLookup.Add(currentRegion, regionType);
+            visitedRegions.Add(region);
 
             if (regionType != RegionType.Empty)
             {
-                AddRegionToCheck(currentRegion.MoveUp());
-                AddRegionToCheck(currentRegion.MoveDown());
-                AddRegionToCheck(currentRegion.MoveLeft());
-                AddRegionToCheck(currentRegion.MoveRight());
+                returnList.Add((region, regionType));
+
+                AddRegionToCheck(region.MoveUp());
+                AddRegionToCheck(region.MoveDown());
+                AddRegionToCheck(region.MoveLeft());
+                AddRegionToCheck(region.MoveRight());
+
+                AddRegionToCheck(region.MoveUpLeft());
+                AddRegionToCheck(region.MoveUpRight());
+                AddRegionToCheck(region.MoveDownLeft());
+                AddRegionToCheck(region.MoveDownRight());
             }
         }
 
-        return regionLookup
-            .Where(pair => pair.Value != RegionType.Empty)
-            .Select(pair => (pair.Key, pair.Value))
-            .ToList();
+        return returnList;
 
         void AddRegionToCheck(RegionId region)
         {
@@ -54,7 +60,7 @@ public static class BoundaryCalculator
                 region.Y >= 0 &&
                 region.X < (boundaryParameters.VerticalDivisions * 2) &&
                 region.Y < boundaryParameters.VerticalDivisions &&
-                !regionLookup.ContainsKey(region))
+                !visitedRegions.Contains(region))
             {
                 regionsToCheck.Enqueue(region);
             }

@@ -1,4 +1,4 @@
-﻿using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary;
 
 namespace Buddhabrot.Core.Tests.Boundary;
 
@@ -8,9 +8,9 @@ public class QuadTests
 
     public static IEnumerable<object[]> LeafNodeTestCases()
     {
-        yield return new object[] { new QuadTestCase(Quad.Empty, RegionType.Empty) };
-        yield return new object[] { new QuadTestCase(Quad.Border, RegionType.Border) };
-        yield return new object[] { new QuadTestCase(Quad.Filament, RegionType.Filament) };
+        yield return new object[] { new QuadTestCase(Quad.EmptyLeaf, RegionType.Empty) };
+        yield return new object[] { new QuadTestCase(Quad.BorderLeaf, RegionType.Border) };
+        yield return new object[] { new QuadTestCase(Quad.FilamentLeaf, RegionType.Filament) };
     }
 
     [Theory]

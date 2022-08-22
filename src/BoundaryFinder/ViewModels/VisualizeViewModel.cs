@@ -82,6 +82,7 @@ public sealed class VisualizeViewModel : ViewModelBase
             
 			NumberOfRegions = numRegions;
             Lookup = lookup;
+            _log($"Quad tree nodes: {Lookup.NodeCount}");
         }
         catch (Exception e)
         {

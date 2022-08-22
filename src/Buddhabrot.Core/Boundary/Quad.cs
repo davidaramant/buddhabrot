@@ -1,33 +1,27 @@
 ﻿namespace Buddhabrot.Core.Boundary;
 
 public readonly record struct Quad(uint Encoded)
-{
-    private const int HasChildrenBits = 1;
-    private const int TypeBits = 2;
-    private const int MetadataBits = HasChildrenBits + TypeBits;
-    private const int MetadataShift = 32 - MetadataBits;
-    private const int IndexMask = ~(0b111 << MetadataShift);
-
-    private Quad(RegionType type) : this((uint)type << MetadataShift)
+{ 
+    private Quad(RegionType type) : this((uint)type << 1)
     {
     }
 
     public Quad(RegionType type, int childIndex)
-        : this((uint)((1 << 31) | ((uint)type << MetadataShift) | (uint)childIndex))
+        : this((uint)childIndex << 3 | (uint)type << 1 | 1)
     {
     }
 
-    public int ChildIndex => (int)(Encoded & IndexMask);
-    public RegionType Type => (RegionType)((Encoded >> MetadataShift) & 0b11);
-    public bool HasChildren => (Encoded >> 31) == 0b1;
+    public int ChildIndex => (int)(Encoded >> 3);
+    public RegionType Type => (RegionType)((Encoded >> 1) & 0b11);
+    public bool HasChildren => (Encoded & 1) == 1;
 
-    public static readonly Quad Empty = new(RegionType.Empty);
-    public static readonly Quad Border = new(RegionType.Border);
-    public static readonly Quad Filament = new(RegionType.Filament);
+    public static readonly Quad EmptyLeaf = new(RegionType.Empty);
+    public static readonly Quad BorderLeaf = new(RegionType.Border);
+    public static readonly Quad FilamentLeaf = new(RegionType.Filament);
 
-    public bool IsEmptyLeaf => this == Empty;
-    public bool IsBorderLeaf => this == Border;
-    public bool IsFilamentLeaf => this == Filament;
+    public bool IsEmptyLeaf => this == EmptyLeaf;
+    public bool IsBorderLeaf => this == BorderLeaf;
+    public bool IsFilamentLeaf => this == FilamentLeaf;
 
     public int GetQuadrantIndex(Quadrant child) => ChildIndex + (int)child;
 

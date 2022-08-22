@@ -32,6 +32,8 @@ public sealed class RasterImage : IDisposable
         canvas.Clear(ToSKColor(color));
     }
 
+    public void SetPixel(System.Drawing.Point point, System.Drawing.Color color) => SetPixel(point.X, point.Y, color);
+
     public void SetPixel(int x, int y, System.Drawing.Color color)
     {
         _bitmap.SetPixel(x, y, ToSKColor(color));

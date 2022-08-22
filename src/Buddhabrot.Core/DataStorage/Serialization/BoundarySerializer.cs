@@ -15,10 +15,10 @@ public static class BoundarySerializer
         {
             VerticalPower = parameters.VerticalDivisionsPower,
             MaximumIterations = parameters.MaxIterations,
-            Regions = regions.Select(r => new RegionLocation {X = r.X, Y = r.Y}).ToArray(),
+            Regions = regions.Select(r => new RegionLocation { X = r.X, Y = r.Y }).ToArray(),
             MaxX = lookup.MaxX,
             MaxY = lookup.MaxY,
-            QuadTreeNodes = lookup.GetRawNodes(),
+            QuadTreeNodes = lookup.GetRawNodes().Select(q => q.Encoded).ToArray(),
         };
         boundaries.Save(stream);
     }

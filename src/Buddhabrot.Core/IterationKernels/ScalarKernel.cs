@@ -107,7 +107,9 @@ public static class ScalarKernel
 
             if (z.MagnitudeSquared() > 4)
             {
-                break;
+                var magZ = z.Magnitude;
+                var magDZ = dZ.Magnitude;
+                return Math.Log(magZ * magZ) * magZ / magDZ;
             }
 
             if (stepsTaken == stepLimit)
@@ -118,8 +120,7 @@ public static class ScalarKernel
             }
         }
 
-        var magZ = z.Magnitude;
-        var magDZ = dZ.Magnitude;
-        return Math.Log(magZ * magZ) * magZ / magDZ;
+        // Match the normal escape time algorithm and treat falling out of the loop as being in the set
+        return double.MaxValue;
     }
 }

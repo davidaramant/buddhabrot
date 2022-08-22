@@ -8,32 +8,92 @@ namespace Buddhabrot.ManualVisualizations;
 [Explicit]
 public class FilamentVisualizations : BaseVisualization
 {
+    readonly ViewPort _viewPort = new(
+        new ComplexArea(
+            new Interval(-2, 2),
+            new Interval(0, 2)),
+        new Size(1000, 500));
+
     [OneTimeSetUp]
     public void CreateOutputPath() => SetUpOutputPath(nameof(FilamentVisualizations));
 
     [Test]
     public void ShouldCalculateFilaments()
     {
-        var viewPort = new ViewPort(
-            new ComplexArea(
-                new Interval(-2, 2),
-                new Interval(0, 2)),
-            new Size(1000, 500));
-
         var escapeLimitsThousands = new[] { 1, 5, 10 };
 
-        using var image = new RasterImage(viewPort.Resolution);
+        using var image = new RasterImage(_viewPort.Resolution);
 
         foreach (var maxK in escapeLimitsThousands)
         {
-            RenderEscapeTimeSet(viewPort, maxK * 1000, image);
+            RenderEscapeTimeSet(_viewPort, maxK * 1000, image);
 
             SaveImage(image, $"Escape Time {maxK}K");
 
-            RenderFilaments(viewPort, maxK * 1000, image);
+            RenderFilaments(_viewPort, maxK * 1000, image);
 
             SaveImage(image, $"Distance Estimate {maxK}K");
         }
+    }
+
+    [Test]
+    public void ShouldBeAbleToBoundaryTraceWithFilaments([Values] bool checkDiagonals)
+    {
+        var max = 10_000;
+
+        using var image = new RasterImage(_viewPort.Resolution);
+
+        image.Fill(Color.White);
+
+        var visitedPoints = new HashSet<Point>();
+        var toCheck = new Queue<Point>();
+        toCheck.Enqueue(new Point(0, _viewPort.Resolution.Height - 1));
+
+        while (toCheck.Any())
+        {
+            var point = toCheck.Dequeue();
+
+            if (visitedPoints.Contains(point))
+                continue;
+
+            var c = _viewPort.GetComplex(point);
+            var distance = ScalarKernel.FindExteriorDistance(c, max);
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            var containsBorderOrFilament = distance == Double.MaxValue || distance < _viewPort.RealPixelSize / 2;
+
+            visitedPoints.Add(point);
+            image.SetPixel(point, PickColorFromDistance(_viewPort, distance));
+
+            if (containsBorderOrFilament)
+            {
+                AddPointToCheck(point with { X = point.X + 1 });
+                AddPointToCheck(point with { X = point.X - 1 });
+                AddPointToCheck(point with { Y = point.Y + 1 });
+                AddPointToCheck(point with { Y = point.Y - 1 });
+
+                if (checkDiagonals)
+                {
+                    AddPointToCheck(point with { X = point.X + 1, Y = point.Y + 1 });
+                    AddPointToCheck(point with { X = point.X + 1, Y = point.Y - 1 });
+                    AddPointToCheck(point with { X = point.X - 1, Y = point.Y + 1 });
+                    AddPointToCheck(point with { X = point.X - 1, Y = point.Y - 1 });
+                }
+            }
+        }
+
+        void AddPointToCheck(Point p)
+        {
+            if (p.X >= 0 &&
+                p.Y >= 0 &&
+                p.X < _viewPort.Resolution.Width &&
+                p.Y < _viewPort.Resolution.Height &&
+                !visitedPoints.Contains(p))
+            {
+                toCheck.Enqueue(p);
+            }
+        }
+
+        SaveImage(image, $"Boundary Traced Filaments {max / 1000}K - diagonals {(checkDiagonals ? "YES" : "NO")}");
     }
 
     private static void RenderEscapeTimeSet(ViewPort viewPort, int max, RasterImage image)
@@ -58,15 +118,16 @@ public class FilamentVisualizations : BaseVisualization
                 var distance =
                     ScalarKernel.FindExteriorDistance(viewPort.GetComplex(col, row), max);
 
-                var color = distance switch
-                {
-                    Double.MaxValue => Color.DarkBlue,
-                    var d when d < viewPort.RealPixelSize / 2 => Color.Red,
-                    _ => Color.White,
-                };
-
-                image.SetPixel(col, row, color);
+                image.SetPixel(col, row, PickColorFromDistance(viewPort, distance));
             }
         });
     }
+
+    private static Color PickColorFromDistance(ViewPort viewPort, double distance) =>
+        distance switch
+        {
+            Double.MaxValue => Color.DarkBlue,
+            var d when d < viewPort.RealPixelSize / 2 => Color.Red,
+            _ => Color.White,
+        };
 }

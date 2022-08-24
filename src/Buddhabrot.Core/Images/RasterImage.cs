@@ -25,7 +25,7 @@ public sealed class RasterImage : IDisposable
 
     private static SKColor ToSKColor(System.Drawing.Color color) =>
         new SKColor(red: color.R, green: color.G, blue: color.B);
-    
+
     public void Fill(System.Drawing.Color color)
     {
         using var canvas = new SKCanvas(_bitmap);
@@ -45,6 +45,16 @@ public sealed class RasterImage : IDisposable
         var y = pixelIndex / Width;
 
         SetPixel(x, y, color);
+    }
+
+    public void FillRectangle(int x, int y, int width, int height, System.Drawing.Color color)
+    {
+        using var canvas = new SKCanvas(_bitmap);
+        canvas.DrawRect(x, y, width, height, new SKPaint()
+            {
+                Color = ToSKColor(color),
+            }
+        );
     }
 
     /// <summary>
@@ -85,7 +95,7 @@ public sealed class RasterImage : IDisposable
                 ".png" => newImg.Encode(SKEncodedImageFormat.Png, quality: 100),
                 _ => throw new ArgumentException("Unsupported file format.")
             };
-            
+
             data.SaveTo(stream);
         }
         else

@@ -17,9 +17,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     private readonly Action<string> _log;
     private int _maximumIterations = 15_000_000;
     private int _verticalDivisionPower = 1;
-    private readonly ObservableAsPropertyHelper<int> _verticalDivisions;
-    private readonly ObservableAsPropertyHelper<double> _scanAreaWidth;
-    private readonly ObservableAsPropertyHelper<double> _scanArea;
+    private readonly ObservableAsPropertyHelper<AreaDivisions> _areaDivisions;
     private readonly ObservableAsPropertyHelper<bool> _isFindingBoundary;
 
     public int VerticalDistance => HorizontalDistance / 2;
@@ -37,10 +35,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _verticalDivisionPower, value);
     }
 
-    public int VerticalDivisions => _verticalDivisions.Value;
-
-    public double ScanAreaWidth => _scanAreaWidth.Value;
-    public double ScanArea => _scanArea.Value;
+    public AreaDivisions AreaDivisions => _areaDivisions.Value;
 
     public ReactiveCommand<Unit, Unit> FindBoundary { get; }
     public ReactiveCommand<Unit, Unit> CancelFindingBoundary { get; }
@@ -50,12 +45,8 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     {
         _dataProvider = dataProvider;
         _log = log;
-        this.WhenAnyValue(x => x.VerticalDivisionPower, power => 1 << power)
-            .ToProperty(this, x => x.VerticalDivisions, out _verticalDivisions);
-        this.WhenAnyValue(x => x.VerticalDivisions, divisions => VerticalDistance / (double)divisions)
-            .ToProperty(this, x => x.ScanAreaWidth, out _scanAreaWidth);
-        this.WhenAnyValue(x => x.ScanAreaWidth, width => width * width)
-            .ToProperty(this, x => x.ScanArea, out _scanArea);
+        this.WhenAnyValue(x => x.VerticalDivisionPower, power => new AreaDivisions(power))
+            .ToProperty(this, x => x.AreaDivisions, out _areaDivisions);
 
         FindBoundary = ReactiveCommand.CreateFromObservable(
             () => Observable
@@ -71,7 +62,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
         {
             var stopwatch = Stopwatch.StartNew();
 
-            var boundaryParameters = new BoundaryParameters(VerticalDivisionPower, MaximumIterations);
+            var boundaryParameters = new BoundaryParameters(AreaDivisions, MaximumIterations);
 
             var regions = await Task.Run(
                 () => BoundaryCalculator.FindBoundaryAndFilamentsAsync(
@@ -84,14 +75,14 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             stopwatch.Restart();
 
             var lookup =
-                await Task.Run(() => new RegionLookup(boundaryParameters.VerticalDivisionsPower, regions, _log),
+                await Task.Run(() => new RegionLookup(boundaryParameters.Divisions.VerticalPower, regions, _log),
                     cancelToken);
 
             _log($"Constructed quad tree. Took {stopwatch.Elapsed}");
 
             _dataProvider.SaveBorderData(
-                boundaryParameters, 
-                regions.Where(pair=>pair.Type == RegionType.Border).Select(pair=>pair.Region).ToList(), 
+                boundaryParameters,
+                regions.Where(pair => pair.Type == RegionType.Border).Select(pair => pair.Region).ToList(),
                 lookup);
         }
         catch (OperationCanceledException)

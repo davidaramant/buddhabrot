@@ -19,8 +19,8 @@ public sealed class RegionCorners
         }
 
         Complex c = new(
-            real: corner.X * _boundaryParams.SideLength - 2,
-            imaginary: corner.Y * _boundaryParams.SideLength);
+            real: corner.X * _boundaryParams.Divisions.RegionSideLength - 2,
+            imaginary: corner.Y * _boundaryParams.Divisions.RegionSideLength);
         inSet = await Task.Run(
             () => ScalarKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite,
             cancelToken);
@@ -46,10 +46,10 @@ public sealed class RegionCorners
 
     public bool DoesRegionContainFilaments(RegionId region)
     {
-        var halfSideLength = _boundaryParams.SideLength / 2;
+        var halfSideLength = _boundaryParams.Divisions.RegionSideLength / 2;
         var center = new Complex(
-            region.X * _boundaryParams.SideLength + halfSideLength,
-            region.Y * _boundaryParams.SideLength + halfSideLength);
+            region.X * _boundaryParams.Divisions.RegionSideLength + halfSideLength,
+            region.Y * _boundaryParams.Divisions.RegionSideLength + halfSideLength);
 
         var distanceToSet = ScalarKernel.FindExteriorDistance(center, _boundaryParams.MaxIterations);
         return distanceToSet <= halfSideLength;

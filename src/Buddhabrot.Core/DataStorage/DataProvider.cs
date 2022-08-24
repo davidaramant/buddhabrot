@@ -17,7 +17,7 @@ public sealed class DataProvider
         return
             Directory.GetFiles(LocalDataStoragePath, "*.boundaries")
                 .Select(filePath => BoundaryParameters.FromDescription(Path.GetFileNameWithoutExtension(filePath)))
-                .OrderByDescending(bp => bp.VerticalDivisions)
+                .OrderByDescending(bp => bp.Divisions.VerticalPower)
                 .ToList();
     }
 

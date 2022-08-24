@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
 using DynamicData.Binding;
@@ -15,7 +12,7 @@ public sealed class VisualizeViewModel : ViewModelBase
 {
     private readonly BorderDataProvider _dataProvider;
     private readonly Action<string> _log;
-    private BoundaryParameters _selectedParameters = new(0, 0);
+    private BoundaryParameters _selectedParameters = new(new AreaDivisions(0), 0);
     private readonly ObservableAsPropertyHelper<int> _minimumIterationsCap;
     private int _minimumIterations = 0;
     private int _numberOfRegions;
@@ -49,7 +46,7 @@ public sealed class VisualizeViewModel : ViewModelBase
         get => _numberOfRegions;
         private set => this.RaiseAndSetIfChanged(ref _numberOfRegions, value);
     }
-	
+
     public RegionLookup Lookup
     {
         get => _lookup;
@@ -79,8 +76,8 @@ public sealed class VisualizeViewModel : ViewModelBase
         {
             IsLoadingBoundary = true;
             var (lookup, numRegions) = _dataProvider.LoadLookup(SelectedParameters);
-            
-			NumberOfRegions = numRegions;
+
+            NumberOfRegions = numRegions;
             Lookup = lookup;
             _log($"Quad tree nodes: {Lookup.NodeCount}");
         }

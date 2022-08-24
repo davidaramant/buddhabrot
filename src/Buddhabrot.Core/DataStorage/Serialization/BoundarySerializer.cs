@@ -13,7 +13,7 @@ public static class BoundarySerializer
     {
         var boundaries = new Boundaries
         {
-            VerticalPower = parameters.VerticalDivisionsPower,
+            VerticalPower = parameters.Divisions.VerticalPower,
             MaximumIterations = parameters.MaxIterations,
             Regions = regions.Select(r => new RegionLocation { X = r.X, Y = r.Y }).ToArray(),
             MaxX = lookup.MaxX,
@@ -28,7 +28,7 @@ public static class BoundarySerializer
     {
         var boundaries = Boundaries.Load(stream);
         return (
-            new BoundaryParameters(boundaries.VerticalPower, boundaries.MaximumIterations),
+            new BoundaryParameters(new AreaDivisions(boundaries.VerticalPower), boundaries.MaximumIterations),
             boundaries.Regions.Select(rl => new RegionId(X: rl.X, Y: rl.Y)).ToList(),
             new RegionLookup(boundaries.VerticalPower, boundaries.MaxX, boundaries.MaxY, boundaries.QuadTreeNodes));
     }

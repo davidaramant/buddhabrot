@@ -58,8 +58,8 @@ public static class BoundaryCalculator
         {
             if (region.X >= 0 &&
                 region.Y >= 0 &&
-                region.X < (boundaryParameters.VerticalDivisions * 2) &&
-                region.Y < boundaryParameters.VerticalDivisions &&
+                region.X < (boundaryParameters.Divisions.QuadrantDivisions * 2) &&
+                region.Y < boundaryParameters.Divisions.QuadrantDivisions &&
                 !visitedRegions.Contains(region))
             {
                 regionsToCheck.Enqueue(region);

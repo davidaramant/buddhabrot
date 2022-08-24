@@ -27,13 +27,13 @@
             Text="{Binding VerticalDivisionPower, StringFormat=Power: \{0:N0\}, Mode=OneWay}" />
 
         <TextBlock
-            Text="{Binding VerticalDivisions, StringFormat=Vertical Divisions: \{0:N0\}, Mode=OneWay}" />
+            Text="{Binding AreaDivisions.QuadrantDivisions, StringFormat=Quadrant Divisions: \{0:N0\}, Mode=OneWay}" />
 
         <TextBlock
-            Text="{Binding ScanAreaWidth, StringFormat=Scan Area Width: \{0\}, Mode=OneWay}" />
+            Text="{Binding AreaDivisions.RegionSideLength, StringFormat=Region Side Length: \{0\}, Mode=OneWay}" />
 
         <TextBlock
-            Text="{Binding ScanArea, StringFormat=Scan Area: \{0\}, Mode=OneWay}" />
+            Text="{Binding AreaDivisions.RegionArea, StringFormat=Region Area: \{0\}, Mode=OneWay}" />
 
         <Button
             Content="Find Boundary"

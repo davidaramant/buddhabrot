@@ -90,8 +90,8 @@ public sealed class RegionLookup
         var topLevelWidth = 1 << verticalPower;
         _nodes.Add(cache.MakeQuad(
             sw: Quad.EmptyLeaf,
-            nw: BuildQuad(verticalPower - 1, 0, 0),
-            ne: BuildQuad(verticalPower - 1, topLevelWidth, 0),
+            nw: BuildQuad(Depth - 1, 0, 0),
+            ne: BuildQuad(Depth - 1, topLevelWidth, 0),
             se: Quad.EmptyLeaf));
         log?.Invoke(
             $"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}, Num nodes: {_nodes.Count:N0}");

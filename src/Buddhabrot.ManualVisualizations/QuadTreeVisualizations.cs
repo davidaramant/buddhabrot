@@ -40,39 +40,9 @@ public class QuadTreeVisualizations : BaseVisualization
 
     private void RenderQuadTree(RegionLookup lookup, string name, int scale = 1)
     {
-        var imageWidth = (1 << lookup.Depth) * 2 + 1;
+        using var r = new QuadTreeRenderer(lookup.Depth);
+
         var nodes = lookup.GetRawNodes();
-
-        using var image = new RasterImage(imageWidth, imageWidth, scale: scale);
-        image.Fill(Color.FromArgb(red:25,green:25,blue:25));
-
-        void DrawPixel(int x, int y, Color c) => image.SetPixel(x, imageWidth - y - 1, c);
-
-        void DrawCell(int x, int y, Color c, int level = 0)
-        {
-            if (level == 0)
-            {
-                DrawPixel(x * 2 + 1, y * 2 + 1, c);
-            }
-            else
-            {
-                var width = 1 << level;
-
-                var startX = x * 2 + 1;
-                var startY = y * 2 + 1;
-
-                var endX = (x + width - 1) * 2 + 1;
-                var endY = (y + width - 1) * 2 + 1;
-
-                for (int drawY = startY; drawY <= endY; drawY++)
-                {
-                    for (int drawX = startX; drawX <= endX; drawX++)
-                    {
-                        DrawPixel(drawX, drawY, c);
-                    }
-                }
-            }
-        }
 
         (Quad SW, Quad NW, Quad NE, Quad SE) GetChildren(Quad quad)
         {
@@ -80,32 +50,29 @@ public class QuadTreeVisualizations : BaseVisualization
             return (nodes[index], nodes[index + 1], nodes[index + 2], nodes[index + 3]);
         }
 
-        void DrawQuad(Quad quad, int level, int xOffset, int yOffset)
+        void DrawQuad(Quad quad, int depth, int x, int y)
         {
-            if (level == 0)
+            if (depth == lookup.Depth - 1 || !quad.HasChildren)
             {
-                DrawCell(xOffset, yOffset, PickColorFromType(quad.Type));
+                r.DrawCell(x, y, depth, PickColorFromType(quad.Type));
                 return;
             }
 
-            if (!quad.HasChildren)
-            {
-                DrawCell(xOffset, yOffset, PickColorFromType(quad.Type), level);
-                return;
-            }
-
-            var offset = 1 << (level - 1);
+            var multiplier = 1 << depth;
+            var newX = x * multiplier;
+            var newY = y * multiplier;
             var (sw, nw, ne, se) = GetChildren(quad);
-            DrawQuad(sw, level - 1, xOffset, yOffset);
-            DrawQuad(nw, level - 1, xOffset, yOffset + offset);
-            DrawQuad(ne, level - 1, xOffset + offset, yOffset + offset);
-            DrawQuad(se, level - 1, xOffset + offset, yOffset);
+            DrawQuad(sw, depth + 1, newX, newY);
+            DrawQuad(nw, depth + 1, newX, newY + 1);
+            DrawQuad(ne, depth + 1, newX + 1, newY + 1);
+            DrawQuad(se, depth + 1, newX + 1, newY);
         }
 
-        DrawQuad(nodes.Last(), level: lookup.Depth, 0, 0);
+        DrawQuad(nodes.Last(), depth: 0, 0, 0);
 
-        SaveImage(image, name);
+        SaveImage(r.Image, name);
     }
+
 
     private static Color PickColorFromType(RegionType type) =>
         type switch

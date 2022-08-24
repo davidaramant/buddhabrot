@@ -42,4 +42,47 @@ public static class BoundaryVisualizer
 
         return img;
     }
+
+    public static RasterImage RenderRegionLookup(RegionLookup lookup, int scale = 1)
+    {
+        var r = new QuadTreeRenderer(lookup.Levels, scale, leaveImageOpen: true);
+
+        var nodes = lookup.GetRawNodes();
+
+        (Quad SW, Quad NW, Quad NE, Quad SE) GetChildren(Quad quad)
+        {
+            var index = quad.ChildIndex;
+            return (nodes[index], nodes[index + 1], nodes[index + 2], nodes[index + 3]);
+        }
+
+        void DrawQuad(Quad quad, int depth, int x, int y)
+        {
+            if (depth == lookup.Levels - 1 || !quad.HasChildren)
+            {
+                r.DrawCell(x, y, depth, PickColorFromType(quad.Type));
+                return;
+            }
+
+            var multiplier = 1 << depth;
+            var newX = x * multiplier;
+            var newY = y * multiplier;
+            var (sw, nw, ne, se) = GetChildren(quad);
+            DrawQuad(sw, depth + 1, newX, newY);
+            DrawQuad(nw, depth + 1, newX, newY + 1);
+            DrawQuad(ne, depth + 1, newX + 1, newY + 1);
+            DrawQuad(se, depth + 1, newX + 1, newY);
+        }
+
+        DrawQuad(nodes.Last(), depth: 0, 0, 0);
+
+        return r.Image;
+    }
+
+    private static Color PickColorFromType(RegionType type) =>
+        type switch
+        {
+            RegionType.Border => Color.DarkBlue,
+            RegionType.Filament => Color.Red,
+            _ => Color.White,
+        };
 }

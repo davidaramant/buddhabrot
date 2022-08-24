@@ -3,7 +3,7 @@ namespace Buddhabrot.Core.Boundary;
 public sealed class RegionLookup
 {
     private readonly List<Quad> _nodes = new();
-    public int Depth { get; }
+    public int Levels { get; }
     public int NodeCount => _nodes.Count;
 
     private readonly ComplexArea _topLevelArea = new(
@@ -18,7 +18,7 @@ public sealed class RegionLookup
     private RegionLookup()
     {
         _nodes.Add(Quad.EmptyLeaf);
-        Depth = 1;
+        Levels = 1;
         MaxX = 0;
         MaxY = 0;
         PopulatedArea = ComplexArea.Empty;
@@ -41,7 +41,7 @@ public sealed class RegionLookup
         IReadOnlyList<(RegionId, RegionType)> regions,
         Action<string>? log = default)
     {
-        Depth = verticalPower + 1;
+        Levels = verticalPower + 1;
         QuadCache cache = new(_nodes);
 
         Dictionary<RegionId, Quad> regionLookup = new(regions.Count);
@@ -90,8 +90,8 @@ public sealed class RegionLookup
         var topLevelWidth = 1 << verticalPower;
         _nodes.Add(cache.MakeQuad(
             sw: Quad.EmptyLeaf,
-            nw: BuildQuad(Depth - 1, 0, 0),
-            ne: BuildQuad(Depth - 1, topLevelWidth, 0),
+            nw: BuildQuad(Levels - 1, 0, 0),
+            ne: BuildQuad(Levels - 1, topLevelWidth, 0),
             se: Quad.EmptyLeaf));
         log?.Invoke(
             $"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}, Num nodes: {_nodes.Count:N0}");

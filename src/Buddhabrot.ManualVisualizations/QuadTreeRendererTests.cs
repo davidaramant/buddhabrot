@@ -18,7 +18,7 @@ public class QuadTreeRendererTests : BaseVisualization
             using var r = new QuadTreeRenderer(levels);
             r.DrawCell(0, 0, depth, Color.White);
 
-            SaveImage(r.Image, $"Single Cell - m{levels} d{depth}");
+            SaveImage(r.Image, $"Single Cell - l{levels} d{depth}");
         }
     }
 
@@ -37,7 +37,7 @@ public class QuadTreeRendererTests : BaseVisualization
                 }
             }
 
-            SaveImage(r.Image, $"All Cells - m{levels} d{depth}");
+            SaveImage(r.Image, $"All Cells - l{levels} d{depth}");
         }
     }
 
@@ -53,5 +53,21 @@ public class QuadTreeRendererTests : BaseVisualization
         }
         
         SaveImage(r.Image, "Diagonal");
+    }
+    
+    [Test]
+    public void ShouldRenderEveryCellOfQuadTree()
+    {
+        const int levels = 3;
+
+        for (int y = 0; y < 4; y++)
+        {
+            for (int x = 0; x < 4; x++)
+            {
+                using var r = new QuadTreeRenderer(levels);
+                r.DrawCell(x, y, 2, Color.White);
+                SaveImage(r.Image, $"Pos Y{y} X{x}");
+            }
+        }
     }
 }

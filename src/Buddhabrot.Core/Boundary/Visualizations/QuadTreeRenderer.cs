@@ -1,7 +1,7 @@
 using System.Drawing;
 using Buddhabrot.Core.Images;
 
-namespace Buddhabrot.Core.Boundary;
+namespace Buddhabrot.Core.Boundary.Visualizations;
 
 public sealed class QuadTreeRenderer : IDisposable
 {

@@ -1,5 +1,6 @@
 using System.Drawing;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Visualizations;
 
 namespace Buddhabrot.ManualVisualizations;
 

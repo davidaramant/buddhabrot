@@ -2,7 +2,7 @@
 using Buddhabrot.Core.Images;
 using Buddhabrot.Core.IterationKernels;
 
-namespace Buddhabrot.Core.Boundary;
+namespace Buddhabrot.Core.Boundary.Visualizations;
 
 public static class BoundaryVisualizer
 {

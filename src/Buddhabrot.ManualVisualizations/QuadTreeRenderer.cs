@@ -24,11 +24,13 @@ public sealed class QuadTreeRenderer : IDisposable
         if (depth > (MaxDepth - 1))
             throw new ArgumentOutOfRangeException(nameof(depth));
 
-        var inverse = MaxDepth - depth - 1;
-        var cellWidth = (1 << inverse) * CellWidth + (1 << inverse) - 1;
+        var inverseDepth = MaxDepth - depth - 1;
+        var cellWidth = (1 << inverseDepth) * CellWidth + (1 << inverseDepth) - 1;
 
+        var correctedY = (1 << depth) - y - 1;
+        
         var cellX = 1 + (x * (cellWidth + 1));
-        var cellY = 1 + (y * (cellWidth + 1));
+        var cellY = 1 + (correctedY * (cellWidth + 1));
 
         Image.FillRectangle(cellX, cellY, cellWidth, cellWidth, c);
     }

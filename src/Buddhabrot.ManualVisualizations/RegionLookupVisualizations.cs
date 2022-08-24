@@ -5,10 +5,10 @@ using Buddhabrot.Core.Images;
 namespace Buddhabrot.ManualVisualizations;
 
 [Explicit]
-public class QuadTreeVisualizations : BaseVisualization
+public class RegionLookupVisualizations : BaseVisualization
 {
     [OneTimeSetUp]
-    public void SetOutputPath() => base.SetUpOutputPath(nameof(QuadTreeVisualizations));
+    public void SetOutputPath() => base.SetUpOutputPath(nameof(RegionLookupVisualizations));
 
     [Test]
     public void ShouldConstructQuadTreeCorrectly()

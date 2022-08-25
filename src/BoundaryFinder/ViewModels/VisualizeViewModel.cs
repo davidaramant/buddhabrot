@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Linq;
 using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Visualizations;
 using DynamicData.Binding;
 using ReactiveUI;
 
@@ -53,6 +55,8 @@ public sealed class VisualizeViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _lookup, value);
     }
 
+    public ReactiveCommand<Unit, Unit> SaveQuadTreeRenderingCommand { get; }
+
     public VisualizeViewModel(BorderDataProvider dataProvider, Action<string> log)
     {
         _dataProvider = dataProvider;
@@ -68,6 +72,14 @@ public sealed class VisualizeViewModel : ViewModelBase
             .Where(x => x.Value != null)
             .Select(x => x.Value!)
             .InvokeCommand(loadLookupCommand);
+
+        SaveQuadTreeRenderingCommand = ReactiveCommand.Create(SaveQuadTreeRendering);
+    }
+
+    private void SaveQuadTreeRendering()
+    {
+        using var img = BoundaryVisualizer.RenderRegionLookup(Lookup);
+        img.Save(System.IO.Path.Combine(_dataProvider.LocalDataStoragePath, SelectedParameters.Description + ".png"));
     }
 
     private void LoadLookup(BoundaryParameters parameters)

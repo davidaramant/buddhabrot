@@ -34,6 +34,7 @@ public static class BoundarySerializer
                 new AreaDivisions(boundaries.VerticalPower),
                 boundaries.MaxX,
                 boundaries.MaxY,
+                boundaries.VerticalPower + 2, // HACK: This seems... not amazing
                 boundaries.QuadTreeNodes));
     }
 }

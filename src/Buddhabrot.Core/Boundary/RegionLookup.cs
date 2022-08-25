@@ -28,10 +28,12 @@ public sealed class RegionLookup
         AreaDivisions divisions,
         int maxX,
         int maxY,
+        int levels,
         IEnumerable<uint> rawNodes)
     {
         MaxX = maxX;
         MaxY = maxY;
+        Levels = levels;
         _nodes = rawNodes.Select(i => new Quad(i)).ToList();
         PopulatedArea = ComputePopulatedArea(divisions.VerticalPower, maxX, maxY);
     }

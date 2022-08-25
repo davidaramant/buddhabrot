@@ -13,29 +13,39 @@ public class RegionLookupVisualizations : BaseVisualization
     public void ShouldConstructQuadTreeCorrectly()
     {
         var power2Regions =
-            new[] {(0, 0), (1, 0), (2, 0), (2, 1), (3, 1), (3, 2), (4, 2), (4, 1), (4, 0)}
+            new[] { (0, 0), (1, 0), (2, 0), (2, 1), (3, 1), (3, 2), (4, 2), (4, 1), (4, 0) }
                 .Select(t => (new RegionId(t.Item1, t.Item2), RegionType.Border)).ToList();
 
-        var lookup = new RegionLookup(verticalPower: 2, power2Regions);
+        var lookup = new RegionLookup(new AreaDivisions(2), power2Regions);
 
         using var image = BoundaryVisualizer.RenderRegionLookup(lookup, scale: 10);
         SaveImage(image, "Power 2 Quadtree");
     }
 
     [Test]
-    [TestCase(0, 0)]
-    [TestCase(0, 1)]
-    [TestCase(1, 1)]
-    [TestCase(1, 0)]
-    [TestCase(2, 0)]
-    [TestCase(2, 1)]
-    [TestCase(3, 1)]
-    [TestCase(3, 0)]
-    public void ShouldRenderSimplestPossibleQuadTree(int x, int y)
+    [TestCase(1, 0, 0)]
+    [TestCase(1, 0, 1)]
+    [TestCase(1, 1, 1)]
+    [TestCase(1, 1, 0)]
+    [TestCase(1, 2, 0)]
+    [TestCase(1, 2, 1)]
+    [TestCase(1, 3, 1)]
+    [TestCase(1, 3, 0)]
+    [TestCase(2, 0, 0)]
+    [TestCase(2, 1, 1)]
+    [TestCase(2, 2, 2)]
+    [TestCase(2, 3, 3)]
+    [TestCase(2, 4, 0)]
+    [TestCase(2, 4, 1)]
+    [TestCase(2, 5, 1)]
+    [TestCase(2, 7, 3)]
+    public void ShouldRenderSimpleQuadTree(int verticalPower, int x, int y)
     {
+        var divisions = new AreaDivisions(verticalPower);
         var region = new RegionId(x, y);
-        var lookup = new RegionLookup(verticalPower: 1, new[] {(region, RegionType.Border)});
-        using var image = BoundaryVisualizer.RenderRegionLookup(lookup, scale: 10);
-        SaveImage(image, $"Test {region.X} {region.Y}");
+        var lookup = new RegionLookup(divisions, new[] { (region, RegionType.Border) });
+        using var image = BoundaryVisualizer.RenderRegionLookup(lookup);
+        var width = divisions.QuadrantDivisions * 2;
+        SaveImage(image, $"{width}x{width} {region.X} {region.Y}");
     }
 }

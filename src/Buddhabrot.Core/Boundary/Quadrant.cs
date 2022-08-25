@@ -2,8 +2,8 @@
 
 public enum Quadrant
 {
-    SouthWest,
-    NorthWest,
-    NorthEast,
-    SouthEast,
+    SouthWest = 0,
+    NorthWest = 1,
+    NorthEast = 2,
+    SouthEast = 3,
 }

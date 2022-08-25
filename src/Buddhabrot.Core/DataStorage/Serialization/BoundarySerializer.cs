@@ -30,6 +30,10 @@ public static class BoundarySerializer
         return (
             new BoundaryParameters(new AreaDivisions(boundaries.VerticalPower), boundaries.MaximumIterations),
             boundaries.Regions.Select(rl => new RegionId(X: rl.X, Y: rl.Y)).ToList(),
-            new RegionLookup(boundaries.VerticalPower, boundaries.MaxX, boundaries.MaxY, boundaries.QuadTreeNodes));
+            new RegionLookup(
+                new AreaDivisions(boundaries.VerticalPower),
+                boundaries.MaxX,
+                boundaries.MaxY,
+                boundaries.QuadTreeNodes));
     }
 }

@@ -14,6 +14,7 @@ public readonly record struct Quad(uint Encoded)
     public int ChildIndex => (int)(Encoded >> 3);
     public RegionType Type => (RegionType)((Encoded >> 1) & 0b11);
     public bool HasChildren => (Encoded & 1) == 1;
+    public bool IsLeaf => !HasChildren;
 
     public static readonly Quad EmptyLeaf = new(RegionType.Empty);
     public static readonly Quad BorderLeaf = new(RegionType.Border);

@@ -75,7 +75,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             stopwatch.Restart();
 
             var lookup =
-                await Task.Run(() => new RegionLookup(boundaryParameters.Divisions.VerticalPower, regions, _log),
+                await Task.Run(() => new RegionLookup(boundaryParameters.Divisions, regions, _log),
                     cancelToken);
 
             _log($"Constructed quad tree. Took {stopwatch.Elapsed}");

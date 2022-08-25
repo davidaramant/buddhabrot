@@ -25,7 +25,7 @@ public sealed class RegionLookup
     }
 
     public RegionLookup(
-        int verticalPower,
+        AreaDivisions divisions,
         int maxX,
         int maxY,
         IEnumerable<uint> rawNodes)
@@ -33,15 +33,15 @@ public sealed class RegionLookup
         MaxX = maxX;
         MaxY = maxY;
         _nodes = rawNodes.Select(i => new Quad(i)).ToList();
-        PopulatedArea = ComputePopulatedArea(verticalPower, maxX, maxY);
+        PopulatedArea = ComputePopulatedArea(divisions.VerticalPower, maxX, maxY);
     }
 
     public RegionLookup(
-        int verticalPower,
+        AreaDivisions divisions,
         IReadOnlyList<(RegionId, RegionType)> regions,
         Action<string>? log = default)
     {
-        Levels = verticalPower + 1;
+        Levels = divisions.VerticalPower + 2;
         QuadCache cache = new(_nodes);
 
         Dictionary<RegionId, Quad> regionLookup = new(regions.Count);
@@ -65,33 +65,30 @@ public sealed class RegionLookup
 
         MaxX = maxX;
         MaxY = maxY;
-        PopulatedArea = ComputePopulatedArea(verticalPower, maxX, maxY);
+        PopulatedArea = ComputePopulatedArea(divisions.VerticalPower, maxX, maxY);
 
-        Quad BuildQuad(int level, int xOffset, int yOffset)
+        Quad BuildQuad(int depth, int x, int y, int xOffset = 0)
         {
-            if (level == 0)
+            if (depth == Levels - 1)
             {
-                return cache.MakeQuad(
-                    sw: LookupLocation(xOffset, yOffset),
-                    nw: LookupLocation(xOffset, yOffset + 1),
-                    ne: LookupLocation(xOffset + 1, yOffset + 1),
-                    se: LookupLocation(xOffset + 1, yOffset));
+                return LookupLocation(x + xOffset, y);
             }
 
-            var levelWidth = 1 << level;
+            var levelWidth = 1 << depth;
+            var newX = x * levelWidth;
+            var newY = x * levelWidth;
 
             return cache.MakeQuad(
-                sw: BuildQuad(level - 1, xOffset, yOffset),
-                nw: BuildQuad(level - 1, xOffset, yOffset + levelWidth),
-                ne: BuildQuad(level - 1, xOffset + levelWidth, yOffset + levelWidth),
-                se: BuildQuad(level - 1, xOffset + levelWidth, yOffset));
+                sw: BuildQuad(depth + 1, newX, newY, xOffset),
+                nw: BuildQuad(depth + 1, newX, newY + 1, xOffset),
+                ne: BuildQuad(depth + 1, newX + 1, newY + 1, xOffset),
+                se: BuildQuad(depth + 1, newX + 1, newY, xOffset));
         }
 
-        var topLevelWidth = 1 << verticalPower;
         _nodes.Add(cache.MakeQuad(
             sw: Quad.EmptyLeaf,
-            nw: BuildQuad(Levels - 1, 0, 0),
-            ne: BuildQuad(Levels - 1, topLevelWidth, 0),
+            nw: BuildQuad(1, 0, 0),
+            ne: BuildQuad(1, 0, 0, xOffset: divisions.QuadrantDivisions),
             se: Quad.EmptyLeaf));
         log?.Invoke(
             $"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}, Num nodes: {_nodes.Count:N0}");
@@ -143,95 +140,35 @@ public sealed class RegionLookup
         // Check the mirrored values to get build the bottom of the set
         toCheck.Enqueue((_topLevelArea, _nodes.Last()));
 
-         while (toCheck.Any())
-         {
-             var (quadArea, currentQuad) = toCheck.Dequeue();
-        
-             if (!currentQuad.IsEmptyLeaf &&
-                 searchArea.OverlapsWith(quadArea))
-             {
-                 var nextWidth = quadArea.Width / 2d;
-        
-                 if (nextWidth < minVisibleWidth)
-                 {
-                     visibleAreas.Add((quadArea.Intersect(searchArea), currentQuad.Type));
-                 }
-                 else
-                 {
-                     toCheck.Enqueue(
-                         (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
-                     toCheck.Enqueue(
-                         (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
-                     toCheck.Enqueue(
-                         (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
-                     toCheck.Enqueue(
-                         (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
-                 }
-             }
-         }
+        while (toCheck.Any())
+        {
+            var (quadArea, currentQuad) = toCheck.Dequeue();
+
+            if (!currentQuad.IsEmptyLeaf &&
+                searchArea.OverlapsWith(quadArea))
+            {
+                var nextWidth = quadArea.Width / 2d;
+
+                if (nextWidth < minVisibleWidth)
+                {
+                    visibleAreas.Add((quadArea.Intersect(searchArea), currentQuad.Type));
+                }
+                else
+                {
+                    toCheck.Enqueue(
+                        (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
+                }
+            }
+        }
 
         return visibleAreas;
     }
 
     public IReadOnlyList<Quad> GetRawNodes() => _nodes;
-
-    sealed class QuadCache
-    {
-        private readonly List<Quad> _nodes;
-        private readonly Dictionary<(Quad NW, Quad NE, Quad SE, Quad SW), Quad> _dict = new();
-
-        public QuadCache(List<Quad> nodes) => _nodes = nodes;
-
-        public int Size => _dict.Count;
-        public int NumCachedValuesUsed { get; private set; }
-
-        public Quad MakeQuad(Quad sw, Quad nw, Quad ne, Quad se)
-        {
-            if (sw == nw &&
-                nw == ne &&
-                ne == se &&
-                !sw.HasChildren)
-            {
-                return sw;
-            }
-
-            var types = new[]
-            {
-                sw.Type,
-                nw.Type,
-                ne.Type,
-                se.Type,
-            };
-
-            var (numBorders, numFilaments) = types.Aggregate(
-                (Borders: 0, Filaments: 0),
-                (count, type) => type switch
-                {
-                    RegionType.Border => (count.Borders + 1, count.Filaments),
-                    RegionType.Filament => (count.Borders, count.Filaments + 1),
-                    _ => count
-                });
-
-            var type = numBorders >= numFilaments ? RegionType.Border : RegionType.Filament;
-
-            var key = (sw, nw, ne, se);
-            if (!_dict.TryGetValue(key, out var quad))
-            {
-                var index = _nodes.Count;
-                quad = new Quad(type, index);
-                _nodes.Add(sw);
-                _nodes.Add(nw);
-                _nodes.Add(ne);
-                _nodes.Add(se);
-
-                _dict.Add(key, quad);
-            }
-            else
-            {
-                NumCachedValuesUsed++;
-            }
-
-            return quad;
-        }
-    }
 }

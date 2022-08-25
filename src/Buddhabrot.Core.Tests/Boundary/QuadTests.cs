@@ -38,4 +38,18 @@ public class QuadTests
         node.HasChildren.Should().BeTrue();
         node.ChildIndex.Should().Be(123);
     }
+
+    [Fact]
+    public void ShouldHaveExpectedEquality()
+    {
+        Quad.EmptyLeaf.Should().Be(Quad.EmptyLeaf);
+        Quad.BorderLeaf.Should().Be(Quad.BorderLeaf);
+        Quad.FilamentLeaf.Should().Be(Quad.FilamentLeaf);
+
+        Quad.EmptyLeaf.Should().NotBe(Quad.BorderLeaf);
+        Quad.EmptyLeaf.Should().NotBe(Quad.FilamentLeaf);
+        Quad.BorderLeaf.Should().NotBe(Quad.FilamentLeaf);
+
+        new Quad(RegionType.Empty, 0).Should().NotBe(Quad.EmptyLeaf);
+    }
 }

@@ -1,32 +1,31 @@
+using System.Diagnostics;
 using System.Drawing;
 using Buddhabrot.Core.Images;
 
 namespace Buddhabrot.Core.Boundary.Visualizations;
 
-public sealed class QuadTreeRenderer : IDisposable
+public sealed class QuadTreeRenderer
 {
-    private readonly bool _leaveImageOpen;
     private const int CellWidth = 3;
-    public int Levels { get; }
-    public RasterImage Image { get; }
+    private readonly int _levels;
+    private readonly int _xOffset;
+    private readonly RasterImage _image;
+    
+    public static int GetRequiredWidth(int levels) => 2 + (1 << (levels - 1)) * CellWidth + (1 << (levels - 1)) - 1;
 
-    public QuadTreeRenderer(int levels, int imageScale = 1, bool leaveImageOpen = false)
+    public QuadTreeRenderer(RasterImage image, int levels, int xOffset = 0)
     {
-        if (levels < 1)
-            throw new ArgumentOutOfRangeException(nameof(levels));
-        _leaveImageOpen = leaveImageOpen;
-        Levels = levels;
-        int width = 2 + (1 << (levels - 1)) * CellWidth + (1 << (levels - 1)) - 1;
-        Image = new RasterImage(width, width, imageScale);
-        Image.Fill(Color.Black);
+        Debug.Assert(levels == 0);
+        _levels = levels;
+        _xOffset = xOffset;
+        _image = image;
     }
 
     public void DrawCell(int x, int y, int depth, Color c)
     {
-        if (depth > (Levels - 1))
-            throw new ArgumentOutOfRangeException(nameof(depth));
+        Debug.Assert(depth > (_levels - 1));
 
-        var inverseDepth = Levels - depth - 1;
+        var inverseDepth = _levels - depth - 1;
         var cellWidth = (1 << inverseDepth) * CellWidth + (1 << inverseDepth) - 1;
 
         var correctedY = (1 << depth) - y - 1;
@@ -34,14 +33,6 @@ public sealed class QuadTreeRenderer : IDisposable
         var cellX = 1 + (x * (cellWidth + 1));
         var cellY = 1 + (correctedY * (cellWidth + 1));
 
-        Image.FillRectangle(cellX, cellY, cellWidth, cellWidth, c);
-    }
-
-    public void Dispose()
-    {
-        if (!_leaveImageOpen)
-        {
-            Image.Dispose();
-        }
+        _image.FillRectangle(cellX + _xOffset, cellY, cellWidth, cellWidth, c);
     }
 }

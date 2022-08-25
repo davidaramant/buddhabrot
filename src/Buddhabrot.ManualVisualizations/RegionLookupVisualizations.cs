@@ -13,7 +13,7 @@ public class RegionLookupVisualizations : BaseVisualization
     public void ShouldConstructPower2QuadTreeCorrectly()
     {
         var power2Regions =
-            new[] { (0, 0), (1, 0), (2, 0), (2, 1), (3, 1), (3, 2), (4, 2), (4, 1), (4, 0) }
+            new[] {(0, 0), (1, 0), (2, 0), (2, 1), (3, 1), (3, 2), (4, 2), (4, 1), (4, 0)}
                 .Select(t => (new RegionId(t.Item1, t.Item2), RegionType.Border)).ToList();
 
         var lookup = new RegionLookup(new AreaDivisions(2), power2Regions);
@@ -26,8 +26,12 @@ public class RegionLookupVisualizations : BaseVisualization
     public void ShouldConstructPower3QuadTreeCorrectly()
     {
         var power2Regions =
-            new[] { (0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (4, 1), (4, 0), (5, 0), (5, 1), (5, 2), (6, 2), (7, 2), (8, 2),
-                    (9, 2), (9, 1), (9, 0) }
+            new[]
+                {
+                    (0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (4, 1), (4, 0), (5, 0), (5, 1), (5, 2), (6, 2), (7, 2),
+                    (8, 2),
+                    (9, 2), (9, 1), (9, 0)
+                }
                 .Select(t => (new RegionId(t.Item1, t.Item2), RegionType.Border)).ToList();
 
         var lookup = new RegionLookup(new AreaDivisions(3), power2Regions);
@@ -35,7 +39,7 @@ public class RegionLookupVisualizations : BaseVisualization
         using var image = BoundaryVisualizer.RenderRegionLookup(lookup);
         SaveImage(image, "Power 3 Quadtree");
     }
-    
+
     [Test]
     [TestCase(1, 0, 0)]
     [TestCase(1, 0, 1)]
@@ -57,8 +61,8 @@ public class RegionLookupVisualizations : BaseVisualization
     {
         var divisions = new AreaDivisions(verticalPower);
         var region = new RegionId(x, y);
-        var lookup = new RegionLookup(divisions, new[] { (region, RegionType.Border) });
-        using var image = BoundaryVisualizer.RenderRegionLookup(lookup);
+        var lookup = new RegionLookup(divisions, new[] {(region, RegionType.Border)});
+        using var image = BoundaryVisualizer.RenderRegionLookup(lookup, scale: 10);
         var width = divisions.QuadrantDivisions * 2;
         SaveImage(image, $"{width}x{width} {region.X} {region.Y}");
     }

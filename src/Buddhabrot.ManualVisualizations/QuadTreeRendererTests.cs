@@ -1,6 +1,6 @@
 using System.Drawing;
-using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Visualizations;
+using Buddhabrot.Core.Images;
 
 namespace Buddhabrot.ManualVisualizations;
 
@@ -15,10 +15,12 @@ public class QuadTreeRendererTests : BaseVisualization
     {
         foreach (var depth in Enumerable.Range(0, levels))
         {
-            using var r = new QuadTreeRenderer(levels);
+            var width = QuadTreeRenderer.GetRequiredWidth(levels);
+            using var image = new RasterImage(width, width);
+            var r = new QuadTreeRenderer(image, levels);
             r.DrawCell(0, 0, depth, Color.White);
 
-            SaveImage(r.Image, $"Single Cell - l{levels} d{depth}");
+            SaveImage(image, $"Single Cell - l{levels} d{depth}");
         }
     }
 
@@ -27,7 +29,9 @@ public class QuadTreeRendererTests : BaseVisualization
     {
         foreach (var depth in Enumerable.Range(0, levels))
         {
-            using var r = new QuadTreeRenderer(levels);
+            var width = QuadTreeRenderer.GetRequiredWidth(levels);
+            using var image = new RasterImage(width, width);
+            var r = new QuadTreeRenderer(image, levels);
 
             for (int y = 0; y < (1 << depth); y++)
             {
@@ -37,7 +41,7 @@ public class QuadTreeRendererTests : BaseVisualization
                 }
             }
 
-            SaveImage(r.Image, $"All Cells - l{levels} d{depth}");
+            SaveImage(image, $"All Cells - l{levels} d{depth}");
         }
     }
 
@@ -45,14 +49,16 @@ public class QuadTreeRendererTests : BaseVisualization
     public void ShouldRenderDiagonalLineOfCells()
     {
         const int levels = 3;
-        using var r = new QuadTreeRenderer(levels);
+        var width = QuadTreeRenderer.GetRequiredWidth(levels);
+        using var image = new RasterImage(width, width);
+        var r = new QuadTreeRenderer(image, levels);
 
         foreach (var pos in Enumerable.Range(0, 1 << levels))
         {
             r.DrawCell(pos, pos, 2, Color.White);
         }
         
-        SaveImage(r.Image, "Diagonal");
+        SaveImage(image, "Diagonal");
     }
     
     [Test]
@@ -64,9 +70,11 @@ public class QuadTreeRendererTests : BaseVisualization
         {
             for (int x = 0; x < 4; x++)
             {
-                using var r = new QuadTreeRenderer(levels);
+                var width = QuadTreeRenderer.GetRequiredWidth(levels);
+                using var image = new RasterImage(width, width);
+                var r = new QuadTreeRenderer(image, levels);
                 r.DrawCell(x, y, 2, Color.White);
-                SaveImage(r.Image, $"Pos Y{y} X{x}");
+                SaveImage(image, $"Pos Y{y} X{x}");
             }
         }
     }

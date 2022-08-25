@@ -34,7 +34,7 @@ public static class BoundaryVisualizer
                 img.SetPixel(x, y,
                     ScalarKernel.FindEscapeTime(viewPort.GetComplex(x, y), iterationRange.Max) switch
                     {
-                        { IsInfinite: true } => Color.LightSteelBlue,
+                        {IsInfinite: true} => Color.LightSteelBlue,
                         var et when et.Iterations >= iterationRange.Min => Color.Red,
                         _ => Color.White,
                     });
@@ -46,7 +46,9 @@ public static class BoundaryVisualizer
 
     public static RasterImage RenderRegionLookup(RegionLookup lookup, int scale = 1)
     {
-        var r = new QuadTreeRenderer(lookup.Levels, scale, leaveImageOpen: true);
+        var widthOfTopLevelQuadrant = QuadTreeRenderer.GetRequiredWidth(lookup.Levels - 1);
+        var imageWidth = QuadTreeRenderer.GetRequiredWidth(lookup.Levels);
+        var image = new RasterImage(imageWidth, imageWidth, scale);
 
         var nodes = lookup.GetRawNodes();
 
@@ -57,7 +59,7 @@ public static class BoundaryVisualizer
             return (nodes[index], nodes[index + 1], nodes[index + 2], nodes[index + 3]);
         }
 
-        void DrawQuad(Quad quad, int depth, int x, int y)
+        void DrawQuad(QuadTreeRenderer r, Quad quad, int depth, int x, int y)
         {
             if (depth == lookup.Levels - 1 || quad.IsLeaf)
             {
@@ -68,15 +70,17 @@ public static class BoundaryVisualizer
             var newX = x << 1;
             var newY = y << 1;
             var (sw, nw, ne, se) = GetChildren(quad);
-            DrawQuad(sw, depth + 1, newX, newY);
-            DrawQuad(nw, depth + 1, newX, newY + 1);
-            DrawQuad(ne, depth + 1, newX + 1, newY + 1);
-            DrawQuad(se, depth + 1, newX + 1, newY);
+            DrawQuad(r, sw, depth + 1, newX, newY);
+            DrawQuad(r, nw, depth + 1, newX, newY + 1);
+            DrawQuad(r, ne, depth + 1, newX + 1, newY + 1);
+            DrawQuad(r, se, depth + 1, newX + 1, newY);
         }
 
-        DrawQuad(nodes.Last(), depth: 0, 0, 0);
+        var (_, topW, topE, _) = GetChildren(nodes.Last());
+        DrawQuad(new QuadTreeRenderer(image, lookup.Levels - 1), topW, depth: 0, 0, 0);
+        DrawQuad(new QuadTreeRenderer(image, lookup.Levels - 1, xOffset: widthOfTopLevelQuadrant - 1), topE, depth: 0, 0, 0);
 
-        return r.Image;
+        return image;
     }
 
     private static Color PickColorFromType(RegionType type) =>

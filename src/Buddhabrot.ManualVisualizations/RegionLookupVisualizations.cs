@@ -10,7 +10,7 @@ public class RegionLookupVisualizations : BaseVisualization
     public void SetOutputPath() => base.SetUpOutputPath(nameof(RegionLookupVisualizations));
 
     [Test]
-    public void ShouldConstructQuadTreeCorrectly()
+    public void ShouldConstructPower2QuadTreeCorrectly()
     {
         var power2Regions =
             new[] { (0, 0), (1, 0), (2, 0), (2, 1), (3, 1), (3, 2), (4, 2), (4, 1), (4, 0) }
@@ -18,10 +18,24 @@ public class RegionLookupVisualizations : BaseVisualization
 
         var lookup = new RegionLookup(new AreaDivisions(2), power2Regions);
 
-        using var image = BoundaryVisualizer.RenderRegionLookup(lookup, scale: 10);
+        using var image = BoundaryVisualizer.RenderRegionLookup(lookup);
         SaveImage(image, "Power 2 Quadtree");
     }
 
+    [Test]
+    public void ShouldConstructPower3QuadTreeCorrectly()
+    {
+        var power2Regions =
+            new[] { (0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (4, 1), (4, 0), (5, 0), (5, 1), (5, 2), (6, 2), (7, 2), (8, 2),
+                    (9, 2), (9, 1), (9, 0) }
+                .Select(t => (new RegionId(t.Item1, t.Item2), RegionType.Border)).ToList();
+
+        var lookup = new RegionLookup(new AreaDivisions(3), power2Regions);
+
+        using var image = BoundaryVisualizer.RenderRegionLookup(lookup);
+        SaveImage(image, "Power 3 Quadtree");
+    }
+    
     [Test]
     [TestCase(1, 0, 0)]
     [TestCase(1, 0, 1)]

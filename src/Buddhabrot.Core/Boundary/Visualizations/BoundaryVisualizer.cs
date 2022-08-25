@@ -34,7 +34,7 @@ public static class BoundaryVisualizer
                 img.SetPixel(x, y,
                     ScalarKernel.FindEscapeTime(viewPort.GetComplex(x, y), iterationRange.Max) switch
                     {
-                        {IsInfinite: true} => Color.LightSteelBlue,
+                        { IsInfinite: true } => Color.LightSteelBlue,
                         var et when et.Iterations >= iterationRange.Min => Color.Red,
                         _ => Color.White,
                     });
@@ -65,9 +65,8 @@ public static class BoundaryVisualizer
                 return;
             }
 
-            var multiplier = 1 << depth;
-            var newX = x * multiplier;
-            var newY = y * multiplier;
+            var newX = x << 1;
+            var newY = y << 1;
             var (sw, nw, ne, se) = GetChildren(quad);
             DrawQuad(sw, depth + 1, newX, newY);
             DrawQuad(nw, depth + 1, newX, newY + 1);

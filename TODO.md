@@ -6,9 +6,12 @@
   - [ ] Allow changing local files location 
 - [x] Better busy indicator
 - [ ] Integrate DE in boundary scanning
-  - [ ] Update algorithm
-  - [ ] Persist filament regions
-  - [ ] Render filament regions
+  - [x] Update algorithm
+  - [x] Persist filament regions
+  - [x] Render filament regions
+  - [ ] Debug what on earth went wrong
+- [x] Visualizations of raw quad trees
+  - [ ] Integrate this into the app somewhere
 - [x] Flip Y again - regions going down isn't helpful anymore
 - [x] Allow log area to be hidden
 - [ ] Real-Time Visualizations

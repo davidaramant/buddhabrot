@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using Buddhabrot.Core.Images;
 using Buddhabrot.Core.IterationKernels;
 
@@ -51,13 +52,14 @@ public static class BoundaryVisualizer
 
         (Quad SW, Quad NW, Quad NE, Quad SE) GetChildren(Quad quad)
         {
+            Debug.Assert(quad.HasChildren, "Attempted to get children of leaf node");
             var index = quad.ChildIndex;
             return (nodes[index], nodes[index + 1], nodes[index + 2], nodes[index + 3]);
         }
 
         void DrawQuad(Quad quad, int depth, int x, int y)
         {
-            if (depth == lookup.Levels - 1 || !quad.HasChildren)
+            if (depth == lookup.Levels - 1 || quad.IsLeaf)
             {
                 r.DrawCell(x, y, depth, PickColorFromType(quad.Type));
                 return;

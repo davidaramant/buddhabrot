@@ -76,7 +76,7 @@ public sealed class RegionLookup
 
             var levelWidth = 1 << depth;
             var newX = x * levelWidth;
-            var newY = x * levelWidth;
+            var newY = y * levelWidth;
 
             return cache.MakeQuad(
                 sw: BuildQuad(depth + 1, newX, newY, xOffset),

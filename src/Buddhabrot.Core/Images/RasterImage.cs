@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.Diagnostics;
+using SkiaSharp;
 
 namespace Buddhabrot.Core.Images;
 
@@ -49,6 +50,8 @@ public sealed class RasterImage : IDisposable
 
     public void FillRectangle(int x, int y, int width, int height, System.Drawing.Color color)
     {
+        Debug.Assert(x >= 0 && x < Width && y >= 0 && y < Height, "Attempted to fill rectangle outside of image");
+
         using var canvas = new SKCanvas(_bitmap);
         canvas.DrawRect(x, y, width, height, new SKPaint()
             {

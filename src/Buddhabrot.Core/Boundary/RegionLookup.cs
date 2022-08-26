@@ -120,7 +120,7 @@ public sealed class RegionLookup
             {
                 var nextWidth = quadArea.Width / 2d;
 
-                if (nextWidth < minVisibleWidth)
+                if (currentQuad.IsLeaf || nextWidth < minVisibleWidth)
                 {
                     visibleAreas.Add((quadArea.Intersect(searchArea), currentQuad.Type));
                 }
@@ -150,7 +150,7 @@ public sealed class RegionLookup
             {
                 var nextWidth = quadArea.Width / 2d;
 
-                if (nextWidth < minVisibleWidth)
+                if (currentQuad.IsLeaf || nextWidth < minVisibleWidth)
                 {
                     visibleAreas.Add((quadArea.Intersect(searchArea), currentQuad.Type));
                 }

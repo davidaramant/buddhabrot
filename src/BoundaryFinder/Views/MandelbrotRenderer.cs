@@ -125,7 +125,7 @@ public sealed class MandelbrotRenderer : Control
             var brush = type switch
             {
                 RegionType.Border => Brushes.DarkSlateBlue,
-                RegionType.Filament => Brushes.DarkSlateGray,
+                RegionType.Filament => Brushes.Red,
                 _ => Brushes.White,
             };
             context.FillRectangle(brush, new Rect(rect.X, rect.Y, rect.Width, rect.Height));

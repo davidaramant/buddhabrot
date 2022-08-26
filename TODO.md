@@ -5,13 +5,13 @@
 - [x] Refactor data storage stuff
   - [ ] Allow changing local files location 
 - [x] Better busy indicator
-- [ ] Integrate DE in boundary scanning
+- [x] Integrate DE in boundary scanning
   - [x] Update algorithm
   - [x] Persist filament regions
   - [x] Render filament regions
-  - [ ] Debug what on earth went wrong
+  - [x] Debug what on earth went wrong
 - [x] Visualizations of raw quad trees
-  - [ ] Integrate this into the app somewhere
+  - [x] Integrate this into the app somewhere
 - [x] Flip Y again - regions going down isn't helpful anymore
 - [x] Allow log area to be hidden
 - [ ] Real-Time Visualizations

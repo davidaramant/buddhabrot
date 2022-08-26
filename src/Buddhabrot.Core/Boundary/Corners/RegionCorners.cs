@@ -9,6 +9,8 @@ public sealed class RegionCorners
     private readonly ConcurrentDictionary<CornerId, bool> _isCornerInSet = new();
     private readonly BoundaryParameters _boundaryParams;
 
+    private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
+
     public RegionCorners(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
 
     private async Task<bool> IsCornerInSetAsync(CornerId corner, CancellationToken cancelToken = default)
@@ -18,9 +20,7 @@ public sealed class RegionCorners
             return inSet;
         }
 
-        Complex c = new(
-            real: corner.X * _boundaryParams.Divisions.RegionSideLength - 2,
-            imaginary: corner.Y * _boundaryParams.Divisions.RegionSideLength);
+        Complex c = ToComplex(corner.X, corner.Y);
         inSet = await Task.Run(
             () => ScalarKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite,
             cancelToken);
@@ -46,12 +46,11 @@ public sealed class RegionCorners
 
     public bool DoesRegionContainFilaments(RegionId region)
     {
-        var halfSideLength = _boundaryParams.Divisions.RegionSideLength / 2;
-        var center = new Complex(
-            region.X * _boundaryParams.Divisions.RegionSideLength + halfSideLength,
-            region.Y * _boundaryParams.Divisions.RegionSideLength + halfSideLength);
+        var center = ToComplex(region.X + 0.5, region.Y + 0.5);
 
         var distanceToSet = ScalarKernel.FindExteriorDistance(center, _boundaryParams.MaxIterations);
-        return distanceToSet <= halfSideLength;
+        return distanceToSet <= RegionWidth / 2;
     }
+
+    private Complex ToComplex(double x, double y) => new(real: x * RegionWidth - 2, imaginary: y * RegionWidth);
 }

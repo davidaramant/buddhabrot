@@ -57,13 +57,41 @@ public class RegionLookupVisualizations : BaseVisualization
     [TestCase(2, 4, 1)]
     [TestCase(2, 5, 1)]
     [TestCase(2, 7, 3)]
-    public void ShouldRenderSimpleQuadTree(int verticalPower, int x, int y)
+    public void ShouldRenderSimpleQuadTreeWithBorder(int verticalPower, int x, int y)
     {
         var divisions = new AreaDivisions(verticalPower);
         var region = new RegionId(x, y);
         var lookup = new RegionLookup(divisions, new[] {(region, RegionType.Border)});
-        using var image = BoundaryVisualizer.RenderRegionLookup(lookup, scale: 10);
+        using var image = BoundaryVisualizer.RenderRegionLookup(lookup);
         var width = divisions.QuadrantDivisions * 2;
-        SaveImage(image, $"{width}x{width} {region.X} {region.Y}");
+        SaveImage(image, $"Border {width}x{width/2} {region.X} {region.Y}");
+    }
+    
+    
+    [Test]
+    [TestCase(1, 0, 0)]
+    [TestCase(1, 0, 1)]
+    [TestCase(1, 1, 1)]
+    [TestCase(1, 1, 0)]
+    [TestCase(1, 2, 0)]
+    [TestCase(1, 2, 1)]
+    [TestCase(1, 3, 1)]
+    [TestCase(1, 3, 0)]
+    [TestCase(2, 0, 0)]
+    [TestCase(2, 1, 1)]
+    [TestCase(2, 2, 2)]
+    [TestCase(2, 3, 3)]
+    [TestCase(2, 4, 0)]
+    [TestCase(2, 4, 1)]
+    [TestCase(2, 5, 1)]
+    [TestCase(2, 7, 3)]
+    public void ShouldRenderSimpleQuadTreeWithFilament(int verticalPower, int x, int y)
+    {
+        var divisions = new AreaDivisions(verticalPower);
+        var region = new RegionId(x, y);
+        var lookup = new RegionLookup(divisions, new[] {(region, RegionType.Filament)});
+        using var image = BoundaryVisualizer.RenderRegionLookup(lookup);
+        var width = divisions.QuadrantDivisions * 2;
+        SaveImage(image, $"Filament {width}x{width/2} {region.X} {region.Y}");
     }
 }

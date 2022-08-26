@@ -48,7 +48,7 @@ public static class BoundaryVisualizer
     {
         var widthOfTopLevelQuadrant = QuadTreeRenderer.GetRequiredWidth(lookup.Levels - 1);
         var imageWidth = QuadTreeRenderer.GetRequiredWidth(lookup.Levels);
-        var image = new RasterImage(imageWidth, imageWidth, scale);
+        var image = new RasterImage(imageWidth, widthOfTopLevelQuadrant, scale);
 
         var nodes = lookup.GetRawNodes();
 

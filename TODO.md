@@ -31,6 +31,8 @@
   - [ ] There is an unstable 1-pixel gap between regions
   - [ ] Render region interiors
     - [ ] Multi-threaded rendering
+      - [ ] `WriteableBitmap`
+        - [ ] `Screens` - get screen the window is on, get DPI from that 
   - [ ] Nicer aesthetic
 - [x] NUnit test project for manual "tests"
 - [ ] CI builds on GitHub

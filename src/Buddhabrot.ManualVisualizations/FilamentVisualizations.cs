@@ -8,11 +8,11 @@ namespace Buddhabrot.ManualVisualizations;
 [Explicit]
 public class FilamentVisualizations : BaseVisualization
 {
-    readonly ViewPort _viewPort = new(
+    readonly ViewPort _viewPort = ViewPort.FromLogicalArea(
         new ComplexArea(
             new Interval(-2, 2),
             new Interval(0, 2)),
-        new Size(1000, 500));
+        width: 1000);
 
     [OneTimeSetUp]
     public void CreateOutputPath() => SetUpOutputPath(nameof(FilamentVisualizations));
@@ -20,7 +20,7 @@ public class FilamentVisualizations : BaseVisualization
     [Test]
     public void ShouldCalculateFilaments()
     {
-        var escapeLimitsThousands = new[] { 1, 5, 10 };
+        var escapeLimitsThousands = new[] {1, 5, 10};
 
         using var image = new RasterImage(_viewPort.Resolution);
 
@@ -59,24 +59,24 @@ public class FilamentVisualizations : BaseVisualization
             var c = _viewPort.GetComplex(point);
             var distance = ScalarKernel.FindExteriorDistance(c, max);
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            var containsBorderOrFilament = distance == Double.MaxValue || distance < _viewPort.RealPixelSize / 2;
+            var containsBorderOrFilament = distance == Double.MaxValue || distance < _viewPort.PixelWidth / 2;
 
             visitedPoints.Add(point);
             image.SetPixel(point, PickColorFromDistance(_viewPort, distance));
 
             if (containsBorderOrFilament)
             {
-                AddPointToCheck(point with { X = point.X + 1 });
-                AddPointToCheck(point with { X = point.X - 1 });
-                AddPointToCheck(point with { Y = point.Y + 1 });
-                AddPointToCheck(point with { Y = point.Y - 1 });
+                AddPointToCheck(point with {X = point.X + 1});
+                AddPointToCheck(point with {X = point.X - 1});
+                AddPointToCheck(point with {Y = point.Y + 1});
+                AddPointToCheck(point with {Y = point.Y - 1});
 
                 if (checkDiagonals)
                 {
-                    AddPointToCheck(point with { X = point.X + 1, Y = point.Y + 1 });
-                    AddPointToCheck(point with { X = point.X + 1, Y = point.Y - 1 });
-                    AddPointToCheck(point with { X = point.X - 1, Y = point.Y + 1 });
-                    AddPointToCheck(point with { X = point.X - 1, Y = point.Y - 1 });
+                    AddPointToCheck(point with {X = point.X + 1, Y = point.Y + 1});
+                    AddPointToCheck(point with {X = point.X + 1, Y = point.Y - 1});
+                    AddPointToCheck(point with {X = point.X - 1, Y = point.Y + 1});
+                    AddPointToCheck(point with {X = point.X - 1, Y = point.Y - 1});
                 }
             }
         }
@@ -127,7 +127,7 @@ public class FilamentVisualizations : BaseVisualization
         distance switch
         {
             Double.MaxValue => Color.DarkBlue,
-            var d when d < viewPort.RealPixelSize / 2 => Color.Red,
+            var d when d < viewPort.PixelWidth / 2 => Color.Red,
             _ => Color.White,
         };
 }

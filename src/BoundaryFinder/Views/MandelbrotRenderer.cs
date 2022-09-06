@@ -92,7 +92,7 @@ public sealed class MandelbrotRenderer : Control
 
             var viewPort = GetCurrentViewPort();
 
-            LogicalArea = LogicalArea.OffsetBy(-deltaX * viewPort.RealPixelSize, deltaY * viewPort.ImagPixelSize);
+            LogicalArea = LogicalArea.OffsetBy(-deltaX * viewPort.PixelWidth, deltaY * viewPort.PixelWidth);
         }
 
         base.OnPointerMoved(e);
@@ -104,8 +104,10 @@ public sealed class MandelbrotRenderer : Control
         base.OnPointerCaptureLost(e);
     }
 
-    private ViewPort GetCurrentViewPort() =>
-        new(LogicalArea, new System.Drawing.Size((int)Bounds.Width, (int)Bounds.Height));
+    private ViewPort GetCurrentViewPort() => ViewPort.FromResolution(
+        new System.Drawing.Size((int) Bounds.Width, (int) Bounds.Height), 
+        LogicalArea.BottomLeftCorner,
+        LogicalArea.Width);
 
     public override void Render(DrawingContext context)
     {
@@ -114,10 +116,10 @@ public sealed class MandelbrotRenderer : Control
         var viewPort = GetCurrentViewPort();
 
         var center = viewPort.GetPosition(Complex.Zero);
-        var radius = 2 / viewPort.RealPixelSize;
+        var radius = 2 / viewPort.PixelWidth;
         context.DrawEllipse(Brushes.White, null, new Point(center.X, center.Y), radius, radius);
 
-        var areasToDraw = Lookup.GetVisibleAreas(LogicalArea, viewPort.RealPixelSize);
+        var areasToDraw = Lookup.GetVisibleAreas(LogicalArea, viewPort.PixelWidth);
         for (var index = 0; index < areasToDraw.Count; index++)
         {
             var (area, type) = areasToDraw[index];

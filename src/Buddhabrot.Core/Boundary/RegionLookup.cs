@@ -175,14 +175,13 @@ public sealed class RegionLookup
     }
 
     public IReadOnlyList<(Rectangle Area, RegionType Type)> GetVisibleAreas(
-        Point topLeft,
-        Rectangle searchArea,
-        int depth)
+        SquareBoundary bounds,
+        Rectangle searchArea)
     {
         var visibleAreas = new List<(Rectangle, RegionType)>();
 
         var toCheck = new Queue<(SquareBoundary, Quad)>();
-        toCheck.Enqueue((new SquareBoundary(topLeft, depth), _nodes.Last()));
+        toCheck.Enqueue((bounds, _nodes.Last()));
 
         while (toCheck.Any())
         {
@@ -213,7 +212,7 @@ public sealed class RegionLookup
         }
 
         // Check the mirrored values to build the bottom of the set
-        toCheck.Enqueue((new SquareBoundary(topLeft, depth), _nodes.Last()));
+        toCheck.Enqueue((bounds, _nodes.Last()));
 
         while (toCheck.Any())
         {

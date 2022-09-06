@@ -8,11 +8,11 @@ public sealed class ViewPortTests
     [Fact]
     public void ShouldFigureOutMiddleOfSquareArea()
     {
-        var viewPort = new ViewPort(
+        var viewPort = ViewPort.FromLogicalArea(
             new ComplexArea(
                 new Interval(-1, 1),
                 new Interval(-1, 1)),
-            new Size(101, 101));
+            101);
 
         var middle = viewPort.GetPosition(new Complex());
 
@@ -22,11 +22,11 @@ public sealed class ViewPortTests
     [Fact]
     public void ShouldUseTopLeftAsPositionOrigin()
     {
-        var viewPort = new ViewPort(
+        var viewPort = ViewPort.FromLogicalArea(
             new ComplexArea(
                 new Interval(-1, 1),
                 new Interval(-1, 1)),
-            new Size(101, 101));
+            101);
 
         var topLeft = viewPort.GetPosition(new Complex(-1, 1));
 
@@ -36,11 +36,11 @@ public sealed class ViewPortTests
     [Fact]
     public void ShouldRoundTripPositions()
     {
-        var viewPort = new ViewPort(
+        var viewPort = ViewPort.FromLogicalArea(
             new ComplexArea(
                 new Interval(-1, 1),
                 new Interval(-1, 1)),
-            new Size(101, 101));
+            101);
 
         var c = new Complex(-1, 1);
 
@@ -51,15 +51,38 @@ public sealed class ViewPortTests
     [Fact]
     public void ShouldRoundTripComplexNumbers()
     {
-        var viewPort = new ViewPort(
+        var viewPort = ViewPort.FromLogicalArea(
             new ComplexArea(
                 new Interval(-1, 1),
                 new Interval(-1, 1)),
-            new Size(101, 101));
+            101);
 
         var point = new Point(-1, 1);
 
         var roundTripped = viewPort.GetPosition(viewPort.GetComplex(point));
         roundTripped.Should().Be(point);
+    }
+
+    [Fact]
+    public void ShouldDetermineHeight()
+    {
+        var viewPort = ViewPort.FromLogicalArea(
+            new ComplexArea(
+                new Interval(-1, 1),
+                new Interval(-1, 1)),
+            101);
+
+        viewPort.Resolution.Height.Should().Be(101);
+    }
+
+    [Fact]
+    public void ShouldDetermineImaginaryMagnitude()
+    {
+        var viewPort = ViewPort.FromResolution(
+            new Size(100, 100),
+            new Complex(0, 0),
+            realMagnitude: 2);
+
+        viewPort.LogicalArea.Width.Should().Be(2);
     }
 }

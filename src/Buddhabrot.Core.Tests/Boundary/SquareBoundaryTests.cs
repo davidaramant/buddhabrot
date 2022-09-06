@@ -8,12 +8,12 @@ public class SquareBoundaryTests
     [Fact]
     public void ShouldGetExpectedQuadrants()
     {
-        var sq = new SquareBoundary(Point.Empty, 1);
+        var sq = new SquareBoundary(0, 0, 1);
 
-        sq.GetNWQuadrant().Should().Be(new SquareBoundary(Point.Empty, 0));
-        sq.GetNEQuadrant().Should().Be(new SquareBoundary(new Point(1, 0), 0));
-        sq.GetSEQuadrant().Should().Be(new SquareBoundary(new Point(1, 1), 0));
-        sq.GetSWQuadrant().Should().Be(new SquareBoundary(new Point(0, 1), 0));
+        sq.GetNWQuadrant().Should().Be(new SquareBoundary(0, 0, 0));
+        sq.GetNEQuadrant().Should().Be(new SquareBoundary(1, 0, 0));
+        sq.GetSEQuadrant().Should().Be(new SquareBoundary(1, 1, 0));
+        sq.GetSWQuadrant().Should().Be(new SquareBoundary(0, 1, 0));
     }
 
     public static IEnumerable<object[]> IntersectionData()
@@ -34,7 +34,13 @@ public class SquareBoundaryTests
     [MemberData(nameof(IntersectionData))]
     public void ShouldIntersectWithRectangle(Rectangle rect, Rectangle expected)
     {
-        var sq = new SquareBoundary(new Point(-2, -2), 2);
+        var sq = new SquareBoundary(-2, -2, 2);
         sq.IntersectWith(rect).Should().Be(expected);
+    }
+
+    [Fact]
+    public void ShouldCalculateCenteredSquareInArea()
+    {
+        SquareBoundary.GetLargestCenteredSquareInside(10, 12).Should().Be(new SquareBoundary(1, 2, 3));
     }
 }

@@ -8,9 +8,10 @@ public readonly record struct ComplexArea(
 {
     public double Width => RealInterval.Magnitude;
     public double Height => ImagInterval.Magnitude;
-    
+
     public static readonly ComplexArea Empty = new(Interval.Empty, Interval.Empty);
 
+    public Complex BottomLeftCorner => new(RealInterval.InclusiveMin, ImagInterval.InclusiveMin);
     public Complex TopLeftCorner => new(RealInterval.InclusiveMin, ImagInterval.ExclusiveMax);
 
     public bool Contains(Complex number) =>

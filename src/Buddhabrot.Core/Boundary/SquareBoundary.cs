@@ -3,22 +3,22 @@
 namespace Buddhabrot.Core.Boundary;
 
 public readonly record struct SquareBoundary(
-    Point TopLeft,
+    int X,
+    int Y,
     int Scale)
 {
-    public int X => TopLeft.X;
-    public int Y => TopLeft.Y;
     public bool IsPoint => Scale == 0;
+    public int Length => 1 << Scale;
     public int QuadrantLength => 1 << (Scale - 1);
 
-    public SquareBoundary GetNWQuadrant() => new(TopLeft, Scale - 1);
-    public SquareBoundary GetNEQuadrant() => new(TopLeft + new Size(QuadrantLength, 0), Scale - 1);
-    public SquareBoundary GetSEQuadrant() => new(TopLeft + new Size(QuadrantLength, QuadrantLength), Scale - 1);
-    public SquareBoundary GetSWQuadrant() => new(TopLeft + new Size(0, QuadrantLength), Scale - 1);
+    public SquareBoundary GetNWQuadrant() => this with {Scale = Scale - 1};
+    public SquareBoundary GetNEQuadrant() => new(X + QuadrantLength, Y, Scale - 1);
+    public SquareBoundary GetSEQuadrant() => new(X + QuadrantLength, Y + QuadrantLength, Scale - 1);
+    public SquareBoundary GetSWQuadrant() => new(X, Y + QuadrantLength, Scale - 1);
 
     public Rectangle IntersectWith(Rectangle rect)
     {
-        int length = 1 << Scale;
+        int length = Length;
 
         int x1 = Math.Max(rect.X, X);
         int x2 = Math.Min(rect.X + rect.Width, X + length);
@@ -33,5 +33,16 @@ public readonly record struct SquareBoundary(
         return Rectangle.Empty;
     }
 
-    public override string ToString() => $"{TopLeft}, SideLength = {1 << Scale}";
+    public override string ToString() => $"({X}, {Y}), SideLength = {1 << Scale}";
+
+    public static SquareBoundary GetLargestCenteredSquareInside(int width, int height)
+    {
+        var scale = Utility.GetLargestPowerOfTwoLessThan(Math.Min(width, height));
+
+        var length = 1 << scale;
+
+        var x = (width - length) / 2;
+        var y = (height - length) / 2;
+        return new(x, y, scale);
+    }
 }

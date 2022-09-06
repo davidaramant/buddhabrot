@@ -68,7 +68,10 @@ public sealed class MandelbrotRenderer : Control
         };
 
         ResetViewCommand = ReactiveCommand.Create(ResetLogicalArea);
-        ZoomOutCommand = ReactiveCommand.Create(() => { SetBoundary = SetBoundary.ZoomOut(); });
+        ZoomOutCommand = ReactiveCommand.Create(() =>
+        {
+            SetBoundary = SetBoundary.ZoomOut((int) Bounds.Width, (int) Bounds.Height);
+        });
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -123,7 +126,6 @@ public sealed class MandelbrotRenderer : Control
     public override void Render(DrawingContext context)
     {
         context.FillRectangle(Brushes.LightGray, new Rect(Bounds.Size));
-        // TODO: Deal with window resizing
 
         var center = SetBoundary.Center;
         var radius = SetBoundary.QuadrantLength;

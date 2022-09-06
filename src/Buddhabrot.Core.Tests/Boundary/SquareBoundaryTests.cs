@@ -43,4 +43,47 @@ public class SquareBoundaryTests
     {
         SquareBoundary.GetLargestCenteredSquareInside(10, 12).Should().Be(new SquareBoundary(1, 2, 3));
     }
+
+    public sealed record ZoomOutTestCase(
+        string Name,
+        SquareBoundary Boundary,
+        int Width,
+        int Height,
+        SquareBoundary ExpectedResult)
+    {
+        public override string ToString() => Name;
+    }
+
+    public static IEnumerable<object[]> ZoomOutData()
+    {
+        yield return new object[]
+        {
+            new ZoomOutTestCase("Centered",
+                new SquareBoundary(X: 1, Y: 1, Scale: 3),
+                Width: 10,
+                Height: 10,
+                ExpectedResult: new SquareBoundary(X: 3, Y: 3, Scale: 2))
+        };
+        yield return new object[]
+        {
+            new ZoomOutTestCase("Offset - Top Left",
+                new SquareBoundary(X: 1, Y: 1, Scale: 3),
+                Width: 20,
+                Height: 20,
+                ExpectedResult: new SquareBoundary(X: 5, Y: 5, Scale: 2))
+        };
+        yield return new object[]
+        {
+            new ZoomOutTestCase("Offset - Top Right",
+                new SquareBoundary(X: 11, Y: 1, Scale: 3),
+                Width: 20,
+                Height: 20,
+                ExpectedResult: new SquareBoundary(X: 11, Y: 5, Scale: 2))
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(ZoomOutData))]
+    public void ShouldZoomOutCorrectly(ZoomOutTestCase testCase) =>
+        testCase.Boundary.ZoomOut(width: testCase.Width, height: testCase.Height).Should().Be(testCase.ExpectedResult);
 }

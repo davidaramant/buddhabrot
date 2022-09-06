@@ -14,10 +14,15 @@ public readonly record struct SquareBoundary(
 
     public SquareBoundary OffsetBy(int deltaX, int deltaY) => new(X + deltaX, Y + deltaY, Scale);
 
-    // TODO: Take into account position when zooming in
-    public SquareBoundary ZoomIn(int x, int y) => this with {Scale = Scale + 1};
-    // TODO: Take into account position when zooming out
-    public SquareBoundary ZoomOut() => this with {Scale = Scale - 1};
+    public SquareBoundary ZoomIn(int x, int y) => new(
+        Scale: Scale + 1,
+        X: X - (x - X),
+        Y: Y - (y - Y));
+
+    public SquareBoundary ZoomOut(int width, int height) => new(
+        Scale: Scale - 1,
+        X: X - (X - (width / 2)) / 2,
+        Y: Y - (Y - (height / 2)) / 2);
 
     public SquareBoundary GetNWQuadrant() => this with {Scale = Scale - 1};
     public SquareBoundary GetNEQuadrant() => new(X + QuadrantLength, Y, Scale - 1);

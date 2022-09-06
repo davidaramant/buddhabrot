@@ -20,7 +20,7 @@
   - [x] QuadTree for regions
   - [x] Render regions
   - [x] Zooming & panning
-    - [ ] Zoom where the cursor was clicked
+    - [x] Zoom where the cursor was clicked
   - [x] Aspect ratio is WRONG
     - [x] Just show 4x4 area instead of populated area
   - [x] Region drawing optimizations
@@ -28,11 +28,13 @@
     - [x] Building quad tree is too slow
       - [ ] Optimize this for real - saving it off is a hack
   - [x] Show entire set boundary
-  - [ ] There is an unstable 1-pixel gap between regions
+  - [x] There is an unstable 1-pixel gap between regions
+  - [ ] Rework how the logical area is calculated
   - [ ] Render region interiors
     - [ ] Multi-threaded rendering
       - [ ] `WriteableBitmap`
-        - [ ] `Screens` - get screen the window is on, get DPI from that 
+        - [ ] `Screens` - get screen the window is on, get DPI from that
+        - [ ] Render larger image than screen; do not rerender while panning
   - [ ] Nicer aesthetic
 - [x] NUnit test project for manual "tests"
 - [ ] CI builds on GitHub

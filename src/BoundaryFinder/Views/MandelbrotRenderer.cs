@@ -1,4 +1,4 @@
-using System.Numerics;
+using System.Drawing;
 using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
@@ -7,13 +7,25 @@ using Avalonia.Media;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using ReactiveUI;
+using Brushes = Avalonia.Media.Brushes;
+using Point = Avalonia.Point;
 
 namespace BoundaryFinder.Views;
 
 public sealed class MandelbrotRenderer : Control
 {
-    private bool _panning = false;
-    private Point _panningStartPoint = new Point();
+    private bool _panning;
+    private Point _panningStartPoint;
+    private SquareBoundary _panningStart;
+
+    public static readonly StyledProperty<SquareBoundary> SetBoundaryProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, SquareBoundary>(nameof(SetBoundary));
+
+    public SquareBoundary SetBoundary
+    {
+        get => GetValue(SetBoundaryProperty);
+        set => SetValue(SetBoundaryProperty, value);
+    }
 
     public static readonly StyledProperty<ComplexArea> LogicalAreaProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, ComplexArea>(nameof(LogicalArea));
@@ -40,6 +52,7 @@ public sealed class MandelbrotRenderer : Control
     {
         AffectsRender<MandelbrotRenderer>(LookupProperty);
         AffectsRender<MandelbrotRenderer>(LogicalAreaProperty);
+        AffectsRender<MandelbrotRenderer>(SetBoundaryProperty);
     }
 
     public MandelbrotRenderer()
@@ -48,14 +61,14 @@ public sealed class MandelbrotRenderer : Control
         // HACK: I'm sure there is some fancy Reactive way to do this
         this.PropertyChanged += (s, e) =>
         {
-            if (e.Property.Name == nameof(Lookup) && Lookup != null)
+            if (e.Property.Name == nameof(Lookup) && Lookup.NodeCount > 1)
             {
                 ResetLogicalArea();
             }
         };
 
         ResetViewCommand = ReactiveCommand.Create(ResetLogicalArea);
-        ZoomOutCommand = ReactiveCommand.Create(() => { LogicalArea = LogicalArea.Scale(1.25); });
+        ZoomOutCommand = ReactiveCommand.Create(() => { SetBoundary = SetBoundary.ZoomOut(); });
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -64,11 +77,13 @@ public sealed class MandelbrotRenderer : Control
         {
             _panning = true;
             _panningStartPoint = e.GetPosition(this);
+            _panningStart = SetBoundary;
         }
         else if (e.ClickCount == 2)
         {
             _panning = false;
-            LogicalArea = LogicalArea.Scale(0.75);
+            var pos = e.GetPosition(this);
+            SetBoundary = SetBoundary.ZoomIn((int) pos.X, (int) pos.Y);
         }
 
         base.OnPointerPressed(e);
@@ -84,15 +99,11 @@ public sealed class MandelbrotRenderer : Control
     {
         if (_panning)
         {
-            // HACK: This seems weird, but it's functional enough
-            var dampingFactor = 0.03d;
             var currentPos = e.GetPosition(this);
-            var deltaX = dampingFactor * (currentPos.X - _panningStartPoint.X);
-            var deltaY = dampingFactor * (currentPos.Y - _panningStartPoint.Y);
+            var deltaX = (int) (currentPos.X - _panningStartPoint.X);
+            var deltaY = (int) (currentPos.Y - _panningStartPoint.Y);
 
-            var viewPort = GetCurrentViewPort();
-
-            LogicalArea = LogicalArea.OffsetBy(-deltaX * viewPort.PixelWidth, deltaY * viewPort.PixelWidth);
+            SetBoundary = _panningStart.OffsetBy(deltaX, deltaY);
         }
 
         base.OnPointerMoved(e);
@@ -105,70 +116,39 @@ public sealed class MandelbrotRenderer : Control
     }
 
     private ViewPort GetCurrentViewPort() => ViewPort.FromResolution(
-        new System.Drawing.Size((int) Bounds.Width, (int) Bounds.Height), 
+        new System.Drawing.Size((int) Bounds.Width, (int) Bounds.Height),
         LogicalArea.BottomLeftCorner,
         LogicalArea.Width);
 
     public override void Render(DrawingContext context)
     {
         context.FillRectangle(Brushes.LightGray, new Rect(Bounds.Size));
-        AdjustLogicalArea(Bounds.Size);
-        var viewPort = GetCurrentViewPort();
+        // TODO: Deal with window resizing
 
-        var center = viewPort.GetPosition(Complex.Zero);
-        var radius = 2 / viewPort.PixelWidth;
+        var center = SetBoundary.Center;
+        var radius = SetBoundary.QuadrantLength;
         context.DrawEllipse(Brushes.White, null, new Point(center.X, center.Y), radius, radius);
 
-        var areasToDraw = Lookup.GetVisibleAreas(LogicalArea, viewPort.PixelWidth);
+        var areasToDraw =
+            Lookup.GetVisibleAreas(SetBoundary, new Rectangle(0, 0, (int) Bounds.Width, (int) Bounds.Height));
         for (var index = 0; index < areasToDraw.Count; index++)
         {
             var (area, type) = areasToDraw[index];
-            var rect = viewPort.GetRectangle(area);
             var brush = type switch
             {
                 RegionType.Border => Brushes.DarkSlateBlue,
                 RegionType.Filament => Brushes.Red,
                 _ => Brushes.White,
             };
-            context.FillRectangle(brush, new Rect(rect.X, rect.Y, rect.Width, rect.Height));
+            context.FillRectangle(brush, new Rect(area.X, area.Y, area.Width, area.Height));
         }
     }
 
     private void ResetLogicalArea()
     {
-        var defaultView = new ComplexArea(new Interval(-2, 2), new Interval(-2, 2));
-        var viewRatio = Bounds.Width / Bounds.Height;
-
-        if (viewRatio >= 1)
-        {
-            // Use vertical, pad horizontal
-            var realPaddedMagnitude = defaultView.RealInterval.Magnitude * viewRatio;
-            LogicalArea = defaultView with
-            {
-                RealInterval = Interval.FromCenterAndLength(0, realPaddedMagnitude)
-            };
-        }
-        else
-        {
-            // Use horizontal, pad vertical
-            var imagPaddedMagnitude = defaultView.ImagInterval.Magnitude / viewRatio;
-            LogicalArea = defaultView with
-            {
-                ImagInterval = Interval.FromCenterAndLength(0, imagPaddedMagnitude)
-            };
-        }
+        // TODO: Figure something about the the LogicalArea
+        SetBoundary = SquareBoundary.GetLargestCenteredSquareInside((int) Bounds.Width, (int) Bounds.Height);
     }
 
-    private void AdjustLogicalArea(Size bounds)
-    {
-        var aspectRatio = bounds.Width / bounds.Height;
-        var imagMagnitude = LogicalArea.RealInterval.Magnitude / aspectRatio;
-
-        LogicalArea = LogicalArea with
-        {
-            ImagInterval = Interval.FromMinAndLength(LogicalArea.ImagInterval.InclusiveMin, imagMagnitude)
-        };
-    }
-
-    protected override Size MeasureOverride(Size availableSize) => availableSize;
+    protected override Avalonia.Size MeasureOverride(Avalonia.Size availableSize) => availableSize;
 }

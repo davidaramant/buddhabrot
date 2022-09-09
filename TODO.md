@@ -32,9 +32,8 @@
   - [ ] Rework how the logical area is calculated
   - [ ] Render region interiors
     - [ ] Multi-threaded rendering
-      - [ ] `WriteableBitmap`
-        - [ ] `Screens` - get screen the window is on, get DPI from that
-        - [ ] Render larger image than screen; do not rerender while panning
+    - [ ] `RenderTargetBitmap` - https://github.com/AvaloniaUI/Avalonia/issues/2492
+    - [ ] Render larger image than screen; do not re-render while panning
   - [ ] Nicer aesthetic
 - [x] NUnit test project for manual "tests"
 - [ ] CI builds on GitHub

@@ -15,7 +15,7 @@ public sealed class ViewPort
     {
         LogicalArea = logicalArea;
         Resolution = resolution;
-        
+
         PixelWidth = logicalArea.RealInterval.Magnitude / (resolution.Width - 1);
     }
 
@@ -36,6 +36,19 @@ public sealed class ViewPort
         return new(new ComplexArea(realInterval, imagInterval), resolution);
     }
 
+    public static ViewPort FromResolution(Size resolution, Point originOffset, double pixelSize)
+    {
+        var realMagnitude = resolution.Width * pixelSize;
+        var imagMagnitude = resolution.Height * pixelSize;
+
+        var realInterval =
+            Interval.FromMinAndLength(-originOffset.X * pixelSize, realMagnitude);
+        var imagInterval =
+            Interval.FromMinAndLength((originOffset.Y - resolution.Height) * pixelSize, imagMagnitude);
+
+        return new(new ComplexArea(realInterval, imagInterval), resolution);
+    }
+
     private int FlipY(int y) => Resolution.Height - y - 1;
     private double GetRealValue(int x) => LogicalArea.RealInterval.InclusiveMin + x * PixelWidth;
     private double GetImagValue(int y) => LogicalArea.ImagInterval.InclusiveMin + FlipY(y) * PixelWidth;
@@ -44,14 +57,14 @@ public sealed class ViewPort
     public Complex GetComplex(Point position) => GetComplex(position.X, position.Y);
 
     public Rectangle GetRectangle(ComplexArea area) =>
-        new (
+        new(
             GetPosition(area.TopLeftCorner),
-            new Size((int) Math.Ceiling(area.RealInterval.Magnitude / PixelWidth),
-                (int) Math.Ceiling(area.ImagInterval.Magnitude / PixelWidth)));
+            new Size((int)Math.Ceiling(area.RealInterval.Magnitude / PixelWidth),
+                (int)Math.Ceiling(area.ImagInterval.Magnitude / PixelWidth)));
 
     public Point GetPosition(Complex c) => new(
-        (int) ((c.Real - LogicalArea.RealInterval.InclusiveMin) / PixelWidth),
-        FlipY((int) ((c.Imaginary - LogicalArea.ImagInterval.InclusiveMin) / PixelWidth)));
+        (int)((c.Real - LogicalArea.RealInterval.InclusiveMin) / PixelWidth),
+        FlipY((int)((c.Imaginary - LogicalArea.ImagInterval.InclusiveMin) / PixelWidth)));
 
     public override string ToString() => $"Area: {LogicalArea}, Resolution: {Resolution.Width}x{Resolution.Height}";
 }

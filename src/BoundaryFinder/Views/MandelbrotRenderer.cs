@@ -27,13 +27,13 @@ public sealed class MandelbrotRenderer : Control
         set => SetValue(SetBoundaryProperty, value);
     }
 
-    public static readonly StyledProperty<ComplexArea> LogicalAreaProperty =
-        AvaloniaProperty.Register<MandelbrotRenderer, ComplexArea>(nameof(LogicalArea));
+    public static readonly StyledProperty<ViewPort> ViewPortProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, ViewPort>(nameof(ViewPort));
 
-    public ComplexArea LogicalArea
+    public ViewPort ViewPort
     {
-        get => GetValue(LogicalAreaProperty);
-        set => SetValue(LogicalAreaProperty, value);
+        get => GetValue(ViewPortProperty);
+        set => SetValue(ViewPortProperty, value);
     }
 
     public static readonly StyledProperty<RegionLookup> LookupProperty =
@@ -51,7 +51,6 @@ public sealed class MandelbrotRenderer : Control
     static MandelbrotRenderer()
     {
         AffectsRender<MandelbrotRenderer>(LookupProperty);
-        AffectsRender<MandelbrotRenderer>(LogicalAreaProperty);
         AffectsRender<MandelbrotRenderer>(SetBoundaryProperty);
     }
 
@@ -118,13 +117,12 @@ public sealed class MandelbrotRenderer : Control
         base.OnPointerCaptureLost(e);
     }
 
-    private ViewPort GetCurrentViewPort() => ViewPort.FromResolution(
-        new System.Drawing.Size((int) Bounds.Width, (int) Bounds.Height),
-        LogicalArea.BottomLeftCorner,
-        LogicalArea.Width);
-
     public override void Render(DrawingContext context)
     {
+        ViewPort = ViewPort.FromResolution(
+            new System.Drawing.Size((int)Bounds.Width, (int)Bounds.Height),
+            SetBoundary.Center, 
+            2d / SetBoundary.QuadrantLength);
         context.FillRectangle(Brushes.LightGray, new Rect(Bounds.Size));
 
         var center = SetBoundary.Center;
@@ -146,11 +144,8 @@ public sealed class MandelbrotRenderer : Control
         }
     }
 
-    private void ResetLogicalArea()
-    {
-        // TODO: Figure something about the the LogicalArea
+    private void ResetLogicalArea() => 
         SetBoundary = SquareBoundary.GetLargestCenteredSquareInside((int) Bounds.Width, (int) Bounds.Height);
-    }
 
     protected override Avalonia.Size MeasureOverride(Avalonia.Size availableSize) => availableSize;
 }

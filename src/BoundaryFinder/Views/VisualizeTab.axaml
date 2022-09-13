@@ -70,7 +70,7 @@
             <Label
                 Content="{Binding NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}, Mode=OneWay}" />
             <Label
-                Content="{Binding #MandelbrotRenderer.LogicalArea}" />
+                Content="{Binding #MandelbrotRenderer.ViewPort.LogicalArea}" />
             <Button
                 Content="Save Quad Tree Image"
                 Command="{Binding SaveQuadTreeRenderingCommand}"/>

@@ -85,4 +85,66 @@ public sealed class ViewPortTests
 
         viewPort.LogicalArea.Width.Should().Be(2);
     }
+
+    public sealed record ResolutionTestCase(
+        string Name,
+        Size Resolution,
+        Point OriginOffset,
+        double PixelSize,
+        ComplexArea ExpectedArea)
+    {
+        public override string ToString() => Name;
+    }
+
+    public static IEnumerable<object[]> GetOverlapData()
+    {
+        yield return new object[]
+        {
+            new ResolutionTestCase(
+                "Center of Square 1:1",
+                new Size(100, 100),
+                new Point(0, 0), 1,
+                ExpectedArea: new ComplexArea(
+                    new Interval(0, 100),
+                    new Interval(-100, 0)))
+        };
+        yield return new object[]
+        {
+            new ResolutionTestCase(
+                "Center of Square 1:0.1",
+                new Size(100, 100),
+                new Point(0, 0), 0.1,
+                ExpectedArea: new ComplexArea(
+                    new Interval(0, 10),
+                    new Interval(-10, 0)))
+        };
+        yield return new object[]
+        {
+            new ResolutionTestCase(
+                "Offset Right",
+                new Size(100, 100),
+                new Point(50, 0), 0.1,
+                ExpectedArea: new ComplexArea(
+                    new Interval(-5, 5),
+                    new Interval(-10, 0)))
+        };
+        yield return new object[]
+        {
+            new ResolutionTestCase(
+                "Offset Up Imag Axis",
+                new Size(100, 100),
+                new Point(0, 50), 0.1,
+                ExpectedArea: new ComplexArea(
+                    new Interval(0, 10),
+                    new Interval(-5, 5)))
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetOverlapData))]
+    public void ShouldConstructFromResolution(ResolutionTestCase testCase)
+    {
+        var viewPort = ViewPort.FromResolution(testCase.Resolution, testCase.OriginOffset, testCase.PixelSize);
+        viewPort.LogicalArea.Should().Be(testCase.ExpectedArea);
+    }
 }

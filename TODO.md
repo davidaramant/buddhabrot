@@ -14,6 +14,7 @@
   - [x] Integrate this into the app somewhere
 - [x] Flip Y again - regions going down isn't helpful anymore
 - [x] Allow log area to be hidden
+- [ ] Split regions and quad tree into different files
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
   - [x] Switch to power-of-two divisions

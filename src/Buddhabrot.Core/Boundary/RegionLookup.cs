@@ -13,31 +13,19 @@ public sealed class RegionLookup
         new Interval(-2, 2));
 
     public static readonly RegionLookup Empty = new();
-    public int MaxX { get; }
-    public int MaxY { get; }
-    public ComplexArea PopulatedArea { get; }
 
     private RegionLookup()
     {
         _nodes.Add(Quad.EmptyLeaf);
         Levels = 1;
-        MaxX = 0;
-        MaxY = 0;
-        PopulatedArea = ComplexArea.Empty;
     }
 
     public RegionLookup(
-        AreaDivisions divisions,
-        int maxX,
-        int maxY,
         int levels,
         IEnumerable<uint> rawNodes)
     {
-        MaxX = maxX;
-        MaxY = maxY;
         Levels = levels;
         _nodes = rawNodes.Select(i => new Quad(i)).ToList();
-        PopulatedArea = ComputePopulatedArea(divisions.VerticalPower, maxX, maxY);
     }
 
     public RegionLookup(
@@ -67,10 +55,6 @@ public sealed class RegionLookup
             maxY = Math.Max(maxY, region.Y);
         }
 
-        MaxX = maxX;
-        MaxY = maxY;
-        PopulatedArea = ComputePopulatedArea(divisions.VerticalPower, maxX, maxY);
-
         Quad BuildQuad(int depth, int x, int y, int xOffset = 0)
         {
             if (depth == Levels - 1)
@@ -96,15 +80,7 @@ public sealed class RegionLookup
         log?.Invoke(
             $"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}, Num nodes: {_nodes.Count:N0}");
     }
-
-    private static ComplexArea ComputePopulatedArea(int verticalPower, int maxX, int maxY)
-    {
-        var sideLength = 2.0 / (1 << verticalPower);
-        return new ComplexArea(
-            Interval.FromMinAndLength(-2, (maxX + 1) * sideLength),
-            new Interval(0, (maxY + 1) * sideLength));
-    }
-
+    
     public IReadOnlyList<(ComplexArea Area, RegionType Type)> GetVisibleAreas(
         ComplexArea searchArea,
         double minVisibleWidth)

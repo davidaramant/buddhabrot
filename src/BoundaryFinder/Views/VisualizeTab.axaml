@@ -68,8 +68,6 @@
             Grid.Column="0"
             Grid.ColumnSpan="6">
             <Label
-                Content="{Binding NumberOfRegions, StringFormat=Number of Regions: \{0:N0\}, Mode=OneWay}" />
-            <Label
                 Content="{Binding #MandelbrotRenderer.ViewPort.LogicalArea}" />
             <Button
                 Content="Save Quad Tree Image"

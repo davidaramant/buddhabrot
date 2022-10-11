@@ -5,17 +5,17 @@ namespace Buddhabrot.Core.DataStorage;
 
 public sealed class DataProvider
 {
-    public string LocalDataStoragePath { get; set; } = string.Empty;
+    public string DataStoragePath { get; set; } = string.Empty;
 
     public IReadOnlyList<BoundaryParameters> GetBoundaryParameters()
     {
-        if (!Directory.Exists(LocalDataStoragePath))
+        if (!Directory.Exists(DataStoragePath))
         {
             return Array.Empty<BoundaryParameters>();
         }
 
         return
-            Directory.GetFiles(LocalDataStoragePath, "*.boundaries")
+            Directory.GetFiles(DataStoragePath, "*.boundaries")
                 .Select(filePath => BoundaryParameters.FromDescription(Path.GetFileNameWithoutExtension(filePath)))
                 .OrderByDescending(bp => bp.Divisions.VerticalPower)
                 .ToList();
@@ -23,31 +23,36 @@ public sealed class DataProvider
 
     public IReadOnlyList<RegionId> GetBoundaryRegions(BoundaryParameters parameters)
     {
-        using var stream = File.OpenRead(Path.Combine(LocalDataStoragePath, ToFileName(parameters)));
-        return BoundarySerializer.Load(stream).Regions;
+        using var stream = File.OpenRead(Path.Combine(DataStoragePath, ToBoundaryFileName(parameters)));
+        return BoundarySerializer.LoadRegions(stream).Regions;
     }
 
-    public (RegionLookup, int NumRegions) GetLookup(BoundaryParameters parameters)
+    public RegionLookup GetLookup(BoundaryParameters parameters)
     {
-        using var stream = File.OpenRead(Path.Combine(LocalDataStoragePath, ToFileName(parameters)));
-        var data = BoundarySerializer.Load(stream);
-        return (data.Lookup, data.Regions.Count);
+        using var stream = File.OpenRead(Path.Combine(DataStoragePath, ToQuadTreeFileName(parameters)));
+        return BoundarySerializer.LoadQuadTree(stream);
     }
 
     public void SaveBoundaryRegions(BoundaryParameters parameters, IEnumerable<RegionId> regions, RegionLookup lookup)
     {
-        if (!Directory.Exists(LocalDataStoragePath))
+        if (!Directory.Exists(DataStoragePath))
         {
-            Directory.CreateDirectory(LocalDataStoragePath);
+            Directory.CreateDirectory(DataStoragePath);
         }
 
-        using var stream = File.Open(Path.Combine(LocalDataStoragePath, ToFileName(parameters)), FileMode.Create);
-        BoundarySerializer.Save(parameters, regions, lookup, stream);
+        using (var stream = File.Open(Path.Combine(DataStoragePath, ToBoundaryFileName(parameters)), FileMode.Create))
+        {
+            BoundarySerializer.Save(parameters, regions, stream);
+        }
+        using (var stream = File.Open(Path.Combine(DataStoragePath, ToQuadTreeFileName(parameters)), FileMode.Create))
+        {
+            BoundarySerializer.Save(lookup, stream);
+        }
     }
 
     public string GetBoundaryParameterLocation(BoundaryParameters parameters)
     {
-        var path = Path.Combine(LocalDataStoragePath, parameters.Description);
+        var path = Path.Combine(DataStoragePath, parameters.Description);
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
@@ -56,6 +61,9 @@ public sealed class DataProvider
         return path;
     }
 
-    private static string ToFileName(BoundaryParameters parameters) =>
+    private static string ToBoundaryFileName(BoundaryParameters parameters) =>
         parameters.Description + ".boundaries";
+
+    private static string ToQuadTreeFileName(BoundaryParameters parameters) =>
+        parameters.Description + ".quadtree";
 }

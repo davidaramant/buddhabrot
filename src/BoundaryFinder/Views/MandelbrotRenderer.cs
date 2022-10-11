@@ -60,7 +60,7 @@ public sealed class MandelbrotRenderer : Control
         // HACK: I'm sure there is some fancy Reactive way to do this
         this.PropertyChanged += (s, e) =>
         {
-            if (e.Property.Name == nameof(Lookup) && Lookup.NodeCount > 1)
+            if (e.Property.Name == nameof(Lookup) && Lookup?.NodeCount > 1)
             {
                 ResetLogicalArea();
             }

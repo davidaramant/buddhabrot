@@ -8,7 +8,6 @@ public static class BoundarySerializer
     public static void Save(
         BoundaryParameters parameters,
         IEnumerable<RegionId> regions,
-        RegionLookup lookup,
         Stream stream)
     {
         var boundaries = new Boundaries
@@ -16,25 +15,35 @@ public static class BoundarySerializer
             VerticalPower = parameters.Divisions.VerticalPower,
             MaximumIterations = parameters.MaxIterations,
             Regions = regions.Select(r => new RegionLocation { X = r.X, Y = r.Y }).ToArray(),
-            MaxX = lookup.MaxX,
-            MaxY = lookup.MaxY,
-            QuadTreeNodes = lookup.GetRawNodes().Select(q => q.Encoded).ToArray(),
         };
         boundaries.Save(stream);
     }
 
-    public static (BoundaryParameters Parameters, IReadOnlyList<RegionId> Regions, RegionLookup Lookup) Load(
+    public static void Save(
+        RegionLookup lookup,
         Stream stream)
+    {
+        var quadTree = new QuadTree
+        {
+            Levels = lookup.Levels,
+            Nodes = lookup.GetRawNodes().Select(n => n.Encoded).ToArray(),
+        };
+        quadTree.Save(stream);
+    }
+
+    public static (BoundaryParameters Parameters, IReadOnlyList<RegionId> Regions) LoadRegions(Stream stream)
     {
         var boundaries = Boundaries.Load(stream);
         return (
             new BoundaryParameters(new AreaDivisions(boundaries.VerticalPower), boundaries.MaximumIterations),
-            boundaries.Regions.Select(rl => new RegionId(X: rl.X, Y: rl.Y)).ToList(),
-            new RegionLookup(
-                new AreaDivisions(boundaries.VerticalPower),
-                boundaries.MaxX,
-                boundaries.MaxY,
-                boundaries.VerticalPower + 2, // HACK: This seems... not amazing
-                boundaries.QuadTreeNodes));
+            boundaries.Regions.Select(rl => new RegionId(X: rl.X, Y: rl.Y)).ToList());
+    }
+
+    public static RegionLookup LoadQuadTree(Stream stream)
+    {
+        var quadTree = QuadTree.Load(stream);
+        return new RegionLookup(
+            quadTree.Levels,
+            quadTree.Nodes);
     }
 }

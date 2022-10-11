@@ -16,16 +16,16 @@ public sealed class BorderDataProvider
         "Mandelbrot Set Boundaries");
 
     private readonly DataProvider _dataProvider;
-    public string LocalDataStoragePath => _dataProvider.LocalDataStoragePath;
+    public string LocalDataStoragePath => _dataProvider.DataStoragePath;
     public ObservableCollection<BoundaryParameters> SavedBoundaries { get; } = new();
 
     public BorderDataProvider(DataProvider dataProvider)
     {
         _dataProvider = dataProvider;
 
-        if (string.IsNullOrWhiteSpace(_dataProvider.LocalDataStoragePath))
+        if (string.IsNullOrWhiteSpace(_dataProvider.DataStoragePath))
         {
-            _dataProvider.LocalDataStoragePath = _defaultDataSetPath;
+            _dataProvider.DataStoragePath = _defaultDataSetPath;
         }
 
         RefreshSavedBoundaries();
@@ -46,12 +46,12 @@ public sealed class BorderDataProvider
 
     public void UpdateDataStoragePath(string newPath)
     {
-        _dataProvider.LocalDataStoragePath = newPath;
+        _dataProvider.DataStoragePath = newPath;
         RefreshSavedBoundaries();
     }
 
     public IReadOnlyList<RegionId> LoadRegions(BoundaryParameters parameters) =>
         _dataProvider.GetBoundaryRegions(parameters);
 
-    public (RegionLookup, int NumRegions) LoadLookup(BoundaryParameters parameters) => _dataProvider.GetLookup(parameters);
+    public RegionLookup LoadLookup(BoundaryParameters parameters) => _dataProvider.GetLookup(parameters);
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using System.Net.Mime;
 using System.Reactive;
@@ -98,6 +99,8 @@ public sealed class MandelbrotRenderer : Control
             // TODO: Handle resizing
             _frontBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
             _backBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+
+            _renderState = RenderState.Uninitialized;
         }
     }
 
@@ -156,45 +159,24 @@ public sealed class MandelbrotRenderer : Control
 
         InitializeBitmaps(size.Width, size.Height);
 
-        if (_renderState == RenderState.Uninitialized)
+        // TODO: There are state issues with when the images are rendered.
+        // - The window apparently "zooms" when launched, causing the bitmaps to initialized multiple times
+        // - If it's busy rendering, it needs to cancel that attempt when resized 
+        
+        switch (_renderState)
         {
-            _renderState = RenderState.Rendering;
-            ThreadPool.QueueUserWorkItem(RenderBuffers);
+            case RenderState.Uninitialized:
+                _renderState = RenderState.Rendering;
+                ThreadPool.QueueUserWorkItem(RenderBuffers);
+                break;
+            case RenderState.Rendering:
+                break;
+            case RenderState.Done:
+                context.DrawImage(_frontBuffer,
+                    new Rect(0, 0, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height)
+                );
+                break;
         }
-
-        if (_renderState == RenderState.Done)
-        {
-            context.FillRectangle(Brushes.Orange, new Rect(Bounds.Size));
-            // context.DrawImage(_frontBuffer,
-            //     new Rect(0, 0, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height),
-            //     new Rect(0, 0, Width, Height)
-            // )
-            // TODO: Why doesn't this work???????????
-            context.DrawImage(_frontBuffer,
-                new Rect(0, 0, 100, 100),
-                new Rect(0, 0, 100, 100)
-            );
-        }
-
-        // context.FillRectangle(Brushes.LightGray, new Rect(Bounds.Size));
-        //
-        // var center = SetBoundary.Center;
-        // var radius = SetBoundary.QuadrantLength;
-        // context.DrawEllipse(Brushes.White, null, new Point(center.X, center.Y), radius, radius);
-        //
-        // var areasToDraw =
-        //     Lookup.GetVisibleAreas(SetBoundary, new Rectangle(0, 0, (int)Bounds.Width, (int)Bounds.Height));
-        // for (var index = 0; index < areasToDraw.Count; index++)
-        // {
-        //     var (area, type) = areasToDraw[index];
-        //     var brush = type switch
-        //     {
-        //         RegionType.Border => Brushes.DarkSlateBlue,
-        //         RegionType.Filament => Brushes.Red,
-        //         _ => Brushes.White,
-        //     };
-        //     context.FillRectangle(brush, new Rect(area.X, area.Y, area.Width, area.Height));
-        // }
     }
 
     private void RenderBuffers(object? _)
@@ -203,12 +185,10 @@ public sealed class MandelbrotRenderer : Control
 
         using (var context = _backBuffer.CreateDrawingContext(null))
         {
-            context.Clear(Colors.Aqua);
+            var skiaContext = (ISkiaDrawingContextImpl)context;
+            var canvas = skiaContext.SkCanvas;
 
-            //var skiaContext = (ISkiaDrawingContextImpl)context;
-            //var canvas = skiaContext.SkCanvas;
-
-            //canvas.DrawRect(0, 0, _backBuffer.PixelSize.Width, _backBuffer.PixelSize.Height, new SKPaint { Color = SKColors.Red });
+            canvas.DrawRect(0, 0, _backBuffer.PixelSize.Width, _backBuffer.PixelSize.Height, new SKPaint { Color = SKColors.LightGray });
 
 
             // var center = SetBoundary.Center;
@@ -233,8 +213,8 @@ public sealed class MandelbrotRenderer : Control
         }
 
         (_backBuffer, _frontBuffer) = (_frontBuffer, _backBuffer);
-
         _renderState = RenderState.Done;
+        InvalidateVisual();
     }
 
     private void ResetLogicalArea() =>

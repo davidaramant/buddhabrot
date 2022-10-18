@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Net.Mime;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,13 +8,12 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Media.Immutable;
 using Avalonia.Skia;
+using Avalonia.Threading;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using ReactiveUI;
 using SkiaSharp;
-using Brushes = Avalonia.Media.Brushes;
 using Point = Avalonia.Point;
 
 namespace BoundaryFinder.Views;
@@ -29,13 +27,145 @@ public sealed class MandelbrotRenderer : Control
     private enum RenderState
     {
         Uninitialized,
-        Rendering,
-        Done,
+        RenderingNormal,
+        RenderingPaused,
+        Idle,
+        Panning,
     }
 
-    private volatile RenderState _renderState = RenderState.Uninitialized;
-    private RenderTargetBitmap _frontBuffer = new RenderTargetBitmap(new PixelSize(1, 1));
-    private RenderTargetBitmap _backBuffer = new RenderTargetBitmap(new PixelSize(1, 1));
+    private enum Event
+    {
+        ParamsChanged,
+        DoneRendering,
+        StartPan,
+        EndPan,
+    }
+
+    private RenderState _state = RenderState.Uninitialized;
+
+    private async Task HandleEventAsync(Event @event) =>
+        _state = await (_state switch
+        {
+            RenderState.Uninitialized => HandleEventInUninitializedAsync(@event),
+            RenderState.RenderingNormal => HandleEventInRenderingNormalAsync(@event),
+            RenderState.RenderingPaused => HandleEventInRenderingPausedAsync(@event),
+            RenderState.Idle => HandleEventInIdleAsync(@event),
+            RenderState.Panning => HandleEventInPanningAsync(@event),
+            _ => throw new ArgumentOutOfRangeException()
+        });
+
+    private async Task<RenderState> HandleEventInUninitializedAsync(Event @event)
+    {
+        if (@event == Event.ParamsChanged)
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (Lookup == null)
+            {
+                RecreateBuffers();
+            }
+            else
+            {
+                RecreateBuffers();
+                await StartRenderingAsync();
+                return RenderState.RenderingNormal;
+            }
+        }
+
+        return _state;
+    }
+
+    private async Task<RenderState> HandleEventInRenderingNormalAsync(Event @event)
+    {
+        switch (@event)
+        {
+            case Event.ParamsChanged:
+                await CancelRenderingAsync();
+                await StartRenderingAsync();
+                return RenderState.RenderingNormal;
+
+            case Event.DoneRendering:
+                InvalidateVisual();
+                return RenderState.Idle;
+
+            case Event.StartPan:
+                await CancelRenderingAsync();
+                return RenderState.RenderingPaused;
+
+            default:
+                return RenderState.RenderingNormal;
+        }
+    }
+
+    private async Task<RenderState> HandleEventInRenderingPausedAsync(Event @event)
+    {
+        if (@event == Event.EndPan)
+        {
+            await StartRenderingAsync();
+            return RenderState.RenderingNormal;
+        }
+
+        return RenderState.RenderingPaused;
+    }
+
+    private async Task<RenderState> HandleEventInIdleAsync(Event @event)
+    {
+        if (@event == Event.ParamsChanged)
+        {
+            await StartRenderingAsync();
+            return RenderState.RenderingNormal;
+        }
+        else if (@event == Event.StartPan)
+        {
+            return RenderState.Panning;
+        }
+
+        return RenderState.Idle;
+    }
+
+    private async Task<RenderState> HandleEventInPanningAsync(Event @event)
+    {
+        if (@event == Event.EndPan)
+        {
+            await StartRenderingAsync();
+            return RenderState.RenderingNormal;
+        }
+
+        return RenderState.Panning;
+    }
+
+    private void RecreateBuffers()
+    {
+        var width = (int)Bounds.Width;
+        var height = (int)Bounds.Height;
+
+        if (_frontBuffer.PixelSize.Width != width || _frontBuffer.PixelSize.Height != height)
+        {
+            _frontBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+            _backBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+        }
+    }
+
+    private async Task StartRenderingAsync()
+    {
+        var args = await Dispatcher.UIThread.InvokeAsync(() => new RenderingArgs(SetBoundary, Lookup));
+
+        _renderingTask =
+            Task.Run(() => RenderBuffersAsync(args, _cancelSource.Token));
+    }
+
+    private async Task CancelRenderingAsync()
+    {
+        _cancelSource.Cancel();
+        await _renderingTask;
+        _cancelSource = new();
+    }
+
+    private CancellationTokenSource _cancelSource = new();
+    private Task _renderingTask = Task.CompletedTask;
+
+
+    private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
+    private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
 
     public static readonly StyledProperty<SquareBoundary> SetBoundaryProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, SquareBoundary>(nameof(SetBoundary));
@@ -77,31 +207,26 @@ public sealed class MandelbrotRenderer : Control
     {
         ClipToBounds = true;
         // HACK: I'm sure there is some fancy Reactive way to do this
-        this.PropertyChanged += (s, e) =>
+        this.PropertyChanged += async (s, e) =>
         {
             if (e.Property.Name == nameof(Lookup) && Lookup?.NodeCount > 1)
             {
                 ResetLogicalArea();
+                await HandleEventAsync(Event.ParamsChanged);
+            }
+            else if (e.Property.Name == nameof(SetBoundary))
+            {
+                await HandleEventAsync(Event.ParamsChanged);
             }
         };
+
+        this.EffectiveViewportChanged += async (_, _) => { await HandleEventAsync(Event.ParamsChanged); };
 
         ResetViewCommand = ReactiveCommand.Create(ResetLogicalArea);
         ZoomOutCommand = ReactiveCommand.Create(() =>
         {
             SetBoundary = SetBoundary.ZoomOut((int)Bounds.Width, (int)Bounds.Height);
         });
-    }
-
-    private void InitializeBitmaps(int width, int height)
-    {
-        if (_frontBuffer.PixelSize.Width != width || _frontBuffer.PixelSize.Height != height)
-        {
-            // TODO: Handle resizing
-            _frontBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
-            _backBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
-
-            _renderState = RenderState.Uninitialized;
-        }
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -157,64 +282,51 @@ public sealed class MandelbrotRenderer : Control
             SetBoundary.Center,
             2d / SetBoundary.QuadrantLength);
 
-        InitializeBitmaps(size.Width, size.Height);
-
-        // TODO: There are state issues with when the images are rendered.
-        // - The window apparently "zooms" when launched, causing the bitmaps to initialized multiple times
-        // - If it's busy rendering, it needs to cancel that attempt when resized 
-        
-        switch (_renderState)
-        {
-            case RenderState.Uninitialized:
-                _renderState = RenderState.Rendering;
-                ThreadPool.QueueUserWorkItem(RenderBuffers);
-                break;
-            case RenderState.Rendering:
-                break;
-            case RenderState.Done:
-                context.DrawImage(_frontBuffer,
-                    new Rect(0, 0, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height)
-                );
-                break;
-        }
+        context.DrawImage(_frontBuffer,
+            new Rect(0, 0, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height)
+        );
     }
 
-    private void RenderBuffers(object? _)
-    {
-        // TODO: This method can't access any UI properties. It needs to be passed in all the dependencies
+    sealed record RenderingArgs(
+        SquareBoundary SetBoundary,
+        RegionLookup Lookup);
 
+    private Task RenderBuffersAsync(RenderingArgs args, CancellationToken cancelToken)
+    {
+        // TODO: Check for cancellation
         using (var context = _backBuffer.CreateDrawingContext(null))
         {
             var skiaContext = (ISkiaDrawingContextImpl)context;
             var canvas = skiaContext.SkCanvas;
 
-            canvas.DrawRect(0, 0, _backBuffer.PixelSize.Width, _backBuffer.PixelSize.Height, new SKPaint { Color = SKColors.LightGray });
+            canvas.DrawRect(0, 0, _backBuffer.PixelSize.Width, _backBuffer.PixelSize.Height,
+                new SKPaint { Color = SKColors.LightGray });
 
+            var center = args.SetBoundary.Center;
+            var radius = args.SetBoundary.QuadrantLength;
 
-            // var center = SetBoundary.Center;
-            // var radius = SetBoundary.QuadrantLength;
-            //
-            // canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = SKColors.White });
-            //
-            // var areasToDraw =
-            //     Lookup.GetVisibleAreas(SetBoundary, new Rectangle(0, 0, (int)Bounds.Width, (int)Bounds.Height));
-            // for (var index = 0; index < areasToDraw.Count; index++)
-            // {
-            //     var (area, type) = areasToDraw[index];
-            //     var color = type switch
-            //     {
-            //         RegionType.Border => SKColors.DarkSlateBlue,
-            //         RegionType.Filament => SKColors.Red,
-            //         _ => SKColors.White,
-            //     };
-            //
-            //     canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
-            // }
+            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = SKColors.White });
+
+            var areasToDraw =
+                args.Lookup.GetVisibleAreas(args.SetBoundary,
+                    new Rectangle(0, 0, (int)Bounds.Width, (int)Bounds.Height));
+            for (var index = 0; index < areasToDraw.Count; index++)
+            {
+                var (area, type) = areasToDraw[index];
+                var color = type switch
+                {
+                    RegionType.Border => SKColors.DarkSlateBlue,
+                    RegionType.Filament => SKColors.Red,
+                    _ => SKColors.White,
+                };
+
+                canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
+            }
         }
 
         (_backBuffer, _frontBuffer) = (_frontBuffer, _backBuffer);
-        _renderState = RenderState.Done;
-        InvalidateVisual();
+
+        return HandleEventAsync(Event.DoneRendering);
     }
 
     private void ResetLogicalArea() =>

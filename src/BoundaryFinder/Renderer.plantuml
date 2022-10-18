@@ -1,0 +1,36 @@
+@startuml Renderer
+
+' Events:
+' - Params Changed (New Data, Resize, Zoom)
+' - Start Pan
+' - End Pan
+' - Done Rendering
+
+state Unitialized
+state Idle
+state Panning
+state Rendering {
+    state Normal : entry / Start Render
+    state Paused : entry / Cancel Render
+    state Paused : Params Changed / NOTHING
+    [*] -> Normal
+    Normal -> Paused : Start Pan
+    Paused -> Normal : End Pan
+}
+
+[*] -> Unitialized
+
+Unitialized -> Unitialized : Params Changed [Not New Data] / Recreate Buffers
+Unitialized -d-> Rendering : Params Changed
+
+Rendering -> Rendering : Params Changed / Cancel Render
+Rendering -l-> Idle : Done Rendering
+
+Idle -d-> Panning : Start Pan
+Idle -> Rendering : Params Changed
+
+Panning -u-> Rendering : End Pan
+
+
+
+@enduml

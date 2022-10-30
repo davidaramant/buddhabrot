@@ -1,39 +1,33 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Avalonia;
 
 namespace BoundaryFinder.Views;
 
-public sealed class RenderInstructions : IEnumerable<Rect>
+public sealed class RenderInstructions
 {
     private readonly Rect? _firstDirtyRect;
     private readonly Rect? _secondDirtyRect;
 
-    public bool PasteFrontBuffer { get; }
+    public Point? PasteOffset { get; }
+    public bool PasteFrontBuffer => PasteOffset.HasValue;
 
-    private RenderInstructions(bool pasteFrontBuffer, Rect? firstDirtyRect, Rect? secondDirtyRect)
+    private RenderInstructions(Point? pasteOffset, Rect? firstDirtyRect, Rect? secondDirtyRect)
     {
-        PasteFrontBuffer = pasteFrontBuffer;
+        PasteOffset = pasteOffset;
         _firstDirtyRect = firstDirtyRect;
         _secondDirtyRect = secondDirtyRect;
     }
 
     public static RenderInstructions Everything(Size newSize) =>
         new(
-            pasteFrontBuffer: false,
+            pasteOffset: null,
             firstDirtyRect: new Rect(new Point(0, 0), newSize),
             secondDirtyRect: null);
 
-    public static RenderInstructions Calculate(Size oldSize, Size newSize)
+    public static RenderInstructions Resized(Size oldSize, Size newSize)
     {
-        if (newSize.Width <= oldSize.Width && newSize.Height <= oldSize.Height)
-        {
-            return new RenderInstructions(
-                pasteFrontBuffer: true,
-                firstDirtyRect: null,
-                secondDirtyRect: null);
-        }
-
         Rect? horizontal = null;
         if (newSize.Width > oldSize.Width)
         {
@@ -55,12 +49,62 @@ public sealed class RenderInstructions : IEnumerable<Rect>
         }
 
         return new RenderInstructions(
-            pasteFrontBuffer: true,
+            pasteOffset: new Point(0, 0),
             firstDirtyRect: horizontal,
             secondDirtyRect: vertical);
     }
 
-    public IEnumerator<Rect> GetEnumerator()
+    public static RenderInstructions Moved(Size size, Point offset)
+    {
+        Rect? horizontal = null;
+        if (offset.X != 0)
+        {
+            if (offset.X < 0)
+            {
+                horizontal = new Rect(
+                    size.Width + offset.X,
+                    0,
+                    width: Math.Abs(offset.X),
+                    size.Height);
+            }
+            else
+            {
+                horizontal = new Rect(
+                    0,
+                    0,
+                    width: offset.X,
+                    size.Height);
+            }
+        }
+
+        Rect? vertical = null;
+        if (offset.Y != 0)
+        {
+            if (offset.Y < 0) // Up
+            {
+                vertical = new Rect(
+                    x: Math.Max(0, offset.X),
+                    y: size.Height + offset.Y,
+                    width: Math.Min(size.Width, size.Width - Math.Abs(offset.X)),
+                    height: Math.Abs(offset.Y));
+            }
+            else // Down
+            {
+                vertical = new Rect(
+                    x: Math.Max(0, offset.X),
+                    y: 0,
+                    width: Math.Min(size.Width, size.Width - Math.Abs(offset.X)),
+                    height: offset.Y);
+            }
+        }
+
+        return new RenderInstructions(
+            pasteOffset: offset,
+            firstDirtyRect: horizontal,
+            secondDirtyRect: vertical);
+    }
+
+    public IEnumerable<Rect> GetDirtyRectangles()
     {
         if (_firstDirtyRect.HasValue)
             yield return _firstDirtyRect.Value;
@@ -68,6 +112,4 @@ public sealed class RenderInstructions : IEnumerable<Rect>
         if (_secondDirtyRect.HasValue)
             yield return _secondDirtyRect.Value;
     }
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

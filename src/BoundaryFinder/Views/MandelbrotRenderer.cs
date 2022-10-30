@@ -56,19 +56,11 @@ public sealed class MandelbrotRenderer : Control
 
     private async Task<RenderState> HandleEventInUninitializedAsync(Event @event)
     {
-        if (@event == Event.ParamsChanged)
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (@event == Event.ParamsChanged && Lookup != null)
         {
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (Lookup == null)
-            {
-                RecreateBuffers();
-            }
-            else
-            {
-                RecreateBuffers();
-                await StartRenderingAsync();
-                return RenderState.RenderingNormal;
-            }
+            await StartRenderingAsync();
+            return RenderState.RenderingNormal;
         }
 
         return _state;
@@ -131,18 +123,6 @@ public sealed class MandelbrotRenderer : Control
         }
 
         return RenderState.Panning;
-    }
-
-    private void RecreateBuffers()
-    {
-        var width = (int)Bounds.Width;
-        var height = (int)Bounds.Height;
-
-        if (_frontBuffer.PixelSize.Width != width || _frontBuffer.PixelSize.Height != height)
-        {
-            _frontBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
-            _backBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
-        }
     }
 
     private async Task StartRenderingAsync()
@@ -293,13 +273,21 @@ public sealed class MandelbrotRenderer : Control
 
     private Task RenderBuffersAsync(RenderingArgs args, CancellationToken cancelToken)
     {
+        var width = (int)Bounds.Width;
+        var height = (int)Bounds.Height;
+
+        if (_backBuffer.PixelSize.Width != width || _backBuffer.PixelSize.Height != height)
+        {
+            _backBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+        }
+        
         // TODO: Check for cancellation
         using (var context = _backBuffer.CreateDrawingContext(null))
         {
             var skiaContext = (ISkiaDrawingContextImpl)context;
             var canvas = skiaContext.SkCanvas;
 
-            canvas.DrawRect(0, 0, _backBuffer.PixelSize.Width, _backBuffer.PixelSize.Height,
+            canvas.DrawRect(0, 0, width, height,
                 new SKPaint { Color = SKColors.LightGray });
 
             var center = args.SetBoundary.Center;
@@ -309,7 +297,7 @@ public sealed class MandelbrotRenderer : Control
 
             var areasToDraw =
                 args.Lookup.GetVisibleAreas(args.SetBoundary,
-                    new Rectangle(0, 0, (int)Bounds.Width, (int)Bounds.Height));
+                    new Rectangle(0, 0, width, height));
             for (var index = 0; index < areasToDraw.Count; index++)
             {
                 var (area, type) = areasToDraw[index];

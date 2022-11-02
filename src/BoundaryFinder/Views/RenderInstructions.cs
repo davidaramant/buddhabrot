@@ -1,10 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Avalonia;
 
 namespace BoundaryFinder.Views;
 
+// TODO: This needs to expose SoureRect and DestRect for pasting images
 public sealed class RenderInstructions
 {
     private readonly Rect? _firstDirtyRect;

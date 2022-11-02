@@ -23,6 +23,7 @@ public sealed class MandelbrotRenderer : Control
     private bool _panning;
     private Point _panningStartPoint;
     private SquareBoundary _panningStart;
+    private RenderInstructions _nextInstructions = RenderInstructions.Everything(new Avalonia.Size(1, 1));
 
     private enum RenderState
     {
@@ -35,7 +36,9 @@ public sealed class MandelbrotRenderer : Control
 
     private enum Event
     {
-        ParamsChanged,
+        NewData,
+        Resize,
+        Zoom,
         DoneRendering,
         StartPan,
         EndPan,
@@ -56,9 +59,9 @@ public sealed class MandelbrotRenderer : Control
 
     private async Task<RenderState> HandleEventInUninitializedAsync(Event @event)
     {
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (@event == Event.ParamsChanged && Lookup != null)
+        if (@event == Event.NewData)
         {
+            _nextInstructions = RenderInstructions.Everything(Bounds.Size);
             await StartRenderingAsync();
             return RenderState.RenderingNormal;
         }
@@ -70,7 +73,15 @@ public sealed class MandelbrotRenderer : Control
     {
         switch (@event)
         {
-            case Event.ParamsChanged:
+            case Event.NewData:
+            case Event.Zoom:
+                _nextInstructions = RenderInstructions.Everything(Bounds.Size);
+                await CancelRenderingAsync();
+                await StartRenderingAsync();
+                return RenderState.RenderingNormal;
+
+            case Event.Resize:
+                _nextInstructions = RenderInstructions.Resized(oldSize: _frontBuffer.Size, newSize: Bounds.Size);
                 await CancelRenderingAsync();
                 await StartRenderingAsync();
                 return RenderState.RenderingNormal;
@@ -92,6 +103,7 @@ public sealed class MandelbrotRenderer : Control
     {
         if (@event == Event.EndPan)
         {
+            _nextInstructions = RenderInstructions.Moved(Bounds.Size, new Point(0, 0)); // TODO: Pass in panning offset
             await StartRenderingAsync();
             return RenderState.RenderingNormal;
         }
@@ -101,23 +113,31 @@ public sealed class MandelbrotRenderer : Control
 
     private async Task<RenderState> HandleEventInIdleAsync(Event @event)
     {
-        if (@event == Event.ParamsChanged)
+        switch (@event)
         {
-            await StartRenderingAsync();
-            return RenderState.RenderingNormal;
-        }
-        else if (@event == Event.StartPan)
-        {
-            return RenderState.Panning;
-        }
+            case Event.NewData:
+            case Event.Zoom:
+                _nextInstructions = RenderInstructions.Everything(Bounds.Size);
+                await StartRenderingAsync();
+                return RenderState.RenderingNormal;
 
-        return RenderState.Idle;
+            case Event.Resize:
+                _nextInstructions = RenderInstructions.Resized(oldSize: _frontBuffer.Size, newSize: Bounds.Size);
+                await StartRenderingAsync();
+                return RenderState.RenderingNormal;
+
+            case Event.StartPan:
+                return RenderState.Panning;
+            default:
+                return RenderState.Idle;
+        }
     }
 
     private async Task<RenderState> HandleEventInPanningAsync(Event @event)
     {
         if (@event == Event.EndPan)
         {
+            _nextInstructions = RenderInstructions.Moved(Bounds.Size, new Point(0, 0)); // TODO: Pass in panning offset
             await StartRenderingAsync();
             return RenderState.RenderingNormal;
         }
@@ -127,7 +147,8 @@ public sealed class MandelbrotRenderer : Control
 
     private async Task StartRenderingAsync()
     {
-        var args = await Dispatcher.UIThread.InvokeAsync(() => new RenderingArgs(SetBoundary, Lookup));
+        var args = await Dispatcher.UIThread.InvokeAsync(
+            () => new RenderingArgs(_nextInstructions, SetBoundary, Lookup));
 
         _renderingTask =
             Task.Run(() => RenderBuffersAsync(args, _cancelSource.Token));
@@ -192,15 +213,15 @@ public sealed class MandelbrotRenderer : Control
             if (e.Property.Name == nameof(Lookup) && Lookup?.NodeCount > 1)
             {
                 ResetLogicalArea();
-                await HandleEventAsync(Event.ParamsChanged);
+                await HandleEventAsync(Event.NewData);
             }
             else if (e.Property.Name == nameof(SetBoundary))
             {
-                await HandleEventAsync(Event.ParamsChanged);
+                await HandleEventAsync(Event.Zoom);
             }
         };
 
-        this.EffectiveViewportChanged += async (_, _) => { await HandleEventAsync(Event.ParamsChanged); };
+        this.EffectiveViewportChanged += async (_, _) => { await HandleEventAsync(Event.Resize); };
 
         ResetViewCommand = ReactiveCommand.Create(ResetLogicalArea);
         ZoomOutCommand = ReactiveCommand.Create(() =>
@@ -268,6 +289,7 @@ public sealed class MandelbrotRenderer : Control
     }
 
     sealed record RenderingArgs(
+        RenderInstructions Instructions,
         SquareBoundary SetBoundary,
         RegionLookup Lookup);
 
@@ -280,7 +302,7 @@ public sealed class MandelbrotRenderer : Control
         {
             _backBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
         }
-        
+
         // TODO: Check for cancellation
         using (var context = _backBuffer.CreateDrawingContext(null))
         {
@@ -295,20 +317,34 @@ public sealed class MandelbrotRenderer : Control
 
             canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = SKColors.White });
 
-            var areasToDraw =
-                args.Lookup.GetVisibleAreas(args.SetBoundary,
-                    new Rectangle(0, 0, width, height));
-            for (var index = 0; index < areasToDraw.Count; index++)
+            if (args.Instructions.PasteFrontBuffer)
             {
-                var (area, type) = areasToDraw[index];
-                var color = type switch
-                {
-                    RegionType.Border => SKColors.DarkSlateBlue,
-                    RegionType.Filament => SKColors.Red,
-                    _ => SKColors.White,
-                };
+                context.DrawBitmap(
+                    _frontBuffer.PlatformImpl,
+                    opacity: 1,
+                    sourceRect: new Rect(new Point(0, 0), _frontBuffer.Size),
+                    destRect: new Rect(args.Instructions.PasteOffset.Value.X, args.Instructions.PasteOffset.Value.Y,
+                        width, height));
+            }
 
-                canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
+            foreach (var dirtyRect in args.Instructions.GetDirtyRectangles())
+            {
+                var areasToDraw =
+                    args.Lookup.GetVisibleAreas(args.SetBoundary,
+                        new System.Drawing.Rectangle((int)dirtyRect.X, (int)dirtyRect.Y, (int)dirtyRect.Width,
+                            (int)dirtyRect.Height));
+                for (var index = 0; index < areasToDraw.Count; index++)
+                {
+                    var (area, type) = areasToDraw[index];
+                    var color = type switch
+                    {
+                        RegionType.Border => SKColors.DarkSlateBlue,
+                        RegionType.Filament => SKColors.Red,
+                        _ => SKColors.White,
+                    };
+
+                    canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
+                }
             }
         }
 

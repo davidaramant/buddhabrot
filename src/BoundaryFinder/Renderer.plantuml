@@ -1,7 +1,9 @@
 @startuml Renderer
 
 ' Events:
-' - Params Changed (New Data, Resize, Zoom)
+' - New Data
+' - Resize
+' - Zoom
 ' - Start Pan
 ' - End Pan
 ' - Done Rendering
@@ -20,16 +22,17 @@ state Rendering {
 
 [*] -> Unitialized
 
-Unitialized -> Unitialized : Params Changed [Not New Data] / Recreate Buffers
-Unitialized -d-> Rendering : Params Changed
+Unitialized -d-> Rendering : New Data / Invalidate Everything
 
-Rendering -> Rendering : Params Changed / Cancel Render
+Rendering -> Rendering : New Data, Zoom\n/ Cancel Render,\nInvalidate Everything
+Rendering -> Rendering : Resize\n/ Cancel Render,\nInstructions for new size
 Rendering -l-> Idle : Done Rendering
 
 Idle -d-> Panning : Start Pan
-Idle -> Rendering : Params Changed
+Idle -> Rendering : New Data, Zoom\n/ Invalidate Everything
+Idle -> Rendering : Resize\n/ Instructions for new size
 
-Panning -u-> Rendering : End Pan
+Panning -u-> Rendering : End Pan / Update Instructions From Pan
 
 
 

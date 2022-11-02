@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Reactive;
 using System.Threading;
@@ -44,18 +45,37 @@ public sealed class MandelbrotRenderer : Control
         EndPan,
     }
 
+    private readonly Queue<Event> _eventQueue = new();
+    private bool _handlingQueue = false;
     private RenderState _state = RenderState.Uninitialized;
 
-    private async Task HandleEventAsync(Event @event) =>
-        _state = await (_state switch
+    private async Task HandleEventAsync(Event @event)
+    {
+        Console.Out.WriteLine($"{_state}: {@event}");
+        _eventQueue.Enqueue(@event);
+
+        if (_handlingQueue)
         {
-            RenderState.Uninitialized => HandleEventInUninitializedAsync(@event),
-            RenderState.RenderingNormal => HandleEventInRenderingNormalAsync(@event),
-            RenderState.RenderingPaused => HandleEventInRenderingPausedAsync(@event),
-            RenderState.Idle => HandleEventInIdleAsync(@event),
-            RenderState.Panning => HandleEventInPanningAsync(@event),
-            _ => throw new ArgumentOutOfRangeException()
-        });
+            Console.Out.WriteLine("bailing, event queued...");
+            return;
+        }
+
+        _handlingQueue = true;
+        while (_eventQueue.TryDequeue(out var e))
+        {
+            _state = await (_state switch
+            {
+                RenderState.Uninitialized => HandleEventInUninitializedAsync(e),
+                RenderState.RenderingNormal => HandleEventInRenderingNormalAsync(e),
+                RenderState.RenderingPaused => HandleEventInRenderingPausedAsync(e),
+                RenderState.Idle => HandleEventInIdleAsync(e),
+                RenderState.Panning => HandleEventInPanningAsync(e),
+                _ => throw new ArgumentOutOfRangeException()
+            });
+        }
+
+        _handlingQueue = false;
+    }
 
     private async Task<RenderState> HandleEventInUninitializedAsync(Event @event)
     {

@@ -12,19 +12,22 @@ public sealed class RenderInstructions
     public bool PasteFrontBuffer { get; }
     public Rect SourceRect { get; }
     public Rect DestRect { get; }
+    public PixelSize Size { get; }
 
     private RenderInstructions(
         bool pasteFrontBuffer,
         Rect sourceRect,
         Rect destRect,
         PixelRect? firstDirtyRect,
-        PixelRect? secondDirtyRect)
+        PixelRect? secondDirtyRect, 
+        PixelSize size)
     {
         PasteFrontBuffer = pasteFrontBuffer;
         SourceRect = sourceRect;
         DestRect = destRect;
         _firstDirtyRect = firstDirtyRect;
         _secondDirtyRect = secondDirtyRect;
+        Size = size;
     }
 
     public static RenderInstructions Everything(PixelSize newSize) =>
@@ -33,7 +36,8 @@ public sealed class RenderInstructions
             sourceRect: Rect.Empty,
             destRect: Rect.Empty,
             firstDirtyRect: new PixelRect(new PixelPoint(0, 0), newSize),
-            secondDirtyRect: null);
+            secondDirtyRect: null,
+            size: newSize);
 
     public static RenderInstructions Resized(PixelSize oldSize, PixelSize newSize)
     {
@@ -68,7 +72,8 @@ public sealed class RenderInstructions
             sourceRect: pasteRect,
             destRect: pasteRect,
             firstDirtyRect: horizontal,
-            secondDirtyRect: vertical);
+            secondDirtyRect: vertical,
+            size: newSize);
     }
 
     public static RenderInstructions Moved(PixelSize size, PixelVector offset)
@@ -131,7 +136,8 @@ public sealed class RenderInstructions
                 width: pasteWidth,
                 height: pasteHeight),
             firstDirtyRect: horizontal,
-            secondDirtyRect: vertical);
+            secondDirtyRect: vertical,
+            size: size);
 
         static int ClampSource(int p) => -Math.Min(0, p);
         static int ClampDest(int p) => Math.Max(0, p);

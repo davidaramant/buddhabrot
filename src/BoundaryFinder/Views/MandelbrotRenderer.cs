@@ -14,7 +14,6 @@ using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using ReactiveUI;
 using SkiaSharp;
-using Point = Avalonia.Point;
 
 namespace BoundaryFinder.Views;
 
@@ -48,9 +47,9 @@ public sealed class MandelbrotRenderer : Control
     private bool _handlingQueue = false;
     private RenderState _state = RenderState.Uninitialized;
 
-    private PixelSize PixelBounds => new((int)Bounds.Width, (int)Bounds.Height);
-    
-    
+    private PixelSize PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
+
+
     private async Task HandleEventAsync(Event @event)
     {
         Console.Out.WriteLine($"{_state}: {@event}");
@@ -125,7 +124,8 @@ public sealed class MandelbrotRenderer : Control
     {
         if (@event == Event.EndPan)
         {
-            _nextInstructions = RenderInstructions.Moved(PixelBounds, new PixelVector(0, 0)); // TODO: Pass in panning offset
+            _nextInstructions =
+                RenderInstructions.Moved(PixelBounds, new PixelVector(0, 0)); // TODO: Pass in panning offset
             await StartRenderingAsync();
             return RenderState.RenderingNormal;
         }
@@ -314,16 +314,17 @@ public sealed class MandelbrotRenderer : Control
     sealed record RenderingArgs(
         RenderInstructions Instructions,
         SquareBoundary SetBoundary,
-        RegionLookup Lookup);
+        RegionLookup Lookup)
+    {
+        public int Width => Instructions.Size.Width;
+        public int Height => Instructions.Size.Height;
+    }
 
     private Task RenderBuffersAsync(RenderingArgs args, CancellationToken cancelToken)
     {
-        var width = (int)Bounds.Width;
-        var height = (int)Bounds.Height;
-
-        if (_backBuffer.PixelSize.Width != width || _backBuffer.PixelSize.Height != height)
+        if (_backBuffer.PixelSize.Width != args.Width || _backBuffer.PixelSize.Height != args.Height)
         {
-            _backBuffer = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+            _backBuffer = new RenderTargetBitmap(new PixelSize(args.Width, args.Height), new Vector(96, 96));
         }
 
         // TODO: Check for cancellation
@@ -332,7 +333,7 @@ public sealed class MandelbrotRenderer : Control
             var skiaContext = (ISkiaDrawingContextImpl)context;
             var canvas = skiaContext.SkCanvas;
 
-            canvas.DrawRect(0, 0, width, height,
+            canvas.DrawRect(0, 0, args.Width, args.Height,
                 new SKPaint { Color = SKColors.LightGray });
 
             var center = args.SetBoundary.Center;
@@ -349,25 +350,23 @@ public sealed class MandelbrotRenderer : Control
                     destRect: args.Instructions.DestRect);
             }
 
-            // foreach (var dirtyRect in args.Instructions.GetDirtyRectangles())
-            // {
-            //     var areasToDraw =
-            //         args.Lookup.GetVisibleAreas(args.SetBoundary,
-            //             new System.Drawing.Rectangle((int)dirtyRect.X, (int)dirtyRect.Y, (int)dirtyRect.Width,
-            //                 (int)dirtyRect.Height));
-            //     for (var index = 0; index < areasToDraw.Count; index++)
-            //     {
-            //         var (area, type) = areasToDraw[index];
-            //         var color = type switch
-            //         {
-            //             RegionType.Border => SKColors.DarkSlateBlue,
-            //             RegionType.Filament => SKColors.Red,
-            //             _ => SKColors.White,
-            //         };
-            //
-            //         canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
-            //     }
-            // }
+            foreach (var dirtyRect in args.Instructions.GetDirtyRectangles())
+            {
+                Console.Out.WriteLine(dirtyRect);
+                var areasToDraw =
+                    args.Lookup.GetVisibleAreas(args.SetBoundary, dirtyRect);
+                foreach (var (area, type) in areasToDraw)
+                {
+                    var color = type switch
+                    {
+                        RegionType.Border => SKColors.DarkSlateBlue,
+                        RegionType.Filament => SKColors.Red,
+                        _ => SKColors.White,
+                    };
+
+                    canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
+                }
+            }
         }
 
         (_backBuffer, _frontBuffer) = (_frontBuffer, _backBuffer);
@@ -378,5 +377,5 @@ public sealed class MandelbrotRenderer : Control
     private void ResetLogicalArea() =>
         SetBoundary = SquareBoundary.GetLargestCenteredSquareInside((int)Bounds.Width, (int)Bounds.Height);
 
-    protected override Avalonia.Size MeasureOverride(Avalonia.Size availableSize) => availableSize;
+    protected override Size MeasureOverride(Size availableSize) => availableSize;
 }

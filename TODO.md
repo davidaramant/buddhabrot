@@ -27,14 +27,17 @@
   - [x] Region drawing optimizations
     - [x] Halt quad tree search based on pixel size? No need to grab sub-pixel stuff
     - [x] Building quad tree is too slow
-      - [ ] Optimize this for real - saving it off is a hack
+      - [ ] Optimize this for real - saving it off is a hack (EDIT: is it???? making a normalized one has to be bottom up)
   - [x] Show entire set boundary
   - [x] There is an unstable 1-pixel gap between regions
-  - [ ] Rework how the logical area is calculated
+  - [ ] Rework how the logical area is calculated (EDIT: what did this mean?)
   - [ ] Render region interiors
-    - [ ] Multi-threaded rendering
-    - [ ] `RenderTargetBitmap` - https://github.com/AvaloniaUI/Avalonia/issues/2492
-    - [ ] Render larger image than screen; do not re-render while panning
+    - [x] `RenderTargetBitmap` - https://github.com/AvaloniaUI/Avalonia/issues/2492
+    - [x] `RenderInstructions`
+    - [x] Handle resizing
+    - [ ] BUG: Resizing too fast goes haywire
+    - [ ] Panning
+    - [ ] New mode for rendering border region interiors
   - [ ] Nicer aesthetic
 - [x] NUnit test project for manual "tests"
 - [ ] CI builds on GitHub

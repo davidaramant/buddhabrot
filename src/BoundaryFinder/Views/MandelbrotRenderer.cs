@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ public sealed class MandelbrotRenderer : Control
     private bool _panning;
     private Point _panningStartPoint;
     private SquareBoundary _panningStart;
-    private RenderInstructions _nextInstructions = RenderInstructions.Everything(new Avalonia.Size(1, 1));
+    private RenderInstructions _nextInstructions = RenderInstructions.Everything(new PixelSize(1, 1));
 
     private enum RenderState
     {
@@ -49,6 +48,9 @@ public sealed class MandelbrotRenderer : Control
     private bool _handlingQueue = false;
     private RenderState _state = RenderState.Uninitialized;
 
+    private PixelSize PixelBounds => new((int)Bounds.Width, (int)Bounds.Height);
+    
+    
     private async Task HandleEventAsync(Event @event)
     {
         Console.Out.WriteLine($"{_state}: {@event}");
@@ -81,7 +83,7 @@ public sealed class MandelbrotRenderer : Control
     {
         if (@event == Event.NewData)
         {
-            _nextInstructions = RenderInstructions.Everything(Bounds.Size);
+            _nextInstructions = RenderInstructions.Everything(PixelBounds);
             await StartRenderingAsync();
             return RenderState.RenderingNormal;
         }
@@ -95,13 +97,13 @@ public sealed class MandelbrotRenderer : Control
         {
             case Event.NewData:
             case Event.Zoom:
-                _nextInstructions = RenderInstructions.Everything(Bounds.Size);
+                _nextInstructions = RenderInstructions.Everything(PixelBounds);
                 await CancelRenderingAsync();
                 await StartRenderingAsync();
                 return RenderState.RenderingNormal;
 
             case Event.Resize:
-                _nextInstructions = RenderInstructions.Resized(oldSize: _frontBuffer.Size, newSize: Bounds.Size);
+                _nextInstructions = RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize, newSize: PixelBounds);
                 await CancelRenderingAsync();
                 await StartRenderingAsync();
                 return RenderState.RenderingNormal;
@@ -123,7 +125,7 @@ public sealed class MandelbrotRenderer : Control
     {
         if (@event == Event.EndPan)
         {
-            _nextInstructions = RenderInstructions.Moved(Bounds.Size, new Point(0, 0)); // TODO: Pass in panning offset
+            _nextInstructions = RenderInstructions.Moved(PixelBounds, new PixelVector(0, 0)); // TODO: Pass in panning offset
             await StartRenderingAsync();
             return RenderState.RenderingNormal;
         }
@@ -137,12 +139,12 @@ public sealed class MandelbrotRenderer : Control
         {
             case Event.NewData:
             case Event.Zoom:
-                _nextInstructions = RenderInstructions.Everything(Bounds.Size);
+                _nextInstructions = RenderInstructions.Everything(PixelBounds);
                 await StartRenderingAsync();
                 return RenderState.RenderingNormal;
 
             case Event.Resize:
-                _nextInstructions = RenderInstructions.Resized(oldSize: _frontBuffer.Size, newSize: Bounds.Size);
+                _nextInstructions = RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize, newSize: PixelBounds);
                 await StartRenderingAsync();
                 return RenderState.RenderingNormal;
 
@@ -157,7 +159,8 @@ public sealed class MandelbrotRenderer : Control
     {
         if (@event == Event.EndPan)
         {
-            _nextInstructions = RenderInstructions.Moved(Bounds.Size, new Point(0, 0)); // TODO: Pass in panning offset
+            _nextInstructions =
+                RenderInstructions.Moved(PixelBounds, new PixelVector(0, 0)); // TODO: Pass in panning offset
             await StartRenderingAsync();
             return RenderState.RenderingNormal;
         }
@@ -342,30 +345,29 @@ public sealed class MandelbrotRenderer : Control
                 context.DrawBitmap(
                     _frontBuffer.PlatformImpl,
                     opacity: 1,
-                    sourceRect: new Rect(new Point(0, 0), _frontBuffer.Size),
-                    destRect: new Rect(args.Instructions.PasteOffset.Value.X, args.Instructions.PasteOffset.Value.Y,
-                        width, height));
+                    sourceRect: args.Instructions.SourceRect,
+                    destRect: args.Instructions.DestRect);
             }
 
-            foreach (var dirtyRect in args.Instructions.GetDirtyRectangles())
-            {
-                var areasToDraw =
-                    args.Lookup.GetVisibleAreas(args.SetBoundary,
-                        new System.Drawing.Rectangle((int)dirtyRect.X, (int)dirtyRect.Y, (int)dirtyRect.Width,
-                            (int)dirtyRect.Height));
-                for (var index = 0; index < areasToDraw.Count; index++)
-                {
-                    var (area, type) = areasToDraw[index];
-                    var color = type switch
-                    {
-                        RegionType.Border => SKColors.DarkSlateBlue,
-                        RegionType.Filament => SKColors.Red,
-                        _ => SKColors.White,
-                    };
-
-                    canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
-                }
-            }
+            // foreach (var dirtyRect in args.Instructions.GetDirtyRectangles())
+            // {
+            //     var areasToDraw =
+            //         args.Lookup.GetVisibleAreas(args.SetBoundary,
+            //             new System.Drawing.Rectangle((int)dirtyRect.X, (int)dirtyRect.Y, (int)dirtyRect.Width,
+            //                 (int)dirtyRect.Height));
+            //     for (var index = 0; index < areasToDraw.Count; index++)
+            //     {
+            //         var (area, type) = areasToDraw[index];
+            //         var color = type switch
+            //         {
+            //             RegionType.Border => SKColors.DarkSlateBlue,
+            //             RegionType.Filament => SKColors.Red,
+            //             _ => SKColors.White,
+            //         };
+            //
+            //         canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
+            //     }
+            // }
         }
 
         (_backBuffer, _frontBuffer) = (_frontBuffer, _backBuffer);

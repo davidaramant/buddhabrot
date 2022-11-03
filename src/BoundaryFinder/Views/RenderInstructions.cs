@@ -4,64 +4,81 @@ using Avalonia;
 
 namespace BoundaryFinder.Views;
 
-// TODO: This needs to expose SoureRect and DestRect for pasting images
 public sealed class RenderInstructions
 {
-    private readonly Rect? _firstDirtyRect;
-    private readonly Rect? _secondDirtyRect;
+    private readonly PixelRect? _firstDirtyRect;
+    private readonly PixelRect? _secondDirtyRect;
 
-    public Point? PasteOffset { get; }
-    public bool PasteFrontBuffer => PasteOffset.HasValue;
+    public bool PasteFrontBuffer { get; }
+    public Rect SourceRect { get; }
+    public Rect DestRect { get; }
 
-    private RenderInstructions(Point? pasteOffset, Rect? firstDirtyRect, Rect? secondDirtyRect)
+    private RenderInstructions(
+        bool pasteFrontBuffer,
+        Rect sourceRect,
+        Rect destRect,
+        PixelRect? firstDirtyRect,
+        PixelRect? secondDirtyRect)
     {
-        PasteOffset = pasteOffset;
+        PasteFrontBuffer = pasteFrontBuffer;
+        SourceRect = sourceRect;
+        DestRect = destRect;
         _firstDirtyRect = firstDirtyRect;
         _secondDirtyRect = secondDirtyRect;
     }
 
-    public static RenderInstructions Everything(Size newSize) =>
+    public static RenderInstructions Everything(PixelSize newSize) =>
         new(
-            pasteOffset: null,
-            firstDirtyRect: new Rect(new Point(0, 0), newSize),
+            pasteFrontBuffer: false,
+            sourceRect: Rect.Empty,
+            destRect: Rect.Empty,
+            firstDirtyRect: new PixelRect(new PixelPoint(0, 0), newSize),
             secondDirtyRect: null);
 
-    public static RenderInstructions Resized(Size oldSize, Size newSize)
+    public static RenderInstructions Resized(PixelSize oldSize, PixelSize newSize)
     {
-        Rect? horizontal = null;
+        PixelRect? horizontal = null;
         if (newSize.Width > oldSize.Width)
         {
-            horizontal = new Rect(
+            horizontal = new PixelRect(
                 x: oldSize.Width,
                 y: 0,
                 width: newSize.Width - oldSize.Width,
                 height: newSize.Height);
         }
 
-        Rect? vertical = null;
+        PixelRect? vertical = null;
         if (newSize.Height > oldSize.Height)
         {
-            vertical = new Rect(
+            vertical = new PixelRect(
                 x: 0,
                 y: oldSize.Height,
                 width: oldSize.Width,
                 height: newSize.Height - oldSize.Height);
         }
 
+        var pasteRect = new Rect(
+            0,
+            0,
+            width: Math.Min(oldSize.Width, newSize.Width),
+            height: Math.Min(oldSize.Height, newSize.Height));
+
         return new RenderInstructions(
-            pasteOffset: new Point(0, 0),
+            pasteFrontBuffer: true,
+            sourceRect: pasteRect,
+            destRect: pasteRect,
             firstDirtyRect: horizontal,
             secondDirtyRect: vertical);
     }
 
-    public static RenderInstructions Moved(Size size, Point offset)
+    public static RenderInstructions Moved(PixelSize size, PixelVector offset)
     {
-        Rect? horizontal = null;
+        PixelRect? horizontal = null;
         if (offset.X != 0)
         {
             if (offset.X < 0)
             {
-                horizontal = new Rect(
+                horizontal = new PixelRect(
                     size.Width + offset.X,
                     0,
                     width: Math.Abs(offset.X),
@@ -69,7 +86,7 @@ public sealed class RenderInstructions
             }
             else
             {
-                horizontal = new Rect(
+                horizontal = new PixelRect(
                     0,
                     0,
                     width: offset.X,
@@ -77,12 +94,12 @@ public sealed class RenderInstructions
             }
         }
 
-        Rect? vertical = null;
+        PixelRect? vertical = null;
         if (offset.Y != 0)
         {
             if (offset.Y < 0) // Up
             {
-                vertical = new Rect(
+                vertical = new PixelRect(
                     x: Math.Max(0, offset.X),
                     y: size.Height + offset.Y,
                     width: Math.Min(size.Width, size.Width - Math.Abs(offset.X)),
@@ -90,7 +107,7 @@ public sealed class RenderInstructions
             }
             else // Down
             {
-                vertical = new Rect(
+                vertical = new PixelRect(
                     x: Math.Max(0, offset.X),
                     y: 0,
                     width: Math.Min(size.Width, size.Width - Math.Abs(offset.X)),
@@ -98,18 +115,42 @@ public sealed class RenderInstructions
             }
         }
 
+        var pasteWidth = size.Width - Math.Abs(offset.X);
+        var pasteHeight = size.Height - Math.Abs(offset.Y);
+
         return new RenderInstructions(
-            pasteOffset: offset,
+            pasteFrontBuffer: true,
+            sourceRect: new Rect(
+                x: ClampSource(offset.X),
+                y: ClampSource(offset.Y),
+                width: pasteWidth,
+                height: pasteHeight),
+            destRect: new Rect(
+                x: ClampDest(offset.X),
+                y: ClampDest(offset.Y),
+                width: pasteWidth,
+                height: pasteHeight),
             firstDirtyRect: horizontal,
             secondDirtyRect: vertical);
+
+        static int ClampSource(int p) => -Math.Min(0, p);
+        static int ClampDest(int p) => Math.Max(0, p);
     }
 
-    public IEnumerable<Rect> GetDirtyRectangles()
+    public IEnumerable<System.Drawing.Rectangle> GetDirtyRectangles()
     {
         if (_firstDirtyRect.HasValue)
-            yield return _firstDirtyRect.Value;
+            yield return new System.Drawing.Rectangle(
+                _firstDirtyRect.Value.X,
+                _firstDirtyRect.Value.Y,
+                _firstDirtyRect.Value.Width,
+                _firstDirtyRect.Value.Height);
 
         if (_secondDirtyRect.HasValue)
-            yield return _secondDirtyRect.Value;
+            yield return new System.Drawing.Rectangle(
+                _secondDirtyRect.Value.X,
+                _secondDirtyRect.Value.Y,
+                _secondDirtyRect.Value.Width,
+                _secondDirtyRect.Value.Height);
     }
 }

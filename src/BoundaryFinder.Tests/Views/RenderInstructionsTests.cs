@@ -1,5 +1,6 @@
 using Avalonia;
 using BoundaryFinder.Views;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace BoundaryFinder.Tests.Views;
 
@@ -8,20 +9,20 @@ public class RenderInstructionsTests
     [Fact]
     public void ShouldIncludeEntireAreaIfInvalidatingEverything()
     {
-        var inst = RenderInstructions.Everything(new Size(100, 100));
+        var inst = RenderInstructions.Everything(new PixelSize(100, 100));
 
         inst.PasteFrontBuffer.Should().BeFalse();
 
         var rects = inst.GetDirtyRectangles().ToList();
         rects.Should().HaveCount(1);
-        rects.Should().Contain(new Rect(0, 0, 100, 100));
+        rects.Should().Contain(new Rectangle(0, 0, 100, 100));
     }
 
     public sealed record ResizeTestCase(
         string Description,
-        Size OldSize,
-        Size NewSize,
-        IEnumerable<Rect> DirtyRects
+        PixelSize OldSize,
+        PixelSize NewSize,
+        IEnumerable<Rectangle> DirtyRects
     )
     {
         public override string ToString() => Description;
@@ -33,42 +34,42 @@ public class RenderInstructionsTests
         {
             new ResizeTestCase(
                 "Smaller",
-                OldSize: new Size(100, 100),
-                NewSize: new Size(50, 50),
-                DirtyRects: Enumerable.Empty<Rect>())
+                OldSize: new PixelSize(100, 100),
+                NewSize: new PixelSize(50, 50),
+                DirtyRects: Enumerable.Empty<Rectangle>())
         };
         yield return new object[]
         {
             new ResizeTestCase(
                 "Wider",
-                OldSize: new Size(100, 100),
-                NewSize: new Size(150, 100),
+                OldSize: new PixelSize(100, 100),
+                NewSize: new PixelSize(150, 100),
                 DirtyRects: new[]
                 {
-                    new Rect(100, 0, 50, 100)
+                    new Rectangle(100, 0, 50, 100)
                 })
         };
         yield return new object[]
         {
             new ResizeTestCase(
                 "Taller",
-                OldSize: new Size(100, 100),
-                NewSize: new Size(100, 150),
+                OldSize: new PixelSize(100, 100),
+                NewSize: new PixelSize(100, 150),
                 DirtyRects: new[]
                 {
-                    new Rect(0, 100, 100, 50)
+                    new Rectangle(0, 100, 100, 50)
                 })
         };
         yield return new object[]
         {
             new ResizeTestCase(
                 "Bigger",
-                OldSize: new Size(100, 100),
-                NewSize: new Size(150, 150),
+                OldSize: new PixelSize(100, 100),
+                NewSize: new PixelSize(150, 150),
                 DirtyRects: new[]
                 {
-                    new Rect(100, 0, 50, 150),
-                    new Rect(0, 100, 100, 50)
+                    new Rectangle(100, 0, 50, 150),
+                    new Rectangle(0, 100, 100, 50)
                 })
         };
     }
@@ -80,16 +81,17 @@ public class RenderInstructionsTests
         var inst = RenderInstructions.Resized(testCase.OldSize, testCase.NewSize);
 
         inst.PasteFrontBuffer.Should().BeTrue();
-        inst.PasteOffset.Should().Be(new Point(0, 0));
-
+        
         inst.GetDirtyRectangles().Should().BeEquivalentTo(testCase.DirtyRects);
     }
     
     public sealed record MoveTestCase(
         string Description,
-        Size Size,
-        Point Offset,
-        IEnumerable<Rect> DirtyRects
+        PixelSize PixelSize,
+        PixelVector Offset,
+        Rect SourceRect,
+        Rect DestRect,
+        IEnumerable<Rectangle> DirtyRects
     )
     {
         public override string ToString() => Description;
@@ -101,92 +103,108 @@ public class RenderInstructionsTests
         {
             new MoveTestCase(
                 "Left",
-                Size: new Size(100, 100),
-                Offset:new Point(-25,0),
+                PixelSize: new PixelSize(100, 100),
+                Offset:new PixelVector(-25,0),
+                SourceRect: new Rect(25,0,75,100),
+                DestRect: new Rect(0,0,75,100),
                 DirtyRects: new[]
                 {
-                    new Rect(75, 0, 25, 100)
+                    new Rectangle(75, 0, 25, 100)
                 })
         };
         yield return new object[]
         {
             new MoveTestCase(
                 "Right",
-                Size: new Size(100, 100),
-                Offset:new Point(25,0),
+                PixelSize: new PixelSize(100, 100),
+                Offset:new PixelVector(25,0),
+                SourceRect: new Rect(0,0,75,100),
+                DestRect: new Rect(25,0,75,100),
                 DirtyRects: new[]
                 {
-                    new Rect(0, 0, 25, 100)
+                    new Rectangle(0, 0, 25, 100)
                 })
         };
         yield return new object[]
         {
             new MoveTestCase(
                 "Up",
-                Size: new Size(100, 100),
-                Offset:new Point(0,-25),
+                PixelSize: new PixelSize(100, 100),
+                Offset:new PixelVector(0,-25),
+                SourceRect: new Rect(0,25,100,75),
+                DestRect: new Rect(0,0,100,75),
                 DirtyRects: new[]
                 {
-                    new Rect(0, 75, 100, 25)
+                    new Rectangle(0, 75, 100, 25)
                 })
         };
         yield return new object[]
         {
             new MoveTestCase(
                 "Down",
-                Size: new Size(100, 100),
-                Offset:new Point(0,25),
+                PixelSize: new PixelSize(100, 100),
+                Offset:new PixelVector(0,25),
+                SourceRect: new Rect(0,0,100,75),
+                DestRect: new Rect(0,25,100,75),
                 DirtyRects: new[]
                 {
-                    new Rect(0, 0, 100, 25)
+                    new Rectangle(0, 0, 100, 25)
                 })
         };
         yield return new object[]
         {
             new MoveTestCase(
                 "Up Left",
-                Size: new Size(100, 100),
-                Offset:new Point(-25,-25),
+                PixelSize: new PixelSize(100, 100),
+                Offset:new PixelVector(-25,-25),
+                SourceRect: new Rect(25,25,75,75),
+                DestRect: new Rect(0,0,75,75),
                 DirtyRects: new[]
                 {
-                    new Rect(75, 0, 25, 100),
-                    new Rect(0, 75, 75, 25),
+                    new Rectangle(75, 0, 25, 100),
+                    new Rectangle(0, 75, 75, 25),
                 })
         };
         yield return new object[]
         {
             new MoveTestCase(
                 "Up Right",
-                Size: new Size(100, 100),
-                Offset:new Point(25,-25),
+                PixelSize: new PixelSize(100, 100),
+                Offset:new PixelVector(25,-25),
+                SourceRect: new Rect(0,25,75,75),
+                DestRect: new Rect(25,0,75,75),
                 DirtyRects: new[]
                 {
-                    new Rect(0, 0, 25, 100),
-                    new Rect(25, 75, 75, 25),
+                    new Rectangle(0, 0, 25, 100),
+                    new Rectangle(25, 75, 75, 25),
                 })
         };
         yield return new object[]
         {
             new MoveTestCase(
                 "Down Left",
-                Size: new Size(100, 100),
-                Offset:new Point(-25,25),
+                PixelSize: new PixelSize(100, 100),
+                Offset:new PixelVector(-25,25),
+                SourceRect: new Rect(25,0,75,75),
+                DestRect: new Rect(0,25,75,75),
                 DirtyRects: new[]
                 {
-                    new Rect(75, 0, 25, 100),
-                    new Rect(0, 0, 75, 25),
+                    new Rectangle(75, 0, 25, 100),
+                    new Rectangle(0, 0, 75, 25),
                 })
         };
         yield return new object[]
         {
             new MoveTestCase(
                 "Down Right",
-                Size: new Size(100, 100),
-                Offset:new Point(25,25),
+                PixelSize: new PixelSize(100, 100),
+                Offset:new PixelVector(25,25),
+                SourceRect: new Rect(0,0,75,75),
+                DestRect: new Rect(25,25,75,75),
                 DirtyRects: new[]
                 {
-                    new Rect(0, 0, 25, 100),
-                    new Rect(25, 0, 75, 25),
+                    new Rectangle(0, 0, 25, 100),
+                    new Rectangle(25, 0, 75, 25),
                 })
         };
     }
@@ -195,10 +213,11 @@ public class RenderInstructionsTests
     [MemberData(nameof(MoveTestCases))]
     public void ShouldComputeInstructionsForMoving(MoveTestCase testCase)
     {
-        var inst = RenderInstructions.Moved(testCase.Size, testCase.Offset);
+        var inst = RenderInstructions.Moved(testCase.PixelSize, testCase.Offset);
 
         inst.PasteFrontBuffer.Should().BeTrue();
-        inst.PasteOffset.Should().Be(testCase.Offset);
+        inst.SourceRect.Should().Be(testCase.SourceRect);        
+        inst.DestRect.Should().Be(testCase.DestRect);        
 
         inst.GetDirtyRectangles().Should().BeEquivalentTo(testCase.DirtyRects);
     }

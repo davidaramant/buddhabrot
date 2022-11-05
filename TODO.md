@@ -40,4 +40,4 @@
     - [ ] New mode for rendering border region interiors
   - [ ] Nicer aesthetic
 - [x] NUnit test project for manual "tests"
-- [ ] CI builds on GitHub
+- [x] CI builds on GitHub

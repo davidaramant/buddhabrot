@@ -19,18 +19,17 @@ namespace BoundaryFinder.Views;
 
 public sealed class MandelbrotRenderer : Control
 {
-    private bool _panning;
+    private bool _isPanning;
     private Point _panningStartPoint;
     private SquareBoundary _panningStart;
+    private PixelVector _panningOffset = new();
     private RenderInstructions _nextInstructions = RenderInstructions.Everything(new PixelSize(1, 1));
 
     private enum RenderState
     {
         Uninitialized,
-        RenderingNormal,
-        RenderingPaused,
+        Rendering,
         Idle,
-        Panning,
     }
 
     private enum Event
@@ -38,9 +37,8 @@ public sealed class MandelbrotRenderer : Control
         NewData,
         Resize,
         Zoom,
+        Panned,
         DoneRendering,
-        StartPan,
-        EndPan,
     }
 
     private readonly Queue<Event> _eventQueue = new();
@@ -67,10 +65,8 @@ public sealed class MandelbrotRenderer : Control
             _state = await (_state switch
             {
                 RenderState.Uninitialized => HandleEventInUninitializedAsync(e),
-                RenderState.RenderingNormal => HandleEventInRenderingNormalAsync(e),
-                RenderState.RenderingPaused => HandleEventInRenderingPausedAsync(e),
+                RenderState.Rendering => HandleEventInRenderingAsync(e),
                 RenderState.Idle => HandleEventInIdleAsync(e),
-                RenderState.Panning => HandleEventInPanningAsync(e),
                 _ => throw new ArgumentOutOfRangeException()
             });
         }
@@ -84,13 +80,13 @@ public sealed class MandelbrotRenderer : Control
         {
             _nextInstructions = RenderInstructions.Everything(PixelBounds);
             await StartRenderingAsync();
-            return RenderState.RenderingNormal;
+            return RenderState.Rendering;
         }
 
         return _state;
     }
 
-    private async Task<RenderState> HandleEventInRenderingNormalAsync(Event @event)
+    private async Task<RenderState> HandleEventInRenderingAsync(Event @event)
     {
         switch (@event)
         {
@@ -99,38 +95,28 @@ public sealed class MandelbrotRenderer : Control
                 _nextInstructions = RenderInstructions.Everything(PixelBounds);
                 await CancelRenderingAsync();
                 await StartRenderingAsync();
-                return RenderState.RenderingNormal;
+                return RenderState.Rendering;
 
             case Event.Resize:
                 _nextInstructions = RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize, newSize: PixelBounds);
                 await CancelRenderingAsync();
                 await StartRenderingAsync();
-                return RenderState.RenderingNormal;
+                return RenderState.Rendering;
+
+            case Event.Panned:
+                _nextInstructions = RenderInstructions.Moved(PixelBounds, _panningOffset);
+                SetBoundary = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
+                await CancelRenderingAsync();
+                await StartRenderingAsync();
+                return RenderState.Rendering;
 
             case Event.DoneRendering:
                 InvalidateVisual();
                 return RenderState.Idle;
 
-            case Event.StartPan:
-                await CancelRenderingAsync();
-                return RenderState.RenderingPaused;
-
             default:
-                return RenderState.RenderingNormal;
+                return RenderState.Rendering;
         }
-    }
-
-    private async Task<RenderState> HandleEventInRenderingPausedAsync(Event @event)
-    {
-        if (@event == Event.EndPan)
-        {
-            _nextInstructions =
-                RenderInstructions.Moved(PixelBounds, new PixelVector(0, 0)); // TODO: Pass in panning offset
-            await StartRenderingAsync();
-            return RenderState.RenderingNormal;
-        }
-
-        return RenderState.RenderingPaused;
     }
 
     private async Task<RenderState> HandleEventInIdleAsync(Event @event)
@@ -141,31 +127,22 @@ public sealed class MandelbrotRenderer : Control
             case Event.Zoom:
                 _nextInstructions = RenderInstructions.Everything(PixelBounds);
                 await StartRenderingAsync();
-                return RenderState.RenderingNormal;
+                return RenderState.Rendering;
 
             case Event.Resize:
                 _nextInstructions = RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize, newSize: PixelBounds);
                 await StartRenderingAsync();
-                return RenderState.RenderingNormal;
+                return RenderState.Rendering;
 
-            case Event.StartPan:
-                return RenderState.Panning;
+            case Event.Panned:
+                _nextInstructions = RenderInstructions.Moved(PixelBounds, _panningOffset);
+                SetBoundary = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
+                await StartRenderingAsync();
+                return RenderState.Rendering;
+
             default:
                 return RenderState.Idle;
         }
-    }
-
-    private async Task<RenderState> HandleEventInPanningAsync(Event @event)
-    {
-        if (@event == Event.EndPan)
-        {
-            _nextInstructions =
-                RenderInstructions.Moved(PixelBounds, new PixelVector(0, 0)); // TODO: Pass in panning offset
-            await StartRenderingAsync();
-            return RenderState.RenderingNormal;
-        }
-
-        return RenderState.Panning;
     }
 
     private async Task StartRenderingAsync()
@@ -173,8 +150,7 @@ public sealed class MandelbrotRenderer : Control
         var args = await Dispatcher.UIThread.InvokeAsync(
             () => new RenderingArgs(_nextInstructions, SetBoundary, Lookup));
 
-        _renderingTask =
-            Task.Run(() => RenderBuffersAsync(args, _cancelSource.Token));
+        _renderingTask = Task.Run(() => RenderBuffersAsync(args, _cancelSource.Token));
     }
 
     private async Task CancelRenderingAsync()
@@ -245,6 +221,35 @@ public sealed class MandelbrotRenderer : Control
         };
 
         this.EffectiveViewportChanged += async (_, _) => { await HandleEventAsync(Event.Resize); };
+        PointerPressed += async (_, e) =>
+        {
+            if (e.ClickCount == 1)
+            {
+                _isPanning = true;
+                _panningStartPoint = e.GetPosition(this);
+                _panningStart = SetBoundary;
+            }
+            else if (e.ClickCount == 2)
+            {
+                _isPanning = false;
+                var pos = e.GetPosition(this);
+                SetBoundary = SetBoundary.ZoomIn((int)pos.X, (int)pos.Y);
+                await HandleEventAsync(Event.Zoom);
+            }
+        };
+        PointerReleased += async (_, e) =>
+        {
+            _isPanning = false;
+            await HandleEventAsync(Event.Panned);
+        };
+        PointerCaptureLost += async (_, e) =>
+        {
+            if (_isPanning)
+            {
+                _isPanning = true;
+                await HandleEventAsync(Event.Panned);
+            }
+        };
 
         ResetViewCommand = ReactiveCommand.Create(ResetLogicalArea);
         ZoomOutCommand = ReactiveCommand.Create(() =>
@@ -253,48 +258,19 @@ public sealed class MandelbrotRenderer : Control
         });
     }
 
-    protected override void OnPointerPressed(PointerPressedEventArgs e)
-    {
-        if (e.ClickCount == 1)
-        {
-            _panning = true;
-            _panningStartPoint = e.GetPosition(this);
-            _panningStart = SetBoundary;
-        }
-        else if (e.ClickCount == 2)
-        {
-            _panning = false;
-            var pos = e.GetPosition(this);
-            SetBoundary = SetBoundary.ZoomIn((int)pos.X, (int)pos.Y);
-        }
-
-        base.OnPointerPressed(e);
-    }
-
-    protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    {
-        _panning = false;
-        base.OnPointerReleased(e);
-    }
-
     protected override void OnPointerMoved(PointerEventArgs e)
     {
-        if (_panning)
+        if (_isPanning)
         {
             var currentPos = e.GetPosition(this);
             var deltaX = (int)(currentPos.X - _panningStartPoint.X);
             var deltaY = (int)(currentPos.Y - _panningStartPoint.Y);
 
-            SetBoundary = _panningStart.OffsetBy(deltaX, deltaY);
+            _panningOffset = new PixelVector(deltaX, deltaY);
+            InvalidateVisual();
         }
 
         base.OnPointerMoved(e);
-    }
-
-    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
-    {
-        _panning = false;
-        base.OnPointerCaptureLost(e);
     }
 
     public override void Render(DrawingContext context)
@@ -307,7 +283,11 @@ public sealed class MandelbrotRenderer : Control
             2d / SetBoundary.QuadrantLength);
 
         context.DrawImage(_frontBuffer,
-            new Rect(0, 0, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height)
+            new Rect(
+                _panningOffset.X,
+                _panningOffset.Y,
+                _frontBuffer.PixelSize.Width,
+                _frontBuffer.PixelSize.Height)
         );
     }
 
@@ -370,6 +350,7 @@ public sealed class MandelbrotRenderer : Control
         }
 
         (_backBuffer, _frontBuffer) = (_frontBuffer, _backBuffer);
+        _panningOffset = new();
 
         return HandleEventAsync(Event.DoneRendering);
     }

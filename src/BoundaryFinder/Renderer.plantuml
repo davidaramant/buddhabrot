@@ -4,36 +4,24 @@
 ' - New Data
 ' - Resize
 ' - Zoom
-' - Start Pan
-' - End Pan
+' - Panned
 ' - Done Rendering
 
 state Unitialized
 state Idle
-state Panning
-state Rendering {
-    state Normal : entry / Start Render
-    state Paused : entry / Cancel Render
-    state Paused : Params Changed / NOTHING
-    [*] -> Normal
-    Normal -> Paused : Start Pan
-    Paused -> Normal : End Pan
-}
+state Rendering
 
 [*] -> Unitialized
 
 Unitialized -d-> Rendering : New Data / Invalidate Everything
 
 Rendering -> Rendering : New Data, Zoom\n/ Cancel Render,\nInvalidate Everything
-Rendering -> Rendering : Resize\n/ Cancel Render,\nInstructions for new size
+Rendering -> Rendering : Resize\n/ Cancel Render,\nResize Instructions
+Rendering -> Rendering : Panned\n/ Cancel Render,\nPan Instructions
 Rendering -l-> Idle : Done Rendering
 
-Idle -d-> Panning : Start Pan
 Idle -> Rendering : New Data, Zoom\n/ Invalidate Everything
-Idle -> Rendering : Resize\n/ Instructions for new size
-
-Panning -u-> Rendering : End Pan / Update Instructions From Pan
-
-
+Idle -> Rendering : Resize\n/ Resize Instructions
+Idle -> Rendering : Panned\n/ Pan Instructions
 
 @enduml

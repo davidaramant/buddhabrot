@@ -197,12 +197,6 @@ public sealed class MandelbrotRenderer : Control
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
     public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
 
-    static MandelbrotRenderer()
-    {
-        AffectsRender<MandelbrotRenderer>(LookupProperty);
-        AffectsRender<MandelbrotRenderer>(SetBoundaryProperty);
-    }
-
     public MandelbrotRenderer()
     {
         ClipToBounds = true;

@@ -17,6 +17,9 @@ using SkiaSharp;
 
 namespace BoundaryFinder.Views;
 
+// TODO: Move the creation of _nextInstructions out of the machine, combined NewData, Resize, Zoom, and Panned events
+// TODO: IsBusy indicator (why did it break EVERYTHING????)
+
 public sealed class MandelbrotRenderer : Control
 {
     private bool _isPanning;

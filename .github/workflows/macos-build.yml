@@ -23,6 +23,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore src/Buddhabrot.sln
     - name: Build
-      run: dotnet build --no-restore --Configuration Release src/Buddhabrot.sln
+      run: dotnet build --no-restore --configuration Release src/Buddhabrot.sln
     - name: Test
       run: dotnet test --no-build --verbosity normal --configuration Release src/Buddhabrot.sln

@@ -4,7 +4,7 @@ using Avalonia;
 
 namespace BoundaryFinder.Views;
 
-public sealed class RenderInstructions
+public sealed class RenderInstructions : IEquatable<RenderInstructions>
 {
     private readonly PixelRect? _firstDirtyRect;
     private readonly PixelRect? _secondDirtyRect;
@@ -19,7 +19,7 @@ public sealed class RenderInstructions
         Rect sourceRect,
         Rect destRect,
         PixelRect? firstDirtyRect,
-        PixelRect? secondDirtyRect, 
+        PixelRect? secondDirtyRect,
         PixelSize size)
     {
         PasteFrontBuffer = pasteFrontBuffer;
@@ -159,4 +159,38 @@ public sealed class RenderInstructions
                 _secondDirtyRect.Value.Width,
                 _secondDirtyRect.Value.Height);
     }
+    
+    #region Equality (generated)
+
+    public bool Equals(RenderInstructions? other)
+    {
+        if (ReferenceEquals(null, other)) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Nullable.Equals(_firstDirtyRect, other._firstDirtyRect) &&
+               Nullable.Equals(_secondDirtyRect, other._secondDirtyRect) &&
+               PasteFrontBuffer == other.PasteFrontBuffer && SourceRect.Equals(other.SourceRect) &&
+               DestRect.Equals(other.DestRect) && Size.Equals(other.Size);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return ReferenceEquals(this, obj) || obj is RenderInstructions other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_firstDirtyRect, _secondDirtyRect, PasteFrontBuffer, SourceRect, DestRect, Size);
+    }
+
+    public static bool operator ==(RenderInstructions? left, RenderInstructions? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(RenderInstructions? left, RenderInstructions? right)
+    {
+        return !Equals(left, right);
+    }
+
+    #endregion
 }

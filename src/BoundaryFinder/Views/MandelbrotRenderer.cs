@@ -32,6 +32,7 @@ public sealed class MandelbrotRenderer : Control
     }
 
     private RenderState _state = RenderState.Idle;
+    private RenderingArgs? _currentFrameArgs;
     private RenderingArgs? _nextFrameArgs;
     private CancellationTokenSource _cancelSource = new();
     private Task _renderingTask = Task.CompletedTask;
@@ -233,17 +234,19 @@ public sealed class MandelbrotRenderer : Control
     {
         var args = new RenderingArgs(instructions, _setBoundary, Lookup);
         
-        // TODO: Short-circuit equivalent renders
-
         switch (_state)
         {
             case RenderState.Idle:
+                _currentFrameArgs = args;
                 await StartRenderingAsync(args);
                 _state = RenderState.Rendering;
                 break;
 
             case RenderState.Rendering:
-                _nextFrameArgs = args;
+                if (args != _currentFrameArgs && args != _nextFrameArgs)
+                {
+                    _nextFrameArgs = args;
+                }
                 break;
         }
     }
@@ -251,9 +254,11 @@ public sealed class MandelbrotRenderer : Control
     private async Task DoneRenderingAsync()
     {
         InvalidateVisual();
+        _currentFrameArgs = null;
 
         if (_nextFrameArgs != null)
         {
+            _currentFrameArgs = _nextFrameArgs;
             await StartRenderingAsync(_nextFrameArgs);
             _nextFrameArgs = null;
             _state = RenderState.Rendering;

@@ -4,16 +4,13 @@
 ' - Request Render
 ' - Done Rendering
 
-state Unitialized
 state Idle
 state Rendering {
     Rendering: entry / Start Rendering
     Rendering: Request Render / Save Next
 }
 
-[*] -> Unitialized
-
-Unitialized -d-> Rendering : Request Render
+[*] --> Idle
 
 Rendering -l-> Idle : Done Rendering
 Rendering -> Rendering : Done Rendering [Has Next]

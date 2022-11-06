@@ -8,14 +8,13 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Skia;
+using Avalonia.Threading;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using ReactiveUI;
 using SkiaSharp;
 
 namespace BoundaryFinder.Views;
-
-// TODO: IsBusy indicator (why did it break EVERYTHING????)
 
 public sealed class MandelbrotRenderer : Control
 {
@@ -58,6 +57,15 @@ public sealed class MandelbrotRenderer : Control
     {
         get => GetValue(LookupProperty);
         set => SetValue(LookupProperty, value);
+    }
+    
+    public static readonly StyledProperty<bool> IsBusyProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, bool>(nameof(IsBusy));
+
+    public bool IsBusy
+    {
+        get => GetValue(IsBusyProperty);
+        set => SetValue(IsBusyProperty, value);
     }
 
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
@@ -240,6 +248,7 @@ public sealed class MandelbrotRenderer : Control
                 _currentFrameArgs = args;
                 await StartRenderingAsync(args);
                 _state = RenderState.Rendering;
+                IsBusy = true;
                 break;
 
             case RenderState.Rendering:
@@ -266,6 +275,7 @@ public sealed class MandelbrotRenderer : Control
         else
         {
             _state = RenderState.Idle;
+            await Dispatcher.UIThread.InvokeAsync(() => IsBusy = false);
         }
     }
 

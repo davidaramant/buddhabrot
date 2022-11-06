@@ -24,7 +24,8 @@
             Grid.Row="0"
             Grid.Column="1"
             IsIndeterminate="True"
-            IsVisible="{Binding IsLoadingBoundary}" />
+            Margin="2,0"
+            IsVisible="{Binding #MandelbrotRenderer.IsBusy}" />
         <Button
             Grid.Row="0"
             Grid.Column="2"

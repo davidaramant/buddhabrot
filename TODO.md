@@ -36,7 +36,7 @@
     - [x] `RenderInstructions`
     - [x] Handle resizing
     - [ ] BUG: Resizing too fast goes haywire
-    - [ ] Panning
+    - [x] Panning
     - [ ] New mode for rendering border region interiors
   - [ ] Nicer aesthetic
 - [x] NUnit test project for manual "tests"

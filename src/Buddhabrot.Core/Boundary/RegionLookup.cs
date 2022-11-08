@@ -152,69 +152,72 @@ public sealed class RegionLookup
 
     public IReadOnlyList<(Rectangle Area, RegionType Type)> GetVisibleAreas(
         SquareBoundary bounds,
-        Rectangle searchArea)
+        IEnumerable<Rectangle> searchAreas)
     {
         var visibleAreas = new List<(Rectangle, RegionType)>();
 
-        var toCheck = new Queue<(SquareBoundary, Quad)>();
-        toCheck.Enqueue((bounds, _nodes.Last()));
-
-        while (toCheck.Any())
+        foreach (var searchArea in searchAreas)
         {
-            var (quadArea, currentQuad) = toCheck.Dequeue();
+            var toCheck = new Queue<(SquareBoundary, Quad)>();
+            toCheck.Enqueue((bounds, _nodes.Last()));
 
-            if (currentQuad.IsEmptyLeaf)
-                continue;
-
-            var intersection = quadArea.IntersectWith(searchArea);
-            if (intersection == Rectangle.Empty)
-                continue;
-
-            if (currentQuad.IsLeaf || quadArea.IsPoint)
+            while (toCheck.Any())
             {
-                visibleAreas.Add((intersection, currentQuad.Type));
+                var (quadArea, currentQuad) = toCheck.Dequeue();
+
+                if (currentQuad.IsEmptyLeaf)
+                    continue;
+
+                var intersection = quadArea.IntersectWith(searchArea);
+                if (intersection == Rectangle.Empty)
+                    continue;
+
+                if (currentQuad.IsLeaf || quadArea.IsPoint)
+                {
+                    visibleAreas.Add((intersection, currentQuad.Type));
+                }
+                else
+                {
+                    toCheck.Enqueue(
+                        (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
+                }
             }
-            else
+
+            // Check the mirrored values to build the bottom of the set
+            toCheck.Enqueue((bounds, _nodes.Last()));
+
+            while (toCheck.Any())
             {
-                toCheck.Enqueue(
-                    (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
-                toCheck.Enqueue(
-                    (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
-                toCheck.Enqueue(
-                    (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
-                toCheck.Enqueue(
-                    (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
-            }
-        }
+                var (quadArea, currentQuad) = toCheck.Dequeue();
 
-        // Check the mirrored values to build the bottom of the set
-        toCheck.Enqueue((bounds, _nodes.Last()));
+                if (currentQuad.IsEmptyLeaf)
+                    continue;
 
-        while (toCheck.Any())
-        {
-            var (quadArea, currentQuad) = toCheck.Dequeue();
+                var intersection = quadArea.IntersectWith(searchArea);
+                if (intersection == Rectangle.Empty)
+                    continue;
 
-            if (currentQuad.IsEmptyLeaf)
-                continue;
-
-            var intersection = quadArea.IntersectWith(searchArea);
-            if (intersection == Rectangle.Empty)
-                continue;
-
-            if (currentQuad.IsLeaf || quadArea.IsPoint)
-            {
-                visibleAreas.Add((intersection, currentQuad.Type));
-            }
-            else
-            {
-                toCheck.Enqueue(
-                    (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
-                toCheck.Enqueue(
-                    (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
-                toCheck.Enqueue(
-                    (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
-                toCheck.Enqueue(
-                    (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
+                if (currentQuad.IsLeaf || quadArea.IsPoint)
+                {
+                    visibleAreas.Add((intersection, currentQuad.Type));
+                }
+                else
+                {
+                    toCheck.Enqueue(
+                        (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
+                    toCheck.Enqueue(
+                        (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
+                }
             }
         }
 

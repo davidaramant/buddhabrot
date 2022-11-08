@@ -58,7 +58,7 @@ public sealed class MandelbrotRenderer : Control
         get => GetValue(LookupProperty);
         set => SetValue(LookupProperty, value);
     }
-    
+
     public static readonly StyledProperty<bool> IsBusyProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, bool>(nameof(IsBusy));
 
@@ -85,21 +85,32 @@ public sealed class MandelbrotRenderer : Control
 
         this.EffectiveViewportChanged += async (_, _) =>
         {
-            await RequestRenderAsync(RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize, newSize: PixelBounds));
+            await RequestRenderAsync(RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize,
+                newSize: PixelBounds));
         };
         PointerPressed += async (_, e) =>
         {
-            if (e.ClickCount == 1)
+            var properties = e.GetCurrentPoint(this).Properties;
+
+            if (properties.IsLeftButtonPressed)
             {
-                _isPanning = true;
-                _panningStartPoint = e.GetPosition(this);
-                _panningStart = _setBoundary;
+                if (e.ClickCount == 1)
+                {
+                    _isPanning = true;
+                    _panningStartPoint = e.GetPosition(this);
+                    _panningStart = _setBoundary;
+                }
+                else if (e.ClickCount == 2)
+                {
+                    _isPanning = false;
+                    var pos = e.GetPosition(this);
+                    _setBoundary = _setBoundary.ZoomIn((int)pos.X, (int)pos.Y);
+                    await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+                }
             }
-            else if (e.ClickCount == 2)
+            else if (properties.IsRightButtonPressed && e.ClickCount == 2)
             {
-                _isPanning = false;
-                var pos = e.GetPosition(this);
-                _setBoundary = _setBoundary.ZoomIn((int)pos.X, (int)pos.Y);
+                _setBoundary = _setBoundary.ZoomOut(PixelBounds.Width, PixelBounds.Height);
                 await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
             }
         };
@@ -203,22 +214,18 @@ public sealed class MandelbrotRenderer : Control
                     destRect: args.Instructions.DestRect);
             }
 
-            // TODO - these loops can be flattened. Make Lookup take a sequence of dirty rects
-            foreach (var dirtyRect in args.Instructions.GetDirtyRectangles())
+            var areasToDraw =
+                args.Lookup.GetVisibleAreas(args.SetBoundary, args.Instructions.GetDirtyRectangles());
+            foreach (var (area, type) in areasToDraw)
             {
-                var areasToDraw =
-                    args.Lookup.GetVisibleAreas(args.SetBoundary, dirtyRect);
-                foreach (var (area, type) in areasToDraw)
+                var color = type switch
                 {
-                    var color = type switch
-                    {
-                        RegionType.Border => SKColors.DarkSlateBlue,
-                        RegionType.Filament => SKColors.Red,
-                        _ => SKColors.White,
-                    };
+                    RegionType.Border => SKColors.DarkSlateBlue,
+                    RegionType.Filament => SKColors.Red,
+                    _ => SKColors.White,
+                };
 
-                    canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
-                }
+                canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
             }
         }
 
@@ -241,7 +248,7 @@ public sealed class MandelbrotRenderer : Control
     private async Task RequestRenderAsync(RenderInstructions instructions)
     {
         var args = new RenderingArgs(instructions, _setBoundary, Lookup);
-        
+
         switch (_state)
         {
             case RenderState.Idle:
@@ -256,6 +263,7 @@ public sealed class MandelbrotRenderer : Control
                 {
                     _nextFrameArgs = args;
                 }
+
                 break;
         }
     }

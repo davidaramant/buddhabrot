@@ -4,8 +4,8 @@ namespace Buddhabrot.Core.Boundary;
 
 public static class BoundaryCalculator
 {
-    public static async Task<IReadOnlyList<(RegionId Region, RegionType Type)>>
-        FindBoundaryAndFilamentsAsync(
+    public static IReadOnlyList<(RegionId Region, RegionType Type)>
+        FindBoundaryAndFilaments(
             BoundaryParameters boundaryParameters,
             CancellationToken cancelToken = default)
     {
@@ -16,14 +16,14 @@ public static class BoundaryCalculator
 
         var returnList = new List<(RegionId, RegionType)>();
 
-        while (regionsToCheck.Any())
+        while (regionsToCheck.Any() && !cancelToken.IsCancellationRequested)
         {
             var region = regionsToCheck.Dequeue();
 
             if (visitedRegions.Contains(region))
                 continue;
 
-            var corners = await cornerComputer.GetRegionCornersAsync(region, cancelToken);
+            var corners = cornerComputer.GetRegionCorners(region);
 
             bool containsFilament = corners.ContainsBorder || cornerComputer.DoesRegionContainFilaments(region);
 

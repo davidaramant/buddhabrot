@@ -65,20 +65,18 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             var boundaryParameters = new BoundaryParameters(AreaDivisions, MaximumIterations);
 
             var regions = await Task.Run(
-                () => BoundaryCalculator.FindBoundaryAndFilamentsAsync(
-                    boundaryParameters,
-                    cancelToken),
+                () => BoundaryCalculator.FindBoundaryAndFilaments(boundaryParameters, cancelToken),
                 cancelToken);
 
-            _log(
-                $"Found boundary for {boundaryParameters}.\n\t- Took {stopwatch.Elapsed}\n\t- Found {regions.Count:N0} border regions");
+            _log($"Found boundary for {boundaryParameters}.\n" +
+                 $"\t- Took {stopwatch.Elapsed}\n" +
+                 $"\t- Found {regions.Count:N0} border regions");
             stopwatch.Restart();
 
             var lookup =
-                await Task.Run(() => new RegionLookup(boundaryParameters.Divisions, regions, _log),
-                    cancelToken);
+                await Task.Run(() => new RegionLookup(boundaryParameters.Divisions, regions, _log), cancelToken);
 
-            _log($"Constructed quad tree. Took {stopwatch.Elapsed}");
+            _log($"Constructed quad tree (size: {lookup.NodeCount:N0}). Took {stopwatch.Elapsed}");
 
             _dataProvider.SaveBorderData(
                 boundaryParameters,

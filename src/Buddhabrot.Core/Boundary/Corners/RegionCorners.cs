@@ -13,7 +13,7 @@ public sealed class RegionCorners
 
     public RegionCorners(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
 
-    private async Task<bool> IsCornerInSetAsync(CornerId corner, CancellationToken cancelToken = default)
+    private bool IsCornerInSet(CornerId corner)
     {
         if (_isCornerInSet.TryGetValue(corner, out var inSet))
         {
@@ -21,28 +21,17 @@ public sealed class RegionCorners
         }
 
         Complex c = ToComplex(corner.X, corner.Y);
-        inSet = await Task.Run(
-            () => ScalarKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite,
-            cancelToken);
+        inSet = ScalarKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite;
         _isCornerInSet.TryAdd(corner, inSet);
         return inSet;
     }
 
-    public async ValueTask<CornersInSet> GetRegionCornersAsync(RegionId region, CancellationToken cancelToken)
-    {
-        var upperLeftTask = IsCornerInSetAsync(region.UpperLeftCorner(), cancelToken);
-        var upperRightTask = IsCornerInSetAsync(region.UpperRightCorner(), cancelToken);
-        var lowerRightTask = IsCornerInSetAsync(region.LowerRightCorner(), cancelToken);
-        var lowerLeftTask = IsCornerInSetAsync(region.LowerLeftCorner(), cancelToken);
-
-        await Task.WhenAll(upperLeftTask, upperRightTask, lowerRightTask, lowerLeftTask);
-
-        return new CornersInSet(
-            UpperLeft: upperLeftTask.Result,
-            UpperRight: upperRightTask.Result,
-            LowerRight: lowerRightTask.Result,
-            LowerLeft: lowerLeftTask.Result);
-    }
+    public CornersInSet GetRegionCorners(RegionId region) =>
+        new (
+            UpperLeft: IsCornerInSet(region.UpperLeftCorner()),
+            UpperRight: IsCornerInSet(region.UpperRightCorner()),
+            LowerRight: IsCornerInSet(region.LowerRightCorner()),
+            LowerLeft: IsCornerInSet(region.LowerLeftCorner()));
 
     public bool DoesRegionContainFilaments(RegionId region)
     {

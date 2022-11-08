@@ -11,14 +11,14 @@ public static class BoundaryCalculator
     {
         var cornerComputer = new RegionCorners(boundaryParameters);
         HashSet<RegionId> visitedRegions = new();
-        Queue<RegionId> regionsToCheck = new();
-        regionsToCheck.Enqueue(new RegionId(0, 0));
+        Stack<RegionId> regionsToCheck = new();
+        regionsToCheck.Push(new RegionId(0, 0));
 
         var returnList = new List<(RegionId, RegionType)>();
 
         while (regionsToCheck.Any() && !cancelToken.IsCancellationRequested)
         {
-            var region = regionsToCheck.Dequeue();
+            var region = regionsToCheck.Pop();
 
             if (visitedRegions.Contains(region))
                 continue;
@@ -62,7 +62,7 @@ public static class BoundaryCalculator
                 region.Y < boundaryParameters.Divisions.QuadrantDivisions &&
                 !visitedRegions.Contains(region))
             {
-                regionsToCheck.Enqueue(region);
+                regionsToCheck.Push(region);
             }
         }
     }

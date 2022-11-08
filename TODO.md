@@ -35,7 +35,7 @@
     - [x] `RenderTargetBitmap` - https://github.com/AvaloniaUI/Avalonia/issues/2492
     - [x] `RenderInstructions`
     - [x] Handle resizing
-    - [ ] BUG: Resizing too fast goes haywire
+    - [x] BUG: Resizing too fast goes haywire
     - [x] Panning
     - [ ] New mode for rendering border region interiors
   - [ ] Nicer aesthetic

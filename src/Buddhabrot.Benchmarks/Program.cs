@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using BenchmarkDotNet.Running;
 using Humanizer;
 
 namespace Buddhabrot.Benchmarks;
@@ -7,14 +8,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.Out.WriteLine(BorderPointBenchmarks.Span.Length());
-        Console.Out.WriteLine(BorderPointBenchmarks.Span.Length() / ((long)1 << 38));
+        BenchmarkRunner.Run<QueueVsStack>();
 
-
-        var bpb = new BorderPointBenchmarks();
-
-        //SimpleBenchmark(bpb.FindBorderPoint, "Find Border Point");
-        SimpleBenchmark(bpb.FindBorderPointsMagnitudeSquared, "Find Border Point Mag Squared");
 
         // BenchmarkRunner.Run<AutomaticIterationLimitBenchmarks>();
         //BenchmarkRunner.Run<BorderPointBenchmarks>();

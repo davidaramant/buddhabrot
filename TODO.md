@@ -38,6 +38,6 @@
     - [x] BUG: Resizing too fast goes haywire
     - [x] Panning
     - [ ] New mode for rendering border region interiors
-  - [ ] Nicer aesthetic
+  - [x] Nicer aesthetic
 - [x] NUnit test project for manual "tests"
 - [x] CI builds on GitHub

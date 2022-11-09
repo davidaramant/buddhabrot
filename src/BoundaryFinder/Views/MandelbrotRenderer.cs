@@ -18,6 +18,19 @@ namespace BoundaryFinder.Views;
 
 public sealed class MandelbrotRenderer : Control
 {
+    // https://coolors.co/96e2d9-4c7c80-011627-741a2f-e71d36-7f8b92-e4f8f4-caf1eb-2ec4b6-ff9f1c
+    private static class Palette
+    {
+        public static readonly SKColor Background = new (0xFFcaf1eb);
+        public static readonly SKColor InBounds = new (0xFFf1fcf8);
+        public static readonly SKColor InSet = new (0xFF96e2d9);
+        public static readonly SKColor Border = new (0xFF011627);
+        public static readonly SKColor BorderInSet = new(0xFF4c7c80);
+        public static readonly SKColor BorderInRange = new (0xFFff9f1c);
+        public static readonly SKColor BorderEmpty = new(0xFF741a2f);
+        public static readonly SKColor Filament = new (0xFFe71d36);
+    }
+    
     private SquareBoundary _setBoundary;
     private bool _isPanning;
     private Point _panningStartPoint;
@@ -198,12 +211,12 @@ public sealed class MandelbrotRenderer : Control
             var canvas = skiaContext.SkCanvas;
 
             canvas.DrawRect(0, 0, args.Width, args.Height,
-                new SKPaint { Color = SKColors.LightGray });
+                new SKPaint { Color = Palette.Background });
 
             var center = args.SetBoundary.Center;
             var radius = args.SetBoundary.QuadrantLength;
 
-            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = SKColors.White });
+            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = Palette.InBounds });
 
             if (args.Instructions.PasteFrontBuffer)
             {
@@ -216,17 +229,19 @@ public sealed class MandelbrotRenderer : Control
 
             var areasToDraw =
                 args.Lookup.GetVisibleAreas(args.SetBoundary, args.Instructions.GetDirtyRectangles());
+
+            using var paint = new SKPaint();
             foreach (var (area, type) in areasToDraw)
             {
-                var color = type switch
+                paint.Color = type switch
                 {
-                    RegionType.Border => SKColors.DarkSlateBlue,
-                    RegionType.Filament => SKColors.Red,
-                    RegionType.InSet => SKColors.Black,
-                    _ => SKColors.White,
+                    RegionType.Border => Palette.Border,
+                    RegionType.Filament => Palette.Filament,
+                    RegionType.InSet => Palette.InSet,
+                    _ => Palette.InBounds,
                 };
 
-                canvas.DrawRect(area.X, area.Y, area.Width, area.Height, new SKPaint { Color = color });
+                canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
             }
         }
 

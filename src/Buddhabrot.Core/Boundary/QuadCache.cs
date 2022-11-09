@@ -78,7 +78,7 @@ public sealed class QuadCache
             if (_borderCount == 0 && _filamentCount == 0 && _inSetCount == 0)
                 return RegionType.Empty;
 
-            if (_borderCount >= 2)
+            if (_borderCount >= _filamentCount && _borderCount >= _inSetCount)
                 return RegionType.Border;
 
             return _filamentCount >= _inSetCount ? RegionType.Filament : RegionType.InSet;

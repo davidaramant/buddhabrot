@@ -6,7 +6,7 @@ namespace Buddhabrot.Core.Boundary.Corners;
 
 public sealed class RegionCorners
 {
-    private readonly ConcurrentDictionary<CornerId, bool> _isCornerInSet = new();
+    private readonly Dictionary<CornerId, bool> _isCornerInSet = new();
     private readonly BoundaryParameters _boundaryParams;
 
     private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;

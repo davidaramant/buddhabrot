@@ -46,7 +46,7 @@ public static class ScalarKernel
                 oldZReal = zReal;
                 oldZImag = zImag;
                 stepsTaken = 0;
-                stepLimit = stepLimit << 1;
+                stepLimit <<= 1;
             }
         }
 

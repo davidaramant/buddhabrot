@@ -16,7 +16,7 @@ public static class BoundaryCalculator
 
         var returnList = new List<(RegionId, RegionType)>();
 
-        while (regionsToCheck.Any() && !cancelToken.IsCancellationRequested)
+        while (regionsToCheck.Count > 0 && !cancelToken.IsCancellationRequested)
         {
             var region = regionsToCheck.Pop();
 
@@ -39,7 +39,7 @@ public static class BoundaryCalculator
             {
                 regionType = cornerComputer.DoesRegionContainFilaments(region) ? RegionType.Filament : RegionType.Empty;
             }
-            
+
 
             visitedRegions.Add(region);
 

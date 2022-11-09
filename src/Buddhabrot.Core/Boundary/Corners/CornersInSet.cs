@@ -1,6 +1,6 @@
 namespace Buddhabrot.Core.Boundary.Corners;
 
-public sealed record CornersInSet(
+public readonly record struct CornersInSet(
     bool LowerLeft,
     bool LowerRight,
     bool UpperRight,
@@ -12,4 +12,5 @@ public sealed record CornersInSet(
     public bool IsRightEdge => LowerRight != UpperRight;
 
     public bool ContainsBorder => IsUpperEdge || IsLowerEdge || IsLeftEdge || IsRightEdge;
+    public bool InsideSet => LowerLeft && LowerRight && UpperRight && UpperLeft;
 }

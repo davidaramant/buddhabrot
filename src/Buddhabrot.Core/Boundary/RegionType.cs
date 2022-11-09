@@ -4,5 +4,6 @@ public enum RegionType
 {
     Empty,
     Border,
-    Filament
+    Filament,
+    InSet
 }

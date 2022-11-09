@@ -222,6 +222,7 @@ public sealed class MandelbrotRenderer : Control
                 {
                     RegionType.Border => SKColors.DarkSlateBlue,
                     RegionType.Filament => SKColors.Red,
+                    RegionType.InSet => SKColors.Black,
                     _ => SKColors.White,
                 };
 

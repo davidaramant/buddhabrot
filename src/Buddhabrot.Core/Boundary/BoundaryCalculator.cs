@@ -25,14 +25,21 @@ public static class BoundaryCalculator
 
             var corners = cornerComputer.GetRegionCorners(region);
 
-            bool containsFilament = corners.ContainsBorder || cornerComputer.DoesRegionContainFilaments(region);
+            RegionType regionType;
 
-            var regionType = (corners.ContainsBorder, containsFilament) switch
+            if (corners.ContainsBorder)
             {
-                (true, _) => RegionType.Border,
-                (false, true) => RegionType.Filament,
-                _ => RegionType.Empty,
-            };
+                regionType = RegionType.Border;
+            }
+            else if (corners.InsideSet)
+            {
+                regionType = RegionType.InSet;
+            }
+            else
+            {
+                regionType = cornerComputer.DoesRegionContainFilaments(region) ? RegionType.Filament : RegionType.Empty;
+            }
+            
 
             visitedRegions.Add(region);
 

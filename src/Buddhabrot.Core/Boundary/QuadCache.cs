@@ -20,28 +20,16 @@ public sealed class QuadCache
             return sw;
         }
 
-        var types = new[]
-        {
-            sw.Type,
-            nw.Type,
-            ne.Type,
-            se.Type,
-        };
-
-        var (numBorders, numFilaments) = types.Aggregate(
-            (Borders: 0, Filaments: 0),
-            (count, type) => type switch
-            {
-                RegionType.Border => (count.Borders + 1, count.Filaments),
-                RegionType.Filament => (count.Borders, count.Filaments + 1),
-                _ => count
-            });
-
-        var type = numBorders >= numFilaments ? RegionType.Border : RegionType.Filament;
-
         var key = (sw, nw, ne, se);
         if (!_dict.TryGetValue(key, out var quad))
         {
+            var type = new TypeCount()
+                .Count(sw.Type)
+                .Count(nw.Type)
+                .Count(ne.Type)
+                .Count(se.Type)
+                .DetermineType();
+            
             var index = _nodes.Count;
             quad = new Quad(type, index);
             _nodes.Add(sw);
@@ -57,5 +45,43 @@ public sealed class QuadCache
         }
 
         return quad;
+    }
+
+    private readonly struct TypeCount
+    {
+        private readonly int _borderCount = 0;
+        private readonly int _filamentCount = 0;
+        private readonly int _inSetCount = 0;
+
+        public TypeCount()
+        {
+        }
+
+        private TypeCount(int borderCount, int filamentCount, int inSetCount)
+        {
+            _borderCount = borderCount;
+            _filamentCount = filamentCount;
+            _inSetCount = inSetCount;
+        }
+
+        public TypeCount Count(RegionType type) =>
+            type switch
+            {
+                RegionType.Border => new(_borderCount + 1, _filamentCount, _inSetCount),
+                RegionType.Filament => new(_borderCount, _filamentCount + 1, _inSetCount),
+                RegionType.InSet => new(_borderCount, _filamentCount, _inSetCount + 1),
+                _ => this,
+            };
+
+        public RegionType DetermineType()
+        {
+            if (_borderCount == 0 && _filamentCount == 0 && _inSetCount == 0)
+                return RegionType.Empty;
+
+            if (_borderCount >= 2)
+                return RegionType.Border;
+
+            return _filamentCount >= _inSetCount ? RegionType.Filament : RegionType.InSet;
+        }
     }
 }

@@ -49,6 +49,7 @@ public sealed class RegionLookup
             {
                 RegionType.Border => Quad.BorderLeaf,
                 RegionType.Filament => Quad.FilamentLeaf,
+                RegionType.InSet => Quad.InSetLeaf,
                 _ => throw new InvalidOperationException("What type did I get?? " + type)
             });
             maxX = Math.Max(maxX, region.X);

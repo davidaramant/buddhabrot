@@ -7,8 +7,10 @@ public static class BoundaryCalculator
     public static IReadOnlyList<(RegionId Region, RegionType Type)>
         FindBoundaryAndFilaments(
             BoundaryParameters boundaryParameters,
-            CancellationToken cancelToken = default)
+            CancellationToken cancelToken = default,
+            Action<RegionId,RegionType>? logVisitedArea = null)
     {
+        var log = logVisitedArea ?? new Action<RegionId, RegionType>((_, _) => { });
         var cornerComputer = new RegionCorners(boundaryParameters);
         HashSet<RegionId> visitedRegions = new();
         Stack<RegionId> regionsToCheck = new();
@@ -40,9 +42,10 @@ public static class BoundaryCalculator
                 regionType = cornerComputer.DoesRegionContainFilaments(region) ? RegionType.Filament : RegionType.Empty;
             }
 
-
             visitedRegions.Add(region);
 
+            log(region, regionType);
+            
             if (regionType != RegionType.Empty)
             {
                 returnList.Add((region, regionType));

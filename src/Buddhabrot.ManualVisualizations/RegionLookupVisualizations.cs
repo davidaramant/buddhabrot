@@ -25,7 +25,7 @@ public class RegionLookupVisualizations : BaseVisualization
     [Test]
     public void ShouldConstructPower3QuadTreeCorrectly()
     {
-        var power2Regions =
+        var power3Regions =
             new[]
                 {
                     (0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (4, 1), (4, 0), (5, 0), (5, 1), (5, 2), (6, 2), (7, 2),
@@ -34,7 +34,7 @@ public class RegionLookupVisualizations : BaseVisualization
                 }
                 .Select(t => (new RegionId(t.Item1, t.Item2), RegionType.Border)).ToList();
 
-        var lookup = new RegionLookup(new AreaDivisions(3), power2Regions);
+        var lookup = new RegionLookup(new AreaDivisions(3), power3Regions);
 
         using var image = BoundaryVisualizer.RenderRegionLookup(lookup);
         SaveImage(image, "Power 3 Quadtree");

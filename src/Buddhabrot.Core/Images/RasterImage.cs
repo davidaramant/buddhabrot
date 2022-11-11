@@ -12,6 +12,7 @@ public sealed class RasterImage : IDisposable
     public int Width { get; }
     public int Height { get; }
     public int PixelCount => Width * Height;
+    public SKBitmap Raw => _bitmap;
 
     public RasterImage(System.Drawing.Size resolution, int scale = 1) : this(resolution.Width, resolution.Height, scale)
     {

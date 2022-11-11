@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Drawing;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;
@@ -6,7 +5,6 @@ using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary.Visualization;
 
-// TODO: What on earth happened to this thing??? After it's fixed, write some tests that make sure it doesn't break
 public sealed class QuadTreeRenderer
 {
     private const int CellWidth = 3;
@@ -27,8 +25,6 @@ public sealed class QuadTreeRenderer
     
     public void DrawCell(int x, int y, int depth, SKColor c)
     {
-        //Debug.Assert(depth >= (_levels - 1));
-
         var inverseDepth = _levels - depth - 1;
         var cellWidth = (1 << inverseDepth) * CellWidth + (1 << inverseDepth) - 1;
 

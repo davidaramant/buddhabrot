@@ -35,7 +35,7 @@ public static class BoundaryVisualizer
                 img.SetPixel(x, y,
                     ScalarKernel.FindEscapeTime(viewPort.GetComplex(x, y), iterationRange.Max) switch
                     {
-                        {IsInfinite: true} => Color.LightSteelBlue,
+                        { IsInfinite: true } => Color.LightSteelBlue,
                         var et when et.Iterations >= iterationRange.Min => Color.Red,
                         _ => Color.White,
                     });
@@ -45,13 +45,18 @@ public static class BoundaryVisualizer
         return img;
     }
 
-    public static RasterImage RenderRegionLookup(RegionLookup lookup, int scale = 1)
+    public static RasterImage RenderRegionLookup(
+        RegionLookup lookup, 
+        int scale = 1, 
+        SKColor? backgroundColor = null,
+        IBoundaryPalette? palette = null)
     {
-        var palette = PastelPalette.Instance;
-        
+        palette ??= PastelPalette.Instance;
+
         var widthOfTopLevelQuadrant = QuadTreeRenderer.GetRequiredWidth(lookup.Levels - 1);
         var imageWidth = QuadTreeRenderer.GetRequiredWidth(lookup.Levels);
         var image = new RasterImage(imageWidth, widthOfTopLevelQuadrant, scale);
+        image.Fill(backgroundColor ?? SKColors.Black);
 
         var nodes = lookup.GetRawNodes();
 
@@ -84,7 +89,7 @@ public static class BoundaryVisualizer
         DrawQuad(new QuadTreeRenderer(image, lookup.Levels - 1, xOffset: widthOfTopLevelQuadrant - 1), topE, depth: 0, 0, 0);
 
         return image;
-        
+
         SKColor PickColorFromType(RegionType type) =>
             type switch
             {

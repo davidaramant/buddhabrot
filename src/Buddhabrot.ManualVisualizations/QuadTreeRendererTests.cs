@@ -13,10 +13,11 @@ public class QuadTreeRendererTests : BaseVisualization
     [Test]
     public void ShouldRenderSingleCellAtDifferentDepths([Range(1, 4)] int levels)
     {
+        var width = QuadTreeRenderer.GetRequiredWidth(levels);
+        using var image = new RasterImage(width, width);
         foreach (var depth in Enumerable.Range(0, levels))
         {
-            var width = QuadTreeRenderer.GetRequiredWidth(levels);
-            using var image = new RasterImage(width, width);
+            image.Fill(Color.Black);
             var r = new QuadTreeRenderer(image, levels);
             r.DrawCell(0, 0, depth, Color.White);
 
@@ -27,10 +28,12 @@ public class QuadTreeRendererTests : BaseVisualization
     [Test]
     public void ShouldRenderAllCellsAtDifferentDepths([Range(1, 4)] int levels)
     {
+        var width = QuadTreeRenderer.GetRequiredWidth(levels);
+        using var image = new RasterImage(width, width);
         foreach (var depth in Enumerable.Range(0, levels))
+
         {
-            var width = QuadTreeRenderer.GetRequiredWidth(levels);
-            using var image = new RasterImage(width, width);
+            image.Fill(Color.Black);
             var r = new QuadTreeRenderer(image, levels);
 
             for (int y = 0; y < (1 << depth); y++)
@@ -51,27 +54,30 @@ public class QuadTreeRendererTests : BaseVisualization
         const int levels = 3;
         var width = QuadTreeRenderer.GetRequiredWidth(levels);
         using var image = new RasterImage(width, width);
+        image.Fill(Color.Black);
         var r = new QuadTreeRenderer(image, levels);
 
-        foreach (var pos in Enumerable.Range(0, 1 << levels))
+        foreach (var pos in Enumerable.Range(0, 1 << levels - 1))
         {
             r.DrawCell(pos, pos, 2, Color.White);
         }
-        
+
         SaveImage(image, "Diagonal");
     }
-    
+
     [Test]
     public void ShouldRenderEveryCellOfQuadTree()
     {
         const int levels = 3;
 
+        var width = QuadTreeRenderer.GetRequiredWidth(levels);
+        using var image = new RasterImage(width, width);
+
         for (int y = 0; y < 4; y++)
         {
             for (int x = 0; x < 4; x++)
             {
-                var width = QuadTreeRenderer.GetRequiredWidth(levels);
-                using var image = new RasterImage(width, width);
+                image.Fill(Color.Black);
                 var r = new QuadTreeRenderer(image, levels);
                 r.DrawCell(x, y, 2, Color.White);
                 SaveImage(image, $"Pos Y{y} X{x}");

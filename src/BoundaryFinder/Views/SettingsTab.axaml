@@ -14,5 +14,7 @@
         <Button 
             Content="Change File Path" 
             Command="{Binding UpdateFilePathCommand}" />
+        <Label>System Information:</Label>
+        <TextBlock Text="{Binding SystemInformation}"/>
     </StackPanel>
 </UserControl>

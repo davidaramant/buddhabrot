@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive;
 using BoundaryFinder.Models;
+using Buddhabrot.Core.Utilities;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
@@ -16,6 +17,8 @@ public sealed class SettingsViewModel : ViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> UpdateFilePathCommand { get; }
+
+    public string SystemInformation {get;}
     
     public SettingsViewModel(BorderDataProvider dataProvider, Action<string> log)
     {
@@ -25,5 +28,7 @@ public sealed class SettingsViewModel : ViewModelBase
         {
             dataProvider.UpdateDataStoragePath(_dataSetPath);
         });
+
+        SystemInformation = ComputerDescription.Get();
     }
 }

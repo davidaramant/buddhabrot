@@ -13,14 +13,14 @@ public static class BoundaryCalculator
         var log = logVisitedArea ?? new Action<RegionId, RegionType>((_, _) => { });
         var cornerComputer = new RegionCorners(boundaryParameters);
         HashSet<RegionId> visitedRegions = new();
-        Stack<RegionId> regionsToCheck = new();
-        regionsToCheck.Push(new RegionId(0, 0));
+        Queue<RegionId> regionsToCheck = new();
+        regionsToCheck.Enqueue(new RegionId(0, 0));
 
         var returnList = new List<(RegionId, RegionType)>();
 
         while (regionsToCheck.Count > 0 && !cancelToken.IsCancellationRequested)
         {
-            var region = regionsToCheck.Pop();
+            var region = regionsToCheck.Dequeue();
 
             if (visitedRegions.Contains(region))
                 continue;
@@ -50,15 +50,17 @@ public static class BoundaryCalculator
             {
                 returnList.Add((region, regionType));
 
-                AddRegionToCheck(region.MoveUp());
-                AddRegionToCheck(region.MoveDown());
-                AddRegionToCheck(region.MoveLeft());
-                AddRegionToCheck(region.MoveRight());
-
-                AddRegionToCheck(region.MoveUpLeft());
-                AddRegionToCheck(region.MoveUpRight());
-                AddRegionToCheck(region.MoveDownLeft());
-                AddRegionToCheck(region.MoveDownRight());
+                if (regionType != RegionType.InSet)
+                {
+                    AddRegionToCheck(region.MoveUp());
+                    AddRegionToCheck(region.MoveUpRight());
+                    AddRegionToCheck(region.MoveRight());
+                    AddRegionToCheck(region.MoveDownRight());
+                    AddRegionToCheck(region.MoveDown());
+                    AddRegionToCheck(region.MoveDownLeft());
+                    AddRegionToCheck(region.MoveLeft());
+                    AddRegionToCheck(region.MoveUpLeft());
+                }
             }
         }
 
@@ -72,7 +74,7 @@ public static class BoundaryCalculator
                 region.Y < boundaryParameters.Divisions.QuadrantDivisions &&
                 !visitedRegions.Contains(region))
             {
-                regionsToCheck.Push(region);
+                regionsToCheck.Enqueue(region);
             }
         }
     }

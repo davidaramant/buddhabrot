@@ -90,7 +90,9 @@ public static class BoundaryVisualizer
             {
                 RegionType.Border => palette.Border,
                 RegionType.Filament => palette.Filament,
-                _ => palette.InBounds,
+                RegionType.InSet => palette.InSet,
+                RegionType.Empty => palette.InBounds,
+                _ => throw new Exception("Unknown region type")
             };
     }
 }

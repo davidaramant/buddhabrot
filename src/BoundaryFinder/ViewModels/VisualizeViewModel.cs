@@ -64,8 +64,15 @@ public sealed class VisualizeViewModel : ViewModelBase
 
     private void SaveQuadTreeRendering()
     {
-        using var img = BoundaryVisualizer.RenderRegionLookup(Lookup);
-        img.Save(System.IO.Path.Combine(_dataProvider.LocalDataStoragePath, SelectedParameters.Description + ".png"));
+        try
+        {
+            using var img = BoundaryVisualizer.RenderRegionLookup(Lookup);
+            img.Save(System.IO.Path.Combine(_dataProvider.LocalDataStoragePath, SelectedParameters.Description + ".png"));
+        }
+        catch (Exception e)
+        {
+            _log(e.ToString());
+        }
     }
 
     private void LoadLookup(BoundaryParameters parameters)

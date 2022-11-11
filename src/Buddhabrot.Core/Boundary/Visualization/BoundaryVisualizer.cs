@@ -2,8 +2,9 @@
 using System.Drawing;
 using Buddhabrot.Core.Images;
 using Buddhabrot.Core.IterationKernels;
+using SkiaSharp;
 
-namespace Buddhabrot.Core.Boundary.Visualizations;
+namespace Buddhabrot.Core.Boundary.Visualization;
 
 public static class BoundaryVisualizer
 {
@@ -46,6 +47,8 @@ public static class BoundaryVisualizer
 
     public static RasterImage RenderRegionLookup(RegionLookup lookup, int scale = 1)
     {
+        var palette = PastelPalette.Instance;
+        
         var widthOfTopLevelQuadrant = QuadTreeRenderer.GetRequiredWidth(lookup.Levels - 1);
         var imageWidth = QuadTreeRenderer.GetRequiredWidth(lookup.Levels);
         var image = new RasterImage(imageWidth, widthOfTopLevelQuadrant, scale);
@@ -81,13 +84,13 @@ public static class BoundaryVisualizer
         DrawQuad(new QuadTreeRenderer(image, lookup.Levels - 1, xOffset: widthOfTopLevelQuadrant - 1), topE, depth: 0, 0, 0);
 
         return image;
+        
+        SKColor PickColorFromType(RegionType type) =>
+            type switch
+            {
+                RegionType.Border => palette.Border,
+                RegionType.Filament => palette.Filament,
+                _ => palette.InBounds,
+            };
     }
-
-    private static Color PickColorFromType(RegionType type) =>
-        type switch
-        {
-            RegionType.Border => Color.DarkBlue,
-            RegionType.Filament => Color.Red,
-            _ => Color.White,
-        };
 }

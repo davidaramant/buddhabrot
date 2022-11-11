@@ -1,9 +1,13 @@
 using System.Drawing;
-using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Visualization;
+using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;
 using Buddhabrot.Core.Utilities;
+using CliWrap;
+using SkiaSharp;
 
 namespace Buddhabrot.ManualVisualizations;
 
@@ -32,33 +36,35 @@ public class BoundaryScanningProcess : BaseVisualization
     }
 
     [Test]
-    public void GenerateFrames()
+    public async Task GenerateFramesAsync()
     {
+        var palette = PastelPalette.Instance;
+
         foreach (var png in OutputPath.GetFiles("*.png"))
         {
             png.Delete();
         }
 
-        var session = CreateSession();
+        var session = LoadSession();
 
-        var palette = new Dictionary<RegionType, Color>
+        var colorLookup = new Dictionary<RegionType, SKColor>
         {
-            { RegionType.Empty, Color.LightGray },
-            { RegionType.Border, Color.DarkSlateGray },
-            { RegionType.Filament, Color.Gray },
-            { RegionType.InSet, Color.SlateGray },
+            { RegionType.Empty, palette.Visited },
+            { RegionType.Border, palette.Border },
+            { RegionType.Filament, palette.Filament },
+            { RegionType.InSet, palette.InSet },
         };
 
         using var image = new RasterImage(session.MaxX + 1, session.MaxY + 1, scale: 2);
-        image.Fill(Color.White);
+        image.Fill(palette.InBounds);
 
         var fire = new[]
         {
-            Color.Brown,
-            Color.DarkRed,
-            Color.Red,
-            Color.OrangeRed,
-            Color.Orange,
+            Color.Brown.ToSKColor(),
+            Color.DarkRed.ToSKColor(),
+            Color.Red.ToSKColor(),
+            Color.OrangeRed.ToSKColor(),
+            Color.Orange.ToSKColor(),
         };
 
         var buffer = new RingBuffer<Step>(fire.Length * 2);
@@ -74,7 +80,7 @@ public class BoundaryScanningProcess : BaseVisualization
             int index = 0;
             foreach (var step in buffer)
             {
-                var color = index >= fire.Length ? fire[index - fire.Length] : palette[step.Type];
+                var color = index >= fire.Length ? fire[index - fire.Length] : colorLookup[step.Type];
 
                 image.SetPixel(step.X, (session.MaxY - step.Y), color);
 
@@ -86,13 +92,29 @@ public class BoundaryScanningProcess : BaseVisualization
 
         foreach (var step in buffer)
         {
-            var color = palette[step.Type];
+            var color = colorLookup[step.Type];
 
             image.SetPixel(step.X, (session.MaxY - step.Y), color);
         }
 
         SaveImage(image, $"frame{frame++:00000}");
-        
+
+        await Cli.Wrap("ffmpeg").WithArguments(args =>
+                args.Add("-framerate").Add("60")
+                    .Add("-i").Add("frame%05d.png")
+                    .Add("-pix_fmt").Add("yuv420p")
+                    .Add("-y")
+                    .Add("output.mp4"))
+            .WithWorkingDirectory(OutputPath.FullName)
+            .ExecuteAsync();
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            await Cli.Wrap("open")
+                .WithArguments("output.mp4")
+                .WithWorkingDirectory(OutputPath.FullName)
+                .ExecuteAsync();
+        }
         // ffmpeg -framerate 60 -i frame%05d.png -pix_fmt yuv420p -y output.mp4 && open output.mp4
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Buddhabrot.Core.ExtensionMethods.Drawing;
 using SkiaSharp;
 
 namespace Buddhabrot.Core.Images;
@@ -24,20 +25,21 @@ public sealed class RasterImage : IDisposable
         _bitmap = new SKBitmap(width, height);
     }
 
-    private static SKColor ToSKColor(System.Drawing.Color color) =>
-        new SKColor(red: color.R, green: color.G, blue: color.B);
-
-    public void Fill(System.Drawing.Color color)
+    public void Fill(System.Drawing.Color color) => Fill(color.ToSKColor());
+    
+    public void Fill(SKColor color)
     {
         using var canvas = new SKCanvas(_bitmap);
-        canvas.Clear(ToSKColor(color));
+        canvas.Clear(color);
     }
 
     public void SetPixel(System.Drawing.Point point, System.Drawing.Color color) => SetPixel(point.X, point.Y, color);
 
-    public void SetPixel(int x, int y, System.Drawing.Color color)
+    public void SetPixel(int x, int y, System.Drawing.Color color) => SetPixel(x, y, color.ToSKColor());
+    
+    public void SetPixel(int x, int y, SKColor color)
     {
-        _bitmap.SetPixel(x, y, ToSKColor(color));
+        _bitmap.SetPixel(x, y, color);
     }
 
     public void SetPixel(int pixelIndex, System.Drawing.Color color)
@@ -48,14 +50,17 @@ public sealed class RasterImage : IDisposable
         SetPixel(x, y, color);
     }
 
-    public void FillRectangle(int x, int y, int width, int height, System.Drawing.Color color)
+    public void FillRectangle(int x, int y, int width, int height, System.Drawing.Color color) =>
+        FillRectangle(x, y, width, height, color.ToSKColor());
+    
+    public void FillRectangle(int x, int y, int width, int height, SKColor color)
     {
         Debug.Assert(x >= 0 && x < Width && y >= 0 && y < Height, "Attempted to fill rectangle outside of image");
 
         using var canvas = new SKCanvas(_bitmap);
         canvas.DrawRect(x, y, width, height, new SKPaint()
             {
-                Color = ToSKColor(color),
+                Color = color
             }
         );
     }

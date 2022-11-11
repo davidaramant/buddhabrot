@@ -4,7 +4,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.Visualizations;
+using Buddhabrot.Core.Boundary.Visualization;
 using DynamicData.Binding;
 using ReactiveUI;
 

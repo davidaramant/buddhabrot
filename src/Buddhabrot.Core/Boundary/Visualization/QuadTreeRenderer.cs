@@ -1,8 +1,10 @@
 using System.Diagnostics;
 using System.Drawing;
+using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;
+using SkiaSharp;
 
-namespace Buddhabrot.Core.Boundary.Visualizations;
+namespace Buddhabrot.Core.Boundary.Visualization;
 
 public sealed class QuadTreeRenderer
 {
@@ -21,7 +23,9 @@ public sealed class QuadTreeRenderer
         _image = image;
     }
 
-    public void DrawCell(int x, int y, int depth, Color c)
+    public void DrawCell(int x, int y, int depth, Color c) => DrawCell(x, y, depth, c.ToSKColor());
+    
+    public void DrawCell(int x, int y, int depth, SKColor c)
     {
         Debug.Assert(depth > (_levels - 1));
 

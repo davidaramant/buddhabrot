@@ -11,6 +11,7 @@ using Avalonia.Skia;
 using Avalonia.Threading;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Visualization;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -18,19 +19,6 @@ namespace BoundaryFinder.Views;
 
 public sealed class MandelbrotRenderer : Control
 {
-    // https://coolors.co/96e2d9-4c7c80-011627-741a2f-e71d36-7f8b92-e4f8f4-caf1eb-2ec4b6-ff9f1c
-    private static class Palette
-    {
-        public static readonly SKColor Background = new (0xFFcaf1eb);
-        public static readonly SKColor InBounds = new (0xFFf1fcf8);
-        public static readonly SKColor InSet = new (0xFF96e2d9);
-        public static readonly SKColor Border = new (0xFF011627);
-        public static readonly SKColor BorderInSet = new(0xFF4c7c80);
-        public static readonly SKColor BorderInRange = new (0xFFff9f1c);
-        public static readonly SKColor BorderEmpty = new(0xFF741a2f);
-        public static readonly SKColor Filament = new (0xFFe71d36);
-    }
-    
     private SquareBoundary _setBoundary;
     private bool _isPanning;
     private Point _panningStartPoint;
@@ -61,6 +49,15 @@ public sealed class MandelbrotRenderer : Control
     {
         get => GetValue(ViewPortProperty);
         set => SetValue(ViewPortProperty, value);
+    }
+    
+    public static readonly StyledProperty<IBoundaryPalette> PaletteProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, IBoundaryPalette>(nameof(Palette), defaultValue:PastelPalette.Instance);
+
+    public IBoundaryPalette Palette
+    {
+        get => GetValue(PaletteProperty);
+        set => SetValue(PaletteProperty, value);
     }
 
     public static readonly StyledProperty<RegionLookup> LookupProperty =
@@ -191,7 +188,8 @@ public sealed class MandelbrotRenderer : Control
     sealed record RenderingArgs(
         RenderInstructions Instructions,
         SquareBoundary SetBoundary,
-        RegionLookup Lookup)
+        RegionLookup Lookup,
+        IBoundaryPalette Palette)
     {
         public int Width => Instructions.Size.Width;
         public int Height => Instructions.Size.Height;
@@ -211,12 +209,12 @@ public sealed class MandelbrotRenderer : Control
             var canvas = skiaContext.SkCanvas;
 
             canvas.DrawRect(0, 0, args.Width, args.Height,
-                new SKPaint { Color = Palette.Background });
+                new SKPaint { Color = args.Palette.Background });
 
             var center = args.SetBoundary.Center;
             var radius = args.SetBoundary.QuadrantLength;
 
-            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = Palette.InBounds });
+            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InBounds });
 
             if (args.Instructions.PasteFrontBuffer)
             {
@@ -235,10 +233,10 @@ public sealed class MandelbrotRenderer : Control
             {
                 paint.Color = type switch
                 {
-                    RegionType.Border => Palette.Border,
-                    RegionType.Filament => Palette.Filament,
-                    RegionType.InSet => Palette.InSet,
-                    _ => Palette.InBounds,
+                    RegionType.Border => args.Palette.Border,
+                    RegionType.Filament => args.Palette.Filament,
+                    RegionType.InSet => args.Palette.InSet,
+                    _ => args.Palette.InBounds,
                 };
 
                 canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
@@ -263,7 +261,7 @@ public sealed class MandelbrotRenderer : Control
 
     private async Task RequestRenderAsync(RenderInstructions instructions)
     {
-        var args = new RenderingArgs(instructions, _setBoundary, Lookup);
+        var args = new RenderingArgs(instructions, _setBoundary, Lookup, Palette);
 
         switch (_state)
         {

@@ -9,7 +9,7 @@
              x:CompileBindings="True"
              x:DataType="vm:VisualizeViewModel">
     <Grid
-        ColumnDefinitions="2*,*,Auto,Auto,Auto,Auto"
+        ColumnDefinitions="500,*,Auto,Auto,Auto,Auto"
         RowDefinitions="Auto,*,Auto">
         <ComboBox
             x:Name="BoundariesComboBox"

@@ -199,6 +199,7 @@ public sealed class MandelbrotRenderer : Control
     {
         if (_backBuffer.PixelSize.Width != args.Width || _backBuffer.PixelSize.Height != args.Height)
         {
+            _backBuffer.Dispose();
             _backBuffer = new RenderTargetBitmap(new PixelSize(args.Width, args.Height), new Vector(96, 96));
         }
 
@@ -242,7 +243,7 @@ public sealed class MandelbrotRenderer : Control
                 canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
             }
         }
-
+        
         (_backBuffer, _frontBuffer) = (_frontBuffer, _backBuffer);
         _panningOffset = new();
 

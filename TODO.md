@@ -38,13 +38,14 @@
     - [x] BUG: Resizing too fast goes haywire
     - [x] Panning
     - [ ] New mode for rendering border region interiors
-      - [ ] UI toggle for rendering interior
+      - [x] UI toggle for rendering interior
       - [ ] New iteration kernel method for running through a list of points
       - [ ] Do the actual rendering
   - [x] Nicer aesthetic
   - [ ] Fill the Mandelbrot interior (scanline rendering)
   - [ ] Pick palette to render with
-    - [ ] UI for palette choices
+    - [x] UI for palette choices
+    - [ ] Backend for picking palettes
     - [ ] More palettes to choose from
 - [x] NUnit test project for manual "tests"
 - [x] CI builds on GitHub

@@ -7,10 +7,11 @@ public static class BoundaryCalculator
     public static IReadOnlyList<(RegionId Region, RegionType Type)>
         FindBoundaryAndFilaments(
             BoundaryParameters boundaryParameters,
+            Action<string> log,
             CancellationToken cancelToken = default,
             Action<RegionId,RegionType>? logVisitedArea = null)
     {
-        var log = logVisitedArea ?? new Action<RegionId, RegionType>((_, _) => { });
+        var logVisit = logVisitedArea ?? new Action<RegionId, RegionType>((_, _) => { });
         var cornerComputer = new RegionCorners(boundaryParameters);
         HashSet<RegionId> visitedRegions = new();
         Queue<RegionId> regionsToCheck = new();
@@ -44,7 +45,7 @@ public static class BoundaryCalculator
 
             visitedRegions.Add(region);
 
-            log(region, regionType);
+            logVisit(region, regionType);
             
             if (regionType != RegionType.Empty)
             {
@@ -63,6 +64,8 @@ public static class BoundaryCalculator
                 }
             }
         }
+
+        log($"Number of cached corners: {cornerComputer.CacheSize:N0}");
 
         return returnList;
 

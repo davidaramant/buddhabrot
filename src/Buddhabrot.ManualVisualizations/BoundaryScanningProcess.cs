@@ -131,6 +131,7 @@ public class BoundaryScanningProcess : BaseVisualization
         int maxX = 0;
         int maxY = 0;
         BoundaryCalculator.FindBoundaryAndFilaments(parameters,
+            _ => { },
             logVisitedArea: (regionId, type) =>
             {
                 maxX = Math.Max(maxX, regionId.X);

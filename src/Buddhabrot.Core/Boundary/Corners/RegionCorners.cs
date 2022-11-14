@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Numerics;
 using Buddhabrot.Core.Calculations;
 
@@ -8,6 +8,8 @@ public sealed class RegionCorners
 {
     private readonly Dictionary<CornerId, bool> _isCornerInSet = new();
     private readonly BoundaryParameters _boundaryParams;
+
+    public int CacheSize => _isCornerInSet.Count;
 
     private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
 

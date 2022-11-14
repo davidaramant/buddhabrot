@@ -65,7 +65,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             var boundaryParameters = new BoundaryParameters(AreaDivisions, MaximumIterations);
 
             var regions = await Task.Run(
-                () => BoundaryCalculator.FindBoundaryAndFilaments(boundaryParameters, cancelToken),
+                () => BoundaryCalculator.FindBoundaryAndFilaments(boundaryParameters, _log, cancelToken),
                 cancelToken);
 
             _log($"Found boundary for {boundaryParameters}.\n" +

@@ -9,6 +9,7 @@ public sealed class RingBuffer<T> : IEnumerable<T>
     private int _tail = 0;
     public int Capacity => _buffer.Length;
     public int Count { get; private set; }
+    public T this[int index] => _buffer[(index + _head) % Capacity];
 
     public RingBuffer(int capacity)
     {
@@ -25,7 +26,7 @@ public sealed class RingBuffer<T> : IEnumerable<T>
         {
             _head = (_head + 1) % Capacity;
         }
-        
+
         Count = Math.Min(Count + 1, Capacity);
     }
 
@@ -39,10 +40,10 @@ public sealed class RingBuffer<T> : IEnumerable<T>
 
     public IEnumerator<T> GetEnumerator()
     {
-        for(int i = 0; i < Count; i++)
+        for (int i = 0; i < Count; i++)
         {
             var index = (i + _head) % Capacity;
-            yield return _buffer[index];    
+            yield return _buffer[index];
         }
     }
 

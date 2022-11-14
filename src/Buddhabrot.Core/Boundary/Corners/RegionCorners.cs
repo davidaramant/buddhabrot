@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Numerics;
-using Buddhabrot.Core.IterationKernels;
+using Buddhabrot.Core.Calculations;
 
 namespace Buddhabrot.Core.Boundary.Corners;
 

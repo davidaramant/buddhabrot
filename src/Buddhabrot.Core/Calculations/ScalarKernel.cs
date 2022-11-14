@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
-namespace Buddhabrot.Core.IterationKernels;
+namespace Buddhabrot.Core.Calculations;
 
 [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Cycle detection requires direct float comparisons.")]
 public static class ScalarKernel 

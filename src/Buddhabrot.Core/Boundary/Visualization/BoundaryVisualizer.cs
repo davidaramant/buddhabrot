@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using Buddhabrot.Core.Images;
-using Buddhabrot.Core.IterationKernels;
+using Buddhabrot.Core.Calculations;
 using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary.Visualization;

@@ -1,7 +1,7 @@
 using System.Drawing;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Images;
-using Buddhabrot.Core.IterationKernels;
+using Buddhabrot.Core.Calculations;
 
 namespace Buddhabrot.ManualVisualizations;
 

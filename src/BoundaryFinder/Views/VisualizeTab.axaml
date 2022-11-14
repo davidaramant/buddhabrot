@@ -44,7 +44,8 @@
         <ToggleSwitch
             Grid.Row="0"
             Grid.Column="4"
-            Margin="4"/>
+            Margin="4"
+            IsChecked="{Binding #MandelbrotRenderer.RenderInteriors}"/>
         <ComboBox
             Grid.Row="0"
             Grid.Column="5"

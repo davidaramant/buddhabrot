@@ -50,9 +50,10 @@ public sealed class MandelbrotRenderer : Control
         get => GetValue(ViewPortProperty);
         set => SetValue(ViewPortProperty, value);
     }
-    
+
     public static readonly StyledProperty<IBoundaryPalette> PaletteProperty =
-        AvaloniaProperty.Register<MandelbrotRenderer, IBoundaryPalette>(nameof(Palette), defaultValue:PastelPalette.Instance);
+        AvaloniaProperty.Register<MandelbrotRenderer, IBoundaryPalette>(nameof(Palette),
+            defaultValue: PastelPalette.Instance);
 
     public IBoundaryPalette Palette
     {
@@ -78,6 +79,15 @@ public sealed class MandelbrotRenderer : Control
         set => SetValue(IsBusyProperty, value);
     }
 
+    public static readonly StyledProperty<bool> RenderInteriorsProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, bool>(nameof(RenderInteriors));
+
+    public bool RenderInteriors
+    {
+        get => GetValue(RenderInteriorsProperty);
+        set => SetValue(RenderInteriorsProperty, value);
+    }
+
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
     public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
 
@@ -90,6 +100,10 @@ public sealed class MandelbrotRenderer : Control
             if (e.Property.Name == nameof(Lookup) && Lookup?.NodeCount > 1)
             {
                 await ResetLogicalAreaAsync();
+            }
+            else if (e.Property.Name == nameof(RenderInteriors))
+            {
+                await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
             }
         };
 
@@ -189,7 +203,8 @@ public sealed class MandelbrotRenderer : Control
         RenderInstructions Instructions,
         SquareBoundary SetBoundary,
         RegionLookup Lookup,
-        IBoundaryPalette Palette)
+        IBoundaryPalette Palette,
+        bool RenderInteriors)
     {
         public int Width => Instructions.Size.Width;
         public int Height => Instructions.Size.Height;
@@ -232,18 +247,24 @@ public sealed class MandelbrotRenderer : Control
             using var paint = new SKPaint();
             foreach (var (area, type) in areasToDraw)
             {
-                paint.Color = type switch
+                if (type == RegionType.Border && args.RenderInteriors)
                 {
-                    RegionType.Border => args.Palette.Border,
-                    RegionType.Filament => args.Palette.Filament,
-                    RegionType.InSet => args.Palette.InSet,
-                    _ => args.Palette.InBounds,
-                };
+                }
+                else
+                {
+                    paint.Color = type switch
+                    {
+                        RegionType.Border => args.Palette.Border,
+                        RegionType.Filament => args.Palette.Filament,
+                        RegionType.InSet => args.Palette.InSet,
+                        _ => args.Palette.InBounds,
+                    };
 
-                canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
+                    canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
+                }
             }
         }
-        
+
         (_backBuffer, _frontBuffer) = (_frontBuffer, _backBuffer);
         _panningOffset = new();
 
@@ -262,7 +283,7 @@ public sealed class MandelbrotRenderer : Control
 
     private async Task RequestRenderAsync(RenderInstructions instructions)
     {
-        var args = new RenderingArgs(instructions, _setBoundary, Lookup, Palette);
+        var args = new RenderingArgs(instructions, _setBoundary, Lookup, Palette, RenderInteriors);
 
         switch (_state)
         {

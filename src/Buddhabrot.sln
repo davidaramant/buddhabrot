@@ -9,21 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\TODO.md = ..\TODO.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuddhabrotLegacy", "BuddhabrotLegacy\BuddhabrotLegacy.csproj", "{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OldTests", "OldTests\OldTests.csproj", "{0D6E864E-E909-4AB2-8104-1C149A5F0913}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.Benchmarks", "Buddhabrot.Benchmarks\Buddhabrot.Benchmarks.csproj", "{E983D290-F91E-4BF6-AD58-19FA558C0560}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buddhabrot.Core", "Buddhabrot.Core\Buddhabrot.Core.csproj", "{2CAF96A9-247F-4FCC-9092-56470AEC2A93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.Core", "Buddhabrot.Core\Buddhabrot.Core.csproj", "{2CAF96A9-247F-4FCC-9092-56470AEC2A93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoundaryFinder", "BoundaryFinder\BoundaryFinder.csproj", "{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoundaryFinder", "BoundaryFinder\BoundaryFinder.csproj", "{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buddhabrot.Core.Tests", "Buddhabrot.Core.Tests\Buddhabrot.Core.Tests.csproj", "{E82D8C6A-E711-4AEF-8581-12748D6BEE32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.Core.Tests", "Buddhabrot.Core.Tests\Buddhabrot.Core.Tests.csproj", "{E82D8C6A-E711-4AEF-8581-12748D6BEE32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buddhabrot.ManualVisualizations", "Buddhabrot.ManualVisualizations\Buddhabrot.ManualVisualizations.csproj", "{26398991-6EAC-4338-B3C3-7688774C87EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.ManualVisualizations", "Buddhabrot.ManualVisualizations\Buddhabrot.ManualVisualizations.csproj", "{26398991-6EAC-4338-B3C3-7688774C87EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoundaryFinder.Tests", "BoundaryFinder.Tests\BoundaryFinder.Tests.csproj", "{0F43442F-0027-4A64-B47F-358CDEB5E158}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoundaryFinder.Tests", "BoundaryFinder.Tests\BoundaryFinder.Tests.csproj", "{0F43442F-0027-4A64-B47F-358CDEB5E158}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,22 +29,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}.Debug|x64.Build.0 = Debug|Any CPU
-		{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}.Release|x64.ActiveCfg = Release|Any CPU
-		{FA5FC935-CC2C-4AB9-84F7-AF5B52F8ECFF}.Release|x64.Build.0 = Release|Any CPU
-		{0D6E864E-E909-4AB2-8104-1C149A5F0913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D6E864E-E909-4AB2-8104-1C149A5F0913}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D6E864E-E909-4AB2-8104-1C149A5F0913}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0D6E864E-E909-4AB2-8104-1C149A5F0913}.Debug|x64.Build.0 = Debug|Any CPU
-		{0D6E864E-E909-4AB2-8104-1C149A5F0913}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D6E864E-E909-4AB2-8104-1C149A5F0913}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D6E864E-E909-4AB2-8104-1C149A5F0913}.Release|x64.ActiveCfg = Release|Any CPU
-		{0D6E864E-E909-4AB2-8104-1C149A5F0913}.Release|x64.Build.0 = Release|Any CPU
 		{E983D290-F91E-4BF6-AD58-19FA558C0560}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E983D290-F91E-4BF6-AD58-19FA558C0560}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E983D290-F91E-4BF6-AD58-19FA558C0560}.Debug|x64.ActiveCfg = Debug|Any CPU

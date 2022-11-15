@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
-using Buddhabrot.Core;
 using Humanizer;
 
-namespace Buddhabrot.Utility;
+namespace Buddhabrot.Core.Utilities;
 
 sealed class TimedOperation : IDisposable
 {

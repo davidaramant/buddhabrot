@@ -1,33 +1,30 @@
-﻿using System.Linq;
-using Buddhabrot.Utility;
-using NUnit.Framework;
+﻿using Buddhabrot.Core.Utilities;
 
-namespace Tests.Utility;
+namespace Buddhabrot.Core.Tests.Utilities;
 
-[TestFixture]
 public sealed class WorkRemainingTests
 {
-    [Test]
+    [Fact]
     public void ShouldReturnFromSequenceIfNoAdditionalItems()
     {
         const int size = 5;
         using (var work = new WorkRemaining<int>(Enumerable.Repeat(size,size)))
         {
-            Assert.That(work.Take(size).Count(), Is.EqualTo(size));
+            work.Take(size).Should().HaveCount(size);
         }
     }
 
-    [Test]
+    [Fact]
     public void ShouldReturnAsMuchDataAsAvailable()
     {
         const int size = 5;
         using (var work = new WorkRemaining<int>(Enumerable.Repeat(size, size)))
         {
-            Assert.That(work.Take(10 * size).Count(), Is.EqualTo(size));
+            work.Take(10 * size).Should().HaveCount(size);
         }
     }
 
-    [Test]
+    [Fact]
     public void ShouldReturnFromBufferBeforeSequence()
     {
         using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))
@@ -37,11 +34,11 @@ public sealed class WorkRemainingTests
             var dataReturned = work.Take(8).ToArray();
             var expected = Enumerable.Repeat(3, 3).Concat(Enumerable.Repeat(5, 5)).ToArray();
 
-            Assert.That(dataReturned, Is.EqualTo(expected));
+            dataReturned.Should().BeEquivalentTo(expected);
         }
     }
 
-    [Test]
+    [Fact]
     public void ShouldTakeLessThanTotal()
     {
         using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))
@@ -51,17 +48,17 @@ public sealed class WorkRemainingTests
             var dataReturned = work.Take(4).ToArray();
             var expected = Enumerable.Repeat(3, 3).Concat(Enumerable.Repeat(5, 1)).ToArray();
 
-            Assert.That(dataReturned, Is.EqualTo(expected));
+            dataReturned.Should().BeEquivalentTo(expected);
         }
     }
 
-    [Test]
+    [Fact]
     public void ShouldNotReturnDuplicatedWork()
     {
         using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))
         {
-            Assert.That(work.Take(4).Count(), Is.EqualTo(4));
-            Assert.That(work.Take(4).Count(), Is.EqualTo(1));
+            work.Take(4).Should().HaveCount(4);
+            work.Take(4).Should().HaveCount(1);
         }
     }
 }

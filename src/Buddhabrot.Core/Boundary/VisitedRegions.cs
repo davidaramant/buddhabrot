@@ -6,25 +6,29 @@
 // Would a quad tree be faster?
 public sealed class VisitedRegions
 {
-    private readonly List<HashSet<int>> _cache = new();
+    // Rows of columns
+    private readonly List<HashSet<int>> _rows = new();
 
-    public int Count => _cache.Sum(col => col.Count);
+    public int Count => _rows.Sum(col => col.Count);
 
     public void Add(RegionId id)
     {
-        if (id.Y >= _cache.Count)
+        // This method is safe because the boundary scanning starts at row 0 and can't skip rows
+        // We cannot get into situations where it will reference a row that doesn't exist
+
+        if (id.Y >= _rows.Count)
         {
-            _cache.Add(new HashSet<int>());
+            _rows.Add(new HashSet<int>());
         }
 
-        _cache[id.Y].Add(id.X);
+        _rows[id.Y].Add(id.X);
     }
 
     public bool Contains(RegionId id)
     {
-        if (id.Y >= _cache.Count)
+        if (id.Y >= _rows.Count)
             return false;
 
-        return _cache[id.Y].Contains(id.X);
+        return _rows[id.Y].Contains(id.X);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive;
+using System.Runtime.InteropServices;
 using BoundaryFinder.Models;
 using Buddhabrot.Core.Utilities;
 using ReactiveUI;
@@ -18,17 +19,40 @@ public sealed class SettingsViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> UpdateFilePathCommand { get; }
 
-    public string SystemInformation {get;}
-    
+    public ReactiveCommand<Unit, Unit> OpenFilePathCommand { get; }
+
+    public string SystemInformation { get; }
+
     public SettingsViewModel(BorderDataProvider dataProvider, Action<string> log)
     {
         _dataSetPath = dataProvider.LocalDataStoragePath;
-        
+
         UpdateFilePathCommand = ReactiveCommand.Create(() =>
         {
             dataProvider.UpdateDataStoragePath(_dataSetPath);
         });
 
         SystemInformation = ComputerDescription.Get();
+
+        OpenFilePathCommand = ReactiveCommand.Create(() =>
+        {
+            System.Diagnostics.Process.Start(GetCommandToOpenDirectory(), DataSetPath);
+        });
+    }
+
+    private static string GetCommandToOpenDirectory()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return "explorer";
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            return "open";
+        }
+        else
+        {
+            throw new Exception("Haven't supported this OS yet");
+        }
     }
 }

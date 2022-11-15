@@ -7,13 +7,16 @@
              x:Class="BoundaryFinder.Views.SettingsTab"
              x:CompileBindings="True"
              x:DataType="vm:SettingsViewModel">
-    <StackPanel Orientation="Vertical" Spacing="8" MaxWidth="1000">
+    <StackPanel Orientation="Vertical" Spacing="8" MaxWidth="1000" Margin="16">
         <TextBox 
             IsReadOnly="True" 
             Text="{Binding DataSetPath, Mode=OneWay}" />
         <Button 
-            Content="Change File Path" 
+            Content="Change File Path..." 
             Command="{Binding UpdateFilePathCommand}" />
+			  <Button
+            Content="Open File Path..."
+						Command="{Binding OpenFilePathCommand}"/>
         <Label>System Information:</Label>
         <TextBlock Text="{Binding SystemInformation}"/>
     </StackPanel>

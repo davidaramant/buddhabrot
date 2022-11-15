@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,8 +15,11 @@ using Avalonia.Threading;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Visualization;
+using Buddhabrot.Core.Calculations;
+using Buddhabrot.Core.ExtensionMethods.Drawing;
 using ReactiveUI;
 using SkiaSharp;
+using Vector = Avalonia.Vector;
 
 namespace BoundaryFinder.Views;
 
@@ -86,6 +92,24 @@ public sealed class MandelbrotRenderer : Control
     {
         get => GetValue(RenderInteriorsProperty);
         set => SetValue(RenderInteriorsProperty, value);
+    }
+
+    public static readonly StyledProperty<int> MaximumIterationsProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, int>(nameof(MaximumIterations));
+
+    public int MaximumIterations
+    {
+        get => GetValue(MaximumIterationsProperty);
+        set => SetValue(MaximumIterationsProperty, value);
+    }
+
+    public static readonly StyledProperty<int> MinimumIterationsProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, int>(nameof(MinimumIterations));
+
+    public int MinimumIterations
+    {
+        get => GetValue(MinimumIterationsProperty);
+        set => SetValue(MinimumIterationsProperty, value);
     }
 
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
@@ -204,7 +228,10 @@ public sealed class MandelbrotRenderer : Control
         SquareBoundary SetBoundary,
         RegionLookup Lookup,
         IBoundaryPalette Palette,
-        bool RenderInteriors)
+        ViewPort ViewPort,
+        bool RenderInteriors,
+        int MinIterations,
+        int MaxIterations)
     {
         public int Width => Instructions.Size.Width;
         public int Height => Instructions.Size.Height;
@@ -245,10 +272,14 @@ public sealed class MandelbrotRenderer : Control
                 args.Lookup.GetVisibleAreas(args.SetBoundary, args.Instructions.GetDirtyRectangles());
 
             using var paint = new SKPaint();
+
+            var positionsToRender = new List<System.Drawing.Point>();
+
             foreach (var (area, type) in areasToDraw)
             {
                 if (type == RegionType.Border && args.RenderInteriors)
                 {
+                    positionsToRender.AddRange(area.GetAllPositions());
                 }
                 else
                 {
@@ -261,6 +292,40 @@ public sealed class MandelbrotRenderer : Control
                     };
 
                     canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
+                }
+            }
+
+            if (positionsToRender.Any())
+            {
+                var points = positionsToRender.Select(args.ViewPort.GetComplex).ToArray();
+                var escapeTimes = new EscapeTime[points.Length];
+
+                // TODO: move this to function
+                // TODO: use vectors internally
+                // TODO: Why does this lock up the UI? It's already in a different Task, should this part be in a Task
+                // as well?
+                Parallel.For(0, points.Length, i =>
+                {
+                    escapeTimes[i] = ScalarKernel.FindEscapeTime(points[i], args.MaxIterations);
+                });
+
+                for (int i = 0; i < points.Length; i++)
+                {
+                    var time = escapeTimes[i];
+                    if (time.IsInfinite)
+                    {
+                        paint.Color = args.Palette.BorderInSet;
+                    }
+                    else if (time.Iterations > args.MinIterations)
+                    {
+                        paint.Color = args.Palette.BorderInRange;
+                    }
+                    else
+                    {
+                        paint.Color = args.Palette.BorderEmpty;
+                    }
+
+                    canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
                 }
             }
         }
@@ -283,7 +348,15 @@ public sealed class MandelbrotRenderer : Control
 
     private async Task RequestRenderAsync(RenderInstructions instructions)
     {
-        var args = new RenderingArgs(instructions, _setBoundary, Lookup, Palette, RenderInteriors);
+        var args = new RenderingArgs(
+            instructions,
+            _setBoundary, 
+            Lookup, 
+            Palette, 
+            ViewPort, 
+            RenderInteriors, 
+            MinimumIterations, 
+            MaximumIterations);
 
         switch (_state)
         {

@@ -68,8 +68,6 @@
             Content="Zoom Out"
             Command="{Binding #MandelbrotRenderer.ZoomOutCommand}" />
 
-
-
         <Border
             Grid.Row="1"
             Grid.Column="0"
@@ -78,7 +76,9 @@
             BorderThickness="1">
             <views:MandelbrotRenderer
                 x:Name="MandelbrotRenderer"
-                Lookup="{Binding Lookup}" />
+                Lookup="{Binding Lookup}"
+                MinimumIterations="{Binding MinimumIterations}"
+                MaximumIterations="{Binding SelectedParameters.MaxIterations}"/>
         </Border>
 
         <StackPanel

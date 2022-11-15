@@ -69,50 +69,6 @@ public static class ScalarKernel
         if (BulbChecker.IsInsideBulbs(c))
             return double.MaxValue;
 
-        var z = Complex.Zero;
-
-        var oldZ = Complex.Zero;
-
-        var dZ = Complex.Zero;
-
-        int stepsTaken = 0;
-        int stepLimit = 2;
-
-        for (int i = 0; i < maxIterations; i++)
-        {
-            stepsTaken++;
-
-            dZ = 2 * z * dZ + 1;
-            z = z * z + c;
-
-            if (oldZ == z)
-                return double.MaxValue;
-
-            if (z.MagnitudeSquared() > 4)
-            {
-                var magZ = z.Magnitude;
-                var magDZ = dZ.Magnitude;
-                return Math.Log(magZ * magZ) * magZ / magDZ;
-            }
-
-            if (stepsTaken == stepLimit)
-            {
-                oldZ = z;
-                stepsTaken = 0;
-                stepLimit <<= 1;
-            }
-        }
-
-        // Match the normal escape time algorithm and treat falling out of the loop as being in the set
-        return double.MaxValue;
-    }
-
-    public static double FindExteriorDistanceBroke(Complex c, int maxIterations)
-    {
-        // http://mrob.com/pub/muency/distanceestimator.html
-        if (BulbChecker.IsInsideBulbs(c))
-            return double.MaxValue;
-
         var zReal = 0.0;
         var zImag = 0.0;
 
@@ -136,8 +92,9 @@ public static class ScalarKernel
             stepsTaken++;
 
             //dZ = 2 * z * dZ + 1;
-            dZReal = 2 * (zReal * dZReal - zImag * dZImag) + 1;
+            var temp =2 * (zReal * dZReal - zImag * dZImag) + 1;
             dZImag = 2 * (zReal * dZImag + zImag * dZReal);
+            dZReal = temp;
 
             zImag = 2 * zReal * zImag + c.Imaginary;
             zReal = z2Real - z2Imag + c.Real;

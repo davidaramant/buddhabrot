@@ -8,6 +8,10 @@ public static class ScalarKernel
 {
     public static EscapeTime FindEscapeTime(Complex c, int maxIterations)
     {
+        // Uses Brent's cycle detection algorithm: https://en.wikipedia.org/wiki/Cycle_detection#Brent's_algorithm
+        // Using "old & older" is a modification I made. Not sure if this is optimal, but it makes a slight improvement
+        // in benchmarks.
+
         if (BulbChecker.IsInsideBulbs(c))
             return EscapeTime.Infinite;
 
@@ -16,6 +20,9 @@ public static class ScalarKernel
 
         var z2Real = 0.0;
         var z2Imag = 0.0;
+
+        var olderZReal = 0.0;
+        var olderZImag = 0.0;
 
         var oldZReal = 0.0;
         var oldZImag = 0.0;
@@ -30,7 +37,7 @@ public static class ScalarKernel
             zImag = 2 * zReal * zImag + c.Imaginary;
             zReal = z2Real - z2Imag + c.Real;
 
-            if (oldZReal == zReal && oldZImag == zImag)
+            if ((oldZReal == zReal && oldZImag == zImag) || (olderZReal == zReal && olderZImag == zImag))
                 return EscapeTime.Infinite;
 
             z2Real = zReal * zReal;
@@ -43,38 +50,12 @@ public static class ScalarKernel
 
             if (stepsTaken == stepLimit)
             {
+                olderZReal = oldZReal;
+                olderZImag = oldZImag;
                 oldZReal = zReal;
                 oldZImag = zImag;
                 stepsTaken = 0;
                 stepLimit <<= 1;
-            }
-        }
-
-        return EscapeTime.Infinite;
-    }
-
-    public static EscapeTime FindEscapeTimeNoCycleDetection(Complex c, int maxIterations)
-    {
-        if (BulbChecker.IsInsideBulbs(c))
-            return EscapeTime.Infinite;
-
-        var zReal = 0.0;
-        var zImag = 0.0;
-
-        var z2Real = 0.0;
-        var z2Imag = 0.0;
-
-        for (int i = 0; i < maxIterations; i++)
-        {
-            zImag = 2 * zReal * zImag + c.Imaginary;
-            zReal = z2Real - z2Imag + c.Real;
-
-            z2Real = zReal * zReal;
-            z2Imag = zImag * zImag;
-
-            if ((z2Real + z2Imag) > 4)
-            {
-                return EscapeTime.Discrete(i);
             }
         }
 

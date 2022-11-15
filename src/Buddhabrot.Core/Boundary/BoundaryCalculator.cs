@@ -65,7 +65,7 @@ public static class BoundaryCalculator
             }
         }
 
-        log($"Number of cached corners: {cornerComputer.CacheSize:N0}");
+        log($"Number of visited regions: {visitedRegions.Count:N0}");        
 
         return returnList;
 

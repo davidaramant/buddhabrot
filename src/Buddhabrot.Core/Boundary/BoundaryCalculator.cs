@@ -9,11 +9,11 @@ public static class BoundaryCalculator
             BoundaryParameters boundaryParameters,
             Action<string> log,
             CancellationToken cancelToken = default,
-            Action<RegionId,RegionType>? logVisitedArea = null)
+            Action<RegionId, RegionType>? logVisitedArea = null)
     {
         var logVisit = logVisitedArea ?? new Action<RegionId, RegionType>((_, _) => { });
         var cornerComputer = new RegionCorners(boundaryParameters);
-        HashSet<RegionId> visitedRegions = new();
+        VisitedRegions visitedRegions = new();
         Queue<RegionId> regionsToCheck = new();
         regionsToCheck.Enqueue(new RegionId(0, 0));
 
@@ -46,7 +46,7 @@ public static class BoundaryCalculator
             visitedRegions.Add(region);
 
             logVisit(region, regionType);
-            
+
             if (regionType != RegionType.Empty)
             {
                 returnList.Add((region, regionType));
@@ -65,7 +65,7 @@ public static class BoundaryCalculator
             }
         }
 
-        log($"Number of visited regions: {visitedRegions.Count:N0}");        
+        log($"Number of visited regions: {visitedRegions.Count:N0}");
 
         return returnList;
 

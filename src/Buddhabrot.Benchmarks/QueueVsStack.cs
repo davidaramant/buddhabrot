@@ -2,7 +2,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Buddhabrot.Benchmarks;
 
-public class QueueVsStack
+public class QueueVsStackBenchmark
 {
     [Params(10_000, 100_000)] public int CutOff { get; set; }
 

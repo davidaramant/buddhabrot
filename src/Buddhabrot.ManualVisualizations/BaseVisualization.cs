@@ -9,15 +9,10 @@ public abstract class BaseVisualization
 
     protected void SetUpOutputPath(string name) =>
         OutputPath = CreateDirectory(name.Humanize(LetterCasing.Title));
-    
+
     protected void SaveImage(RasterImage image, string name) =>
         image.Save(Path.Combine(OutputPath.FullName, name + ".png"));
-    
-    static DirectoryInfo CreateDirectory(string folderName) =>
-        Directory.CreateDirectory(
-            Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "Buddhabrot",
-                "Visualizations",
-                folderName));
+
+    private static DirectoryInfo CreateDirectory(string folderName) =>
+        DataLocation.CreateDirectory("Visualizations", folderName);
 }

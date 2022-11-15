@@ -8,7 +8,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        BenchmarkRunner.Run<QueueVsStack>();
+        BenchmarkRunner.Run<QueueVsStackBenchmark>();
 
 
         // BenchmarkRunner.Run<AutomaticIterationLimitBenchmarks>();

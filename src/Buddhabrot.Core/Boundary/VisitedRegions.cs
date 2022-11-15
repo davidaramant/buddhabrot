@@ -4,7 +4,7 @@
 // It is faster than a single massive HashSet for large amounts of data, but what is the transition?
 // What if the interiors HashSets were replaced with something like Interval? Would the cost of maintaining it be slower?
 // Would a quad tree be faster?
-public sealed class VisitedRegions
+public sealed class VisitedRegions : IVisitedRegions
 {
     // Rows of columns
     private readonly List<HashSet<int>> _rows = new();

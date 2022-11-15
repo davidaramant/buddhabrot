@@ -24,7 +24,7 @@ public sealed class RegionCorners
 
         Complex c = ToComplex(corner.X, corner.Y);
         inSet = ScalarKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite;
-        _isCornerInSet.Add(corner, inSet);
+        _isCornerInSet.AddUnsafe(corner, inSet);
         return inSet;
     }
 

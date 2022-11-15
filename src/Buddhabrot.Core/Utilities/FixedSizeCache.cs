@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Utilities;
+namespace Buddhabrot.Core.Utilities;
 
 public sealed class FixedSizeCache<TKey, TValue>
     where TKey : struct
@@ -16,16 +16,19 @@ public sealed class FixedSizeCache<TKey, TValue>
         _valueCache = new(maxSize);
     }
 
-    public void Add(TKey key, TValue value)
+    public bool Add(TKey key, TValue value)
     {
-        foreach (var savedKey in _keyCache)
+        if (_keyCache.Contains(key))
         {
-            if (savedKey.Equals(key))
-            {
-                return;
-            }
+            return false;
         }
 
+        AddUnsafe(key, value);
+        return true;
+    }
+
+    public void AddUnsafe(TKey key, TValue value)
+    {
         _keyCache.Add(key);
         _valueCache.Add(value);
     }

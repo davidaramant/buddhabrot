@@ -1,4 +1,4 @@
-namespace Buddhabrot.Core.Utilities;
+﻿namespace Buddhabrot.Core.Utilities;
 
 public sealed class FixedSizeCache<TKey, TValue>
     where TKey : struct
@@ -35,17 +35,16 @@ public sealed class FixedSizeCache<TKey, TValue>
 
     public bool TryGetValue(TKey key, out TValue value)
     {
-        int index = 0;
-        foreach (var savedKey in _keyCache)
+        // Use a for loop to avoid allocating an enumerator
+        for (int i = 0; i < _keyCache.Count; i++)
         {
-            if (savedKey.Equals(key))
+            if (_keyCache[i].Equals(key))
             {
-                value = _valueCache[index];
+                value = _valueCache[i];
                 return true;
             }
-            index++;
         }
-
+        
         value = default;
 
         return false;

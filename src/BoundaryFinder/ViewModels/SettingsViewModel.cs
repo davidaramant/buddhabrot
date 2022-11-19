@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Runtime.InteropServices;
 using BoundaryFinder.Models;
 using Buddhabrot.Core.Utilities;
+using CliWrap;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
@@ -27,17 +28,16 @@ public sealed class SettingsViewModel : ViewModelBase
     {
         _dataSetPath = dataProvider.LocalDataStoragePath;
 
-        UpdateFilePathCommand = ReactiveCommand.Create(() =>
-        {
-            dataProvider.UpdateDataStoragePath(_dataSetPath);
-        });
+        UpdateFilePathCommand = ReactiveCommand.Create(() => { dataProvider.UpdateDataStoragePath(_dataSetPath); });
 
         SystemInformation = ComputerDescription.Get();
 
-        OpenFilePathCommand = ReactiveCommand.Create(() =>
-        {
-            System.Diagnostics.Process.Start(GetCommandToOpenDirectory(), DataSetPath);
-        });
+        OpenFilePathCommand = ReactiveCommand.CreateFromTask(
+            () =>
+                Cli.Wrap(GetCommandToOpenDirectory())
+                    .WithArguments(".")
+                    .WithWorkingDirectory(DataSetPath)
+                    .ExecuteAsync());
     }
 
     private static string GetCommandToOpenDirectory()

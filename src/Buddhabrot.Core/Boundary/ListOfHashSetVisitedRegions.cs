@@ -1,15 +1,11 @@
 ﻿namespace Buddhabrot.Core.Boundary;
 
-// TODO: This should be benchmarked.
-// It is faster than a single massive HashSet for large amounts of data, but what is the transition?
-// What if the interiors HashSets were replaced with something like Interval? Would the cost of maintaining it be slower?
-// Would a quad tree be faster?
-public sealed class VisitedRegions : IVisitedRegions
+public sealed class ListOfHashSetVisitedRegions : IVisitedRegions
 {
     // Rows of columns
     private readonly List<HashSet<int>> _rows;
 
-    public VisitedRegions(int numRows)
+    public ListOfHashSetVisitedRegions(int numRows)
     {
         _rows = new(numRows);
     }
@@ -29,11 +25,6 @@ public sealed class VisitedRegions : IVisitedRegions
         _rows[id.Y].Add(id.X);
     }
 
-    public bool Contains(RegionId id)
-    {
-        if (id.Y >= _rows.Count)
-            return false;
-
-        return _rows[id.Y].Contains(id.X);
-    }
+    public bool Contains(RegionId id) => 
+        id.Y < _rows.Count && _rows[id.Y].Contains(id.X);
 }

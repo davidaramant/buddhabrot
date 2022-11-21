@@ -62,7 +62,7 @@ public class VisitedRegionsBenchmark
     public IEnumerable<object> AllVisitedRegionsImplementations()
     {
         yield return new HashSetVisitedRegions();
-        yield return new VisitedRegions(new AreaDivisions(16).QuadrantDivisions);
+        yield return new ListOfHashSetVisitedRegions(new AreaDivisions(16).QuadrantDivisions);
     }
 
     public static void CreateDataSet()
@@ -151,11 +151,11 @@ public class VisitedRegionsBenchmark
 
     private sealed class VisitedRegionsProxy : IVisitedRegions
     {
-        private readonly VisitedRegions _visitedRegions;
+        private readonly ListOfHashSetVisitedRegions _visitedRegions;
 
         public readonly SavedData Commands = new();
 
-        public VisitedRegionsProxy(int rows) => _visitedRegions = new VisitedRegions(rows);
+        public VisitedRegionsProxy(int rows) => _visitedRegions = new ListOfHashSetVisitedRegions(rows);
 
         public int Count => _visitedRegions.Count;
 

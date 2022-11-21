@@ -12,7 +12,7 @@ public static class BoundaryCalculator
             IVisitedRegions? visitedRegionsArg = null)
     {
         var cornerComputer = new RegionCorners(boundaryParameters);
-        IVisitedRegions visitedRegions = visitedRegionsArg ?? new VisitedRegions();
+        IVisitedRegions visitedRegions = visitedRegionsArg ?? new VisitedRegions(boundaryParameters.Divisions.QuadrantDivisions);
         Queue<RegionId> regionsToCheck = new();
         regionsToCheck.Enqueue(new RegionId(0, 0));
 

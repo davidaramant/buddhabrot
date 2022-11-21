@@ -7,7 +7,12 @@
 public sealed class VisitedRegions : IVisitedRegions
 {
     // Rows of columns
-    private readonly List<HashSet<int>> _rows = new();
+    private readonly List<HashSet<int>> _rows;
+
+    public VisitedRegions(int numRows)
+    {
+        _rows = new(numRows);
+    }
 
     public int Count => _rows.Sum(col => col.Count);
 

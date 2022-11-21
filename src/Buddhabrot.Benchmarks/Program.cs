@@ -8,11 +8,9 @@ class Program
 {
     static void Main(string[] args)
     {
-        BenchmarkRunner.Run<QueueVsStackBenchmark>();
+        VisitedRegionsBenchmark.CreateDataSet();
 
-
-        // BenchmarkRunner.Run<AutomaticIterationLimitBenchmarks>();
-        //BenchmarkRunner.Run<BorderPointBenchmarks>();
+        BenchmarkRunner.Run<VisitedRegionsBenchmark>();
     }
 
     private static void SimpleBenchmark<T>(Func<T> method, string name)
@@ -22,7 +20,7 @@ class Program
         const int trials = 3;
         var timer = Stopwatch.StartNew();
 
-        for (int i = -0; i < trials; i++)
+        for (int i = 0; i < trials; i++)
         {
             GC.KeepAlive(method());
         }

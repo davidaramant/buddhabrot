@@ -48,20 +48,20 @@ internal class VisitedRegionsBenchmark
             Add,
             Contains
         }
-        public List<(ActionType, RegionId)> Actions { get; } = new List<(ActionType, RegionId)>();
+        public List<(ActionType, RegionId, RegionType)> Actions { get; } = new List<(ActionType, RegionId, RegionType)>();
 
 
         public int Count => _visitedRegions.Count;
 
-        public void Add(RegionId id)
+        public void Add(RegionId id, RegionType type)
         {
-            Actions.Add((ActionType.Add, id));
-            _visitedRegions.Add(id);
+            Actions.Add((ActionType.Add, id, type));
+            _visitedRegions.Add(id, type);
         }
 
         public bool Contains(RegionId id)
         {
-            Actions.Add((ActionType.Contains, id));
+            Actions.Add((ActionType.Contains, id, default(RegionType)));
             return _visitedRegions.Contains(id);
         }
     }

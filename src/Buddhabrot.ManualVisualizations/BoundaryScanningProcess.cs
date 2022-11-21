@@ -131,17 +131,40 @@ public class BoundaryScanningProcess : BaseVisualization
         int maxX = 0;
         int maxY = 0;
         BoundaryCalculator.FindBoundaryAndFilaments(parameters,
-            _ => { },
-            logVisitedArea: (regionId, type) =>
+            _ => { },           
+            visitedRegionsArg: new VisitedRegionProxy(new VisitedRegions(), (regionId, type) =>
             {
                 maxX = Math.Max(maxX, regionId.X);
                 maxY = Math.Max(maxY, regionId.Y);
                 steps.Add(new Step(regionId.X, regionId.Y, type));
-            });
+            }));
 
         return new ScanSession(
             maxX,
             maxY,
             steps);
+    }
+
+    private sealed class VisitedRegionProxy : IVisitedRegions
+    {
+        private readonly IVisitedRegions _real;
+        private readonly Action<RegionId, RegionType> _logVisit;
+
+        public VisitedRegionProxy(IVisitedRegions real, Action<RegionId, RegionType> logVisit)
+        {
+            _real = real;
+            _logVisit = logVisit;
+        }
+
+        public int Count => _real.Count;
+
+        public void Add(RegionId id, RegionType type)
+        {
+            _logVisit(id, type);
+
+            _real.Add(id, type);
+        }
+
+        public bool Contains(RegionId id) => _real.Contains(id);
     }
 }

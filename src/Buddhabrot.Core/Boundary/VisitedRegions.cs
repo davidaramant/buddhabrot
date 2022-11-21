@@ -11,7 +11,7 @@ public sealed class VisitedRegions : IVisitedRegions
 
     public int Count => _rows.Sum(col => col.Count);
 
-    public void Add(RegionId id)
+    public void Add(RegionId id, RegionType _)
     {
         // This method is safe because the boundary scanning starts at row 0 and can't skip rows
         // We cannot get into situations where it will reference a row that doesn't exist

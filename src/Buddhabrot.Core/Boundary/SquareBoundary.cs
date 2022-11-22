@@ -2,6 +2,9 @@
 
 namespace Buddhabrot.Core.Boundary;
 
+/// <summary>
+/// A square in screen coordinates (+Y is down)
+/// </summary>
 public readonly record struct SquareBoundary(
     int X,
     int Y,

@@ -20,8 +20,10 @@
   - [x] Rework region types to Unknown/Border/Filament/Rejected
     - [ ] Update colors for the new region types
   - [ ] Build up a quad tree during boundary scan
-  - [ ] Return boorder regions from quad tree
-  - [ ] Compress quad tree into RegionLookup
+    - [x] New quad tree node
+    - [ ] New quad tree class
+    - [ ] Return border regions from quad tree
+    - [ ] Compress quad tree into RegionLookup
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
   - [x] Switch to power-of-two divisions

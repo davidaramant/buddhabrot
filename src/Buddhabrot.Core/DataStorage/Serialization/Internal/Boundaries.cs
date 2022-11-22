@@ -21,11 +21,11 @@ public sealed class Boundaries
 }
 
 [ProtoContract]
-public sealed class QuadTree
+public sealed class PersistedQuadTree
 {
-    [ProtoMember(1)] public int Levels { get; set; }
+    [ProtoMember(1)] public int Height { get; set; }
     [ProtoMember(2)] public uint[] Nodes { get; set; } = Array.Empty<uint>();
     
     public void Save(Stream stream) => Serializer.Serialize(stream, this);
-    public static QuadTree Load(Stream stream) => Serializer.Deserialize<QuadTree>(stream);
+    public static PersistedQuadTree Load(Stream stream) => Serializer.Deserialize<PersistedQuadTree>(stream);
 }

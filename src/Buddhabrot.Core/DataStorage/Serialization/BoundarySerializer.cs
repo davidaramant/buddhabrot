@@ -23,9 +23,9 @@ public static class BoundarySerializer
         RegionLookup lookup,
         Stream stream)
     {
-        var quadTree = new QuadTree
+        var quadTree = new PersistedQuadTree
         {
-            Levels = lookup.Levels,
+            Height = lookup.Levels,
             Nodes = lookup.GetRawNodes().Select(n => n.Encoded).ToArray(),
         };
         quadTree.Save(stream);
@@ -41,9 +41,9 @@ public static class BoundarySerializer
 
     public static RegionLookup LoadQuadTree(Stream stream)
     {
-        var quadTree = QuadTree.Load(stream);
+        var quadTree = PersistedQuadTree.Load(stream);
         return new RegionLookup(
-            quadTree.Levels,
+            quadTree.Height,
             quadTree.Nodes);
     }
 }

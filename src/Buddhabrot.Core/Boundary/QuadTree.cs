@@ -2,12 +2,12 @@
 
 public sealed class QuadTree
 {
+    private QuadDimensions _dimensions = new(X: 0, Y: 0, Height: 3);
     private QuadNode _root = QuadNode.MakeBranch(RegionType.Unknown, 0);
     private readonly List<QuadNode> _nodes;
 
-    public int Height { get; private set; } = 3;
-
-    public int Width => 1 << (Height - 1);
+    public int Height => _dimensions.Height;
+    public IReadOnlyList<QuadNode> Nodes => _nodes;
 
     public QuadTree(int capacity = 0)
     {
@@ -23,9 +23,36 @@ public sealed class QuadTree
     public void Add(RegionId id, RegionType type)
     {
         int maxDim = Math.Max(id.X, id.Y);
-        if (maxDim < Width)
+        if (maxDim < _dimensions.SideLength)
         {
-            // Mutate existing tree
+            var node = _root;
+            var nodeIndex = 0;
+            var dimensions = _dimensions;
+            bool shouldContinue = true;
+
+            while (shouldContinue)
+            {
+                var quadrant = dimensions.DetermineQuadrant(id);
+
+                switch (node.NodeType)
+                {
+                    case NodeType.Branch:
+                        nodeIndex = node.GetChildIndex(quadrant); 
+                        node = _nodes[nodeIndex];
+                        dimensions = dimensions.GetQuadrant(quadrant);
+                        break;
+                    
+                    case NodeType.Leaf:
+                        // TODO: if height == 2, convert to LeafQuad
+                        // If not, convert to branch and keep descending
+                        break;
+                    
+                    case NodeType.LeafQuad:
+                        _nodes[nodeIndex] = node.WithQuadrant(quadrant, type);
+                        shouldContinue = false;
+                        break;
+                }
+            }
         }
         else
         {
@@ -38,7 +65,7 @@ public sealed class QuadTree
         throw new NotImplementedException();
     }
 
-    public QuadTree Compress()
+    public QuadTree Normalize()
     {
         throw new NotImplementedException();
     }

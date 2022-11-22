@@ -1,6 +1,6 @@
 ﻿namespace Buddhabrot.Core.Boundary;
 
-public sealed class QuadTree
+public sealed class RegionQuadTree
 {
     private QuadDimensions _dimensions = new(X: 0, Y: 0, Height: 3);
     private QuadNode _root = QuadNode.MakeBranch(RegionType.Unknown, 0);
@@ -9,7 +9,7 @@ public sealed class QuadTree
     public int Height => _dimensions.Height;
     public IReadOnlyList<QuadNode> Nodes => _nodes;
 
-    public QuadTree(int capacity = 0)
+    public RegionQuadTree(int capacity = 0)
     {
         _nodes = new(capacity)
         {
@@ -65,7 +65,7 @@ public sealed class QuadTree
         throw new NotImplementedException();
     }
 
-    public QuadTree Normalize()
+    public RegionQuadTree Normalize()
     {
         throw new NotImplementedException();
     }

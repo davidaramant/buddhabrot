@@ -2,24 +2,26 @@
 
 public readonly record struct QuadNode(uint Encoded)
 {
-    public static QuadNode MakeLeaf(RegionType type) => new((uint)type << 2);
+    public static readonly QuadNode EmptyQuadLeaf = new((uint) NodeType.LeafQuad);
+
+    public static QuadNode MakeLeaf(RegionType type) => new((uint) type << 2);
 
     public static QuadNode MakeLeaf(
-        RegionType type, 
-        RegionType ll, 
-        RegionType lr, 
-        RegionType ul, 
+        RegionType type,
+        RegionType ll,
+        RegionType lr,
+        RegionType ul,
         RegionType ur) => new(
-            (uint)ll << 10 | 
-            (uint)lr << 8 | 
-            (uint)ul << 6 | 
-            (uint)ur << 4 | 
-            (uint)type << 2 | 
-            (uint)NodeType.LeafQuad);
+        (uint) ll << 10 |
+        (uint) lr << 8 |
+        (uint) ul << 6 |
+        (uint) ur << 4 |
+        (uint) type << 2 |
+        (uint) NodeType.LeafQuad);
 
     public static QuadNode MakeBranch(RegionType type, int childIndex) =>
-        new((uint)childIndex << 4 | (uint) type << 2 | (uint) NodeType.Branch);
-    
+        new((uint) childIndex << 4 | (uint) type << 2 | (uint) NodeType.Branch);
+
     public NodeType NodeType => (NodeType) (Encoded & 0b11);
     public RegionType RegionType => (RegionType) (Encoded >> 2 & 0b11);
 

@@ -17,7 +17,8 @@
 - [x] Split regions and quad tree into different files
 - [ ] Optimize Boundary Calculations
   - [ ] Always pass in VisitedRegions into BorderScan
-  - [ ] Rework region types to Unknown/Border/Filament/Rejected
+  - [x] Rework region types to Unknown/Border/Filament/Rejected
+    - [ ] Update colors for the new region types
   - [ ] Build up a quad tree during boundary scan
   - [ ] Return boorder regions from quad tree
   - [ ] Compress quad tree into RegionLookup

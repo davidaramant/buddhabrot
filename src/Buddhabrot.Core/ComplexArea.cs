@@ -40,9 +40,9 @@ public readonly record struct ComplexArea(
         new(RealInterval.Scale(scale), ImagInterval.Scale(scale));
 
     public ComplexArea GetSWQuadrant() => new(RealInterval.FirstHalf(), ImagInterval.FirstHalf());
+    public ComplexArea GetSEQuadrant() => new(RealInterval.LastHalf(), ImagInterval.FirstHalf());
     public ComplexArea GetNWQuadrant() => new(RealInterval.FirstHalf(), ImagInterval.LastHalf());
     public ComplexArea GetNEQuadrant() => new(RealInterval.LastHalf(), ImagInterval.LastHalf());
-    public ComplexArea GetSEQuadrant() => new(RealInterval.LastHalf(), ImagInterval.FirstHalf());
 
     public override string ToString() => $"R:{RealInterval}, I:{ImagInterval}";
 }

@@ -287,7 +287,7 @@ public sealed class MandelbrotRenderer : Control
                     {
                         RegionType.Border => args.Palette.Border,
                         RegionType.Filament => args.Palette.Filament,
-                        RegionType.InSet => args.Palette.InSet,
+                        RegionType.Rejected => args.Palette.InSet,
                         _ => args.Palette.InBounds,
                     };
 

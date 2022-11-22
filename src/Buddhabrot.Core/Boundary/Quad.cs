@@ -16,15 +16,15 @@ public readonly record struct Quad(uint Encoded)
     public bool HasChildren => (Encoded & 1) == 1;
     public bool IsLeaf => !HasChildren;
 
-    public static readonly Quad EmptyLeaf = new(RegionType.Empty);
+    public static readonly Quad UnknownLeaf = new(RegionType.Unknown);
     public static readonly Quad BorderLeaf = new(RegionType.Border);
     public static readonly Quad FilamentLeaf = new(RegionType.Filament);
-    public static readonly Quad InSetLeaf = new(RegionType.InSet);
+    public static readonly Quad RejectedLeaf = new(RegionType.Rejected);
 
-    public bool IsEmptyLeaf => this == EmptyLeaf;
+    public bool IsUnknownLeaf => this == UnknownLeaf;
     public bool IsBorderLeaf => this == BorderLeaf;
     public bool IsFilamentLeaf => this == FilamentLeaf;
-    public bool IsInSetLeaf => this == InSetLeaf;
+    public bool IsRejectedLeaf => this == RejectedLeaf;
 
     public int GetQuadrantIndex(Quadrant child) => ChildIndex + (int)child;
 

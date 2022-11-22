@@ -6,7 +6,7 @@ public class QuadCacheTests
 {
     public static IEnumerable<object[]> LeafNodes()
     {
-        yield return new object[] { Quad.EmptyLeaf };
+        yield return new object[] { Quad.UnknownLeaf };
         yield return new object[] { Quad.BorderLeaf };
         yield return new object[] { Quad.FilamentLeaf };
     }
@@ -30,11 +30,9 @@ public class QuadCacheTests
         var cache = new QuadCache(nodes);
 
         var result = cache.MakeQuad(
-            Quad.EmptyLeaf, 
-            Quad.EmptyLeaf, 
-            Quad.BorderLeaf, 
-            Quad.EmptyLeaf);
-        result.Should().NotBe(Quad.EmptyLeaf);
+            Quad.UnknownLeaf, 
+            Quad.UnknownLeaf, Quad.UnknownLeaf, Quad.BorderLeaf);
+        result.Should().NotBe(Quad.UnknownLeaf);
         result.Should().NotBe(Quad.BorderLeaf);
         result.Should().Be(new Quad(RegionType.Border, 0));
         nodes.Should().HaveCount(4);
@@ -48,15 +46,11 @@ public class QuadCacheTests
         var cache = new QuadCache(nodes);
 
         var result1 = cache.MakeQuad(
-            Quad.EmptyLeaf, 
-            Quad.EmptyLeaf, 
-            Quad.BorderLeaf, 
-            Quad.EmptyLeaf);
+            Quad.UnknownLeaf, 
+            Quad.UnknownLeaf, Quad.UnknownLeaf, Quad.BorderLeaf);
         var result2 = cache.MakeQuad(
-            Quad.EmptyLeaf, 
-            Quad.EmptyLeaf, 
-            Quad.BorderLeaf, 
-            Quad.EmptyLeaf);
+            Quad.UnknownLeaf, 
+            Quad.UnknownLeaf, Quad.UnknownLeaf, Quad.BorderLeaf);
 
         result1.Should().Be(result2);
         nodes.Should().HaveCount(4);

@@ -1,11 +1,12 @@
-﻿using Buddhabrot.Core.Boundary;
+﻿using System.Drawing;
+using Buddhabrot.Core.Boundary;
 
 namespace Buddhabrot.Core.Tests.Boundary;
 
 public class RegionLookupTests
 {
     private readonly IReadOnlyList<(RegionId, RegionType)> _power2Regions =
-        new[] { (0, 0), (1, 0), (2, 0), (2, 1), (3, 1), (3, 2), (4, 2), (4, 1), (4, 0) }
+        new[] {(0, 0), (1, 0), (2, 0), (2, 1), (3, 1), (3, 2), (4, 2), (4, 1), (4, 0)}
             .Select(t => (new RegionId(t.Item1, t.Item2), RegionType.Border)).ToList();
 
     private readonly IReadOnlyList<(RegionId, RegionType)> _power3Regions =
@@ -27,12 +28,10 @@ public class RegionLookupTests
     public void ShouldReturnEveryAreaPlusMirrorsIfSearchAreaIsEqualToBounds()
     {
         var lookup = new RegionLookup(new AreaDivisions(2),
-            new[] { (new RegionId(0, 0), RegionType.Border), (new RegionId(4, 1), RegionType.Border) });
+            new[] {(new RegionId(0, 0), RegionType.Border), (new RegionId(4, 1), RegionType.Border)});
         var visibleAreas = lookup.GetVisibleAreas(
-            new ComplexArea(
-                new Interval(-2, 2),
-                new Interval(-2, 2)),
-            0.00001);
+            new SquareBoundary(0, 0, 2),
+            new[] {new Rectangle(0, 0, 8, 8)});
 
         visibleAreas.Should().HaveCount(4);
     }
@@ -41,12 +40,10 @@ public class RegionLookupTests
     public void ShouldReturnIntersectionsWithSearchArea()
     {
         var lookup = new RegionLookup(new AreaDivisions(2),
-            new[] { (new RegionId(0, 0), RegionType.Border), (new RegionId(4, 1), RegionType.Border) });
+            new[] {(new RegionId(0, 0), RegionType.Border), (new RegionId(4, 1), RegionType.Border)});
         var visibleAreas = lookup.GetVisibleAreas(
-            new ComplexArea(
-                new Interval(-0.5, 0.5),
-                new Interval(0, 1)),
-            0.000001);
+            new SquareBoundary(0, 0, 2),
+            new[] {new Rectangle(0, 0, 1, 1)});
 
         visibleAreas.Should().HaveCount(1);
     }

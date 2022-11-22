@@ -35,30 +35,26 @@ public static class BoundaryCalculator
             }
             else if (corners.InsideSet)
             {
-                regionType = RegionType.InSet;
+                regionType = RegionType.Rejected;
             }
             else
             {
-                regionType = cornerComputer.DoesRegionContainFilaments(region) ? RegionType.Filament : RegionType.Empty;
+                regionType = cornerComputer.DoesRegionContainFilaments(region) ? RegionType.Filament : RegionType.Rejected;
             }
 
             visitedRegions.Add(region, regionType);
+            returnList.Add((region, regionType));
 
-            if (regionType != RegionType.Empty)
+            if (regionType != RegionType.Rejected)
             {
-                returnList.Add((region, regionType));
-
-                if (regionType != RegionType.InSet)
-                {
-                    AddRegionToCheck(region.MoveUp());
-                    AddRegionToCheck(region.MoveUpRight());
-                    AddRegionToCheck(region.MoveRight());
-                    AddRegionToCheck(region.MoveDownRight());
-                    AddRegionToCheck(region.MoveDown());
-                    AddRegionToCheck(region.MoveDownLeft());
-                    AddRegionToCheck(region.MoveLeft());
-                    AddRegionToCheck(region.MoveUpLeft());
-                }
+                AddRegionToCheck(region.MoveUp());
+                AddRegionToCheck(region.MoveUpRight());
+                AddRegionToCheck(region.MoveRight());
+                AddRegionToCheck(region.MoveDownRight());
+                AddRegionToCheck(region.MoveDown());
+                AddRegionToCheck(region.MoveDownLeft());
+                AddRegionToCheck(region.MoveLeft());
+                AddRegionToCheck(region.MoveUpLeft());
             }
         }
 

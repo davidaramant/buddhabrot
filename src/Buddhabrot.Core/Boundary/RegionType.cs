@@ -2,8 +2,8 @@
 
 public enum RegionType
 {
-    Empty,
+    Unknown,
     Border,
     Filament,
-    InSet
+    Rejected
 }

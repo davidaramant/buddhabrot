@@ -35,7 +35,7 @@ public static class BoundaryVisualizer
                 img.SetPixel(x, y,
                     ScalarKernel.FindEscapeTime(viewPort.GetComplex(x, y), iterationRange.Max) switch
                     {
-                        { IsInfinite: true } => Color.LightSteelBlue,
+                        {IsInfinite: true} => Color.LightSteelBlue,
                         var et when et.Iterations >= iterationRange.Min => Color.Red,
                         _ => Color.White,
                     });
@@ -46,8 +46,8 @@ public static class BoundaryVisualizer
     }
 
     public static RasterImage RenderRegionLookup(
-        RegionLookup lookup, 
-        int scale = 1, 
+        RegionLookup lookup,
+        int scale = 1,
         SKColor? backgroundColor = null,
         IBoundaryPalette? palette = null)
     {
@@ -60,7 +60,7 @@ public static class BoundaryVisualizer
 
         var nodes = lookup.GetRawNodes();
 
-        (Quad SW, Quad NW, Quad NE, Quad SE) GetChildren(Quad quad)
+        (Quad SW, Quad SE, Quad NW, Quad NE) GetChildren(Quad quad)
         {
             Debug.Assert(quad.HasChildren, "Attempted to get children of leaf node");
             var index = quad.ChildIndex;
@@ -77,14 +77,14 @@ public static class BoundaryVisualizer
 
             var newX = x << 1;
             var newY = y << 1;
-            var (sw, nw, ne, se) = GetChildren(quad);
+            var (sw, se, nw, ne) = GetChildren(quad);
             DrawQuad(r, sw, depth + 1, newX, newY);
+            DrawQuad(r, se, depth + 1, newX + 1, newY);
             DrawQuad(r, nw, depth + 1, newX, newY + 1);
             DrawQuad(r, ne, depth + 1, newX + 1, newY + 1);
-            DrawQuad(r, se, depth + 1, newX + 1, newY);
         }
 
-        var (_, topW, topE, _) = GetChildren(nodes.Last());
+        var (_, _, topW, topE) = GetChildren(nodes.Last());
         DrawQuad(new QuadTreeRenderer(image, lookup.Levels - 1), topW, depth: 0, 0, 0);
         DrawQuad(new QuadTreeRenderer(image, lookup.Levels - 1, xOffset: widthOfTopLevelQuadrant - 1), topE, depth: 0, 0, 0);
 
@@ -95,8 +95,8 @@ public static class BoundaryVisualizer
             {
                 RegionType.Border => palette.Border,
                 RegionType.Filament => palette.Filament,
-                RegionType.InSet => palette.InSet,
-                RegionType.Empty => palette.InBounds,
+                RegionType.Rejected => palette.InSet,
+                RegionType.Unknown => palette.InBounds,
                 _ => throw new Exception("Unknown region type")
             };
     }

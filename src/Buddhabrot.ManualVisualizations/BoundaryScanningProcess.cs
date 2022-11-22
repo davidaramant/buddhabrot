@@ -49,10 +49,10 @@ public class BoundaryScanningProcess : BaseVisualization
 
         var colorLookup = new Dictionary<RegionType, SKColor>
         {
-            { RegionType.Empty, palette.Visited },
+            { RegionType.Unknown, palette.Visited },
             { RegionType.Border, palette.Border },
             { RegionType.Filament, palette.Filament },
-            { RegionType.InSet, palette.InSet },
+            { RegionType.Rejected, palette.InSet },
         };
 
         using var image = new RasterImage(session.MaxX + 1, session.MaxY + 1, scale: 2);

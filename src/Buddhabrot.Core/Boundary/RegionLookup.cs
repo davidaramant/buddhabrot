@@ -64,15 +64,15 @@ public sealed class RegionLookup
 
             return cache.MakeQuad(
                 sw: BuildQuad(depth + 1, newX, newY, xOffset),
-                se: BuildQuad(depth + 1, newX + 1, newY, xOffset), 
-                nw: BuildQuad(depth + 1, newX, newY + 1, xOffset), 
+                se: BuildQuad(depth + 1, newX + 1, newY, xOffset),
+                nw: BuildQuad(depth + 1, newX, newY + 1, xOffset),
                 ne: BuildQuad(depth + 1, newX + 1, newY + 1, xOffset));
         }
 
         _nodes.Add(cache.MakeQuad(
             sw: Quad.UnknownLeaf,
-            se: Quad.UnknownLeaf, 
-            nw: BuildQuad(1, 0, 0), 
+            se: Quad.UnknownLeaf,
+            nw: BuildQuad(1, 0, 0),
             ne: BuildQuad(1, 0, 0, xOffset: divisions.QuadrantDivisions)));
         log?.Invoke(
             $"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}, Num nodes: {_nodes.Count:N0}");
@@ -91,29 +91,25 @@ public sealed class RegionLookup
 
             while (toCheck.Any())
             {
-                var (quadArea, currentQuad) = toCheck.Dequeue();
+                var (boundary, currentQuad) = toCheck.Dequeue();
 
                 if (currentQuad.IsUnknownLeaf)
                     continue;
 
-                var intersection = quadArea.IntersectWith(searchArea);
+                var intersection = boundary.IntersectWith(searchArea);
                 if (intersection == Rectangle.Empty)
                     continue;
 
-                if (currentQuad.IsLeaf || quadArea.IsPoint)
+                if (currentQuad.IsLeaf || boundary.IsPoint)
                 {
                     visibleAreas.Add((intersection, currentQuad.Type));
                 }
                 else
                 {
-                    toCheck.Enqueue(
-                        (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
-                    toCheck.Enqueue(
-                        (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
-                    toCheck.Enqueue(
-                        (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
-                    toCheck.Enqueue(
-                        (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
+                    toCheck.Enqueue((boundary.LL, _nodes[currentQuad.GetIndex(Quadrant.LL)]));
+                    toCheck.Enqueue((boundary.LR, _nodes[currentQuad.GetIndex(Quadrant.LR)]));
+                    toCheck.Enqueue((boundary.UL, _nodes[currentQuad.GetIndex(Quadrant.UL)]));
+                    toCheck.Enqueue((boundary.UR, _nodes[currentQuad.GetIndex(Quadrant.UR)]));
                 }
             }
 
@@ -137,14 +133,10 @@ public sealed class RegionLookup
                 }
                 else
                 {
-                    toCheck.Enqueue(
-                        (quadArea.GetNWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthWest)]));
-                    toCheck.Enqueue(
-                        (quadArea.GetNEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.SouthEast)]));
-                    toCheck.Enqueue(
-                        (quadArea.GetSWQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthWest)]));
-                    toCheck.Enqueue(
-                        (quadArea.GetSEQuadrant(), _nodes[currentQuad.GetQuadrantIndex(Quadrant.NorthEast)]));
+                    toCheck.Enqueue((quadArea.UL, _nodes[currentQuad.GetIndex(Quadrant.LL)]));
+                    toCheck.Enqueue((quadArea.UR, _nodes[currentQuad.GetIndex(Quadrant.LR)]));
+                    toCheck.Enqueue((quadArea.LL, _nodes[currentQuad.GetIndex(Quadrant.UL)]));
+                    toCheck.Enqueue((quadArea.LR, _nodes[currentQuad.GetIndex(Quadrant.UR)]));
                 }
             }
         }

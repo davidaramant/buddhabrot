@@ -27,10 +27,10 @@ public readonly record struct SquareBoundary(
         X: X - (X - (width / 2)) / 2,
         Y: Y - (Y - (height / 2)) / 2);
 
-    public SquareBoundary GetNWQuadrant() => this with {Scale = Scale - 1};
-    public SquareBoundary GetNEQuadrant() => new(X + QuadrantLength, Y, Scale - 1);
-    public SquareBoundary GetSEQuadrant() => new(X + QuadrantLength, Y + QuadrantLength, Scale - 1);
-    public SquareBoundary GetSWQuadrant() => new(X, Y + QuadrantLength, Scale - 1);
+    public SquareBoundary UL => this with {Scale = Scale - 1};
+    public SquareBoundary UR => new(X + QuadrantLength, Y, Scale - 1);
+    public SquareBoundary LR => new(X + QuadrantLength, Y + QuadrantLength, Scale - 1);
+    public SquareBoundary LL => new(X, Y + QuadrantLength, Scale - 1);
 
     public Rectangle IntersectWith(Rectangle rect)
     {

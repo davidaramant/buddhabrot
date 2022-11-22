@@ -26,7 +26,7 @@ public readonly record struct Quad(uint Encoded)
     public bool IsFilamentLeaf => this == FilamentLeaf;
     public bool IsRejectedLeaf => this == RejectedLeaf;
 
-    public int GetQuadrantIndex(Quadrant child) => ChildIndex + (int)child;
+    public int GetIndex(Quadrant child) => ChildIndex + (int)child;
 
     public override string ToString() => $"{Type} {(HasChildren ? ChildIndex : "Leaf")}";
 }

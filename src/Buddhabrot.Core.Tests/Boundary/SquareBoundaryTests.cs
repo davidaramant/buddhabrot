@@ -10,10 +10,10 @@ public class SquareBoundaryTests
     {
         var sq = new SquareBoundary(0, 0, 1);
 
-        sq.GetNWQuadrant().Should().Be(new SquareBoundary(0, 0, 0));
-        sq.GetNEQuadrant().Should().Be(new SquareBoundary(1, 0, 0));
-        sq.GetSEQuadrant().Should().Be(new SquareBoundary(1, 1, 0));
-        sq.GetSWQuadrant().Should().Be(new SquareBoundary(0, 1, 0));
+        sq.UL.Should().Be(new SquareBoundary(0, 0, 0));
+        sq.UR.Should().Be(new SquareBoundary(1, 0, 0));
+        sq.LR.Should().Be(new SquareBoundary(1, 1, 0));
+        sq.LL.Should().Be(new SquareBoundary(0, 1, 0));
     }
 
     public static IEnumerable<object[]> IntersectionData()

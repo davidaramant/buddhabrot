@@ -2,8 +2,20 @@
 
 public enum Quadrant
 {
-    SouthWest = 0,
-    SouthEast = 1,
-    NorthWest = 2,
-    NorthEast = 3,
+    /// <summary>
+    /// Lower left
+    /// </summary>
+    LL = 0,
+    /// <summary>
+    /// Lower right
+    /// </summary>
+    LR = 1,
+    /// <summary>
+    /// Upper left
+    /// </summary>
+    UL = 2,
+    /// <summary>
+    /// Upper right
+    /// </summary>
+    UR = 3,
 }

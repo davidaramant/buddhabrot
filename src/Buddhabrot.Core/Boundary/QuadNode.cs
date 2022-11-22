@@ -32,6 +32,11 @@ public readonly record struct QuadNode(uint Encoded)
     public RegionType UL => (RegionType) (Encoded >> 6 & 0b11);
     public RegionType UR => (RegionType) (Encoded >> 4 & 0b11);
 
+    public QuadNode WithLL(RegionType ll) => new(Encoded | ((uint) ll << 10));
+    public QuadNode WithLR(RegionType lr) => new(Encoded | ((uint) lr << 8));
+    public QuadNode WithUL(RegionType ul) => new(Encoded | ((uint) ul << 6));
+    public QuadNode WithUR(RegionType ur) => new(Encoded | ((uint) ur << 4));
+
     public override string ToString() => $"{NodeType} {RegionType}" + NodeType switch
     {
         NodeType.Leaf => string.Empty,

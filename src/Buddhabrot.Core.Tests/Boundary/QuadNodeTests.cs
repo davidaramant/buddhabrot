@@ -54,4 +54,38 @@ public class QuadNodeTests
 
         node.ChildIndex.Should().Be(123_456);
     }
+
+    [Fact]
+    public void ShouldUpdateChildren()
+    {
+        var node = QuadNode.EmptyQuadLeaf;
+
+        node = node.WithLL(RegionType.Filament);
+
+        node.LL.Should().Be(RegionType.Filament);
+        node.LR.Should().Be(RegionType.Unknown);
+        node.UL.Should().Be(RegionType.Unknown);
+        node.UR.Should().Be(RegionType.Unknown);
+
+        node = node.WithLR(RegionType.Border);
+        
+        node.LL.Should().Be(RegionType.Filament);
+        node.LR.Should().Be(RegionType.Border);
+        node.UL.Should().Be(RegionType.Unknown);
+        node.UR.Should().Be(RegionType.Unknown);
+
+        node = node.WithUL(RegionType.Rejected);
+        
+        node.LL.Should().Be(RegionType.Filament);
+        node.LR.Should().Be(RegionType.Border);
+        node.UL.Should().Be(RegionType.Rejected);
+        node.UR.Should().Be(RegionType.Unknown);
+
+        node = node.WithUR(RegionType.Rejected);
+        
+        node.LL.Should().Be(RegionType.Filament);
+        node.LR.Should().Be(RegionType.Border);
+        node.UL.Should().Be(RegionType.Rejected);
+        node.UR.Should().Be(RegionType.Rejected);
+    }
 }

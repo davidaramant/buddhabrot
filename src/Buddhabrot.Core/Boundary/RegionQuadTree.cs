@@ -69,6 +69,16 @@ public sealed class RegionQuadTree
 
     public bool HasVisited(RegionId id)
     {
+        if (!_dimensions.Contains(id))
+            return false;
+
+        var node = _root;
+        var dimensions = _dimensions;
+
+        var quadrant = dimensions.DetermineQuadrant(id);
+        
+        
+        
         throw new NotImplementedException();
     }
 

@@ -10,13 +10,13 @@ public readonly record struct QuadDimensions(
 {
     public bool IsPoint => Height == 1;
     public int SideLength => 1 << (Height - 1);
-    public int QuadrantLength => SideLength / 2;
+    public int QuadrantLength => 1 << (Height - 2);
 
     public bool Contains(RegionId id) =>
-        X >= id.X &&
-        Y >= id.Y &&
-        (X + SideLength) < id.X &&
-        (Y + SideLength) < id.Y;
+        id.X >= X &&
+        id.Y >= Y &&
+        id.X < (X + SideLength) &&
+        id.Y < (Y + SideLength);
 
     public QuadDimensions Expand() => this with {Height = Height + 1};
     public QuadDimensions LL => this with {Height = Height - 1};
@@ -47,4 +47,6 @@ public readonly record struct QuadDimensions(
             Quadrant.UR => UR,
             _ => throw new Exception("Can't happen")
         };
+
+    public override string ToString() => $"{{X: {X}, Y:{Y}, Height: {Height}}}";
 }

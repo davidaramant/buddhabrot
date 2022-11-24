@@ -1,0 +1,33 @@
+﻿using Buddhabrot.Core.Boundary;
+
+namespace Buddhabrot.Core.Tests.Boundary;
+
+public class RegionQuadTreeTests
+{
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(0, 1)]
+    [InlineData(1, 0)]
+    [InlineData(1, 1)]
+    [InlineData(2, 0)]
+    [InlineData(0, 2)]
+    public void HasVisitedShouldReturnFalseForEmptyTree(int x, int y)
+    {
+        var tree = new RegionQuadTree();
+
+        tree.HasVisited(new RegionId(x, y)).Should().BeFalse();
+    }
+
+    [Fact]
+    public void ShouldMarkRegionAsVisited()
+    {
+        var tree = new RegionQuadTree();
+        
+        tree.MarkVisited(new RegionId(0,0), RegionType.Border);
+
+        tree.HasVisited(new RegionId(0, 0)).Should().BeTrue();
+        tree.HasVisited(new RegionId(1, 0)).Should().BeFalse();
+        tree.HasVisited(new RegionId(0, 1)).Should().BeFalse();
+        tree.HasVisited(new RegionId(1, 1)).Should().BeFalse();
+    }
+}

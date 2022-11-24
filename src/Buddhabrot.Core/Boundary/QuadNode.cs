@@ -34,6 +34,16 @@ public readonly record struct QuadNode(uint Encoded)
     public RegionType UL => (RegionType) (Encoded >> 6 & 0b11);
     public RegionType UR => (RegionType) (Encoded >> 4 & 0b11);
 
+    public RegionType GetChildRegionType(Quadrant quadrant) =>
+        quadrant switch
+        {
+            Quadrant.LL => LL,
+            Quadrant.LR => LR,
+            Quadrant.UL => UL,
+            Quadrant.UR => UR,
+            _ => throw new Exception("Can't happen")
+        };
+
     public QuadNode WithLL(RegionType ll) => new(Encoded | ((uint) ll << 10));
     public QuadNode WithLR(RegionType lr) => new(Encoded | ((uint) lr << 8));
     public QuadNode WithUL(RegionType ul) => new(Encoded | ((uint) ul << 6));

@@ -31,10 +31,11 @@ public sealed class RegionQuadTree
             _nodes.Add(QuadNode.UnknownLeaf);
             _nodes.Add(QuadNode.UnknownLeaf);
 
+            _dimensions = _dimensions.Expand();
             _root = QuadNode.MakeBranch(RegionType.Unknown, index);
         }
 
-        var nodeIndex = 0;
+        var nodeIndex = -1;
         var node = _root;
         var dimensions = _dimensions;
         Quadrant quadrant = default;
@@ -45,7 +46,7 @@ public sealed class RegionQuadTree
 
             var nodeType = node.NodeType;
             // The only possible nodes are leaves and branches because of the height check
-            
+
             if (nodeType == NodeType.Leaf)
             {
                 var index = _nodes.Count;
@@ -64,7 +65,15 @@ public sealed class RegionQuadTree
         }
 
         quadrant = dimensions.DetermineQuadrant(id);
-        _nodes[nodeIndex] = node.WithQuadrant(quadrant, type);
+        var updatedNode = node.WithQuadrant(quadrant, type);
+        if (nodeIndex != -1)
+        {
+            _nodes[nodeIndex] = updatedNode;
+        }
+        else
+        {
+            _root = updatedNode;
+        }
     }
 
     public bool HasVisited(RegionId id)
@@ -75,11 +84,26 @@ public sealed class RegionQuadTree
         var node = _root;
         var dimensions = _dimensions;
 
+
+        descendTree:
+
         var quadrant = dimensions.DetermineQuadrant(id);
-        
-        
-        
-        throw new NotImplementedException();
+        switch (node.NodeType)
+        {
+            // We only insert Unknown leaves
+            case NodeType.Leaf:
+                return false;
+
+            case NodeType.LeafQuad:
+                return node.GetChildRegionType(quadrant) != RegionType.Unknown;
+
+            case NodeType.Branch:
+                var index = node.GetChildIndex(quadrant);
+                node = _nodes[index];
+                break;
+        }
+
+        goto descendTree;
     }
 
     public RegionLookup TransformToRegionLookup()

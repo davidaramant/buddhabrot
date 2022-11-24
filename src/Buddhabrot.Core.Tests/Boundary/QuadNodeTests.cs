@@ -58,7 +58,7 @@ public class QuadNodeTests
     [Fact]
     public void ShouldUpdateChildren()
     {
-        var node = QuadNode.EmptyQuadLeaf;
+        var node = QuadNode.UnknownLeafQuad;
 
         node = node.WithLL(RegionType.Filament);
 

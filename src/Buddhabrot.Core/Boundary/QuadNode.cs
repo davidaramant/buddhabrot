@@ -2,8 +2,9 @@
 
 public readonly record struct QuadNode(uint Encoded)
 {
-    public static readonly QuadNode EmptyQuadLeaf = new((uint) NodeType.LeafQuad);
-
+    public static readonly QuadNode UnknownLeaf = MakeLeaf(RegionType.Unknown);
+    public static readonly QuadNode UnknownLeafQuad = new((uint) NodeType.LeafQuad);
+    
     public static QuadNode MakeLeaf(RegionType type) => new((uint) type << 2);
 
     public static QuadNode MakeLeaf(

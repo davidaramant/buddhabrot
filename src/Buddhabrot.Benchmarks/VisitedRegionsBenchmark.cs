@@ -8,7 +8,7 @@ using Spectre.Console;
 
 namespace Buddhabrot.Benchmarks;
 
-[SimpleJob(RunStrategy.Monitoring, warmupCount: 1)]
+[SimpleJob(RunStrategy.Monitoring, warmupCount: 1, targetCount: 3)]
 public class VisitedRegionsBenchmark
 {
     private static readonly string DataFilePath =
@@ -19,7 +19,7 @@ public class VisitedRegionsBenchmark
     private SavedData _savedData = default!;
 
     [GlobalSetup]
-    public void LoadDataSet() => 
+    public void LoadDataSet() =>
         AnsiConsole.Progress()
             .Columns(new ProgressColumn[]
             {
@@ -42,8 +42,9 @@ public class VisitedRegionsBenchmark
 
     [Benchmark]
     [ArgumentsSource(nameof(AllVisitedRegionsImplementations))]
-    public void UseVisitedRegions(IVisitedRegions regions)
+    public void UseVisitedRegions(DescribedImplementation wrapper)
     {
+        var regions = wrapper.Regions;
         for (int i = 0; i < _savedData.Metadata.Count; i++)
         {
             if (_savedData.CommandType(i) == CommandType.Add)
@@ -57,11 +58,16 @@ public class VisitedRegionsBenchmark
         }
     }
 
+    public sealed record DescribedImplementation(IVisitedRegions Regions)
+    {
+        public override string ToString() => Regions.GetType().Name;
+    }
+
     public IEnumerable<object> AllVisitedRegionsImplementations()
     {
-        yield return new HashSetVisitedRegions();
-        yield return new ListOfHashSetVisitedRegions(new AreaDivisions(16).QuadrantDivisions);
-        yield return new VisitedRegions();
+        yield return new DescribedImplementation(new HashSetVisitedRegions());
+        yield return new DescribedImplementation(new ListOfHashSetVisitedRegions(new AreaDivisions(16).QuadrantDivisions));
+        yield return new DescribedImplementation(new VisitedRegions(new AreaDivisions(16).QuadrantDivisions * 2));
     }
 
     public static void CreateDataSet()
@@ -111,22 +117,19 @@ public class VisitedRegionsBenchmark
     [ProtoContract]
     public sealed class SavedData
     {
-        [ProtoMember(1)]
-        public List<byte> Metadata { get; set; } = new();
-        [ProtoMember(2)]
-        public List<int> X { get; set; } = new();
-        [ProtoMember(3)]
-        public List<int> Y { get; set; } = new();
+        [ProtoMember(1)] public List<byte> Metadata { get; set; } = new();
+        [ProtoMember(2)] public List<int> X { get; set; } = new();
+        [ProtoMember(3)] public List<int> Y { get; set; } = new();
 
-        public CommandType CommandType(int i) => (CommandType)(Metadata[i] & 1);
+        public CommandType CommandType(int i) => (CommandType) (Metadata[i] & 1);
 
-        public RegionType RegionType(int i) => (RegionType)(Metadata[i] >> 1);
+        public RegionType RegionType(int i) => (RegionType) (Metadata[i] >> 1);
 
         public RegionId Id(int i) => new(X[i], Y[i]);
 
         public void Add(RegionId id, RegionType type)
         {
-            Metadata.Add((byte)((byte)type << 1));
+            Metadata.Add((byte) ((byte) type << 1));
             X.Add(id.X);
             Y.Add(id.Y);
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
@@ -65,7 +65,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             var boundaryParameters = new BoundaryParameters(AreaDivisions, MaximumIterations);
 
             var regions = await Task.Run(
-                () => BoundaryCalculator.FindBoundaryAndFilaments(boundaryParameters, _log, cancelToken),
+                () => BoundaryCalculator.FindBoundaryAndFilaments(boundaryParameters, cancelToken),
                 cancelToken);
 
             _log($"Found boundary for {boundaryParameters}.\n" +

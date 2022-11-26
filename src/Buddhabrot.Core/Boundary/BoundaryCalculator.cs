@@ -4,12 +4,10 @@ namespace Buddhabrot.Core.Boundary;
 
 public static class BoundaryCalculator
 {
-    public static IReadOnlyList<(RegionId Region, RegionType Type)>
-        FindBoundaryAndFilaments(
-            BoundaryParameters boundaryParameters,
-            Action<string> log,
-            CancellationToken cancelToken = default,
-            IVisitedRegions? visitedRegionsArg = null)
+    public static IReadOnlyList<(RegionId Region, RegionType Type)> FindBoundaryAndFilaments(
+        BoundaryParameters boundaryParameters,
+        CancellationToken cancelToken = default,
+        IVisitedRegions? visitedRegionsArg = null)
     {
         var cornerComputer = new RegionCorners(boundaryParameters);
         IVisitedRegions visitedRegions = visitedRegionsArg ?? new ListOfHashSetVisitedRegions(boundaryParameters.Divisions.QuadrantDivisions);
@@ -57,8 +55,6 @@ public static class BoundaryCalculator
                 AddRegionToCheck(region.MoveUpLeft());
             }
         }
-
-        log($"Number of visited regions: {visitedRegions.Count:N0}");
 
         return returnList;
 

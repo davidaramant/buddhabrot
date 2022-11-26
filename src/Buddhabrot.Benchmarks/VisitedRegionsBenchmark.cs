@@ -1,4 +1,4 @@
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.ManualVisualizations;
@@ -86,7 +86,6 @@ public class VisitedRegionsBenchmark
                     var proxy = new VisitedRegionsProxy(bp.Divisions.QuadrantDivisions);
                     BoundaryCalculator.FindBoundaryAndFilaments(
                         bp,
-                        log: _ => { },
                         visitedRegionsArg: proxy);
 
                     boundaryTask.StopTask();

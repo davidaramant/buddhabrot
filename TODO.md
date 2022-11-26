@@ -21,7 +21,8 @@
     - [ ] Update colors for the new region types
   - [ ] Build up a quad tree during boundary scan
     - [x] New quad tree node
-    - [ ] New quad tree class
+    - [x] New quad tree class
+      - [ ] It's real slow - benchmark QuadNode & QuadDimensions
     - [ ] Return border regions from quad tree
     - [ ] Compress quad tree into RegionLookup
 - [ ] Real-Time Visualizations
@@ -51,7 +52,7 @@
       - [ ] New iteration kernel method for running through a list of points
       - [ ] Do the actual rendering
   - [x] Nicer aesthetic
-  - [ ] Fill the Mandelbrot interior (scanline rendering)
+  - ~~[ ] Fill the Mandelbrot interior (scanline rendering)~~ - No good method of doing this
   - [ ] Pick palette to render with
     - [x] UI for palette choices
     - [ ] Backend for picking palettes

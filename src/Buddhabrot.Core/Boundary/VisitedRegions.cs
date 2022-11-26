@@ -8,7 +8,7 @@
 /// It will construct a quad tree that covers [-2,2] on the real axis and [0,4] on the imaginary axis.
 /// The region type is NOT computed for branch nodes or leaf quads.
 ///
-/// Initially this is a tree of height 3 leaf nodes at the second level. Having a the root be a branch avoids some
+/// Initially this is a tree of height 3 leaf nodes at the second level. Having the root be a branch avoids some
 /// special cases.
 /// </remarks>
 public sealed class VisitedRegions : IVisitedRegions

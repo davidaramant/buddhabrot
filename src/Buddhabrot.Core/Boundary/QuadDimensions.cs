@@ -8,7 +8,6 @@ public readonly record struct QuadDimensions(
     int Y,
     int Height)
 {
-    public bool IsPoint => Height == 1;
     public int SideLength => 1 << (Height - 1);
     public int QuadrantLength => 1 << (Height - 2);
 
@@ -26,27 +25,22 @@ public readonly record struct QuadDimensions(
 
     public Quadrant DetermineQuadrant(RegionId id)
     {
-        var upper = id.Y >= Y + QuadrantLength;
-        var right = id.X >= X + QuadrantLength;
+        var xComponent = (id.X >= X + QuadrantLength) ? 1 : 0;
+        var yComponent = (id.Y >= Y + QuadrantLength) ? 2 : 0;
 
-        return (upper, right) switch
-        {
-            (false, false) => Quadrant.LL,
-            (false, true) => Quadrant.LR,
-            (true, false) => Quadrant.UL,
-            (true, true) => Quadrant.UR,
-        };
+        return (Quadrant) (xComponent + yComponent);
     }
 
-    public QuadDimensions GetQuadrant(Quadrant quadrant) =>
-        quadrant switch
-        {
-            Quadrant.LL => LL,
-            Quadrant.LR => LR,
-            Quadrant.UL => UL,
-            Quadrant.UR => UR,
-            _ => throw new Exception("Can't happen")
-        };
+    public QuadDimensions GetQuadrant(Quadrant quadrant)
+    {
+        var isLeft = (int) quadrant % 2;
+        var isLower = (int) quadrant / 2;
+
+        return new(
+            X: X + isLeft * QuadrantLength,
+            Y: Y + isLower * QuadrantLength,
+            Height: Height - 1);
+    }
 
     public override string ToString() => $"{{X: {X}, Y:{Y}, Height: {Height}}}";
 }

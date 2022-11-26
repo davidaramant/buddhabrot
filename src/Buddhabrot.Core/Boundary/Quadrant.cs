@@ -1,5 +1,11 @@
 ﻿namespace Buddhabrot.Core.Boundary;
 
+/// <summary>
+/// The different quadrants of a quad
+/// </summary>
+/// <remarks>
+/// The order of these elements is vital for <see cref="QuadNode"/> and <see cref="QuadDimensions"/>
+/// </remarks>
 public enum Quadrant
 {
     /// <summary>

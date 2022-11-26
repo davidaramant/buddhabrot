@@ -33,30 +33,24 @@ public readonly record struct QuadNode(uint Encoded)
     public RegionType UL => (RegionType) (Encoded >> 6 & 0b11);
     public RegionType UR => (RegionType) (Encoded >> 4 & 0b11);
 
-    public RegionType GetChildRegionType(Quadrant quadrant) =>
-        quadrant switch
-        {
-            Quadrant.LL => LL,
-            Quadrant.LR => LR,
-            Quadrant.UL => UL,
-            Quadrant.UR => UR,
-            _ => throw new Exception("Can't happen")
-        };
+    public RegionType GetQuadrant(Quadrant quadrant)
+    {
+        var offset = QuadrantOffset(quadrant);
+        return (RegionType) (Encoded >> offset & 0b11);
+    }
 
     public QuadNode WithLL(RegionType ll) => new(Encoded | (((uint) ll << 10) + (int) NodeType.LeafQuad));
     public QuadNode WithLR(RegionType lr) => new(Encoded | (((uint) lr << 8) + (int) NodeType.LeafQuad));
     public QuadNode WithUL(RegionType ul) => new(Encoded | (((uint) ul << 6) + (int) NodeType.LeafQuad));
     public QuadNode WithUR(RegionType ur) => new(Encoded | (((uint) ur << 4) + (int) NodeType.LeafQuad));
 
-    public QuadNode WithQuadrant(Quadrant quadrant, RegionType type) =>
-        quadrant switch
-        {
-            Quadrant.LL => WithLL(type),
-            Quadrant.LR => WithLR(type),
-            Quadrant.UL => WithUL(type),
-            Quadrant.UR => WithUR(type),
-            _ => throw new Exception("Can't happen")
-        };
+    public QuadNode WithQuadrant(Quadrant quadrant, RegionType type)
+    {
+        var offset = QuadrantOffset(quadrant);
+        return new(Encoded | ((uint) type << offset) + (int) NodeType.LeafQuad);
+    }
+
+    private static int QuadrantOffset(Quadrant quadrant) => 10 - 2 * (int) quadrant;
 
     public override string ToString() => $"{NodeType} ({RegionType})" + NodeType switch
     {

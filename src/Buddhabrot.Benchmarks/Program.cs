@@ -10,7 +10,11 @@ class Program
     {
         VisitedRegionsBenchmark.CreateDataSet();
 
-        BenchmarkRunner.Run<VisitedRegionsBenchmark>();
+        //BenchmarkRunner.Run<VisitedRegionsBenchmark>();
+        //BenchmarkRunner.Run<QuadNodeWithQuadrantBenchmarks>();
+        //BenchmarkRunner.Run<QuadNodeGetQuadrantBenchmarks>();
+        BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
+        //BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
     }
 
     private static void SimpleBenchmark<T>(Func<T> method, string name)

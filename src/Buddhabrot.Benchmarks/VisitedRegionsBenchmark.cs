@@ -58,16 +58,22 @@ public class VisitedRegionsBenchmark
         }
     }
 
-    public sealed record DescribedImplementation(IVisitedRegions Regions)
+    public sealed record DescribedImplementation(IVisitedRegions Regions, string Description)
     {
-        public override string ToString() => Regions.GetType().Name;
+        public override string ToString() => Description;
     }
 
     public IEnumerable<object> AllVisitedRegionsImplementations()
     {
-        yield return new DescribedImplementation(new HashSetVisitedRegions());
-        yield return new DescribedImplementation(new ListOfHashSetVisitedRegions(new AreaDivisions(16).QuadrantDivisions));
-        yield return new DescribedImplementation(new VisitedRegions(new AreaDivisions(16).QuadrantDivisions * 2));
+        yield return new DescribedImplementation(
+            new HashSetVisitedRegions(),
+            "HashSet");
+        yield return new DescribedImplementation(
+            new ListOfHashSetVisitedRegions(new AreaDivisions(16).QuadrantDivisions),
+            "List of HashSets");
+        yield return new DescribedImplementation(
+            new VisitedRegions(new AreaDivisions(16).QuadrantDivisions * 2),
+            "Quad Tree");
     }
 
     public static void CreateDataSet()

@@ -155,8 +155,6 @@ public class BoundaryScanningProcess : BaseVisualization
             _logVisit = logVisit;
         }
 
-        public int Count => _real.Count;
-
         public void MarkVisited(RegionId id, RegionType type)
         {
             _logVisit(id, type);

@@ -2,7 +2,7 @@
 
 namespace Buddhabrot.Core.Tests.Boundary;
 
-public class RegionQuadTreeTests
+public class VisitedRegionsTests
 {
     [Theory]
     [InlineData(0, 0)]
@@ -13,7 +13,7 @@ public class RegionQuadTreeTests
     [InlineData(0, 2)]
     public void HasVisitedShouldReturnFalseForEmptyTree(int x, int y)
     {
-        var tree = new RegionQuadTree();
+        var tree = new VisitedRegions();
 
         tree.HasVisited(new RegionId(x, y)).Should().BeFalse();
     }
@@ -21,7 +21,7 @@ public class RegionQuadTreeTests
     [Fact]
     public void ShouldMarkRegionAsVisited()
     {
-        var tree = new RegionQuadTree();
+        var tree = new VisitedRegions();
         
         tree.MarkVisited(new RegionId(0,0), RegionType.Border);
 
@@ -34,7 +34,7 @@ public class RegionQuadTreeTests
     [Fact]
     public void ShouldExpandTree()
     {
-        var tree = new RegionQuadTree();
+        var tree = new VisitedRegions();
 
         tree.Height.Should().Be(3);
         

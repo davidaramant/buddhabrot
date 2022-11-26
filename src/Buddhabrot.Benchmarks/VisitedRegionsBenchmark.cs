@@ -42,7 +42,7 @@ public class VisitedRegionsBenchmark
 
     [Benchmark]
     [ArgumentsSource(nameof(AllVisitedRegionsImplementations))]
-    public int UseVisitedRegions(IVisitedRegions regions)
+    public void UseVisitedRegions(IVisitedRegions regions)
     {
         for (int i = 0; i < _savedData.Metadata.Count; i++)
         {
@@ -55,14 +55,13 @@ public class VisitedRegionsBenchmark
                 regions.HasVisited(_savedData.Id(i));
             }
         }
-
-        return regions.Count;
     }
 
     public IEnumerable<object> AllVisitedRegionsImplementations()
     {
         yield return new HashSetVisitedRegions();
         yield return new ListOfHashSetVisitedRegions(new AreaDivisions(16).QuadrantDivisions);
+        yield return new VisitedRegions();
     }
 
     public static void CreateDataSet()

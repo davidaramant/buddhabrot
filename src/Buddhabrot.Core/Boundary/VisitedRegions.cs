@@ -11,16 +11,17 @@
 /// Initially this is a tree of height 3 leaf nodes at the second level. Having a the root be a branch avoids some
 /// special cases.
 /// </remarks>
-public sealed class RegionQuadTree
+public sealed class VisitedRegions : IVisitedRegions
 {
     private QuadDimensions _dimensions = new(X: 0, Y: 0, Height: 3);
     private QuadNode _root = QuadNode.MakeBranch(RegionType.Unknown, 0);
     private readonly List<QuadNode> _nodes;
 
     public int Height => _dimensions.Height;
+    public int NodeCount => _nodes.Count + 1;
     public IReadOnlyList<QuadNode> Nodes => _nodes;
 
-    public RegionQuadTree(int capacity = 0) =>
+    public VisitedRegions(int capacity = 0) =>
         _nodes = new(capacity)
         {
             QuadNode.UnknownLeaf,

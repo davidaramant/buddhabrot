@@ -85,7 +85,7 @@ public class VisitedRegionsBenchmark
                     var proxy = new VisitedRegionsProxy(bp.Divisions.QuadrantDivisions);
                     BoundaryCalculator.FindBoundaryAndFilaments(
                         bp,
-                        visitedRegionsArg: proxy);
+                        visitedRegions: proxy);
 
                     boundaryTask.StopTask();
 

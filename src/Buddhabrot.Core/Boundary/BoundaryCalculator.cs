@@ -6,11 +6,10 @@ public static class BoundaryCalculator
 {
     public static IReadOnlyList<(RegionId Region, RegionType Type)> FindBoundaryAndFilaments(
         BoundaryParameters boundaryParameters,
-        CancellationToken cancelToken = default,
-        IVisitedRegions? visitedRegionsArg = null)
+        IVisitedRegions visitedRegions,
+        CancellationToken cancelToken = default)
     {
         var cornerComputer = new RegionCorners(boundaryParameters);
-        IVisitedRegions visitedRegions = visitedRegionsArg ?? new ListOfHashSetVisitedRegions(boundaryParameters.Divisions.QuadrantDivisions);
         Queue<RegionId> regionsToCheck = new();
         regionsToCheck.Enqueue(new RegionId(0, 0));
 

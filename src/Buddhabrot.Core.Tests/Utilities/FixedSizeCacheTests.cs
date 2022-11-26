@@ -24,7 +24,7 @@ public class FixedSizeCacheTests
     [Fact]
     public void ShouldRollOverContents()
     {
-        for (int i = 0; i < _cache.Capacity + 1; i++)
+        for (int i = 0; i < _cache.Count + 1; i++)
         {
             _cache.Add(i, i);
         }

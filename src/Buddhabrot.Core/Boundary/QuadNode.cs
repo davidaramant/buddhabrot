@@ -59,11 +59,11 @@ public readonly record struct QuadNode(uint Encoded)
             _ => throw new Exception("Can't happen")
         };
 
-    public override string ToString() => $"{NodeType} {RegionType}" + NodeType switch
+    public override string ToString() => $"{NodeType} ({RegionType})" + NodeType switch
     {
         NodeType.Leaf => string.Empty,
         NodeType.Branch => $" {ChildIndex}",
-        NodeType.LeafQuad => $" {LL} {LR} {UL} {UR}",
+        NodeType.LeafQuad => $" LL:{LL} LR:{LR} UL:{UL} UR:{UR}",
         _ => "how could this have happened"
     };
 }

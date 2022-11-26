@@ -30,4 +30,18 @@ public class RegionQuadTreeTests
         tree.HasVisited(new RegionId(0, 1)).Should().BeFalse();
         tree.HasVisited(new RegionId(1, 1)).Should().BeFalse();
     }
+
+    [Fact]
+    public void ShouldExpandTree()
+    {
+        var tree = new RegionQuadTree();
+
+        tree.Height.Should().Be(3);
+        
+        tree.MarkVisited(new RegionId(4,0), RegionType.Border);
+
+        tree.Height.Should().Be(4);
+
+        tree.HasVisited(new RegionId(4, 0)).Should().BeTrue();
+    }
 }

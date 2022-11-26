@@ -12,7 +12,7 @@ public sealed class ListOfHashSetVisitedRegions : IVisitedRegions
 
     public int Count => _rows.Sum(col => col.Count);
 
-    public void Add(RegionId id, RegionType _)
+    public void MarkVisited(RegionId id, RegionType _)
     {
         // This method is safe because the boundary scanning starts at row 0 and can't skip rows
         // We cannot get into situations where it will reference a row that doesn't exist
@@ -25,6 +25,6 @@ public sealed class ListOfHashSetVisitedRegions : IVisitedRegions
         _rows[id.Y].Add(id.X);
     }
 
-    public bool Contains(RegionId id) => 
+    public bool HasVisited(RegionId id) => 
         id.Y < _rows.Count && _rows[id.Y].Contains(id.X);
 }

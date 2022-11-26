@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.ManualVisualizations;
@@ -48,11 +48,11 @@ public class VisitedRegionsBenchmark
         {
             if (_savedData.CommandType(i) == CommandType.Add)
             {
-                regions.Add(_savedData.Id(i), _savedData.RegionType(i));
+                regions.MarkVisited(_savedData.Id(i), _savedData.RegionType(i));
             }
             else
             {
-                regions.Contains(_savedData.Id(i));
+                regions.HasVisited(_savedData.Id(i));
             }
         }
 
@@ -159,16 +159,16 @@ public class VisitedRegionsBenchmark
 
         public int Count => _visitedRegions.Count;
 
-        public void Add(RegionId id, RegionType type)
+        public void MarkVisited(RegionId id, RegionType type)
         {
             Commands.Add(id, type);
-            _visitedRegions.Add(id, type);
+            _visitedRegions.MarkVisited(id, type);
         }
 
-        public bool Contains(RegionId id)
+        public bool HasVisited(RegionId id)
         {
             Commands.Contains(id);
-            return _visitedRegions.Contains(id);
+            return _visitedRegions.HasVisited(id);
         }
     }
 
@@ -178,9 +178,9 @@ public class VisitedRegionsBenchmark
 
         public int Count => _cache.Count;
 
-        public void Add(RegionId id, RegionType _) => _cache.Add(id);
+        public void MarkVisited(RegionId id, RegionType _) => _cache.Add(id);
 
-        public bool Contains(RegionId id) => _cache.Contains(id);
+        public bool HasVisited(RegionId id) => _cache.Contains(id);
 
         public override string ToString() => "HashSet Visited Regions";
     }

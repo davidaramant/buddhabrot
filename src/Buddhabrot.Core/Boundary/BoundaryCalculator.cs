@@ -22,7 +22,7 @@ public static class BoundaryCalculator
         {
             var region = regionsToCheck.Dequeue();
 
-            if (visitedRegions.Contains(region))
+            if (visitedRegions.HasVisited(region))
                 continue;
 
             var corners = cornerComputer.GetRegionCorners(region);
@@ -42,7 +42,7 @@ public static class BoundaryCalculator
                 regionType = cornerComputer.DoesRegionContainFilaments(region) ? RegionType.Filament : RegionType.Rejected;
             }
 
-            visitedRegions.Add(region, regionType);
+            visitedRegions.MarkVisited(region, regionType);
             returnList.Add((region, regionType));
 
             if (regionType != RegionType.Rejected)
@@ -68,7 +68,7 @@ public static class BoundaryCalculator
                 region.Y >= 0 &&
                 region.X < (boundaryParameters.Divisions.QuadrantDivisions * 2) &&
                 region.Y < boundaryParameters.Divisions.QuadrantDivisions &&
-                !visitedRegions.Contains(region))
+                !visitedRegions.HasVisited(region))
             {
                 regionsToCheck.Enqueue(region);
             }

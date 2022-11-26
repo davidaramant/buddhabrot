@@ -22,7 +22,8 @@
   - [ ] Build up a quad tree during boundary scan
     - [x] New quad tree node
     - [x] New quad tree class
-      - [ ] It's real slow - benchmark QuadNode & QuadDimensions
+      - [x] It's real slow - benchmark QuadNode & QuadDimensions
+      - [ ] Check if a RingBuffer cache for HasVisited or Visit helps
     - [ ] Return border regions from quad tree
     - [ ] Compress quad tree into RegionLookup
 - [ ] Real-Time Visualizations

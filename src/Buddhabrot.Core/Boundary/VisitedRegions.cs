@@ -30,7 +30,7 @@ public sealed class VisitedRegions : IVisitedRegions
             QuadNode.UnknownLeaf
         };
 
-    public void MarkVisited(RegionId id, RegionType type)
+    public void Visit(RegionId id, RegionType type)
     {
         // Do we have to expand the tree?
         if (!_dimensions.Contains(id))

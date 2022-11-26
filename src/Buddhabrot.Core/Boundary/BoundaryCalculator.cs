@@ -39,7 +39,7 @@ public static class BoundaryCalculator
                 regionType = cornerComputer.DoesRegionContainFilaments(region) ? RegionType.Filament : RegionType.Rejected;
             }
 
-            visitedRegions.MarkVisited(region, regionType);
+            visitedRegions.Visit(region, regionType);
             returnList.Add((region, regionType));
 
             if (regionType != RegionType.Rejected)

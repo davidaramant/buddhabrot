@@ -2,6 +2,6 @@
 
 public interface IVisitedRegions
 {
-    void MarkVisited(RegionId id, RegionType type);
+    void Visit(RegionId id, RegionType type);
     bool HasVisited(RegionId id);
 }

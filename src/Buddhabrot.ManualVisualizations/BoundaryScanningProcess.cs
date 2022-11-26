@@ -155,11 +155,11 @@ public class BoundaryScanningProcess : BaseVisualization
             _logVisit = logVisit;
         }
 
-        public void MarkVisited(RegionId id, RegionType type)
+        public void Visit(RegionId id, RegionType type)
         {
             _logVisit(id, type);
 
-            _real.MarkVisited(id, type);
+            _real.Visit(id, type);
         }
 
         public bool HasVisited(RegionId id) => _real.HasVisited(id);

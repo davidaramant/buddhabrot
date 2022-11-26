@@ -49,7 +49,7 @@ public class VisitedRegionsBenchmark
         {
             if (_savedData.CommandType(i) == CommandType.Add)
             {
-                regions.MarkVisited(_savedData.Id(i), _savedData.RegionType(i));
+                regions.Visit(_savedData.Id(i), _savedData.RegionType(i));
             }
             else
             {
@@ -166,10 +166,10 @@ public class VisitedRegionsBenchmark
 
         public int Count => _visitedRegions.Count;
 
-        public void MarkVisited(RegionId id, RegionType type)
+        public void Visit(RegionId id, RegionType type)
         {
             Commands.Add(id, type);
-            _visitedRegions.MarkVisited(id, type);
+            _visitedRegions.Visit(id, type);
         }
 
         public bool HasVisited(RegionId id)
@@ -185,7 +185,7 @@ public class VisitedRegionsBenchmark
 
         public int Count => _cache.Count;
 
-        public void MarkVisited(RegionId id, RegionType _) => _cache.Add(id);
+        public void Visit(RegionId id, RegionType _) => _cache.Add(id);
 
         public bool HasVisited(RegionId id) => _cache.Contains(id);
 

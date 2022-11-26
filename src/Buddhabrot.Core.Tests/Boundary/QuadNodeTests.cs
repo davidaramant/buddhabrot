@@ -56,9 +56,21 @@ public class QuadNodeTests
     }
 
     [Fact]
+    public void ShouldChangeNodeTypeWhenSettingChildRegion()
+    {
+        var node = QuadNode.UnknownLeaf;
+
+        node.NodeType.Should().Be(NodeType.Leaf);
+
+        node = node.WithQuadrant(Quadrant.LL, RegionType.Border);
+
+        node.NodeType.Should().Be(NodeType.LeafQuad);
+    }
+
+    [Fact]
     public void ShouldUpdateChildren()
     {
-        var node = QuadNode.UnknownLeafQuad;
+        var node = QuadNode.UnknownLeaf;
 
         node = node.WithLL(RegionType.Filament);
 

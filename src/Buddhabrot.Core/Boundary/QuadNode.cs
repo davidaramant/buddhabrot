@@ -4,7 +4,7 @@ public readonly record struct QuadNode(uint Encoded)
 {
     public static readonly QuadNode UnknownLeaf = MakeLeaf(RegionType.Unknown);
     public static readonly QuadNode UnknownLeafQuad = new((uint) NodeType.LeafQuad);
-    
+
     public static QuadNode MakeLeaf(RegionType type) => new((uint) type << 2);
 
     public static QuadNode MakeLeaf(
@@ -44,10 +44,10 @@ public readonly record struct QuadNode(uint Encoded)
             _ => throw new Exception("Can't happen")
         };
 
-    public QuadNode WithLL(RegionType ll) => new(Encoded | ((uint) ll << 10));
-    public QuadNode WithLR(RegionType lr) => new(Encoded | ((uint) lr << 8));
-    public QuadNode WithUL(RegionType ul) => new(Encoded | ((uint) ul << 6));
-    public QuadNode WithUR(RegionType ur) => new(Encoded | ((uint) ur << 4));
+    public QuadNode WithLL(RegionType ll) => new(Encoded | (((uint) ll << 10) + (int) NodeType.LeafQuad));
+    public QuadNode WithLR(RegionType lr) => new(Encoded | (((uint) lr << 8) + (int) NodeType.LeafQuad));
+    public QuadNode WithUL(RegionType ul) => new(Encoded | (((uint) ul << 6) + (int) NodeType.LeafQuad));
+    public QuadNode WithUR(RegionType ur) => new(Encoded | (((uint) ur << 4) + (int) NodeType.LeafQuad));
 
     public QuadNode WithQuadrant(Quadrant quadrant, RegionType type) =>
         quadrant switch
@@ -58,7 +58,7 @@ public readonly record struct QuadNode(uint Encoded)
             Quadrant.UR => WithUR(type),
             _ => throw new Exception("Can't happen")
         };
-    
+
     public override string ToString() => $"{NodeType} {RegionType}" + NodeType switch
     {
         NodeType.Leaf => string.Empty,

@@ -9,8 +9,6 @@ public sealed class RegionCorners
     private readonly FixedSizeCache<CornerId, bool> _isCornerInSet = new(32);
     private readonly BoundaryParameters _boundaryParams;
 
-    public int CacheSize => _isCornerInSet.Count;
-
     private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
 
     public RegionCorners(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;

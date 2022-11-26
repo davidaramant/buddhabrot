@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Utilities;
+namespace Buddhabrot.Core.Utilities;
 
 public sealed class FixedSizeCache<TKey, TValue>
     where TKey : struct
@@ -7,7 +7,6 @@ public sealed class FixedSizeCache<TKey, TValue>
     private readonly RingBuffer<TKey> _keyCache;
     private readonly RingBuffer<TValue> _valueCache;
 
-    public int Capacity => _keyCache.Capacity;
     public int Count => _keyCache.Count;
 
     public FixedSizeCache(int maxSize)

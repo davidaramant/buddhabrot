@@ -1,8 +1,6 @@
-﻿using System.Collections;
+﻿namespace Buddhabrot.Core.Utilities;
 
-namespace Buddhabrot.Core.Utilities;
-
-public sealed class RingBuffer<T> : IEnumerable<T>
+public sealed class RingBuffer<T> : IReadOnlyCollection<T>
 {
     private readonly T[] _buffer;
     private int _head = 0;
@@ -47,5 +45,5 @@ public sealed class RingBuffer<T> : IEnumerable<T>
         }
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 }

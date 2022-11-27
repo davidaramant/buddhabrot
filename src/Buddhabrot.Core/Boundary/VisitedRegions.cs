@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Boundary;
+namespace Buddhabrot.Core.Boundary;
 
 /// <summary>
 /// Tracks which regions have been visited.
@@ -108,33 +108,46 @@ public sealed class VisitedRegions : IVisitedRegions
         goto descendTree;
     }
 
-    public NewRegionLookup TransformToRegionLookup()
-    {
-        var newNodes = new List<QuadNode>();
-        var normalizer = new QuadNodeNormalizer(newNodes);
-
-        var stack = new Stack<(QuadNode, QuadDimensions)>();
-        stack.Push((_root, _dimensions));
-
-        while (stack.Any())
-        {
-            var (node, dimensions) = stack.Pop();
-
-            if (dimensions.Height == 2)
-            {
-                // special
-            }
-            else
-            {
-                
-            }
-        }
-        
-        throw new NotImplementedException();
-    }
-
     public IReadOnlyList<RegionId> GetBoundaryRegions()
     {
-        throw new NotImplementedException();
+        var regions = new List<RegionId>();
+        
+        DescendNode(_root, _dimensions, regions);
+
+        return regions;
+    }
+
+    private void DescendNode(QuadNode node, QuadDimensions dimensions, List<RegionId> borderRegions)
+    {
+        // All leaves are going to be empty; skip them
+        switch (node.NodeType)
+        {
+            case NodeType.LeafQuad:
+                if (node.LL == RegionType.Border)
+                {
+                    borderRegions.Add(dimensions.GetRegion(Quadrant.LL));
+                }
+                if (node.LR == RegionType.Border)
+                {
+                    borderRegions.Add(dimensions.GetRegion(Quadrant.LR));
+                }
+                if (node.UL == RegionType.Border)
+                {
+                    borderRegions.Add(dimensions.GetRegion(Quadrant.UL));
+                }
+                if (node.UR == RegionType.Border)
+                {
+                    borderRegions.Add(dimensions.GetRegion(Quadrant.UR));
+                }
+
+                break;
+            
+            case NodeType.Branch:
+                DescendNode(_nodes[node.GetChildIndex(Quadrant.LL)], dimensions.LL, borderRegions);
+                DescendNode(_nodes[node.GetChildIndex(Quadrant.LR)], dimensions.LR, borderRegions);
+                DescendNode(_nodes[node.GetChildIndex(Quadrant.UL)], dimensions.UL, borderRegions);
+                DescendNode(_nodes[node.GetChildIndex(Quadrant.UR)], dimensions.UR, borderRegions);
+                break;
+        }
     }
 }

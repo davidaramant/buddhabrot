@@ -1,5 +1,4 @@
 ﻿using Buddhabrot.Core.Boundary.Visualization;
-using Buddhabrot.Core.Boundary;
 using SkiaSharp;
 
 namespace Buddhabrot.Core.Tests.Boundary.Visualization;
@@ -9,14 +8,7 @@ public class BoundaryVisualizerTests
     [Fact]
     public void ShouldProduceSameOutput()
     {
-        var power3Regions = new[]
-        {
-            (0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (4, 1), (4, 0), (5, 0), (5, 1), (5, 2), (6, 2), (7, 2),
-            (8, 2), (9, 2), (9, 1), (9, 0)
-        }
-        .Select(t => (new RegionId(t.Item1, t.Item2), RegionType.Border)).ToList();
-
-        var lookup = new RegionLookup(new AreaDivisions(3), power3Regions);
+        var lookup = RegionLookupUtil.Power3Lookup;
 
         using var actualRasterImage = BoundaryVisualizer.RenderRegionLookup(lookup);
         var actualImage = actualRasterImage.Raw;

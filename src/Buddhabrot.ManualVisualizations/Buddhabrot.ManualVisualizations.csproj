@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Buddhabrot.Core.Tests\Buddhabrot.Core.Tests.csproj" />
       <ProjectReference Include="..\Buddhabrot.Core\Buddhabrot.Core.csproj" />
     </ItemGroup>
 

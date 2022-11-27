@@ -53,40 +53,54 @@ public static class BoundaryVisualizer
     {
         palette ??= PastelPalette.Instance;
 
-        var widthOfTopLevelQuadrant = QuadTreeRenderer.GetRequiredWidth(lookup.Levels - 1);
-        var imageWidth = QuadTreeRenderer.GetRequiredWidth(lookup.Levels);
+        var widthOfTopLevelQuadrant = QuadTreeRenderer.GetRequiredWidth(lookup.Height - 1);
+        var imageWidth = QuadTreeRenderer.GetRequiredWidth(lookup.Height);
         var image = new RasterImage(imageWidth, widthOfTopLevelQuadrant, scale);
         image.Fill(backgroundColor ?? SKColors.Black);
 
-        var nodes = lookup.GetRawNodes();
+        var nodes = lookup.Nodes;
 
-        (Quad SW, Quad SE, Quad NW, Quad NE) GetChildren(Quad quad)
+        (QuadNode LL, QuadNode LR, QuadNode UL, QuadNode UR) GetChildren(QuadNode quad)
         {
-            Debug.Assert(quad.HasChildren, "Attempted to get children of leaf node");
-            var index = quad.ChildIndex;
-            return (nodes[index], nodes[index + 1], nodes[index + 2], nodes[index + 3]);
+            Debug.Assert(quad.NodeType == NodeType.Branch, "Attempted to get children of leaf node");
+            return (
+                nodes[quad.GetChildIndex(Quadrant.LL)],
+                nodes[quad.GetChildIndex(Quadrant.LR)],
+                nodes[quad.GetChildIndex(Quadrant.UL)],
+                nodes[quad.GetChildIndex(Quadrant.UR)]);
         }
 
-        void DrawQuad(QuadTreeRenderer r, Quad quad, int depth, int x, int y)
+        void DrawQuad(QuadTreeRenderer r, QuadNode quad, int depth, int x, int y)
         {
-            if (depth == lookup.Levels - 1 || quad.IsLeaf)
+            if (quad.NodeType == NodeType.Leaf)
             {
-                r.DrawCell(x, y, depth, PickColorFromType(quad.Type));
+                r.DrawCell(x, y, depth, PickColorFromType(quad.RegionType));
                 return;
             }
 
             var newX = x << 1;
             var newY = y << 1;
-            var (sw, se, nw, ne) = GetChildren(quad);
-            DrawQuad(r, sw, depth + 1, newX, newY);
-            DrawQuad(r, se, depth + 1, newX + 1, newY);
-            DrawQuad(r, nw, depth + 1, newX, newY + 1);
-            DrawQuad(r, ne, depth + 1, newX + 1, newY + 1);
+
+            if (quad.NodeType == NodeType.LeafQuad)
+            {
+                r.DrawCell(newX, newY, depth + 1, PickColorFromType(quad.LL));
+                r.DrawCell(newX + 1, newY, depth + 1, PickColorFromType(quad.LR));
+                r.DrawCell(newX, newY + 1, depth + 1, PickColorFromType(quad.UL));
+                r.DrawCell(newX + 1, newY + 1, depth + 1, PickColorFromType(quad.UR));
+                return;
+            }
+
+            var (ll, lr, ul, ur) = GetChildren(quad);
+            DrawQuad(r, ll, depth + 1, newX, newY);
+            DrawQuad(r, lr, depth + 1, newX + 1, newY);
+            DrawQuad(r, ul, depth + 1, newX, newY + 1);
+            DrawQuad(r, ur, depth + 1, newX + 1, newY + 1);
         }
 
         var (_, _, topW, topE) = GetChildren(nodes.Last());
-        DrawQuad(new QuadTreeRenderer(image, lookup.Levels - 1), topW, depth: 0, 0, 0);
-        DrawQuad(new QuadTreeRenderer(image, lookup.Levels - 1, xOffset: widthOfTopLevelQuadrant - 1), topE, depth: 0, 0, 0);
+        DrawQuad(new QuadTreeRenderer(image, lookup.Height - 1), topW, depth: 0, 0, 0);
+        DrawQuad(new QuadTreeRenderer(image, lookup.Height - 1, xOffset: widthOfTopLevelQuadrant - 1), topE, depth: 0,
+            0, 0);
 
         return image;
 

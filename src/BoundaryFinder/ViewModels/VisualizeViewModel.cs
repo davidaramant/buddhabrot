@@ -82,7 +82,7 @@ public sealed class VisualizeViewModel : ViewModelBase
             var lookup = _dataProvider.LoadLookup(SelectedParameters);
 
             Lookup = lookup;
-            _log($"Quad tree nodes: {Lookup.NodeCount}");
+            _log($"Quad tree nodes: {Lookup.NodeCount:N0}");
         }
         catch (Exception e)
         {

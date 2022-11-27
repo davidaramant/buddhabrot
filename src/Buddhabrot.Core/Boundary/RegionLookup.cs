@@ -1,77 +1,26 @@
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Buddhabrot.Core.Boundary;
 
 public sealed class RegionLookup
 {
-    private readonly List<Quad> _nodes = new();
-    public int Levels { get; }
-    public int NodeCount => _nodes.Count;
+    public IReadOnlyList<QuadNode> Nodes { get; }
+
+    public int Height { get; }
+    public int NodeCount => Nodes.Count;
 
     public static readonly RegionLookup Empty = new();
 
     private RegionLookup()
     {
-        _nodes.Add(Quad.UnknownLeaf);
-        Levels = 1;
+        Nodes = new[] {QuadNode.UnknownLeaf};
+        Height = 1;
     }
 
-    public RegionLookup(
-        int levels,
-        IEnumerable<uint> rawNodes)
+    public RegionLookup(IReadOnlyList<QuadNode> nodes, int height)
     {
-        Levels = levels;
-        _nodes = rawNodes.Select(i => new Quad(i)).ToList();
-    }
-
-    public RegionLookup(
-        AreaDivisions divisions,
-        IReadOnlyList<(RegionId, RegionType)> regions,
-        Action<string>? log = default)
-    {
-        Levels = divisions.VerticalPower + 2;
-        QuadCache cache = new(_nodes);
-
-        Dictionary<RegionId, Quad> regionLookup = new(regions.Count);
-
-        Quad LookupLocation(int x, int y) =>
-            regionLookup.TryGetValue(new RegionId(x, y), out var quad) ? quad : Quad.UnknownLeaf;
-
-        foreach (var (region, type) in regions)
-        {
-            regionLookup.Add(region, type switch
-            {
-                RegionType.Border => Quad.BorderLeaf,
-                RegionType.Filament => Quad.FilamentLeaf,
-                RegionType.Rejected => Quad.RejectedLeaf,
-                _ => throw new InvalidOperationException("What type did I get?? " + type)
-            });
-        }
-
-        Quad BuildQuad(int depth, int x, int y, int xOffset = 0)
-        {
-            if (depth == Levels - 1)
-            {
-                return LookupLocation(x + xOffset, y);
-            }
-
-            var newX = x << 1;
-            var newY = y << 1;
-
-            return cache.MakeQuad(
-                sw: BuildQuad(depth + 1, newX, newY, xOffset),
-                se: BuildQuad(depth + 1, newX + 1, newY, xOffset),
-                nw: BuildQuad(depth + 1, newX, newY + 1, xOffset),
-                ne: BuildQuad(depth + 1, newX + 1, newY + 1, xOffset));
-        }
-
-        _nodes.Add(cache.MakeQuad(
-            sw: Quad.UnknownLeaf,
-            se: Quad.UnknownLeaf,
-            nw: BuildQuad(1, 0, 0),
-            ne: BuildQuad(1, 0, 0, xOffset: divisions.QuadrantDivisions)));
-        log?.Invoke(
-            $"Cache size: {cache.Size:N0}, num times cached value used: {cache.NumCachedValuesUsed:N0}, Num nodes: {_nodes.Count:N0}");
+        Nodes = nodes;
+        Height = height;
     }
 
     public IReadOnlyList<(Rectangle Area, RegionType Type)> GetVisibleAreas(
@@ -82,63 +31,75 @@ public sealed class RegionLookup
 
         foreach (var searchArea in searchAreas)
         {
-            var toCheck = new Queue<(SquareBoundary, Quad)>();
-            toCheck.Enqueue((bounds, _nodes.Last()));
+            var toCheck = new Queue<(SquareBoundary, QuadNode)>();
+            toCheck.Enqueue((bounds, Nodes.Last()));
 
             while (toCheck.Any())
             {
                 var (boundary, currentQuad) = toCheck.Dequeue();
 
-                if (currentQuad.IsUnknownLeaf)
+                if (currentQuad.RegionType == RegionType.Unknown)
                     continue;
 
                 var intersection = boundary.IntersectWith(searchArea);
                 if (intersection == Rectangle.Empty)
                     continue;
 
-                if (currentQuad.IsLeaf || boundary.IsPoint)
+                if (currentQuad.NodeType == NodeType.Leaf || boundary.IsPoint)
                 {
-                    visibleAreas.Add((intersection, currentQuad.Type));
+                    visibleAreas.Add((intersection, currentQuad.RegionType));
+                }
+                else if (currentQuad.NodeType == NodeType.LeafQuad)
+                {
+                    toCheck.Enqueue((boundary.LL, QuadNode.MakeLeaf(currentQuad.LL)));
+                    toCheck.Enqueue((boundary.LR, QuadNode.MakeLeaf(currentQuad.LR)));
+                    toCheck.Enqueue((boundary.UL, QuadNode.MakeLeaf(currentQuad.UL)));
+                    toCheck.Enqueue((boundary.UR, QuadNode.MakeLeaf(currentQuad.UR)));
                 }
                 else
                 {
-                    toCheck.Enqueue((boundary.LL, _nodes[currentQuad.GetIndex(Quadrant.LL)]));
-                    toCheck.Enqueue((boundary.LR, _nodes[currentQuad.GetIndex(Quadrant.LR)]));
-                    toCheck.Enqueue((boundary.UL, _nodes[currentQuad.GetIndex(Quadrant.UL)]));
-                    toCheck.Enqueue((boundary.UR, _nodes[currentQuad.GetIndex(Quadrant.UR)]));
+                    toCheck.Enqueue((boundary.LL, Nodes[currentQuad.GetChildIndex(Quadrant.LL)]));
+                    toCheck.Enqueue((boundary.LR, Nodes[currentQuad.GetChildIndex(Quadrant.LR)]));
+                    toCheck.Enqueue((boundary.UL, Nodes[currentQuad.GetChildIndex(Quadrant.UL)]));
+                    toCheck.Enqueue((boundary.UR, Nodes[currentQuad.GetChildIndex(Quadrant.UR)]));
                 }
             }
 
             // Check the mirrored values to build the bottom of the set
-            toCheck.Enqueue((bounds, _nodes.Last()));
+            toCheck.Enqueue((bounds, Nodes.Last()));
 
             while (toCheck.Any())
             {
-                var (quadArea, currentQuad) = toCheck.Dequeue();
+                var (boundary, currentQuad) = toCheck.Dequeue();
 
-                if (currentQuad.IsUnknownLeaf)
+                if (currentQuad.RegionType == RegionType.Unknown)
                     continue;
 
-                var intersection = quadArea.IntersectWith(searchArea);
+                var intersection = boundary.IntersectWith(searchArea);
                 if (intersection == Rectangle.Empty)
                     continue;
 
-                if (currentQuad.IsLeaf || quadArea.IsPoint)
+                if (currentQuad.NodeType == NodeType.Leaf || boundary.IsPoint)
                 {
-                    visibleAreas.Add((intersection, currentQuad.Type));
+                    visibleAreas.Add((intersection, currentQuad.RegionType));
+                }
+                else if (currentQuad.NodeType == NodeType.LeafQuad)
+                {
+                    toCheck.Enqueue((boundary.UL, QuadNode.MakeLeaf(currentQuad.LL)));
+                    toCheck.Enqueue((boundary.UR, QuadNode.MakeLeaf(currentQuad.LR)));
+                    toCheck.Enqueue((boundary.LL, QuadNode.MakeLeaf(currentQuad.UL)));
+                    toCheck.Enqueue((boundary.LR, QuadNode.MakeLeaf(currentQuad.UR)));
                 }
                 else
                 {
-                    toCheck.Enqueue((quadArea.UL, _nodes[currentQuad.GetIndex(Quadrant.LL)]));
-                    toCheck.Enqueue((quadArea.UR, _nodes[currentQuad.GetIndex(Quadrant.LR)]));
-                    toCheck.Enqueue((quadArea.LL, _nodes[currentQuad.GetIndex(Quadrant.UL)]));
-                    toCheck.Enqueue((quadArea.LR, _nodes[currentQuad.GetIndex(Quadrant.UR)]));
+                    toCheck.Enqueue((boundary.UL, Nodes[currentQuad.GetChildIndex(Quadrant.LL)]));
+                    toCheck.Enqueue((boundary.UR, Nodes[currentQuad.GetChildIndex(Quadrant.LR)]));
+                    toCheck.Enqueue((boundary.LL, Nodes[currentQuad.GetChildIndex(Quadrant.UL)]));
+                    toCheck.Enqueue((boundary.LR, Nodes[currentQuad.GetChildIndex(Quadrant.UR)]));
                 }
             }
         }
 
         return visibleAreas;
     }
-
-    public IReadOnlyList<Quad> GetRawNodes() => _nodes;
 }

@@ -17,7 +17,7 @@ public sealed class VisitedRegionsToRegionLookup
         _newTree = new List<QuadNode>(_visitedRegions.NodeCount / 2); // TODO: What should this capacity be?
     }
 
-    public NewRegionLookup Transform()
+    public RegionLookup Transform()
     {
         var newUL = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.LL)]);
         var newUR = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.LR)]);
@@ -26,7 +26,7 @@ public sealed class VisitedRegionsToRegionLookup
         // No need to compute the root region type, it will always be border
         _newTree.Add(QuadNode.MakeBranch(RegionType.Border, rootChildrenIndex));
 
-        return new NewRegionLookup(_newTree, _visitedRegions.Height);
+        return new RegionLookup(_newTree, _visitedRegions.Height);
     }
 
     public QuadNode Normalize(QuadNode node) =>

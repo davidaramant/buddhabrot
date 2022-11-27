@@ -84,13 +84,13 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             var lookup = await Task.Run(() => transformer.Transform(), cancelToken);
             
             _log($"Normalized quad tree to Region Lookup\n"+
-                 $"\t - Went from {visitedRegions.NodeCount:N0} to {lookup.Count:N0} nodes ({(double)lookup.Count/visitedRegions.NodeCount:P})\n"+
+                 $"\t - Went from {visitedRegions.NodeCount:N0} to {lookup.NodeCount:N0} nodes ({(double)lookup.NodeCount/visitedRegions.NodeCount:P})\n"+
                  $"\t - Took {stopwatch.Elapsed}");
             
-            // _dataProvider.SaveBorderData(
-            //     boundaryParameters,
-            //     boundaryRegions,
-            //     lookup);
+            _dataProvider.SaveBorderData(
+                boundaryParameters,
+                boundaryRegions,
+                lookup);
         }
         catch (OperationCanceledException)
         {

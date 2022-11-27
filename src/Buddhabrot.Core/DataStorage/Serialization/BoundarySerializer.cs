@@ -1,4 +1,5 @@
-﻿using Buddhabrot.Core.Boundary;
+﻿using System.Runtime.CompilerServices;
+using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage.Serialization.Internal;
 
 namespace Buddhabrot.Core.DataStorage.Serialization;
@@ -14,7 +15,7 @@ public static class BoundarySerializer
         {
             VerticalPower = parameters.Divisions.VerticalPower,
             MaximumIterations = parameters.MaxIterations,
-            Regions = regions.Select(r => new RegionLocation { X = r.X, Y = r.Y }).ToArray(),
+            Regions = regions.Select(r => new RegionLocation {X = r.X, Y = r.Y}).ToArray(),
         };
         boundaries.Save(stream);
     }
@@ -25,8 +26,8 @@ public static class BoundarySerializer
     {
         var quadTree = new PersistedQuadTree
         {
-            Height = lookup.Levels,
-            Nodes = lookup.GetRawNodes().Select(n => n.Encoded).ToArray(),
+            Height = lookup.Height,
+            Nodes = lookup.Nodes.Select(qn => qn.Encoded).ToArray(),
         };
         quadTree.Save(stream);
     }
@@ -43,7 +44,7 @@ public static class BoundarySerializer
     {
         var quadTree = PersistedQuadTree.Load(stream);
         return new RegionLookup(
-            quadTree.Height,
-            quadTree.Nodes);
+            Unsafe.As<IReadOnlyList<QuadNode>>(quadTree.Nodes),
+            quadTree.Height);
     }
 }

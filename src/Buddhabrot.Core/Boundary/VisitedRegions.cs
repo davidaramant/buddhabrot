@@ -35,11 +35,11 @@ public sealed class VisitedRegions : IVisitedRegions
         // Do we have to expand the tree?
         if (!_dimensions.Contains(id))
         {
-            var index = _nodes.Count;
-            _nodes.Add(_root);
-            _nodes.Add(QuadNode.UnknownLeaf);
-            _nodes.Add(QuadNode.UnknownLeaf);
-            _nodes.Add(QuadNode.UnknownLeaf);
+            var index = _nodes.AddChildren(
+                _root, 
+                QuadNode.UnknownLeaf, 
+                QuadNode.UnknownLeaf, 
+                QuadNode.UnknownLeaf);
 
             _dimensions = _dimensions.Expand();
             _root = QuadNode.MakeBranch(RegionType.Unknown, index);
@@ -59,13 +59,8 @@ public sealed class VisitedRegions : IVisitedRegions
 
             if (nodeType == NodeType.Leaf)
             {
-                var index = _nodes.Count;
+                var index = _nodes.AddUnknownLeafChildren();
                 _nodes[nodeIndex] = node = QuadNode.MakeBranch(RegionType.Unknown, index);
-
-                _nodes.Add(QuadNode.UnknownLeaf);
-                _nodes.Add(QuadNode.UnknownLeaf);
-                _nodes.Add(QuadNode.UnknownLeaf);
-                _nodes.Add(QuadNode.UnknownLeaf);
             }
 
             nodeIndex = node.GetChildIndex(quadrant);

@@ -5,6 +5,7 @@ using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;
+using Buddhabrot.Core.Tests.Boundary;
 using Buddhabrot.Core.Utilities;
 using CliWrap;
 using SkiaSharp;
@@ -132,7 +133,7 @@ public class BoundaryScanningProcess : BaseVisualization
         int maxY = 0;
         BoundaryCalculator.VisitBoundary(
             parameters,           
-            visitedRegions: new VisitedRegionProxy(new ListOfHashSetVisitedRegions(parameters.Divisions.QuadrantDivisions), (regionId, type) =>
+            visitedRegions: new VisitedRegionProxy(new HashSetListVisitedRegions(parameters.Divisions.QuadrantDivisions), (regionId, type) =>
             {
                 maxX = Math.Max(maxX, regionId.X);
                 maxY = Math.Max(maxY, regionId.Y);

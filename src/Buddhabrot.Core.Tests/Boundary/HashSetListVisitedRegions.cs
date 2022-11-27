@@ -1,11 +1,13 @@
-﻿namespace Buddhabrot.Core.Boundary;
+﻿using Buddhabrot.Core.Boundary;
 
-public sealed class ListOfHashSetVisitedRegions : IVisitedRegions
+namespace Buddhabrot.Core.Tests.Boundary;
+
+public sealed class HashSetListVisitedRegions : IVisitedRegions
 {
     // Rows of columns
     private readonly List<HashSet<int>> _rows;
 
-    public ListOfHashSetVisitedRegions(int numRows)
+    public HashSetListVisitedRegions(int numRows)
     {
         _rows = new(numRows);
     }

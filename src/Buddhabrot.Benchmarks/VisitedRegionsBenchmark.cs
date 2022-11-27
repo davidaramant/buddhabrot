@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Tests.Boundary;
 using Buddhabrot.ManualVisualizations;
 using Humanizer;
 using ProtoBuf;
@@ -69,7 +70,7 @@ public class VisitedRegionsBenchmark
             new HashSetVisitedRegions(),
             "HashSet");
         yield return new DescribedImplementation(
-            new ListOfHashSetVisitedRegions(new AreaDivisions(16).QuadrantDivisions),
+            new HashSetListVisitedRegions(new AreaDivisions(16).QuadrantDivisions),
             "List of HashSets");
         yield return new DescribedImplementation(
             new VisitedRegions(new AreaDivisions(16).QuadrantDivisions * 2),
@@ -158,11 +159,11 @@ public class VisitedRegionsBenchmark
 
     private sealed class VisitedRegionsProxy : IVisitedRegions
     {
-        private readonly ListOfHashSetVisitedRegions _visitedRegions;
+        private readonly HashSetListVisitedRegions _visitedRegions;
 
         public readonly SavedData Commands = new();
 
-        public VisitedRegionsProxy(int rows) => _visitedRegions = new ListOfHashSetVisitedRegions(rows);
+        public VisitedRegionsProxy(int rows) => _visitedRegions = new HashSetListVisitedRegions(rows);
 
         public int Count => _visitedRegions.Count;
 

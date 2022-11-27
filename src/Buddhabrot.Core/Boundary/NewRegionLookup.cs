@@ -5,6 +5,7 @@ public sealed class NewRegionLookup
     private readonly IReadOnlyList<QuadNode> _nodes;
     
     public int Height { get; }
+    public int Count => _nodes.Count;
 
     public NewRegionLookup(IReadOnlyList<QuadNode> nodes, int height)
     {

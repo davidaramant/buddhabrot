@@ -1,4 +1,4 @@
-namespace Buddhabrot.Core.Boundary;
+﻿namespace Buddhabrot.Core.Boundary;
 
 /// <summary>
 /// Tracks which regions have been visited.
@@ -20,6 +20,7 @@ public sealed class VisitedRegions : IVisitedRegions
     public int Height => _dimensions.Height;
     public int NodeCount => _nodes.Count + 1;
     public IReadOnlyList<QuadNode> Nodes => _nodes;
+    public QuadNode Root => _root;
 
     public VisitedRegions(int capacity = 0) =>
         _nodes = new(capacity)

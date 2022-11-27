@@ -66,26 +66,31 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
 
             var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
 
-            var regions = await Task.Run(
-                () => BoundaryCalculator.FindBoundaryAndFilaments(boundaryParameters, visitedRegions, cancelToken),
+            await Task.Run(
+                () => BoundaryCalculator.VisitBoundary(boundaryParameters, visitedRegions, cancelToken),
                 cancelToken);
             
-            _log($"Visited region node count: {visitedRegions.NodeCount:N0}");
-
-            _log($"Found boundary for {boundaryParameters}.\n" +
-                 $"\t- Took {stopwatch.Elapsed}\n" +
-                 $"\t- Found {regions.Count:N0} border regions");
+            _log($"Visited boundary for {boundaryParameters}.\n" +
+                 $"\t- Took {stopwatch.Elapsed}");
             stopwatch.Restart();
 
-            var lookup =
-                await Task.Run(() => new RegionLookup(boundaryParameters.Divisions, regions, _log), cancelToken);
+            var boundaryRegions = visitedRegions.GetBoundaryRegions();
 
-            _log($"Constructed quad tree (size: {lookup.NodeCount:N0}). Took {stopwatch.Elapsed}");
+            _log($"Found {boundaryRegions.Count:N0} boundary regions.\n" +
+                 $"\t - Took {stopwatch.Elapsed}");
+            stopwatch.Restart();
 
-            _dataProvider.SaveBorderData(
-                boundaryParameters,
-                regions.Where(pair => pair.Type == RegionType.Border).Select(pair => pair.Region).ToList(),
-                lookup);
+            var transformer = new VisitedRegionsToRegionLookup(visitedRegions);
+            var lookup = await Task.Run(() => transformer.Transform(), cancelToken);
+            
+            _log($"Normalized quad tree to Region Lookup\n"+
+                 $"\t - Went from {visitedRegions.NodeCount:N0} to {lookup.Count:N0} nodes ({(double)lookup.Count/visitedRegions.NodeCount:P})\n"+
+                 $"\t - Took {stopwatch.Elapsed}");
+            
+            // _dataProvider.SaveBorderData(
+            //     boundaryParameters,
+            //     boundaryRegions,
+            //     lookup);
         }
         catch (OperationCanceledException)
         {

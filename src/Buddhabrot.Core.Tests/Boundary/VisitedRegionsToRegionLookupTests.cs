@@ -1,8 +1,9 @@
-﻿using Buddhabrot.Core.Boundary;
+﻿using System.Runtime.CompilerServices;
+using Buddhabrot.Core.Boundary;
 
 namespace Buddhabrot.Core.Tests.Boundary;
 
-public class QuadNodeNormalizerTests
+public class VisitedRegionsToRegionLookupTests
 {
     [Theory]
     [InlineData(RegionType.Border, RegionType.Unknown, RegionType.Unknown, RegionType.Unknown, RegionType.Border)]
@@ -15,13 +16,13 @@ public class QuadNodeNormalizerTests
         RegionType ur,
         RegionType expected)
     {
-        QuadNodeNormalizer.CondenseRegionType(ll, lr, ul, ur).Should().Be(expected);
+        VisitedRegionsToRegionLookup.CondenseRegionType(ll, lr, ul, ur).Should().Be(expected);
     }
 
     [Fact]
     public void ShouldCondenseIdenticalLeaves()
     {
-        var normalizer = new QuadNodeNormalizer(new List<QuadNode>());
+        var normalizer = new VisitedRegionsToRegionLookup(new VisitedRegions());
         var node = normalizer.MakeQuad(
             QuadNode.UnknownLeaf,
             QuadNode.UnknownLeaf,
@@ -34,7 +35,7 @@ public class QuadNodeNormalizerTests
     [Fact]
     public void ShouldCreateLeafQuad()
     {
-        var normalizer = new QuadNodeNormalizer(new List<QuadNode>());
+        var normalizer = new VisitedRegionsToRegionLookup(new VisitedRegions());
         var node = normalizer.MakeQuad(
             QuadNode.MakeLeaf(RegionType.Border),
             QuadNode.UnknownLeaf,

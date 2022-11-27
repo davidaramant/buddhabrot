@@ -17,6 +17,19 @@ public readonly record struct QuadDimensions(
         id.X < (X + SideLength) &&
         id.Y < (Y + SideLength);
 
+    /// <summary>
+    /// Gets the region at the quadrant. Assumes that Height == 2
+    /// </summary>
+    public RegionId GetRegion(Quadrant quadrant)
+    {
+        var isLeft = (int) quadrant % 2;
+        var isLower = (int) quadrant / 2;
+
+        return new(
+            X: X + isLeft * QuadrantLength,
+            Y: Y + isLower * QuadrantLength);
+    }
+    
     public QuadDimensions Expand() => this with {Height = Height + 1};
     public QuadDimensions LL => this with {Height = Height - 1};
     public QuadDimensions LR => this with {X = X + QuadrantLength, Height = Height - 1};

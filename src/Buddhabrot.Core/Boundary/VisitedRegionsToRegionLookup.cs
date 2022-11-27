@@ -1,14 +1,46 @@
 ﻿namespace Buddhabrot.Core.Boundary;
 
-public sealed class QuadNodeNormalizer
+public sealed class VisitedRegionsToRegionLookup
 {
-    private readonly List<QuadNode> _nodes;
+    private readonly VisitedRegions _visitedRegions;
+    private readonly IReadOnlyList<QuadNode> _oldTree;
+    private readonly List<QuadNode> _newTree;
     private readonly Dictionary<(QuadNode LL, QuadNode LR, QuadNode UL, QuadNode UR), QuadNode> _cache = new();
-    
+
     public int Size => _cache.Count;
     public int NumCachedValuesUsed { get; private set; }
-    
-    public QuadNodeNormalizer(List<QuadNode> nodes) => _nodes = nodes;
+
+    public VisitedRegionsToRegionLookup(VisitedRegions visitedRegions)
+    {
+        _visitedRegions = visitedRegions;
+        _oldTree = visitedRegions.Nodes;
+        _newTree = new List<QuadNode>(_visitedRegions.NodeCount / 2); // TODO: What should this capacity be?
+    }
+
+    public NewRegionLookup Transform()
+    {
+        var newUL = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.LL)]);
+        var newUR = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.LR)]);
+
+        var rootChildrenIndex = _newTree.AddChildren(QuadNode.UnknownLeaf, QuadNode.UnknownLeaf, newUL, newUR);
+        // No need to compute the root region type, it will always be border
+        _newTree.Add(QuadNode.MakeBranch(RegionType.Border, rootChildrenIndex));
+
+        return new NewRegionLookup(_newTree, _visitedRegions.Height);
+    }
+
+    public QuadNode Normalize(QuadNode node) =>
+        node.NodeType switch
+        {
+            NodeType.Leaf => node,
+            NodeType.LeafQuad => NormalizeLeafQuad(node),
+            NodeType.Branch => MakeQuad(
+                Normalize(_oldTree[node.GetChildIndex(Quadrant.LL)]),
+                Normalize(_oldTree[node.GetChildIndex(Quadrant.LR)]),
+                Normalize(_oldTree[node.GetChildIndex(Quadrant.UL)]),
+                Normalize(_oldTree[node.GetChildIndex(Quadrant.UR)])),
+            _ => throw new Exception("This can't happen")
+        };
 
     public QuadNode NormalizeLeafQuad(QuadNode leafQuad)
     {
@@ -21,7 +53,7 @@ public sealed class QuadNodeNormalizer
 
         return leafQuad.WithRegionType(CondenseRegionType(leafQuad.LL, leafQuad.LR, leafQuad.UL, leafQuad.UR));
     }
-    
+
     public QuadNode MakeQuad(QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur)
     {
         if (ll.NodeType == NodeType.Leaf &&
@@ -38,7 +70,7 @@ public sealed class QuadNodeNormalizer
             ur.NodeType == NodeType.Leaf)
         {
             return QuadNode.MakeLeaf(
-                CondenseRegionType(ll.RegionType, lr.RegionType, ul.RegionType, ur.RegionType),
+                CondenseRegionType(ll, lr, ul, ur),
                 ll.RegionType,
                 lr.RegionType,
                 ul.RegionType,
@@ -48,12 +80,9 @@ public sealed class QuadNodeNormalizer
         var key = (ll, lr, ul, ur);
         if (!_cache.TryGetValue(key, out var node))
         {
-            var index = _nodes.Count;
-            node = QuadNode.MakeBranch(CondenseRegionType(ll.RegionType, lr.RegionType, ul.RegionType, ur.RegionType), index);
-            _nodes.Add(ll);
-            _nodes.Add(lr);
-            _nodes.Add(ul);
-            _nodes.Add(ur);
+            var index = _newTree.AddChildren(ll, lr, ul, ur);
+            node = QuadNode.MakeBranch(CondenseRegionType(ll, lr, ul, ur),
+                index);
 
             _cache.Add(key, node);
         }
@@ -64,6 +93,9 @@ public sealed class QuadNodeNormalizer
 
         return node;
     }
+
+    public static RegionType CondenseRegionType(QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur) =>
+        CondenseRegionType(ll.RegionType, lr.RegionType, ul.RegionType, ur.RegionType);
 
     public static RegionType CondenseRegionType(RegionType ll, RegionType lr, RegionType ul, RegionType ur)
     {

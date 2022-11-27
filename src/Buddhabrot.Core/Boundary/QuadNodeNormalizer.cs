@@ -9,6 +9,18 @@ public sealed class QuadNodeNormalizer
     public int NumCachedValuesUsed { get; private set; }
     
     public QuadNodeNormalizer(List<QuadNode> nodes) => _nodes = nodes;
+
+    public QuadNode NormalizeLeafQuad(QuadNode leafQuad)
+    {
+        if (leafQuad.LL == leafQuad.LR &&
+            leafQuad.LR == leafQuad.UL &&
+            leafQuad.UL == leafQuad.UR)
+        {
+            return QuadNode.MakeLeaf(leafQuad.LL);
+        }
+
+        return leafQuad.WithRegionType(CondenseRegionType(leafQuad.LL, leafQuad.LR, leafQuad.UL, leafQuad.UR));
+    }
     
     public QuadNode MakeQuad(QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur)
     {

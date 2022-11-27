@@ -8,10 +8,6 @@ public sealed class RegionLookup
     public int Levels { get; }
     public int NodeCount => _nodes.Count;
 
-    private readonly ComplexArea _topLevelArea = new(
-        new Interval(-2, 2),
-        new Interval(-2, 2));
-
     public static readonly RegionLookup Empty = new();
 
     private RegionLookup()

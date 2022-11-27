@@ -108,8 +108,28 @@ public sealed class VisitedRegions : IVisitedRegions
         goto descendTree;
     }
 
-    public RegionLookup TransformToRegionLookup()
+    public NewRegionLookup TransformToRegionLookup()
     {
+        var newNodes = new List<QuadNode>();
+        var normalizer = new QuadNodeNormalizer(newNodes);
+
+        var stack = new Stack<(QuadNode, QuadDimensions)>();
+        stack.Push((_root, _dimensions));
+
+        while (stack.Any())
+        {
+            var (node, dimensions) = stack.Pop();
+
+            if (dimensions.Height == 2)
+            {
+                // special
+            }
+            else
+            {
+                
+            }
+        }
+        
         throw new NotImplementedException();
     }
 

@@ -24,8 +24,8 @@
     - [x] New quad tree class
       - [x] It's real slow - benchmark QuadNode & QuadDimensions
       - [ ] Check if a RingBuffer cache for HasVisited or Visit helps
-    - [ ] Return border regions from quad tree
-    - [ ] Compress quad tree into RegionLookup
+    - [x] Return border regions from quad tree
+    - [x] Compress quad tree into RegionLookup
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
   - [x] Switch to power-of-two divisions
@@ -38,7 +38,7 @@
   - [x] Region drawing optimizations
     - [x] Halt quad tree search based on pixel size? No need to grab sub-pixel stuff
     - [x] Building quad tree is too slow
-      - [ ] Optimize this for real - saving it off is a hack (EDIT: is it???? making a normalized one has to be bottom up)
+      - [x] Optimize this for real - saving it off is a hack (taken care of by the dual-quadtree approach)
   - [x] Show entire set boundary
   - [x] There is an unstable 1-pixel gap between regions
   - [ ] Rework how the logical area is calculated (EDIT: what did this mean?)
@@ -65,10 +65,21 @@
 ## Benchmarks
 ### ThinkPad
 #### 16 / 5M
-
+##### Old
 Number of visited regions: 50,778,193
 Found boundary for Vertical Divisions: 65,536 Max Iterations: 5,000,000.
 	- Took 00:27:46.0629665
 	- Found 35,410,146 border regions
 Cache size: 1,358,995, num times cached value used: 8,683,678, Num nodes: 5,435,981
 Constructed quad tree (size: 5,435,981). Took 00:08:10.0421168
+
+##### New
+
+Visited boundary for Vertical Divisions: 65,536 Max Iterations: 5,000,000.
+- Took 00:25:27.8801404
+Found 1,130,138 boundary regions.
+- Took 00:00:00.3412489
+Normalized quad tree to Region Lookup
+- Went from 22,151,249 to 5,826,673 nodes (26.30%)
+- Took 00:00:01.1627687
+

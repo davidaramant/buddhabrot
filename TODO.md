@@ -26,7 +26,11 @@
       - [x] Check if a RingBuffer cache for HasVisited or Visit helps
     - [x] Return border regions from quad tree
     - [x] Compress quad tree into RegionLookup
+  - [ ] Filter out Rejected regions from RegionLookup. They aren't visually interesting.
   - [ ] Calculate batches of corners (in parallel) and cache them
+    - [ ] Batch data (corners + insides) can be packed into a `ulong`
+    - [ ] Fixed-size cache for corners. Ideally needs a spatial lookup
+    - [ ] Visualization (video) of batches being cached & evicted
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
   - [x] Switch to power-of-two divisions

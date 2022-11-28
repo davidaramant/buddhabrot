@@ -29,7 +29,56 @@
 </head>
 
 <body>
-    <h1>Leaf</h1>
+    <h1>Definitions</h1>
+    <h2>Region Types</h2>
+    <table>
+        <tr>
+            <th>Value</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>Unknown</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Border</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Filament</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Rejected</td>
+        </tr>
+    </table>
+    <h2>Terms</h2>
+    <table>
+        <tr>
+            <td>UL</td>
+            <td>UR</td>
+        </tr>
+        <tr>
+            <td>LL</td>
+            <td>LR</td>
+        </tr>
+    </table>
+
+    <h1>Notes</h1>
+    <p>VisitedRegions and RegionLookup use the same node format, but have some differences:</p>
+    <ul>
+        <li>VisitedRegions does not fill out the region type of Branch or Leaf Quad nodes. This would need to be updated
+            as the tree is mutated.</li>
+        <li>RegionLookup does not use the Rejected region type. This is replaced with Unknown when the tree is built
+            from VisitedRegions. This node type isn't visually interesting and just causes the quad tree to bloat in
+            size.</li>
+        <li>RegionLookup is normalized (subtrees can be referenced mulitple times). It is not intended to be modified.
+        </li>
+    </ul>
+
+    <h1>Node Types</h1>
+    <h2>Leaf</h2>
     <table>
         <tr>
             <th>31</th>
@@ -71,7 +120,7 @@
             <td colspan="2">Node Type = 0</td>
         </tr>
     </table>
-    <h1>Branch</h1>
+    <h2>Branch</h2>
     <table>
         <tr>
             <th>31</th>
@@ -113,7 +162,7 @@
             <td colspan="2">Node Type = 1</td>
         </tr>
     </table>
-    <h1>Leaf Quad</h1>
+    <h2>Leaf Quad</h2>
     <table>
         <tr>
             <th>31</th>

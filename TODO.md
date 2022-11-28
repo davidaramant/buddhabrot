@@ -16,16 +16,17 @@
 - [x] Allow log area to be hidden
 - [x] Split regions and quad tree into different files
 - [ ] Optimize Boundary Calculations
-  - [ ] Always pass in VisitedRegions into BorderScan
+  - [x] Always pass in VisitedRegions into BorderScan
   - [x] Rework region types to Unknown/Border/Filament/Rejected
     - [ ] Update colors for the new region types
-  - [ ] Build up a quad tree during boundary scan
+  - [x] Build up a quad tree during boundary scan
     - [x] New quad tree node
     - [x] New quad tree class
       - [x] It's real slow - benchmark QuadNode & QuadDimensions
-      - [ ] Check if a RingBuffer cache for HasVisited or Visit helps
+      - [x] Check if a RingBuffer cache for HasVisited or Visit helps
     - [x] Return border regions from quad tree
     - [x] Compress quad tree into RegionLookup
+  - [ ] Calculate batches of corners (in parallel) and cache them
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
   - [x] Switch to power-of-two divisions
@@ -83,3 +84,12 @@ Normalized quad tree to Region Lookup
 - Went from 22,151,249 to 5,826,673 nodes (26.30%)
 - Took 00:00:01.1627687
 
+##### With CacheTable
+
+Visited boundary for Vertical Divisions: 65,536 Max Iterations: 5,000,000.
+- Took 00:23:03.7145559
+Found 1,130,138 boundary regions.
+- Took 00:00:00.3697175
+Normalized quad tree to Region Lookup
+- Went from 22,151,249 to 5,826,673 nodes (26.30%)
+- Took 00:00:01.2813702

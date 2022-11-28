@@ -15,18 +15,7 @@ public sealed class FixedSizeCache<TKey, TValue>
         _valueCache = new(maxSize);
     }
 
-    public bool Add(TKey key, TValue value)
-    {
-        if (_keyCache.Contains(key))
-        {
-            return false;
-        }
-
-        AddUnsafe(key, value);
-        return true;
-    }
-
-    public void AddUnsafe(TKey key, TValue value)
+    public void Add(TKey key, TValue value)
     {
         _keyCache.Add(key);
         _valueCache.Add(value);

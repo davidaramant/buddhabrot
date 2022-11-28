@@ -1,12 +1,12 @@
 using System.Numerics;
 using Buddhabrot.Core.Calculations;
-using Buddhabrot.Core.Utilities;
+using CacheTable;
 
 namespace Buddhabrot.Core.Boundary.Corners;
 
 public sealed class RegionCorners
 {
-    private readonly FixedSizeCache<CornerId, bool> _isCornerInSet = new(32);
+    private readonly CacheTable<CornerId, bool> _isCornerInSet = new(32, 4);
     private readonly BoundaryParameters _boundaryParams;
 
     private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
@@ -22,7 +22,7 @@ public sealed class RegionCorners
 
         Complex c = ToComplex(corner.X, corner.Y);
         inSet = ScalarKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite;
-        _isCornerInSet.AddUnsafe(corner, inSet);
+        _isCornerInSet[corner] = inSet;
         return inSet;
     }
 

@@ -42,16 +42,21 @@ public sealed class VisitedRegionsToRegionLookup
             _ => throw new Exception("This can't happen")
         };
 
-    public QuadNode NormalizeLeafQuad(QuadNode leafQuad)
+    public static QuadNode NormalizeLeafQuad(QuadNode leafQuad)
     {
         if (leafQuad.LL == leafQuad.LR &&
             leafQuad.LR == leafQuad.UL &&
             leafQuad.UL == leafQuad.UR)
         {
-            return QuadNode.MakeLeaf(leafQuad.LL);
+            return QuadNode.MakeLeaf(FilterOutRejected(leafQuad.LL));
         }
 
-        return leafQuad.WithRegionType(CondenseRegionType(leafQuad.LL, leafQuad.LR, leafQuad.UL, leafQuad.UR));
+        return QuadNode.MakeLeaf(
+            CondenseRegionType(leafQuad.LL, leafQuad.LR, leafQuad.UL, leafQuad.UR),
+            FilterOutRejected(leafQuad.LL),
+            FilterOutRejected(leafQuad.LR),
+            FilterOutRejected(leafQuad.UL),
+            FilterOutRejected(leafQuad.UR));
     }
 
     public QuadNode MakeQuad(QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur)
@@ -94,6 +99,13 @@ public sealed class VisitedRegionsToRegionLookup
         return node;
     }
 
+    private static RegionType FilterOutRejected(RegionType type) =>
+        type switch
+        {
+            RegionType.Rejected => RegionType.Unknown,
+            _ => type
+        };
+
     public static RegionType CondenseRegionType(QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur) =>
         CondenseRegionType(ll.RegionType, lr.RegionType, ul.RegionType, ur.RegionType);
 
@@ -101,20 +113,19 @@ public sealed class VisitedRegionsToRegionLookup
     {
         int borderCount = 0;
         int filamentCount = 0;
-        int rejectedCount = 0;
 
         Count(ll);
         Count(lr);
         Count(ul);
         Count(ur);
 
-        if (borderCount == 0 && filamentCount == 0 && rejectedCount == 0)
+        if (borderCount == 0 && filamentCount == 0)
             return RegionType.Unknown;
 
-        if (borderCount >= filamentCount && borderCount >= rejectedCount)
+        if (borderCount >= filamentCount)
             return RegionType.Border;
 
-        return filamentCount >= rejectedCount ? RegionType.Filament : RegionType.Rejected;
+        return RegionType.Filament;
 
         void Count(RegionType type)
         {
@@ -126,10 +137,6 @@ public sealed class VisitedRegionsToRegionLookup
 
                 case RegionType.Filament:
                     filamentCount++;
-                    break;
-
-                case RegionType.Rejected:
-                    rejectedCount++;
                     break;
             }
         }

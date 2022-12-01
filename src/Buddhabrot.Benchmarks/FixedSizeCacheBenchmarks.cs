@@ -9,7 +9,7 @@ public class FixedSizeCacheBenchmarks
     public const int DataSize = 1000;
     public const int CacheSize = 32;
 
-    private int[] _data;
+    private int[] _data = Array.Empty<int>();
 
     [GlobalSetup]
     public void FillArrays()

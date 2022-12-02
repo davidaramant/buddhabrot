@@ -15,7 +15,7 @@ public class QuadDimensionDetermineQuadrantBenchmarks
         var rand = new Random(0);
         for (int i = 0; i < Size; i++)
         {
-            _regions[i] = new RegionId(rand.Next(2), rand.Next(2));
+            _regions[i] = new RegionId(rand.Next(4), rand.Next(4));
         }
     }
 
@@ -49,9 +49,9 @@ public class QuadDimensionDetermineQuadrantBenchmarks
     }
 
     [Benchmark]
-    public Quadrant Branchless()
+    public Quadrant BranchlessTernary()
     {
-        var qd = new QuadDimensions(0, 0, 2);
+        var qd = new QuadDimensions(0, 0, 3);
 
         Quadrant d = default;
 
@@ -72,9 +72,9 @@ public class QuadDimensionDetermineQuadrantBenchmarks
     }
     
     [Benchmark]
-    public Quadrant BranchlessWithBoolToInt()
+    public Quadrant BranchlessBoolToInt()
     {
-        var qd = new QuadDimensions(0, 0, 2);
+        var qd = new QuadDimensions(0, 0, 3);
 
         Quadrant d = default;
 
@@ -96,6 +96,30 @@ public class QuadDimensionDetermineQuadrantBenchmarks
         static unsafe int BoolToInt(bool b) 
         {
             return *(Byte*)&b;         
+        }
+    }
+    
+    [Benchmark]
+    public Quadrant Division()
+    {
+        var qd = new QuadDimensions(0, 0, 3);
+
+        Quadrant d = default;
+
+        for (int i = 0; i < Size; i++)
+        {
+            d = DetermineQuadrant(qd, _regions[i]);
+        }
+
+        return d;
+
+        static Quadrant DetermineQuadrant(QuadDimensions q, RegionId id)
+        {
+            var halfWidth = q.QuadrantLength;
+            var xComponent = id.X / halfWidth;
+            var yComponent = (id.Y / halfWidth) << 1;
+
+            return (Quadrant) (xComponent + yComponent);
         }
     }
 }

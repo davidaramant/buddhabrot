@@ -35,24 +35,13 @@ public readonly record struct QuadDimensions(
     public QuadDimensions LR => this with {X = X + QuadrantLength, Height = Height - 1};
     public QuadDimensions UL => this with {Y = Y + QuadrantLength, Height = Height - 1};
     public QuadDimensions UR => new(X: X + QuadrantLength, Y: Y + QuadrantLength, Height: Height - 1);
-
-    public Quadrant DetermineQuadrant(RegionId id)
+    
+    public Quadrant DetermineQuadrant(int x, int y)
     {
-        var xComponent = (id.X >= X + QuadrantLength) ? 1 : 0;
-        var yComponent = (id.Y >= Y + QuadrantLength) ? 2 : 0;
+        var xComponent = x / QuadrantLength;
+        var yComponent = (y / QuadrantLength) << 1;
 
         return (Quadrant) (xComponent + yComponent);
-    }
-
-    public QuadDimensions GetQuadrant(Quadrant quadrant)
-    {
-        var isLeft = (int) quadrant % 2;
-        var isLower = (int) quadrant / 2;
-
-        return new(
-            X: X + isLeft * QuadrantLength,
-            Y: Y + isLower * QuadrantLength,
-            Height: Height - 1);
     }
 
     public override string ToString() => $"{{X: {X}, Y:{Y}, Height: {Height}}}";

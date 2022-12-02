@@ -36,19 +36,31 @@ public class QuadDimensionTests
     public void ShouldDetermineQuadrant(int x, int y, Quadrant expected)
     {
         var d = new QuadDimensions(0, 0, 2);
-        d.DetermineQuadrant(new RegionId(x, y)).Should().Be(expected);
+        d.DetermineQuadrant(x, y).Should().Be(expected);
     }
 
-    [Theory]
-    [InlineData(Quadrant.LL, 0, 0)]
-    [InlineData(Quadrant.LR, 1, 0)]
-    [InlineData(Quadrant.UL, 0, 1)]
-    [InlineData(Quadrant.UR, 1, 1)]
-    public void ShouldGetQuadrant(Quadrant quadrant, int expectedX, int expectedY)
+    [Fact]
+    public void ShouldDescendHeight()
     {
-        var d = new QuadDimensions(0, 0, 2).GetQuadrant(quadrant);
-        d.Height.Should().Be(1);
-        d.X.Should().Be(expectedX);
-        d.Y.Should().Be(expectedY);
+        var height = 4;
+        var x = 5;
+        var y = 3;
+        var quadLength = 1 << (height - 2);
+
+        var quadrants = new List<Quadrant>();
+
+        while (height > 1)
+        {
+            var h = x / quadLength;
+            var v = y / quadLength;
+
+            quadrants.Add((Quadrant)(h + (v << 1)));
+            x -= h * quadLength;
+            y -= v * quadLength;
+            quadLength /= 2;
+            height--;
+        }
+
+        quadrants.Should().BeEquivalentTo(new[] { Quadrant.LR, Quadrant.UL, Quadrant.UR });
     }
 }

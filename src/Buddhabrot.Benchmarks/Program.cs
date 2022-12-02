@@ -8,17 +8,16 @@ class Program
 {
     static void Main(string[] args)
     {
-        VisitedRegionsBenchmark.CreateDataSet();
-
+        //VisitedRegionsBenchmark.CreateDataSet();
         //BenchmarkRunner.Run<VisitedRegionsBenchmark>();
         
         //BenchmarkRunner.Run<QuadNodeWithQuadrantBenchmarks>();
         //BenchmarkRunner.Run<QuadNodeGetQuadrantBenchmarks>();
         
-        //BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
+        BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
         //BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
         
-        BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
+        //BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
     }
 
     private static void SimpleBenchmark<T>(Func<T> method, string name)

@@ -37,9 +37,9 @@ public sealed class VisitedRegions : IVisitedRegions
         if (!_dimensions.Contains(id))
         {
             var index = _nodes.AddChildren(
-                _root, 
-                QuadNode.UnknownLeaf, 
-                QuadNode.UnknownLeaf, 
+                _root,
+                QuadNode.UnknownLeaf,
+                QuadNode.UnknownLeaf,
                 QuadNode.UnknownLeaf);
 
             _dimensions = _dimensions.Expand();
@@ -48,12 +48,24 @@ public sealed class VisitedRegions : IVisitedRegions
 
         var nodeIndex = -1;
         var node = _root;
-        var dimensions = _dimensions;
+        var height = _dimensions.Height;
+        var halfWidth = _dimensions.QuadrantLength;
         Quadrant quadrant = default;
+        var x = id.X;
+        var y = id.Y;
+        int h = 0;
+        int v = 0;
 
-        while (dimensions.Height > 2)
+        while (height > 2)
         {
-            quadrant = dimensions.DetermineQuadrant(id);
+            h = x / halfWidth;
+            v = y / halfWidth;
+
+            quadrant = (Quadrant)(h + (v << 1));
+            x -= h * halfWidth;
+            y -= v * halfWidth;
+            halfWidth /= 2;
+            height--;
 
             var nodeType = node.NodeType;
             // The only possible nodes are leaves and branches because of the height check
@@ -66,10 +78,13 @@ public sealed class VisitedRegions : IVisitedRegions
 
             nodeIndex = node.GetChildIndex(quadrant);
             node = _nodes[nodeIndex];
-            dimensions = dimensions.GetQuadrant(quadrant);
         }
 
-        quadrant = dimensions.DetermineQuadrant(id);
+        h = x / halfWidth;
+        v = y / halfWidth;
+
+        quadrant = (Quadrant)(h + (v << 1));
+
         var updatedNode = node.WithQuadrant(quadrant, type);
         _nodes[nodeIndex] = updatedNode;
     }
@@ -80,11 +95,20 @@ public sealed class VisitedRegions : IVisitedRegions
             return false;
 
         var node = _root;
-        var dimensions = _dimensions;
+        var halfWidth = _dimensions.QuadrantLength;
+        var x = id.X;
+        var y = id.Y;
 
         descendTree:
 
-        var quadrant = dimensions.DetermineQuadrant(id);
+        var h = x / halfWidth;
+        var v = y / halfWidth;
+
+        var quadrant = (Quadrant)(h + (v << 1));
+        x -= h * halfWidth;
+        y -= v * halfWidth;
+        halfWidth /= 2;
+        
         switch (node.NodeType)
         {
             // We only insert Unknown leaves
@@ -97,7 +121,6 @@ public sealed class VisitedRegions : IVisitedRegions
             case NodeType.Branch:
                 var index = node.GetChildIndex(quadrant);
                 node = _nodes[index];
-                dimensions = dimensions.GetQuadrant(quadrant);
                 break;
         }
 
@@ -107,7 +130,7 @@ public sealed class VisitedRegions : IVisitedRegions
     public IReadOnlyList<RegionId> GetBoundaryRegions()
     {
         var regions = new List<RegionId>();
-        
+
         DescendNode(_root, _dimensions, regions);
 
         return regions;
@@ -123,21 +146,24 @@ public sealed class VisitedRegions : IVisitedRegions
                 {
                     borderRegions.Add(dimensions.GetRegion(Quadrant.LL));
                 }
+
                 if (node.LR == RegionType.Border)
                 {
                     borderRegions.Add(dimensions.GetRegion(Quadrant.LR));
                 }
+
                 if (node.UL == RegionType.Border)
                 {
                     borderRegions.Add(dimensions.GetRegion(Quadrant.UL));
                 }
+
                 if (node.UR == RegionType.Border)
                 {
                     borderRegions.Add(dimensions.GetRegion(Quadrant.UR));
                 }
 
                 break;
-            
+
             case NodeType.Branch:
                 DescendNode(_nodes[node.GetChildIndex(Quadrant.LL)], dimensions.LL, borderRegions);
                 DescendNode(_nodes[node.GetChildIndex(Quadrant.LR)], dimensions.LR, borderRegions);

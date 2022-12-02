@@ -10,8 +10,12 @@ using Spectre.Console;
 namespace Buddhabrot.Benchmarks;
 
 [SimpleJob(RunStrategy.Monitoring, warmupCount: 1, targetCount: 3)]
+[MarkdownExporterAttribute.GitHub]
+[MemoryDiagnoser]
 public class VisitedRegionsBenchmark
 {
+    public static readonly AreaDivisions Size = new(16);
+
     private static readonly string DataFilePath =
         Path.Combine(
             DataLocation.CreateDirectory("Benchmarks", nameof(VisitedRegionsBenchmark).Humanize()).FullName,
@@ -20,26 +24,15 @@ public class VisitedRegionsBenchmark
     private SavedData _savedData = default!;
 
     [GlobalSetup]
-    public void LoadDataSet() =>
-        AnsiConsole.Progress()
-            .Columns(new ProgressColumn[]
-            {
-                new TaskDescriptionColumn(),
-                new ProgressBarColumn(),
-                new ElapsedTimeColumn(),
-            })
-            .Start(ctx =>
-            {
-                var loadingTask = ctx.AddTask("Loading visited regions");
-                loadingTask.IsIndeterminate = true;
+    public void LoadDataSet()
+    {
+        Console.Out.WriteLine("Loading data set...");
 
-                using var fs = File.OpenRead(DataFilePath);
-                _savedData = Serializer.Deserialize<SavedData>(fs);
+        using var fs = File.OpenRead(DataFilePath);
+        _savedData = Serializer.Deserialize<SavedData>(fs);
 
-                loadingTask.StopTask();
-
-                AnsiConsole.MarkupLine($"{_savedData.Metadata.Count:N0} commands");
-            });
+        Console.Out.WriteLine($"Loaded {_savedData.Metadata.Count:N0} commands");
+    }
 
     [Benchmark]
     [ArgumentsSource(nameof(AllVisitedRegionsImplementations))]
@@ -70,10 +63,10 @@ public class VisitedRegionsBenchmark
             new HashSetVisitedRegions(),
             "HashSet");
         yield return new DescribedImplementation(
-            new HashSetListVisitedRegions(new AreaDivisions(16).QuadrantDivisions),
+            new HashSetListVisitedRegions(Size.QuadrantDivisions),
             "List of HashSets");
         yield return new DescribedImplementation(
-            new VisitedRegions(new AreaDivisions(16).QuadrantDivisions * 2),
+            new VisitedRegions(Size.QuadrantDivisions * 2),
             "Quad Tree");
     }
 
@@ -82,18 +75,17 @@ public class VisitedRegionsBenchmark
         if (!File.Exists(DataFilePath))
         {
             AnsiConsole.Progress()
-                .Columns(new ProgressColumn[]
-                {
+                .Columns(
                     new TaskDescriptionColumn(),
                     new ProgressBarColumn(),
-                    new ElapsedTimeColumn(),
-                })
+                    new ElapsedTimeColumn()
+                )
                 .Start(ctx =>
                 {
                     var boundaryTask = ctx.AddTask("Finding visited regions");
                     boundaryTask.IsIndeterminate = true;
 
-                    var bp = new BoundaryParameters(new AreaDivisions(16), 1_000_000);
+                    var bp = new BoundaryParameters(Size, 1_000_000);
 
                     var proxy = new VisitedRegionsProxy(bp.Divisions.QuadrantDivisions);
                     BoundaryCalculator.VisitBoundary(
@@ -128,15 +120,15 @@ public class VisitedRegionsBenchmark
         [ProtoMember(2)] public List<int> X { get; set; } = new();
         [ProtoMember(3)] public List<int> Y { get; set; } = new();
 
-        public CommandType CommandType(int i) => (CommandType) (Metadata[i] & 1);
+        public CommandType CommandType(int i) => (CommandType)(Metadata[i] & 1);
 
-        public RegionType RegionType(int i) => (RegionType) (Metadata[i] >> 1);
+        public RegionType RegionType(int i) => (RegionType)(Metadata[i] >> 1);
 
         public RegionId Id(int i) => new(X[i], Y[i]);
 
         public void Add(RegionId id, RegionType type)
         {
-            Metadata.Add((byte) ((byte) type << 1));
+            Metadata.Add((byte)((byte)type << 1));
             X.Add(id.X);
             Y.Add(id.Y);
         }

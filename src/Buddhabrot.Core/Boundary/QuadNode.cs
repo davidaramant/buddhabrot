@@ -25,8 +25,6 @@ public readonly record struct QuadNode(uint Encoded)
     public NodeType NodeType => (NodeType) (Encoded & 0b11);
     public RegionType RegionType => (RegionType) (Encoded >> 2 & 0b11);
 
-    public QuadNode WithRegionType(RegionType type) => new(Encoded | (uint) type << 2);
-
     public int ChildIndex => (int) (Encoded >> 4);
     public int GetChildIndex(Quadrant quadrant) => ChildIndex + (int) quadrant;
 

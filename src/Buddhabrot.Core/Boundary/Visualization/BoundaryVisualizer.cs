@@ -60,9 +60,9 @@ public static class BoundaryVisualizer
 
         var nodes = lookup.Nodes;
 
-        (QuadNode LL, QuadNode LR, QuadNode UL, QuadNode UR) GetChildren(QuadNode quad)
+        (uint LL, uint LR, uint UL, uint UR) GetChildren(uint quad)
         {
-            Debug.Assert(quad.NodeType == NodeType.Branch, "Attempted to get children of leaf node");
+            Debug.Assert(quad.GetNodeType() == NodeType.Branch, "Attempted to get children of leaf node");
             return (
                 nodes[quad.GetChildIndex(Quadrant.LL)],
                 nodes[quad.GetChildIndex(Quadrant.LR)],
@@ -70,23 +70,23 @@ public static class BoundaryVisualizer
                 nodes[quad.GetChildIndex(Quadrant.UR)]);
         }
 
-        void DrawQuad(QuadTreeRenderer r, QuadNode quad, int depth, int x, int y)
+        void DrawQuad(QuadTreeRenderer r, uint quad, int depth, int x, int y)
         {
-            if (quad.NodeType == NodeType.Leaf)
+            if (quad.GetNodeType() == NodeType.Leaf)
             {
-                r.DrawCell(x, y, depth, PickColorFromType(quad.RegionType));
+                r.DrawCell(x, y, depth, PickColorFromType(quad.GetRegionType()));
                 return;
             }
 
             var newX = x << 1;
             var newY = y << 1;
 
-            if (quad.NodeType == NodeType.LeafQuad)
+            if (quad.GetNodeType() == NodeType.LeafQuad)
             {
-                r.DrawCell(newX, newY, depth + 1, PickColorFromType(quad.LL));
-                r.DrawCell(newX + 1, newY, depth + 1, PickColorFromType(quad.LR));
-                r.DrawCell(newX, newY + 1, depth + 1, PickColorFromType(quad.UL));
-                r.DrawCell(newX + 1, newY + 1, depth + 1, PickColorFromType(quad.UR));
+                r.DrawCell(newX, newY, depth + 1, PickColorFromType(quad.GetLL()));
+                r.DrawCell(newX + 1, newY, depth + 1, PickColorFromType(quad.GetLR()));
+                r.DrawCell(newX, newY + 1, depth + 1, PickColorFromType(quad.GetUL()));
+                r.DrawCell(newX + 1, newY + 1, depth + 1, PickColorFromType(quad.GetUR()));
                 return;
             }
 

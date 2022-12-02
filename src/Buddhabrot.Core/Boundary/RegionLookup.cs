@@ -4,7 +4,7 @@ namespace Buddhabrot.Core.Boundary;
 
 public sealed class RegionLookup
 {
-    public IReadOnlyList<QuadNode> Nodes { get; }
+    public IReadOnlyList<uint> Nodes { get; }
 
     public int Height { get; }
     public int NodeCount => Nodes.Count;
@@ -13,11 +13,11 @@ public sealed class RegionLookup
 
     private RegionLookup()
     {
-        Nodes = new[] {QuadNode.UnknownLeaf};
+        Nodes = new[] {QuadNode2.UnknownLeaf};
         Height = 1;
     }
 
-    public RegionLookup(IReadOnlyList<QuadNode> nodes, int height)
+    public RegionLookup(IReadOnlyList<uint> nodes, int height)
     {
         Nodes = nodes;
         Height = height;
@@ -31,30 +31,30 @@ public sealed class RegionLookup
 
         foreach (var searchArea in searchAreas)
         {
-            var toCheck = new Queue<(SquareBoundary, QuadNode)>();
+            var toCheck = new Queue<(SquareBoundary, uint)>();
             toCheck.Enqueue((bounds, Nodes.Last()));
 
             while (toCheck.Any())
             {
                 var (boundary, currentQuad) = toCheck.Dequeue();
 
-                if (currentQuad.RegionType == RegionType.Unknown)
+                if (currentQuad.GetRegionType() == RegionType.Unknown)
                     continue;
 
                 var intersection = boundary.IntersectWith(searchArea);
                 if (intersection == Rectangle.Empty)
                     continue;
 
-                if (currentQuad.NodeType == NodeType.Leaf || boundary.IsPoint)
+                if (currentQuad.GetNodeType() == NodeType.Leaf || boundary.IsPoint)
                 {
-                    visibleAreas.Add((intersection, currentQuad.RegionType));
+                    visibleAreas.Add((intersection, currentQuad.GetRegionType()));
                 }
-                else if (currentQuad.NodeType == NodeType.LeafQuad)
+                else if (currentQuad.GetNodeType() == NodeType.LeafQuad)
                 {
-                    toCheck.Enqueue((boundary.LL, QuadNode.MakeLeaf(currentQuad.LL)));
-                    toCheck.Enqueue((boundary.LR, QuadNode.MakeLeaf(currentQuad.LR)));
-                    toCheck.Enqueue((boundary.UL, QuadNode.MakeLeaf(currentQuad.UL)));
-                    toCheck.Enqueue((boundary.UR, QuadNode.MakeLeaf(currentQuad.UR)));
+                    toCheck.Enqueue((boundary.LL, QuadNode2.MakeLeaf(currentQuad.GetLL())));
+                    toCheck.Enqueue((boundary.LR, QuadNode2.MakeLeaf(currentQuad.GetLR())));
+                    toCheck.Enqueue((boundary.UL, QuadNode2.MakeLeaf(currentQuad.GetUL())));
+                    toCheck.Enqueue((boundary.UR, QuadNode2.MakeLeaf(currentQuad.GetUR())));
                 }
                 else
                 {
@@ -72,23 +72,23 @@ public sealed class RegionLookup
             {
                 var (boundary, currentQuad) = toCheck.Dequeue();
 
-                if (currentQuad.RegionType == RegionType.Unknown)
+                if (currentQuad.GetRegionType() == RegionType.Unknown)
                     continue;
 
                 var intersection = boundary.IntersectWith(searchArea);
                 if (intersection == Rectangle.Empty)
                     continue;
 
-                if (currentQuad.NodeType == NodeType.Leaf || boundary.IsPoint)
+                if (currentQuad.GetNodeType() == NodeType.Leaf || boundary.IsPoint)
                 {
-                    visibleAreas.Add((intersection, currentQuad.RegionType));
+                    visibleAreas.Add((intersection, currentQuad.GetRegionType()));
                 }
-                else if (currentQuad.NodeType == NodeType.LeafQuad)
+                else if (currentQuad.GetNodeType() == NodeType.LeafQuad)
                 {
-                    toCheck.Enqueue((boundary.UL, QuadNode.MakeLeaf(currentQuad.LL)));
-                    toCheck.Enqueue((boundary.UR, QuadNode.MakeLeaf(currentQuad.LR)));
-                    toCheck.Enqueue((boundary.LL, QuadNode.MakeLeaf(currentQuad.UL)));
-                    toCheck.Enqueue((boundary.LR, QuadNode.MakeLeaf(currentQuad.UR)));
+                    toCheck.Enqueue((boundary.UL, QuadNode2.MakeLeaf(currentQuad.GetLL())));
+                    toCheck.Enqueue((boundary.UR, QuadNode2.MakeLeaf(currentQuad.GetLR())));
+                    toCheck.Enqueue((boundary.LL, QuadNode2.MakeLeaf(currentQuad.GetUL())));
+                    toCheck.Enqueue((boundary.LR, QuadNode2.MakeLeaf(currentQuad.GetUR())));
                 }
                 else
                 {

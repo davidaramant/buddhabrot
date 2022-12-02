@@ -3,9 +3,9 @@
 public sealed class VisitedRegionsToRegionLookup
 {
     private readonly VisitedRegions _visitedRegions;
-    private readonly IReadOnlyList<QuadNode> _oldTree;
-    private readonly List<QuadNode> _newTree;
-    private readonly Dictionary<(QuadNode LL, QuadNode LR, QuadNode UL, QuadNode UR), QuadNode> _cache = new();
+    private readonly IReadOnlyList<uint> _oldTree;
+    private readonly List<uint> _newTree;
+    private readonly Dictionary<(uint LL, uint LR, uint UL, uint UR), uint> _cache = new();
 
     public int Size => _cache.Count;
     public int NumCachedValuesUsed { get; private set; }
@@ -14,7 +14,7 @@ public sealed class VisitedRegionsToRegionLookup
     {
         _visitedRegions = visitedRegions;
         _oldTree = visitedRegions.Nodes;
-        _newTree = new List<QuadNode>(_visitedRegions.NodeCount / 2); // TODO: What should this capacity be?
+        _newTree = new List<uint>(_visitedRegions.NodeCount / 2); // TODO: What should this capacity be?
     }
 
     public RegionLookup Transform()
@@ -22,15 +22,15 @@ public sealed class VisitedRegionsToRegionLookup
         var newUL = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.LL)]);
         var newUR = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.LR)]);
 
-        var rootChildrenIndex = _newTree.AddChildren(QuadNode.UnknownLeaf, QuadNode.UnknownLeaf, newUL, newUR);
+        var rootChildrenIndex = _newTree.AddChildren(QuadNode2.UnknownLeaf, QuadNode2.UnknownLeaf, newUL, newUR);
         // No need to compute the root region type, it will always be border
-        _newTree.Add(QuadNode.MakeBranch(RegionType.Border, rootChildrenIndex));
+        _newTree.Add(QuadNode2.MakeBranch(RegionType.Border, rootChildrenIndex));
 
         return new RegionLookup(_newTree, _visitedRegions.Height);
     }
 
-    public QuadNode Normalize(QuadNode node) =>
-        node.NodeType switch
+    public uint Normalize(uint node) =>
+        node.GetNodeType() switch
         {
             NodeType.Leaf => node,
             NodeType.LeafQuad => NormalizeLeafQuad(node),
@@ -42,26 +42,26 @@ public sealed class VisitedRegionsToRegionLookup
             _ => throw new Exception("This can't happen")
         };
 
-    public static QuadNode NormalizeLeafQuad(QuadNode leafQuad)
+    public static uint NormalizeLeafQuad(uint leafQuad)
     {
-        if (leafQuad.LL == leafQuad.LR &&
-            leafQuad.LR == leafQuad.UL &&
-            leafQuad.UL == leafQuad.UR)
+        if (leafQuad.GetLL() == leafQuad.GetLR() &&
+            leafQuad.GetLR() == leafQuad.GetUL() &&
+            leafQuad.GetUL() == leafQuad.GetUR())
         {
-            return QuadNode.MakeLeaf(FilterOutRejected(leafQuad.LL));
+            return QuadNode2.MakeLeaf(FilterOutRejected(leafQuad.GetLL()));
         }
 
-        return QuadNode.MakeLeaf(
-            CondenseRegionType(leafQuad.LL, leafQuad.LR, leafQuad.UL, leafQuad.UR),
-            FilterOutRejected(leafQuad.LL),
-            FilterOutRejected(leafQuad.LR),
-            FilterOutRejected(leafQuad.UL),
-            FilterOutRejected(leafQuad.UR));
+        return QuadNode2.MakeLeaf(
+            CondenseRegionType(leafQuad.GetLL(), leafQuad.GetLR(), leafQuad.GetUL(), leafQuad.GetUR()),
+            FilterOutRejected(leafQuad.GetLL()),
+            FilterOutRejected(leafQuad.GetLR()),
+            FilterOutRejected(leafQuad.GetUL()),
+            FilterOutRejected(leafQuad.GetUR()));
     }
 
-    public QuadNode MakeQuad(QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur)
+    public uint MakeQuad(uint ll, uint lr, uint ul, uint ur)
     {
-        if (ll.NodeType == NodeType.Leaf &&
+        if (ll.GetNodeType() == NodeType.Leaf &&
             ll == lr &&
             lr == ul &&
             ul == ur)
@@ -69,24 +69,24 @@ public sealed class VisitedRegionsToRegionLookup
             return ll;
         }
 
-        if (ll.NodeType == NodeType.Leaf &&
-            lr.NodeType == NodeType.Leaf &&
-            ul.NodeType == NodeType.Leaf &&
-            ur.NodeType == NodeType.Leaf)
+        if (ll.GetNodeType() == NodeType.Leaf &&
+            lr.GetNodeType() == NodeType.Leaf &&
+            ul.GetNodeType() == NodeType.Leaf &&
+            ur.GetNodeType() == NodeType.Leaf)
         {
-            return QuadNode.MakeLeaf(
+            return QuadNode2.MakeLeaf(
                 CondenseRegionType(ll, lr, ul, ur),
-                ll.RegionType,
-                lr.RegionType,
-                ul.RegionType,
-                ur.RegionType);
+                ll.GetRegionType(),
+                lr.GetRegionType(),
+                ul.GetRegionType(),
+                ur.GetRegionType());
         }
 
         var key = (ll, lr, ul, ur);
         if (!_cache.TryGetValue(key, out var node))
         {
             var index = _newTree.AddChildren(ll, lr, ul, ur);
-            node = QuadNode.MakeBranch(CondenseRegionType(ll, lr, ul, ur),
+            node = QuadNode2.MakeBranch(CondenseRegionType(ll, lr, ul, ur),
                 index);
 
             _cache.Add(key, node);
@@ -106,8 +106,8 @@ public sealed class VisitedRegionsToRegionLookup
             _ => type
         };
 
-    public static RegionType CondenseRegionType(QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur) =>
-        CondenseRegionType(ll.RegionType, lr.RegionType, ul.RegionType, ur.RegionType);
+    public static RegionType CondenseRegionType(uint ll, uint lr, uint ul, uint ur) =>
+        CondenseRegionType(ll.GetRegionType(), lr.GetRegionType(), ul.GetRegionType(), ur.GetRegionType());
 
     public static RegionType CondenseRegionType(RegionType ll, RegionType lr, RegionType ul, RegionType ur)
     {

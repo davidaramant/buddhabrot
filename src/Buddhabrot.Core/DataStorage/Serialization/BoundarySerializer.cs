@@ -27,7 +27,7 @@ public static class BoundarySerializer
         var quadTree = new PersistedQuadTree
         {
             Height = lookup.Height,
-            Nodes = lookup.Nodes.Select(qn => qn.Encoded).ToArray(),
+            Nodes = lookup.Nodes.ToArray(),
         };
         quadTree.Save(stream);
     }
@@ -44,7 +44,7 @@ public static class BoundarySerializer
     {
         var quadTree = PersistedQuadTree.Load(stream);
         return new RegionLookup(
-            Unsafe.As<IReadOnlyList<QuadNode>>(quadTree.Nodes),
+            quadTree.Nodes,
             quadTree.Height);
     }
 }

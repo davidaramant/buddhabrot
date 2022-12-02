@@ -14,21 +14,21 @@
 public sealed class VisitedRegions : IVisitedRegions
 {
     private QuadDimensions _dimensions = new(X: 0, Y: 0, Height: 3);
-    private QuadNode _root = QuadNode.MakeBranch(RegionType.Unknown, 0);
-    private readonly List<QuadNode> _nodes;
+    private uint _root = QuadNode2.MakeBranch(RegionType.Unknown, 0);
+    private readonly List<uint> _nodes;
 
     public int Height => _dimensions.Height;
     public int NodeCount => _nodes.Count + 1;
-    public IReadOnlyList<QuadNode> Nodes => _nodes;
-    public QuadNode Root => _root;
+    public IReadOnlyList<uint> Nodes => _nodes;
+    public uint Root => _root;
 
     public VisitedRegions(int capacity = 0) =>
         _nodes = new(capacity)
         {
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf
+            QuadNode2.UnknownLeaf,
+            QuadNode2.UnknownLeaf,
+            QuadNode2.UnknownLeaf,
+            QuadNode2.UnknownLeaf
         };
 
     public void Visit(RegionId id, RegionType type)
@@ -38,12 +38,12 @@ public sealed class VisitedRegions : IVisitedRegions
         {
             var index = _nodes.AddChildren(
                 _root,
-                QuadNode.UnknownLeaf,
-                QuadNode.UnknownLeaf,
-                QuadNode.UnknownLeaf);
+                QuadNode2.UnknownLeaf,
+                QuadNode2.UnknownLeaf,
+                QuadNode2.UnknownLeaf);
 
             _dimensions = _dimensions.Expand();
-            _root = QuadNode.MakeBranch(RegionType.Unknown, index);
+            _root = QuadNode2.MakeBranch(RegionType.Unknown, index);
         }
 
         var nodeIndex = -1;
@@ -67,13 +67,13 @@ public sealed class VisitedRegions : IVisitedRegions
             halfWidth /= 2;
             height--;
 
-            var nodeType = node.NodeType;
+            var nodeType = node.GetNodeType();
             // The only possible nodes are leaves and branches because of the height check
 
             if (nodeType == NodeType.Leaf)
             {
                 var index = _nodes.AddUnknownLeafChildren();
-                _nodes[nodeIndex] = node = QuadNode.MakeBranch(RegionType.Unknown, index);
+                _nodes[nodeIndex] = node = QuadNode2.MakeBranch(RegionType.Unknown, index);
             }
 
             nodeIndex = node.GetChildIndex(quadrant);
@@ -109,7 +109,7 @@ public sealed class VisitedRegions : IVisitedRegions
         y -= v * halfWidth;
         halfWidth /= 2;
         
-        switch (node.NodeType)
+        switch (node.GetNodeType())
         {
             // We only insert Unknown leaves
             case NodeType.Leaf:
@@ -136,28 +136,28 @@ public sealed class VisitedRegions : IVisitedRegions
         return regions;
     }
 
-    private void DescendNode(QuadNode node, QuadDimensions dimensions, List<RegionId> borderRegions)
+    private void DescendNode(uint node, QuadDimensions dimensions, List<RegionId> borderRegions)
     {
         // All leaves are going to be empty; skip them
-        switch (node.NodeType)
+        switch (node.GetNodeType())
         {
             case NodeType.LeafQuad:
-                if (node.LL == RegionType.Border)
+                if (node.GetLL() == RegionType.Border)
                 {
                     borderRegions.Add(dimensions.GetRegion(Quadrant.LL));
                 }
 
-                if (node.LR == RegionType.Border)
+                if (node.GetLR() == RegionType.Border)
                 {
                     borderRegions.Add(dimensions.GetRegion(Quadrant.LR));
                 }
 
-                if (node.UL == RegionType.Border)
+                if (node.GetUL() == RegionType.Border)
                 {
                     borderRegions.Add(dimensions.GetRegion(Quadrant.UL));
                 }
 
-                if (node.UR == RegionType.Border)
+                if (node.GetUR() == RegionType.Border)
                 {
                     borderRegions.Add(dimensions.GetRegion(Quadrant.UR));
                 }

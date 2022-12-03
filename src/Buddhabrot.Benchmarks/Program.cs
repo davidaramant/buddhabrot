@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using BenchmarkDotNet.Running;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.ManualVisualizations;
 using Humanizer;
 
 namespace Buddhabrot.Benchmarks;
@@ -9,7 +10,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        //VisitedRegionsBenchmark.CreateDataSet();
+        //VisitedRegionsDataSet.Create();
         //BenchmarkRunner.Run<VisitedRegionsBenchmark>();
 
         //BenchmarkRunner.Run<QuadNodeWithQuadrantBenchmarks>();

@@ -58,8 +58,14 @@ public static class VisitedRegionsDataSet
 
     public static SavedData Load()
     {
+        Console.Out.WriteLine("Loading data set...");
+        
         using var fs = File.OpenRead(DataFilePath);
-        return Serializer.Deserialize<SavedData>(fs);
+        var sd = Serializer.Deserialize<SavedData>(fs);
+        
+        Console.Out.WriteLine($"Loaded {sd.Metadata.Count:N0} commands");
+
+        return sd;
     }
     
     private sealed class VisitedRegionsProxy : IVisitedRegions
@@ -91,6 +97,8 @@ public static class VisitedRegionsDataSet
         [ProtoMember(1)] public List<byte> Metadata { get; set; } = new();
         [ProtoMember(2)] public List<int> X { get; set; } = new();
         [ProtoMember(3)] public List<int> Y { get; set; } = new();
+
+        public int Count => Metadata.Count;
 
         public CommandType CommandType(int i) => (CommandType)(Metadata[i] & 1);
 

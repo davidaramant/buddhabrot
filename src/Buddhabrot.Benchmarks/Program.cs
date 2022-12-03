@@ -19,7 +19,10 @@ class Program
         //BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
         //BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
 
-        BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
+        //BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
+        
+        //CoordinateHashingTests.ComputeHistograms();
+        BenchmarkRunner.Run<CoordinateHashingBenchmarks>();
 
         // var vrb = new VisitedRegionsBenchmark();
         // vrb.LoadDataSet();

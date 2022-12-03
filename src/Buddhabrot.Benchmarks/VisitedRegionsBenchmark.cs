@@ -17,14 +17,7 @@ public class VisitedRegionsBenchmark
     private VisitedRegionsDataSet.SavedData _savedData = default!;
 
     [GlobalSetup]
-    public void LoadDataSet()
-    {
-        Console.Out.WriteLine("Loading data set...");
-
-        _savedData = VisitedRegionsDataSet.Load();
-
-        Console.Out.WriteLine($"Loaded {_savedData.Metadata.Count:N0} commands");
-    }
+    public void LoadDataSet() => _savedData = VisitedRegionsDataSet.Load();
 
     [Benchmark]
     [ArgumentsSource(nameof(AllVisitedRegionsImplementations))]

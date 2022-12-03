@@ -6,11 +6,18 @@ public sealed class FixedSizeCache<TKey, TValue>
 {
     private readonly TKey[] _keys;
     private readonly TValue[] _values;
-    private readonly int _capacity;
+    private readonly Func<TKey, int> _getIndex;
 
-    public FixedSizeCache(int capacity, TKey defaultKey)
+    public FixedSizeCache(int capacity, TKey defaultKey) :
+        this(capacity, 
+            defaultKey,
+            getIndex: key => (int)((uint)key.GetHashCode()) % capacity)
     {
-        _capacity = capacity;
+    }
+
+    public FixedSizeCache(int capacity, TKey defaultKey, Func<TKey, int> getIndex)
+    {
+        _getIndex = getIndex;
         _keys = new TKey[capacity];
         Array.Fill(_keys, defaultKey);
         _values = new TValue[capacity];
@@ -18,14 +25,14 @@ public sealed class FixedSizeCache<TKey, TValue>
 
     public void Add(TKey key, TValue value)
     {
-        var index = (uint)key.GetHashCode() % _capacity;
+        var index = _getIndex(key);
         _keys[index] = key;
         _values[index] = value;
     }
 
     public bool TryGetValue(TKey key, out TValue value)
     {
-        var index = (uint)key.GetHashCode() % _capacity;
+        var index = _getIndex(key);
         if (_keys[index].Equals(key))
         {
             value = _values[index];

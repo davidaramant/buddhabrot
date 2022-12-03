@@ -6,7 +6,10 @@ namespace Buddhabrot.Core.Boundary.Corners;
 
 public sealed class RegionCorners
 {
-    private readonly FixedSizeCache<CornerId, bool> _isCornerInSet = new(32, defaultKey: new CornerId(-1, -1));
+    private readonly FixedSizeCache<CornerId, bool> _isCornerInSet = new(64,
+        defaultKey: new CornerId(int.MaxValue, int.MaxValue),
+        getIndex: cid => (cid.Y & 0b111) << 3 | (cid.X & 0b111));
+
     private readonly BoundaryParameters _boundaryParams;
 
     private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;

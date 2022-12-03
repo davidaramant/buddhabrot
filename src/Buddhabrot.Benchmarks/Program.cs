@@ -9,8 +9,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        VisitedRegionsBenchmark.CreateDataSet();
-        BenchmarkRunner.Run<VisitedRegionsBenchmark>();
+        //VisitedRegionsBenchmark.CreateDataSet();
+        //BenchmarkRunner.Run<VisitedRegionsBenchmark>();
 
         //BenchmarkRunner.Run<QuadNodeWithQuadrantBenchmarks>();
         //BenchmarkRunner.Run<QuadNodeGetQuadrantBenchmarks>();
@@ -18,8 +18,7 @@ class Program
         //BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
         //BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
 
-        //BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
-
+        BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
 
         // var vrb = new VisitedRegionsBenchmark();
         // vrb.LoadDataSet();

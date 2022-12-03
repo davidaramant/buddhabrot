@@ -4,7 +4,7 @@ namespace Buddhabrot.Core.Tests.Utilities;
 
 public class FixedSizeCacheTests
 {
-    private readonly FixedSizeCache<int, int> _cache = new(4);
+    private readonly FixedSizeCache<int, int> _cache = new(4, defaultKey: -1);
 
     [Fact]
     public void ShouldHandleEntriesNotInCache()
@@ -19,16 +19,5 @@ public class FixedSizeCacheTests
 
         _cache.TryGetValue(1, out var value).Should().BeTrue();
         value.Should().Be(2);
-    }
-
-    [Fact]
-    public void ShouldRollOverContents()
-    {
-        for (int i = 0; i < _cache.Count + 1; i++)
-        {
-            _cache.Add(i, i);
-        }
-
-        _cache.TryGetValue(0, out _).Should().BeFalse();
     }
 }

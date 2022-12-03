@@ -4,35 +4,34 @@ public sealed class FixedSizeCache<TKey, TValue>
     where TKey : struct
     where TValue : struct
 {
-    private readonly RingBuffer<TKey> _keyCache;
-    private readonly RingBuffer<TValue> _valueCache;
+    private readonly TKey[] _keys;
+    private readonly TValue[] _values;
+    private readonly int _capacity;
 
-    public int Count => _keyCache.Count;
-
-    public FixedSizeCache(int maxSize)
+    public FixedSizeCache(int capacity, TKey defaultKey)
     {
-        _keyCache = new(maxSize);
-        _valueCache = new(maxSize);
+        _capacity = capacity;
+        _keys = new TKey[capacity];
+        Array.Fill(_keys, defaultKey);
+        _values = new TValue[capacity];
     }
 
     public void Add(TKey key, TValue value)
     {
-        _keyCache.Add(key);
-        _valueCache.Add(value);
+        var index = (uint)key.GetHashCode() % _capacity;
+        _keys[index] = key;
+        _values[index] = value;
     }
 
     public bool TryGetValue(TKey key, out TValue value)
     {
-        // Use a for loop to avoid allocating an enumerator
-        for (int i = 0; i < _keyCache.Count; i++)
+        var index = (uint)key.GetHashCode() % _capacity;
+        if (_keys[index].Equals(key))
         {
-            if (_keyCache[i].Equals(key))
-            {
-                value = _valueCache[i];
-                return true;
-            }
+            value = _values[index];
+            return true;
         }
-        
+
         value = default;
 
         return false;

@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoundaryFinder.Models;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Utilities;
+using Humanizer;
 using ReactiveUI;
 
 namespace BoundaryFinder.ViewModels;
@@ -69,24 +71,25 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             await Task.Run(
                 () => BoundaryCalculator.VisitBoundary(boundaryParameters, visitedRegions, cancelToken),
                 cancelToken);
-            
-            _log($"Visited boundary for {boundaryParameters}.\n" +
-                 $"\t- Took {stopwatch.Elapsed}");
+
+            _log(DateTime.Now.ToString("s"));
+            _log(ComputerDescription.GetSingleLine());
+            _log($"Visited boundary for {boundaryParameters} ({stopwatch.Elapsed.Humanize(2)})");
             stopwatch.Restart();
 
             var boundaryRegions = visitedRegions.GetBoundaryRegions();
 
-            _log($"Found {boundaryRegions.Count:N0} boundary regions.\n" +
-                 $"\t - Took {stopwatch.Elapsed}");
+            _log($"Found {boundaryRegions.Count:N0} boundary regions ({stopwatch.Elapsed.Humanize(2)})");
             stopwatch.Restart();
 
             var transformer = new VisitedRegionsToRegionLookup(visitedRegions);
             var lookup = await Task.Run(() => transformer.Transform(), cancelToken);
             
-            _log($"Normalized quad tree to Region Lookup\n"+
-                 $"\t - Went from {visitedRegions.NodeCount:N0} to {lookup.NodeCount:N0} nodes ({(double)lookup.NodeCount/visitedRegions.NodeCount:P})\n"+
-                 $"\t - Took {stopwatch.Elapsed}");
-            
+            _log($"Normalized quad tree to Region Lookup ({stopwatch.Elapsed.Humanize(2)})\n"+
+                 $" - Went from {visitedRegions.NodeCount:N0} to {lookup.NodeCount:N0} nodes ({(double)lookup.NodeCount/visitedRegions.NodeCount:P})");
+
+            _log(string.Empty);
+
             _dataProvider.SaveBorderData(
                 boundaryParameters,
                 boundaryRegions,

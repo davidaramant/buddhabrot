@@ -8,7 +8,7 @@ public sealed record BoundaryParameters(
     int MaxIterations)
 {
     public override string ToString() =>
-        $"Vertical Divisions: {Divisions.QuadrantDivisions:N0} Max Iterations: {MaxIterations:N0}";
+        $"({Divisions.VerticalPower}) Vertical Divisions: {Divisions.QuadrantDivisions:N0}, Max Iterations: {MaxIterations:N0}";
 
     public string Description => $"v{Divisions.VerticalPower:N0}_i{MaxIterations:N0}";
 

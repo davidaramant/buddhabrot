@@ -30,7 +30,7 @@ public sealed class SettingsViewModel : ViewModelBase
 
         UpdateFilePathCommand = ReactiveCommand.Create(() => { dataProvider.UpdateDataStoragePath(_dataSetPath); });
 
-        SystemInformation = ComputerDescription.Get();
+        SystemInformation = ComputerDescription.GetMultiline();
 
         OpenFilePathCommand = ReactiveCommand.CreateFromTask(
             () =>

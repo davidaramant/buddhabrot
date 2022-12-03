@@ -2,9 +2,15 @@
 
 ## BoundaryFinder
 
+### Misc
+
 - [x] Refactor data storage stuff
-  - [ ] Allow changing local files location 
-- [x] Better busy indicator
+  - [ ] Allow changing local files location
+- [x] NUnit test project for manual "tests"
+- [x] CI builds on GitHub
+
+### Calculating Boundary
+
 - [x] Integrate DE in boundary scanning
   - [x] Update algorithm
   - [x] Persist filament regions
@@ -13,12 +19,10 @@
 - [x] Visualizations of raw quad trees
   - [x] Integrate this into the app somewhere
 - [x] Flip Y again - regions going down isn't helpful anymore
-- [x] Allow log area to be hidden
 - [x] Split regions and quad tree into different files
 - [ ] Optimize Boundary Calculations
   - [x] Always pass in VisitedRegions into BorderScan
   - [x] Rework region types to Unknown/Border/Filament/Rejected
-    - [ ] Update colors for the new region types
   - [x] Build up a quad tree during boundary scan
     - [x] New quad tree node
     - [x] New quad tree class
@@ -28,9 +32,14 @@
     - [x] Compress quad tree into RegionLookup
   - [x] Filter out Rejected regions from RegionLookup. They aren't visually interesting.
   - [ ] Calculate batches of corners (in parallel) and cache them
-    - [ ] Batch data (corners + insides) can be packed into a `ulong`
-    - [ ] Fixed-size cache for corners. Ideally needs a spatial lookup
+    - [ ] Batch data can be packed into a `ushort` (don't combine corners and centers, I think)
+    - [ ] Fixed-size cache for corners
     - [ ] Visualization (video) of batches being cached & evicted
+
+### GUI
+
+- [x] Better busy indicator
+- [x] Allow log area to be hidden
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
   - [x] Switch to power-of-two divisions
@@ -46,7 +55,7 @@
       - [x] Optimize this for real - saving it off is a hack (taken care of by the dual-quadtree approach)
   - [x] Show entire set boundary
   - [x] There is an unstable 1-pixel gap between regions
-  - [ ] Rework how the logical area is calculated (EDIT: what did this mean?)
+  - [ ] ~~Rework how the logical area is calculated~~ (EDIT: what did this mean?)
   - [ ] Render region interiors
     - [x] `RenderTargetBitmap` - https://github.com/AvaloniaUI/Avalonia/issues/2492
     - [x] `RenderInstructions`
@@ -58,10 +67,9 @@
       - [ ] New iteration kernel method for running through a list of points
       - [ ] Do the actual rendering
   - [x] Nicer aesthetic
-  - ~~[ ] Fill the Mandelbrot interior (scanline rendering)~~ - No good method of doing this
+  - [ ] ~~Fill the Mandelbrot interior (scanline rendering)~~ - No good method of doing this
   - [ ] Pick palette to render with
     - [x] UI for palette choices
     - [ ] Backend for picking palettes
     - [ ] More palettes to choose from
-- [x] NUnit test project for manual "tests"
-- [x] CI builds on GitHub
+- [ ] Update colors for the new region types

@@ -1,7 +1,11 @@
 ﻿namespace Buddhabrot.Core.Boundary;
 
-public readonly record struct QuadNode(uint Encoded)
+public readonly struct QuadNode
 {
+    public readonly uint Encoded;
+
+    public QuadNode(uint encoded) => Encoded = encoded;
+    
     public static readonly QuadNode UnknownLeaf = MakeLeaf(RegionType.Unknown);
 
     public static QuadNode MakeLeaf(RegionType type) => new((uint) type << 2);
@@ -59,4 +63,18 @@ public readonly record struct QuadNode(uint Encoded)
         NodeType.LeafQuad => $" LL:{LL} LR:{LR} UL:{UL} UR:{UR}",
         _ => "how could this have happened"
     };
+
+    #region Equality
+    
+    public override int GetHashCode() => (int)Encoded;
+
+    public override bool Equals(object? obj) => obj is QuadNode other && Equals(other);
+
+    public bool Equals(QuadNode other) => Encoded == other.Encoded;
+
+    public static bool operator ==(QuadNode left, QuadNode right) => left.Equals(right);
+
+    public static bool operator !=(QuadNode left, QuadNode right) => !left.Equals(right);
+
+    #endregion
 }

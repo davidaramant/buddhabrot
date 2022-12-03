@@ -106,3 +106,13 @@ Found 2,739,961 boundary regions.
 Normalized quad tree to Region Lookup
 - Went from 73,633,001 to 17,758,873 nodes (24.12%)
 - Took 00:00:03.8213886
+
+## Mac
+
+Visited boundary for Vertical Divisions: 131,072 Max Iterations: 5,000,000.
+- Took 04:14:15.5064025
+Found 2,739,961 boundary regions.
+- Took 00:00:01.5352555
+Normalized quad tree to Region Lookup
+- Went from 73,633,001 to 17,301,061 nodes (23.496%)
+- Took 00:00:06.1649922

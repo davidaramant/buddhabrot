@@ -28,7 +28,7 @@ public sealed class RegionCorners
             _cornerBatchCache.Add(batchId, batch);
         }
 
-        return batch[corner.GetBatchIndex()];
+        return batch[1 << corner.GetBatchIndex()];
     }
 
     public bool DoesRegionContainFilaments(RegionId region)
@@ -40,7 +40,7 @@ public sealed class RegionCorners
             _cornerBatchCache.Add(batchId, batch);
         }
 
-        return batch[region.GetBatchIndex()];
+        return batch[1 << region.GetBatchIndex()];
     }
 
     public CornersInSet GetRegionCorners(RegionId region) =>
@@ -73,7 +73,7 @@ public sealed class RegionCorners
 
         for (int i = 0; i < 16; i++)
         {
-            batch[i] = inSet[i];
+            batch[1 << i] = inSet[i];
         }
 
         // Do centers
@@ -93,7 +93,7 @@ public sealed class RegionCorners
 
         for (int i = 0; i < 16; i++)
         {
-            batch[i + 16] = inSet[i];
+            batch[(i + 16) << i] = inSet[i];
         }
 
         ArrayPool<Complex>.Shared.Return(corners);

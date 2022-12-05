@@ -1,5 +1,5 @@
 using System.Buffers;
-using System.Collections.Specialized;
+using System.Diagnostics.Metrics;
 using System.Numerics;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Utilities;
@@ -8,7 +8,7 @@ namespace Buddhabrot.Core.Boundary.Corners;
 
 public sealed class RegionCorners
 {
-    private readonly FixedSizeCache<RegionBatchId, BitVector32> _cornerBatchCache = new(16,
+    private readonly FixedSizeCache<RegionBatchId, uint> _cornerBatchCache = new(16,
         defaultKey: RegionBatchId.Invalid,
         getIndex: cbi => cbi.GetHashCode16());
 
@@ -28,7 +28,7 @@ public sealed class RegionCorners
             _cornerBatchCache.Add(batchId, batch);
         }
 
-        return batch[1 << corner.GetBatchIndex()];
+        return (batch & (1 << corner.GetBatchIndex())) != 0;
     }
 
     public bool DoesRegionContainFilaments(RegionId region)
@@ -40,7 +40,7 @@ public sealed class RegionCorners
             _cornerBatchCache.Add(batchId, batch);
         }
 
-        return batch[1 << region.GetBatchIndex()];
+        return (batch & (1 << region.GetBatchIndex())) != 0;
     }
 
     public CornersInSet GetRegionCorners(RegionId region) =>
@@ -50,7 +50,7 @@ public sealed class RegionCorners
             LowerRight: IsCornerInSet(region.LowerRightCorner()),
             LowerLeft: IsCornerInSet(region.LowerLeftCorner()));
 
-    private BitVector32 ComputeBatch(RegionBatchId id)
+    private uint ComputeBatch(RegionBatchId id)
     {
         var corners = ArrayPool<Complex>.Shared.Rent(16);
         var inSet = ArrayPool<bool>.Shared.Rent(16);
@@ -69,11 +69,14 @@ public sealed class RegionCorners
             i => { inSet[i] = ScalarKernel.FindEscapeTime(corners[i], _boundaryParams.MaxIterations).IsInfinite; }
         );
 
-        var batch = new BitVector32(0);
+        uint batch = 0;
 
         for (int i = 0; i < 16; i++)
         {
-            batch[1 << i] = inSet[i];
+            if (inSet[i])
+            {
+                batch |= (uint)(1 << i);
+            }
         }
 
         // Do centers
@@ -93,7 +96,11 @@ public sealed class RegionCorners
 
         for (int i = 0; i < 16; i++)
         {
-            batch[(i + 16) << i] = inSet[i];
+            if (inSet[i])
+            {
+                batch |= (uint)(1 << (i + 16));
+            }
+
         }
 
         ArrayPool<Complex>.Shared.Return(corners);

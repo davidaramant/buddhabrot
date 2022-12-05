@@ -13,6 +13,9 @@ public readonly record struct RegionId(int X, int Y)
 
     public override string ToString() => $"Region ({X}, {Y})";
 
+    public static RegionId operator +(RegionId id, Offset offset) =>
+        new(id.X + offset.X, id.Y + offset.Y);
+
     public RegionId MoveUp() => new(X, Y + 1);
     public RegionId MoveDown() => new(X, Y - 1);
     public RegionId MoveLeft() => new(X - 1, Y);

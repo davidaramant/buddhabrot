@@ -46,7 +46,7 @@ public static class ScalarKernel
 
             if ((z2Real + z2Imag) > 4)
             {
-                return EscapeTime.Discrete(i);
+                return new EscapeTime(i);
             }
 
             if (stepsTaken == stepLimit)
@@ -66,6 +66,7 @@ public static class ScalarKernel
     public static double FindExteriorDistance(Complex c, int maxIterations)
     {
         // http://mrob.com/pub/muency/distanceestimator.html
+
         if (BulbChecker.IsInsideBulbs(c))
             return double.MaxValue;
 

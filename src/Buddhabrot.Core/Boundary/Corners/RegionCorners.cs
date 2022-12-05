@@ -1,3 +1,5 @@
+using System.Buffers;
+using System.Collections.Specialized;
 using System.Numerics;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Utilities;
@@ -6,9 +8,9 @@ namespace Buddhabrot.Core.Boundary.Corners;
 
 public sealed class RegionCorners
 {
-    private readonly FixedSizeCache<CornerId, bool> _isCornerInSet = new(64,
-        defaultKey: new CornerId(int.MaxValue, int.MaxValue),
-        getIndex: cid => (cid.Y & 0b111) << 3 | (cid.X & 0b111));
+    private readonly FixedSizeCache<RegionBatchId, BitVector32> _cornerBatchCache = new(16,
+        defaultKey: RegionBatchId.Invalid,
+        getIndex: cbi => cbi.GetHashCode16());
 
     private readonly BoundaryParameters _boundaryParams;
 
@@ -16,17 +18,29 @@ public sealed class RegionCorners
 
     public RegionCorners(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
 
+
     private bool IsCornerInSet(CornerId corner)
     {
-        if (_isCornerInSet.TryGetValue(corner, out var inSet))
+        var batchId = corner.ToBatchId();
+        if (!_cornerBatchCache.TryGetValue(batchId, out var batch))
         {
-            return inSet;
+            batch = ComputeBatch(batchId);
+            _cornerBatchCache.Add(batchId, batch);
         }
 
-        Complex c = ToComplex(corner.X, corner.Y);
-        inSet = ScalarKernel.FindEscapeTime(c, _boundaryParams.MaxIterations) == EscapeTime.Infinite;
-        _isCornerInSet.Add(corner, inSet);
-        return inSet;
+        return batch[corner.GetBatchIndex()];
+    }
+
+    public bool DoesRegionContainFilaments(RegionId region)
+    {
+        var batchId = region.ToBatchId();
+        if (!_cornerBatchCache.TryGetValue(batchId, out var batch))
+        {
+            batch = ComputeBatch(batchId);
+            _cornerBatchCache.Add(batchId, batch);
+        }
+
+        return batch[region.GetBatchIndex()];
     }
 
     public CornersInSet GetRegionCorners(RegionId region) =>
@@ -36,13 +50,59 @@ public sealed class RegionCorners
             LowerRight: IsCornerInSet(region.LowerRightCorner()),
             LowerLeft: IsCornerInSet(region.LowerLeftCorner()));
 
-    public bool DoesRegionContainFilaments(RegionId region)
+    private BitVector32 ComputeBatch(RegionBatchId id)
     {
-        var center = ToComplex(region.X + 0.5, region.Y + 0.5);
+        var corners = ArrayPool<Complex>.Shared.Rent(16);
+        var inSet = ArrayPool<bool>.Shared.Rent(16);
 
-        var distanceToSet = ScalarKernel.FindExteriorDistance(center, _boundaryParams.MaxIterations);
-        return distanceToSet <= RegionWidth / 2;
+        // Do corners
+        var bottomLeftCorner = id.GetBottomLeftCorner();
+        for (int y = 0; y < 4; y++)
+        {
+            for (int x = 0; x < 4; x++)
+            {
+                corners[y * 4 + x] = ToComplex(bottomLeftCorner + new Offset(x, y));
+            }
+        }
+
+        Parallel.For(0, 16,
+            i => { inSet[i] = ScalarKernel.FindEscapeTime(corners[i], _boundaryParams.MaxIterations).IsInfinite; }
+        );
+
+        var batch = new BitVector32(0);
+
+        for (int i = 0; i < 16; i++)
+        {
+            batch[i] = inSet[i];
+        }
+
+        // Do centers
+        var bottomLeftRegion = id.GetBottomLeftRegion();
+        for (int y = 0; y < 4; y++)
+        {
+            for (int x = 0; x < 4; x++)
+            {
+                corners[y * 4 + x] = GetRegionCenter(bottomLeftRegion + new Offset(x, y));
+            }
+        }
+
+        Parallel.For(0, 16,
+            i => { inSet[i] = ScalarKernel.FindExteriorDistance(corners[i], _boundaryParams.MaxIterations) <= RegionWidth / 2; }
+        );
+
+
+        for (int i = 0; i < 16; i++)
+        {
+            batch[i + 16] = inSet[i];
+        }
+
+        ArrayPool<Complex>.Shared.Return(corners);
+        ArrayPool<bool>.Shared.Return(inSet);
+
+        return batch;
     }
 
+    private Complex ToComplex(CornerId id) => ToComplex(id.X, id.Y);
+    private Complex GetRegionCenter(RegionId id) => ToComplex(id.X + 0.5, id.Y + 0.5);
     private Complex ToComplex(double x, double y) => new(real: x * RegionWidth - 2, imaginary: y * RegionWidth);
 }

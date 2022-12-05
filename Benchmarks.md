@@ -57,3 +57,10 @@ Normalized quad tree to Region Lookup
 - Went from 73,633,001 to 17,301,061 nodes (23.496%)
 - Took 00:00:08.8693450
 
+
+2022-12-03T19:06:21
+macOS (13.0.1) |  10 Cores | 32 GB
+Visited boundary for (16) Vertical Divisions: 65,536, Max Iterations: 5,000,000 (1 hour, 24 minutes)
+Found 1,130,138 boundary regions (1 second, 66 milliseconds)
+Normalized quad tree to Region Lookup (6 seconds, 192 milliseconds)
+- Went from 22,151,249 to 5,630,141 nodes (25.417%)

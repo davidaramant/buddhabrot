@@ -22,5 +22,5 @@ public static class RegionBatchExtensions
 
     public static RegionBatchId ToBatchId(this RegionId id) => new(id.X / 4, id.Y / 4);
 
-    public static int GetBatchIndex(this RegionId id) => 16 + ((id.Y % 4) << 2) + (id.X % 4);
+    public static int GetBatchIndex(this RegionId id) => ((id.Y % 4) << 2) + (id.X % 4);
 }

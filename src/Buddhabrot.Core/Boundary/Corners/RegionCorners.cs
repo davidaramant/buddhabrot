@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics.Metrics;
 using System.Numerics;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Utilities;
@@ -8,7 +7,10 @@ namespace Buddhabrot.Core.Boundary.Corners;
 
 public sealed class RegionCorners
 {
-    private readonly FixedSizeCache<RegionBatchId, uint> _cornerBatchCache = new(64,
+    private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCorners = new(64,
+        defaultKey: RegionBatchId.Invalid,
+        getIndex: cbi => cbi.GetHashCode64());
+    private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCenters = new(64,
         defaultKey: RegionBatchId.Invalid,
         getIndex: cbi => cbi.GetHashCode64());
 
@@ -22,25 +24,25 @@ public sealed class RegionCorners
     private bool IsCornerInSet(CornerId corner)
     {
         var batchId = corner.ToBatchId();
-        if (!_cornerBatchCache.TryGetValue(batchId, out var batch))
+        if (!_cachedCorners.TryGetValue(batchId, out var batch))
         {
-            batch = ComputeBatch(batchId);
-            _cornerBatchCache.Add(batchId, batch);
+            batch = ComputeCornerBatch(batchId);
+            _cachedCorners.Add(batchId, batch);
         }
 
-        return (batch & (1 << corner.GetBatchIndex())) != 0;
+        return batch[corner.GetBatchIndex()];
     }
 
     public bool DoesRegionContainFilaments(RegionId region)
     {
         var batchId = region.ToBatchId();
-        if (!_cornerBatchCache.TryGetValue(batchId, out var batch))
+        if (!_cachedCenters.TryGetValue(batchId, out var batch))
         {
-            batch = ComputeBatch(batchId);
-            _cornerBatchCache.Add(batchId, batch);
+            batch = ComputeCenterBatch(batchId);
+            _cachedCenters.Add(batchId, batch);
         }
 
-        return (batch & (1 << region.GetBatchIndex())) != 0;
+        return batch[region.GetBatchIndex()];
     }
 
     public CornersInSet GetRegionCorners(RegionId region) =>
@@ -50,12 +52,11 @@ public sealed class RegionCorners
             LowerRight: IsCornerInSet(region.LowerRightCorner()),
             LowerLeft: IsCornerInSet(region.LowerLeftCorner()));
 
-    private uint ComputeBatch(RegionBatchId id)
+    private BoolVector16 ComputeCornerBatch(RegionBatchId id)
     {
         var corners = ArrayPool<Complex>.Shared.Rent(16);
         var inSet = ArrayPool<bool>.Shared.Rent(16);
 
-        // Do corners
         var bottomLeftCorner = id.GetBottomLeftCorner();
         for (int y = 0; y < 4; y++)
         {
@@ -69,17 +70,27 @@ public sealed class RegionCorners
             i => { inSet[i] = ScalarKernel.FindEscapeTime(corners[i], _boundaryParams.MaxIterations).IsInfinite; }
         );
 
-        uint batch = 0;
+        var batch = BoolVector16.Empty;
 
         for (int i = 0; i < 16; i++)
         {
             if (inSet[i])
             {
-                batch |= (uint)(1 << i);
+                batch = batch.WithBit(i);
             }
         }
 
-        // Do centers
+        ArrayPool<Complex>.Shared.Return(corners);
+        ArrayPool<bool>.Shared.Return(inSet);
+
+        return batch;
+    }
+
+    private BoolVector16 ComputeCenterBatch(RegionBatchId id)
+    {
+        var corners = ArrayPool<Complex>.Shared.Rent(16);
+        var centerContainsFilaments = ArrayPool<bool>.Shared.Rent(16);
+
         var bottomLeftRegion = id.GetBottomLeftRegion();
         for (int y = 0; y < 4; y++)
         {
@@ -90,21 +101,22 @@ public sealed class RegionCorners
         }
 
         Parallel.For(0, 16,
-            i => { inSet[i] = ScalarKernel.FindExteriorDistance(corners[i], _boundaryParams.MaxIterations) <= RegionWidth / 2; }
+            i => { centerContainsFilaments[i] = ScalarKernel.FindExteriorDistance(corners[i], _boundaryParams.MaxIterations) <= RegionWidth / 2; }
         );
 
+        var batch = BoolVector16.Empty;
 
         for (int i = 0; i < 16; i++)
         {
-            if (inSet[i])
+            if (centerContainsFilaments[i])
             {
-                batch |= (uint)(1 << (i + 16));
+                batch = batch.WithBit(i);
             }
 
         }
 
         ArrayPool<Complex>.Shared.Return(corners);
-        ArrayPool<bool>.Shared.Return(inSet);
+        ArrayPool<bool>.Shared.Return(centerContainsFilaments);
 
         return batch;
     }

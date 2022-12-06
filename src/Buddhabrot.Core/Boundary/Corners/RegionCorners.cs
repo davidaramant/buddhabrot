@@ -10,7 +10,7 @@ public sealed class RegionCorners
     private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCorners = new(64,
         defaultKey: RegionBatchId.Invalid,
         getIndex: cbi => cbi.GetHashCode64());
-    private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCenters = new(64,
+    private readonly FixedSizeCache<RegionBatchId, BoolVector8> _cachedCenters = new(64,
         defaultKey: RegionBatchId.Invalid,
         getIndex: cbi => cbi.GetHashCode64());
 
@@ -86,27 +86,27 @@ public sealed class RegionCorners
         return batch;
     }
 
-    private BoolVector16 ComputeCenterBatch(RegionBatchId id)
+    private BoolVector8 ComputeCenterBatch(RegionBatchId id)
     {
         var corners = ArrayPool<Complex>.Shared.Rent(16);
-        var centerContainsFilaments = ArrayPool<bool>.Shared.Rent(16);
+        var centerContainsFilaments = ArrayPool<bool>.Shared.Rent(4);
 
         var bottomLeftRegion = id.GetBottomLeftRegion();
-        for (int y = 0; y < 4; y++)
+        for (int y = 0; y < 2; y++)
         {
-            for (int x = 0; x < 4; x++)
+            for (int x = 0; x < 2; x++)
             {
-                corners[y * 4 + x] = GetRegionCenter(bottomLeftRegion + new Offset(x, y));
+                corners[y * 2 + x] = GetRegionCenter(bottomLeftRegion + new Offset(x, y));
             }
         }
 
-        Parallel.For(0, 16,
+        Parallel.For(0, 4,
             i => { centerContainsFilaments[i] = ScalarKernel.FindExteriorDistance(corners[i], _boundaryParams.MaxIterations) <= RegionWidth / 2; }
         );
 
-        var batch = BoolVector16.Empty;
+        var batch = BoolVector8.Empty;
 
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 4; i++)
         {
             if (centerContainsFilaments[i])
             {

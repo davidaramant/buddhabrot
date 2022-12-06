@@ -35,7 +35,10 @@ namespace Buddhabrot.Core.Utilities
             hardwareInfo.RefreshMemoryStatus();
             hardwareInfo.RefreshCPUList(includePercentProcessorTime: false);
 
-            var cpus = hardwareInfo.CpuList.Select(cpu => $"{cpu.Name.Trim()} {cpu.NumberOfCores} Cores");
+            static string FormatFrequency(uint mhz) => mhz == 0 ? string.Empty : $"{mhz / 1000d:N2} GHz ";
+
+            var cpus = hardwareInfo.CpuList.Select(cpu =>
+                $"{cpu.Name.Trim()} {FormatFrequency(cpu.MaxClockSpeed)}{cpu.NumberOfCores} Cores");
 
             return
                 $"{hardwareInfo.OperatingSystem.Name} ({hardwareInfo.OperatingSystem.VersionString})" +

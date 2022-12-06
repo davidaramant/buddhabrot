@@ -55,24 +55,24 @@ public sealed class RegionCorners
     private BoolVector16 ComputeCornerBatch(RegionBatchId id)
     {
         var corners = ArrayPool<Complex>.Shared.Rent(16);
-        var inSet = ArrayPool<bool>.Shared.Rent(16);
+        var inSet = ArrayPool<bool>.Shared.Rent(RegionBatchId.CornerArea);
 
         var bottomLeftCorner = id.GetBottomLeftCorner();
-        for (int y = 0; y < 4; y++)
+        for (int y = 0; y < RegionBatchId.CornerWidth; y++)
         {
-            for (int x = 0; x < 4; x++)
+            for (int x = 0; x < RegionBatchId.CornerWidth; x++)
             {
-                corners[y * 4 + x] = ToComplex(bottomLeftCorner + new Offset(x, y));
+                corners[y * RegionBatchId.CornerWidth + x] = ToComplex(bottomLeftCorner + new Offset(x, y));
             }
         }
 
-        Parallel.For(0, 16,
+        Parallel.For(0, RegionBatchId.CornerArea,
             i => { inSet[i] = ScalarKernel.FindEscapeTime(corners[i], _boundaryParams.MaxIterations).IsInfinite; }
         );
 
         var batch = BoolVector16.Empty;
 
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < RegionBatchId.CornerArea; i++)
         {
             if (inSet[i])
             {
@@ -89,14 +89,14 @@ public sealed class RegionCorners
     private BoolVector8 ComputeCenterBatch(RegionBatchId id)
     {
         var corners = ArrayPool<Complex>.Shared.Rent(16);
-        var centerContainsFilaments = ArrayPool<bool>.Shared.Rent(4);
+        var centerContainsFilaments = ArrayPool<bool>.Shared.Rent(RegionBatchId.RegionArea);
 
         var bottomLeftRegion = id.GetBottomLeftRegion();
-        for (int y = 0; y < 2; y++)
+        for (int y = 0; y < RegionBatchId.RegionWidth; y++)
         {
-            for (int x = 0; x < 2; x++)
+            for (int x = 0; x < RegionBatchId.RegionWidth; x++)
             {
-                corners[y * 2 + x] = GetRegionCenter(bottomLeftRegion + new Offset(x, y));
+                corners[y * RegionBatchId.RegionWidth + x] = GetRegionCenter(bottomLeftRegion + new Offset(x, y));
             }
         }
 
@@ -106,7 +106,7 @@ public sealed class RegionCorners
 
         var batch = BoolVector8.Empty;
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < RegionBatchId.RegionArea; i++)
         {
             if (centerContainsFilaments[i])
             {

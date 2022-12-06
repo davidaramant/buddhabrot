@@ -10,6 +10,7 @@ public readonly record struct RegionBatchId(int X, int Y)
     public RegionId GetBottomLeftRegion() => new(X * 4, Y * 4);
 
     public int GetHashCode16() => XYHash.GetHashCode16(X, Y);
+    public int GetHashCode64() => XYHash.GetHashCode64(X, Y);
 }
 
 public static class RegionBatchExtensions

@@ -8,9 +8,9 @@ namespace Buddhabrot.Core.Boundary.Corners;
 
 public sealed class RegionCorners
 {
-    private readonly FixedSizeCache<RegionBatchId, uint> _cornerBatchCache = new(16,
+    private readonly FixedSizeCache<RegionBatchId, uint> _cornerBatchCache = new(64,
         defaultKey: RegionBatchId.Invalid,
-        getIndex: cbi => cbi.GetHashCode16());
+        getIndex: cbi => cbi.GetHashCode64());
 
     private readonly BoundaryParameters _boundaryParams;
 

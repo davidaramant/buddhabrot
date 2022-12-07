@@ -32,10 +32,15 @@
     - [x] Return border regions from quad tree
     - [x] Compress quad tree into RegionLookup
   - [x] Filter out Rejected regions from RegionLookup. They aren't visually interesting.
-  - [ ] Calculate batches of corners (in parallel) and cache them
-    - [ ] Batch data can be packed into a `ushort` (don't combine corners and centers, I think)
-    - [ ] Fixed-size cache for corners
+  - [x] Calculate batches of corners (in parallel) and cache them
+    - [x] Batch data can be packed into a `ushort` (don't combine corners and centers, I think)
+    - [x] Fixed-size cache for corners
+    - [ ] Determine best amount of data to batch & cache
     - [ ] Visualization (video) of batches being cached & evicted
+- [ ] Investigating putting an index into the `VisitedRegions`
+- [ ] Support diffing `RegionLookup`
+  - [ ] Expand RegionType to 3 bits
+  - [ ] Generate quad tree diffs
 
 ### GUI
 
@@ -74,3 +79,4 @@
     - [ ] Backend for picking palettes
     - [ ] More palettes to choose from
 - [ ] Update colors for the new region types
+- [ ] UI to create diff between two `RegionLookup`s

@@ -8,27 +8,24 @@ namespace Buddhabrot.Core.Utilities
     {
         public static string GetMultiline()
         {
-            var hardwareInfo = new HardwareInfo(useAsteriskInWMI: false);
-            hardwareInfo.RefreshOperatingSystem();
-            hardwareInfo.RefreshMemoryStatus();
-            hardwareInfo.RefreshCPUList(includePercentProcessorTime: false);
-
+            var (os, cpu, ram) = GetInfo();
+            
             var sb = new StringBuilder();
-
-            sb.AppendLine($"{hardwareInfo.OperatingSystem.Name} ({hardwareInfo.OperatingSystem.VersionString})");
-
-            foreach (var cpu in hardwareInfo.CpuList)
-            {
-                sb.AppendLine($"{cpu.Name.Trim()} ({cpu.NumberOfLogicalProcessors} Cores, {cpu.MaxClockSpeed:N0} MHz)");
-            }
-
-            sb.AppendLine(new ByteSize(hardwareInfo.MemoryStatus.TotalPhysical).ToString());
-
+            sb.AppendLine(os);
+            sb.AppendLine(cpu);
+            sb.AppendLine(ram);
+            
             return sb.ToString();
         }
 
-
         public static string GetSingleLine()
+        {
+            var (os, cpu, ram) = GetInfo();
+
+            return os + " | " + cpu + " | " + ram;
+        }
+
+        public static (string OS, string CPU, string RAM) GetInfo()
         {
             var hardwareInfo = new HardwareInfo(useAsteriskInWMI: false);
             hardwareInfo.RefreshOperatingSystem();
@@ -40,10 +37,10 @@ namespace Buddhabrot.Core.Utilities
             var cpus = hardwareInfo.CpuList.Select(cpu =>
                 $"{cpu.Name.Trim()} {FormatFrequency(cpu.MaxClockSpeed)}{cpu.NumberOfCores} Cores");
 
-            return
-                $"{hardwareInfo.OperatingSystem.Name} ({hardwareInfo.OperatingSystem.VersionString})" +
-                $" | {string.Join(',', cpus)}" +
-                $" | {new ByteSize(hardwareInfo.MemoryStatus.TotalPhysical)}";
+            return (
+                OS: $"{hardwareInfo.OperatingSystem.Name} ({hardwareInfo.OperatingSystem.VersionString})",
+                CPU: string.Join(',', cpus),
+                RAM: new ByteSize(hardwareInfo.MemoryStatus.TotalPhysical).ToString());
         }
     }
 }

@@ -39,7 +39,7 @@ class Program
         Metrics? metrics = null;
 
         AnsiConsole.Status()
-            .Spinner(Spinner.Known.Aesthetic)
+            .Spinner(Spinner.Known.SquareCorners)
             .Start("Finding boundary...", ctx =>
             {
                 var timer = Stopwatch.StartNew();

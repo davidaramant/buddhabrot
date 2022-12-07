@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BoundaryFinder\BoundaryFinder.csproj" />
+      <ProjectReference Include="..\BoundaryFinder.Gui\BoundaryFinder.Gui.csproj" />
     </ItemGroup>
 
 </Project>

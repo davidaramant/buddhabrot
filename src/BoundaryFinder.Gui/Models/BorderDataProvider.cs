@@ -6,7 +6,7 @@ using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage;
 using DynamicData;
 
-namespace BoundaryFinder.Models;
+namespace BoundaryFinder.Gui.Models;
 
 public sealed class BorderDataProvider
 {

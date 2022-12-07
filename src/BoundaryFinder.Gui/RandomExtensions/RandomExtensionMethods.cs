@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BoundaryFinder.RandomExtensions;
+namespace BoundaryFinder.Gui.RandomExtensions;
 
 public static class RandomExtensionMethods
 {

@@ -21,7 +21,7 @@ using ReactiveUI;
 using SkiaSharp;
 using Vector = Avalonia.Vector;
 
-namespace BoundaryFinder.Views;
+namespace BoundaryFinder.Gui.Views;
 
 public sealed class MandelbrotRenderer : Control
 {

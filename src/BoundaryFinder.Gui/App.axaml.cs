@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using BoundaryFinder.ViewModels;
-using BoundaryFinder.Views;
+using BoundaryFinder.Gui.ViewModels;
+using BoundaryFinder.Gui.Views;
 
-namespace BoundaryFinder
+namespace BoundaryFinder.Gui
 {
     public partial class App : Application
     {

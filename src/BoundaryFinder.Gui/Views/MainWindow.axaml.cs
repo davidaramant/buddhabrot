@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
-namespace BoundaryFinder.Views
+namespace BoundaryFinder.Gui.Views
 {
     public partial class MainWindow : Window
     {

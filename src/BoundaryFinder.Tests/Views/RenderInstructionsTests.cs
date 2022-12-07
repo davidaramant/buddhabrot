@@ -1,5 +1,5 @@
 using Avalonia;
-using BoundaryFinder.Views;
+using BoundaryFinder.Gui.Views;
 using Rectangle = System.Drawing.Rectangle;
 
 namespace BoundaryFinder.Tests.Views;

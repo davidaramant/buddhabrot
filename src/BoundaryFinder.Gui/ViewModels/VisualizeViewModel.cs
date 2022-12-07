@@ -2,13 +2,13 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using BoundaryFinder.Models;
+using BoundaryFinder.Gui.Models;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Visualization;
 using DynamicData.Binding;
 using ReactiveUI;
 
-namespace BoundaryFinder.ViewModels;
+namespace BoundaryFinder.Gui.ViewModels;
 
 public sealed class VisualizeViewModel : ViewModelBase
 {

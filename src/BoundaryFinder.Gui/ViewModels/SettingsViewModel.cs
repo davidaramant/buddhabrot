@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reactive;
 using System.Runtime.InteropServices;
-using BoundaryFinder.Models;
+using BoundaryFinder.Gui.Models;
 using Buddhabrot.Core.Utilities;
 using CliWrap;
 using ReactiveUI;
 
-namespace BoundaryFinder.ViewModels;
+namespace BoundaryFinder.Gui.ViewModels;
 
 public sealed class SettingsViewModel : ViewModelBase
 {

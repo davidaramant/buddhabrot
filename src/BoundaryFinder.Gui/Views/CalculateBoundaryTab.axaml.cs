@@ -2,11 +2,11 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace BoundaryFinder.Views;
+namespace BoundaryFinder.Gui.Views;
 
-public partial class VisualizeTab : UserControl
+public partial class CalculateBoundaryTab : UserControl
 {
-    public VisualizeTab()
+    public CalculateBoundaryTab()
     {
         InitializeComponent();
     }

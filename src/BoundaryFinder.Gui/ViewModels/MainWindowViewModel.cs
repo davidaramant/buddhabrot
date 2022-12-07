@@ -1,10 +1,10 @@
 ﻿using System;
 using Avalonia.Threading;
-using BoundaryFinder.Models;
+using BoundaryFinder.Gui.Models;
 using Buddhabrot.Core.DataStorage;
 using ReactiveUI;
 
-namespace BoundaryFinder.ViewModels;
+namespace BoundaryFinder.Gui.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {

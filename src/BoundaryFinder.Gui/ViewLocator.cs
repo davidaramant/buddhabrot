@@ -1,9 +1,9 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using BoundaryFinder.ViewModels;
+using BoundaryFinder.Gui.ViewModels;
 
-namespace BoundaryFinder;
+namespace BoundaryFinder.Gui;
 
 public sealed class ViewLocator : IDataTemplate
 {

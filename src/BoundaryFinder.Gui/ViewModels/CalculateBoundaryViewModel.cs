@@ -5,13 +5,13 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BoundaryFinder.Models;
+using BoundaryFinder.Gui.Models;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Utilities;
 using Humanizer;
 using ReactiveUI;
 
-namespace BoundaryFinder.ViewModels;
+namespace BoundaryFinder.Gui.ViewModels;
 
 public sealed class CalculateBoundaryViewModel : ViewModelBase
 {

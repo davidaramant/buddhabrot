@@ -2,7 +2,7 @@
 using Avalonia.ReactiveUI;
 using System;
 
-namespace BoundaryFinder;
+namespace BoundaryFinder.Gui;
 
 static class Program
 {

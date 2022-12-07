@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Avalonia;
 
-namespace BoundaryFinder.Views;
+namespace BoundaryFinder.Gui.Views;
 
 public sealed class RenderInstructions : IEquatable<RenderInstructions>
 {

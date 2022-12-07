@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 
-namespace BoundaryFinder.Views;
+namespace BoundaryFinder.Gui.Views;
 
 public partial class LabeledIntegerUpDown : UserControl
 {

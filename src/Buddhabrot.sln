@@ -7,7 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
 		..\TODO.md = ..\TODO.md
-		..\Benchmarks.md = ..\Benchmarks.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.Benchmarks", "Buddhabrot.Benchmarks\Buddhabrot.Benchmarks.csproj", "{E983D290-F91E-4BF6-AD58-19FA558C0560}"
@@ -22,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.ManualVisualizat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoundaryFinder.Tests", "BoundaryFinder.Tests\BoundaryFinder.Tests.csproj", "{0F43442F-0027-4A64-B47F-358CDEB5E158}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoundaryFinder", "BoundaryFinder\BoundaryFinder.csproj", "{4665F5B5-E3D6-4778-A564-765FC548941E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoundaryFinder", "BoundaryFinder\BoundaryFinder.csproj", "{4665F5B5-E3D6-4778-A564-765FC548941E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

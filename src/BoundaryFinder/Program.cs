@@ -102,7 +102,7 @@ class Program
 
             File.AppendAllText(
                 csvPath,
-                string.Join(',',
+                Environment.NewLine + string.Join(',',
                     new[]
                     {
                         DateTime.Now.ToString("yyyy-MM-dd"),
@@ -120,7 +120,7 @@ class Program
                         metrics.NumRegionLookupNodes.ToString("N0"),
                         metrics.NormalizedSize.ToString("P0"),
                         note
-                    }.Select(EscapeCsv)) + Environment.NewLine);
+                    }.Select(EscapeCsv)));
         }
 
         static string EscapeCsv(string value)

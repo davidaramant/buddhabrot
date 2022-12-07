@@ -11,16 +11,16 @@ class Program
 {
     private sealed record Metrics(
         TimeSpan Duration,
-        int BorderRegions,
-        int VisitedRegionNodes,
-        int RegionLookupNodes)
+        int NumBorderRegions,
+        int NumVisitedRegionNodes,
+        int NumRegionLookupNodes)
     {
-        public double NormalizedSize => (double)RegionLookupNodes / VisitedRegionNodes;
+        public double NormalizedSize => (double)NumRegionLookupNodes / NumVisitedRegionNodes;
     }
 
     public static int Main(string[] args)
     {
-        if (args.Length != 2 ||
+        if (args.Length is < 2 or > 3 ||
             !int.TryParse(args[0], out var power) ||
             !int.TryParse(args[1], out var limitMillions))
         {
@@ -30,17 +30,17 @@ class Program
             return -1;
         }
 
+        var note = args.Length == 3 ? args[2] : string.Empty;
+
         var limit = limitMillions * 1_000_000;
 
         var boundaryParameters = new BoundaryParameters(new AreaDivisions(power), limit);
-
-        //AnsiConsole.MarkupLine(boundaryParameters.ToString());
 
         Metrics? metrics = null;
 
         AnsiConsole.Status()
             .Spinner(Spinner.Known.SquareCorners)
-            .Start("Finding boundary...", ctx =>
+            .Start($"Finding boundary... (started {DateTime.Now:HH:mm:ss})", ctx =>
             {
                 var timer = Stopwatch.StartNew();
                 var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
@@ -48,7 +48,7 @@ class Program
                 BoundaryCalculator.VisitBoundary(boundaryParameters, visitedRegions, CancellationToken.None);
 
                 var boundaryRegions = visitedRegions.GetBoundaryRegions();
-                
+
                 var transformer = new VisitedRegionsToRegionLookup(visitedRegions);
                 var lookup = transformer.Transform();
 
@@ -69,14 +69,14 @@ class Program
 
                 metrics = new Metrics(
                     Duration: timer.Elapsed,
-                    BorderRegions: boundaryRegions.Count,
-                    VisitedRegionNodes: visitedRegions.NodeCount,
-                    RegionLookupNodes: lookup.NodeCount);
+                    NumBorderRegions: boundaryRegions.Count,
+                    NumVisitedRegionNodes: visitedRegions.NodeCount,
+                    NumRegionLookupNodes: lookup.NodeCount);
             });
 
         if (metrics == null)
             return -1;
-        
+
         var table = new Table();
 
         table.AddColumn("Key");
@@ -86,19 +86,58 @@ class Program
         table.AddRow("Divisions", boundaryParameters.Divisions.QuadrantDivisions.ToString("N0"));
         table.AddRow("Iteration Limit", boundaryParameters.MaxIterations.ToString("N0"));
         table.AddRow("Timestamp", DateTime.Now.ToString("s"));
-
-        var (os, cpu, ram) = ComputerDescription.GetInfo();
-        table.AddRow("OS", os);
-        table.AddRow("CPU", cpu);
-        table.AddRow("RAM", ram);
-
         table.AddRow("Duration", metrics.Duration.Humanize(2));
-        table.AddRow("Border regions", metrics.BorderRegions.ToString("N0"));
-        table.AddRow($"{nameof(VisitedRegions)} nodes", metrics.VisitedRegionNodes.ToString("N0"));
-        table.AddRow($"{nameof(RegionLookup)} nodes", metrics.RegionLookupNodes.ToString("N0"));
+        table.AddRow("Border regions", metrics.NumBorderRegions.ToString("N0"));
+        table.AddRow($"{nameof(VisitedRegions)} nodes", metrics.NumVisitedRegionNodes.ToString("N0"));
+        table.AddRow($"{nameof(RegionLookup)} nodes", metrics.NumRegionLookupNodes.ToString("N0"));
         table.AddRow($"Normalized size", metrics.NormalizedSize.ToString("P0"));
 
         AnsiConsole.Write(table);
+
+        if (!string.IsNullOrEmpty(note))
+        {
+            var csvPath = FindTimesCsv();
+
+            var (os, cpu, ram) = ComputerDescription.GetInfo();
+
+            File.AppendAllText(
+                csvPath,
+                string.Join(',',
+                    new[]
+                    {
+                        DateTime.Now.ToString("yyyy-MM-dd"),
+                        DateTime.Now.ToString("HH:mm:ss"),
+                        metrics.Duration.TotalSeconds.ToString("F0"),
+                        os,
+                        cpu,
+                        ram, boundaryParameters.Divisions.VerticalPower.ToString(),
+                        boundaryParameters.Divisions.QuadrantDivisions.ToString("D"),
+                        boundaryParameters.MaxIterations.ToString("D"), metrics.NumBorderRegions.ToString("D"),
+                        metrics.NumVisitedRegionNodes.ToString("D"), metrics.NumRegionLookupNodes.ToString("D"),
+                        metrics.NormalizedSize.ToString("P0"), 
+                        note
+                    }.Select(EscapeCsv)) + Environment.NewLine);
+        }
+
+        static string EscapeCsv(string value) => 
+            '"' + value.Replace("\"", new string('"', 3)) + '"';
+
+        static string FindTimesCsv()
+        {
+            var path = Environment.CurrentDirectory;
+
+            int sanityCheck = 5;
+            while (!File.Exists(Path.Combine(path, "Times.csv")))
+            {
+                path = Path.Combine(path, "..");
+                sanityCheck--;
+
+                if (sanityCheck == 0)
+                    throw new Exception("Could not find Times.csv");
+            }
+
+            return Path.Combine(Path.GetFullPath(path), "Times.csv");
+        }
 
         return 0;
     }

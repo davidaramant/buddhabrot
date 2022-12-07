@@ -1,2 +1,2 @@
-Date,Time,Duration (seconds),OS,CPU,RAM,Vertical Power,Divisions,Limit,Border Regions,VisitedRegion Nodes,RegionLookup Nodes,Normalized Size,Notes
-2022-12-07,4:02:47,2638,macOS (13.0.1),Apple M1 Max 10 Cores,32 GB,16,"65,536","5,000,000","1,130,138","22,151,249","5,630,141",25%,"4x4 corners, 2x2 centers"
+Date,Time,Duration,Duration (seconds),OS,CPU,RAM,Vertical Power,Divisions,Limit,Border Regions,VisitedRegion Nodes,RegionLookup Nodes,Normalized Size,Notes
+2022-12-07,4:02:47,"43 minutes, 58 seconds",2638,macOS (13.0.1),Apple M1 Max 10 Cores,32 GB,16,"65,536","5,000,000","1,130,138","22,151,249","5,630,141",25%,"4x4 corners, 2x2 centers"

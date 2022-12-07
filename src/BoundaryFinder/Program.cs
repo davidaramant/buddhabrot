@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage;
 using Buddhabrot.Core.Utilities;
@@ -107,20 +107,28 @@ class Program
                     {
                         DateTime.Now.ToString("yyyy-MM-dd"),
                         DateTime.Now.ToString("HH:mm:ss"),
-                        metrics.Duration.TotalSeconds.ToString("F0"),
+                        metrics.Duration.Humanize(2),
+                        metrics.Duration.TotalSeconds.ToString("N0"),
                         os,
                         cpu,
-                        ram, boundaryParameters.Divisions.VerticalPower.ToString(),
-                        boundaryParameters.Divisions.QuadrantDivisions.ToString("D"),
-                        boundaryParameters.MaxIterations.ToString("D"), metrics.NumBorderRegions.ToString("D"),
-                        metrics.NumVisitedRegionNodes.ToString("D"), metrics.NumRegionLookupNodes.ToString("D"),
-                        metrics.NormalizedSize.ToString("P0"), 
+                        ram,
+                        boundaryParameters.Divisions.VerticalPower.ToString(),
+                        boundaryParameters.Divisions.QuadrantDivisions.ToString("N0"),
+                        boundaryParameters.MaxIterations.ToString("N0"),
+                        metrics.NumBorderRegions.ToString("N0"),
+                        metrics.NumVisitedRegionNodes.ToString("N0"),
+                        metrics.NumRegionLookupNodes.ToString("N0"),
+                        metrics.NormalizedSize.ToString("P0"),
                         note
                     }.Select(EscapeCsv)) + Environment.NewLine);
         }
 
-        static string EscapeCsv(string value) => 
-            '"' + value.Replace("\"", new string('"', 3)) + '"';
+        static string EscapeCsv(string value)
+        {
+            if (value.Contains('"') || value.Contains(','))
+                return '"' + value.Replace("\"", new string('"', 3)) + '"';
+            return value;
+        }
 
         static string FindTimesCsv()
         {

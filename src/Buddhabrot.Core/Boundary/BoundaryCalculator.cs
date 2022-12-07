@@ -57,8 +57,9 @@ public static class BoundaryCalculator
         void AddRegionToCheck(RegionId region)
         {
             if (region is {X: >= 0, Y: >= 0} &&
-                region.X < (boundaryParameters.Divisions.QuadrantDivisions * 2) &&
-                region.Y < boundaryParameters.Divisions.QuadrantDivisions &&
+                // We don't need to check these - the set doesn't reach out that far
+                // region.X < (boundaryParameters.Divisions.QuadrantDivisions * 2) &&
+                // region.Y < boundaryParameters.Divisions.QuadrantDivisions &&
                 !visitedRegions.HasVisited(region))
             {
                 regionsToCheck.Enqueue(region);

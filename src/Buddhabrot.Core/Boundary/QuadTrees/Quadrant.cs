@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Boundary;
+﻿namespace Buddhabrot.Core.Boundary.QuadTrees;
 
 /// <summary>
 /// The different quadrants of a quad

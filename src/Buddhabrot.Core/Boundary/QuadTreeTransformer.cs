@@ -1,6 +1,8 @@
-﻿namespace Buddhabrot.Core.Boundary;
+﻿using Buddhabrot.Core.Boundary.QuadTrees;
 
-public sealed class VisitedRegionsToRegionLookup
+namespace Buddhabrot.Core.Boundary;
+
+public sealed class QuadTreeTransformer
 {
     private readonly VisitedRegions _visitedRegions;
     private readonly IReadOnlyList<QuadNode> _oldTree;
@@ -10,7 +12,7 @@ public sealed class VisitedRegionsToRegionLookup
     public int Size => _cache.Count;
     public int NumCachedValuesUsed { get; private set; }
 
-    public VisitedRegionsToRegionLookup(VisitedRegions visitedRegions)
+    public QuadTreeTransformer(VisitedRegions visitedRegions)
     {
         _visitedRegions = visitedRegions;
         _oldTree = visitedRegions.Nodes;

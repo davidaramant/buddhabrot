@@ -1,6 +1,6 @@
 ﻿using Buddhabrot.Core.Boundary;
 
-namespace Buddhabrot.Core.Tests.Boundary;
+namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
 
 public static class RegionLookupUtil
 {
@@ -21,7 +21,7 @@ public static class RegionLookupUtil
             vr.Visit(new RegionId(p.X, p.Y), RegionType.Border);
         }
 
-        var transformer = new VisitedRegionsToRegionLookup(vr);
+        var transformer = new QuadTreeTransformer(vr);
         return transformer.Transform();
     }
 }

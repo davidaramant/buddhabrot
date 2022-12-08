@@ -36,9 +36,10 @@
     - [x] Batch data can be packed into a `ushort` (don't combine corners and centers, I think)
     - [x] Fixed-size cache for corners
     - [ ] Determine best amount of data to batch & cache
-    - [ ] Visualization (video) of batches being cached & evicted
+    - [] Visualization (video) of batches being cached & evicted
 - [ ] Investigating putting an index into the `VisitedRegions`
-- [ ] Support diffing `RegionLookup`
+- [ ] Support diffing arbitrary quad trees
+  - [ ] Do I need a more generic quad tree internal data structure? 
   - [ ] Expand RegionType to 3 bits
   - [ ] Generate quad tree diffs
 

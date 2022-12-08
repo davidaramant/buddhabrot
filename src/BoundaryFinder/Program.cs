@@ -49,7 +49,7 @@ class Program
 
                 var boundaryRegions = visitedRegions.GetBoundaryRegions();
 
-                var transformer = new VisitedRegionsToRegionLookup(visitedRegions);
+                var transformer = new QuadTreeTransformer(visitedRegions);
                 var lookup = transformer.Transform();
 
                 var defaultDataSetPath = Path.Combine(

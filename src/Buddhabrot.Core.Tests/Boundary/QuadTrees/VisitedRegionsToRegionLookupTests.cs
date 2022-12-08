@@ -1,7 +1,7 @@
-﻿using System.Runtime.CompilerServices;
-using Buddhabrot.Core.Boundary;
+﻿using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.QuadTrees;
 
-namespace Buddhabrot.Core.Tests.Boundary;
+namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
 
 public class VisitedRegionsToRegionLookupTests
 {
@@ -16,13 +16,13 @@ public class VisitedRegionsToRegionLookupTests
         RegionType ur,
         RegionType expected)
     {
-        VisitedRegionsToRegionLookup.CondenseRegionType(ll, lr, ul, ur).Should().Be(expected);
+        QuadTreeTransformer.CondenseRegionType(ll, lr, ul, ur).Should().Be(expected);
     }
 
     [Fact]
     public void ShouldCondenseIdenticalLeaves()
     {
-        var normalizer = new VisitedRegionsToRegionLookup(new VisitedRegions());
+        var normalizer = new QuadTreeTransformer(new VisitedRegions());
         var node = normalizer.MakeQuad(
             QuadNode.UnknownLeaf,
             QuadNode.UnknownLeaf,
@@ -35,7 +35,7 @@ public class VisitedRegionsToRegionLookupTests
     [Fact]
     public void ShouldCreateLeafQuad()
     {
-        var normalizer = new VisitedRegionsToRegionLookup(new VisitedRegions());
+        var normalizer = new QuadTreeTransformer(new VisitedRegions());
         var node = normalizer.MakeQuad(
             QuadNode.MakeLeaf(RegionType.Border),
             QuadNode.UnknownLeaf,

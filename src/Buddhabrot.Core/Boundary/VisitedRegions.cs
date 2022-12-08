@@ -1,4 +1,6 @@
-﻿namespace Buddhabrot.Core.Boundary;
+﻿using Buddhabrot.Core.Boundary.QuadTrees;
+
+namespace Buddhabrot.Core.Boundary;
 
 /// <summary>
 /// Tracks which regions have been visited.

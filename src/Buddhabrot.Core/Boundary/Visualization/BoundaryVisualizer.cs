@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
+using Buddhabrot.Core.Boundary.QuadTrees;
 using Buddhabrot.Core.Images;
 using Buddhabrot.Core.Calculations;
 using SkiaSharp;

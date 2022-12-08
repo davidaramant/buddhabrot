@@ -82,7 +82,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             _log($"Found {boundaryRegions.Count:N0} boundary regions ({stopwatch.Elapsed.Humanize(2)})");
             stopwatch.Restart();
 
-            var transformer = new VisitedRegionsToRegionLookup(visitedRegions);
+            var transformer = new QuadTreeTransformer(visitedRegions);
             var lookup = await Task.Run(() => transformer.Transform(), cancelToken);
             
             _log($"Normalized quad tree to Region Lookup ({stopwatch.Elapsed.Humanize(2)})\n"+

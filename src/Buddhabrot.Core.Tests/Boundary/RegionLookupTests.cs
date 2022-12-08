@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Tests.Boundary.QuadTrees;
 
 namespace Buddhabrot.Core.Tests.Boundary;
 

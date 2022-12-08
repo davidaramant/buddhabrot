@@ -1,4 +1,5 @@
 ﻿using Buddhabrot.Core.Boundary.Visualization;
+using Buddhabrot.Core.Tests.Boundary.QuadTrees;
 using SkiaSharp;
 
 namespace Buddhabrot.Core.Tests.Boundary.Visualization;

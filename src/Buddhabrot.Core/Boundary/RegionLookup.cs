@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Buddhabrot.Core.Boundary.QuadTrees;
 
 namespace Buddhabrot.Core.Boundary;
 

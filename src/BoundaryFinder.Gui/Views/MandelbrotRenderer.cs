@@ -25,7 +25,6 @@ namespace BoundaryFinder.Gui.Views;
 
 public sealed class MandelbrotRenderer : Control
 {
-    private SquareBoundary _setBoundary;
     private bool _isPanning;
     private Point _panningStartPoint;
     private SquareBoundary _panningStart;
@@ -112,6 +111,16 @@ public sealed class MandelbrotRenderer : Control
         set => SetValue(MinimumIterationsProperty, value);
     }
 
+    public static readonly StyledProperty<SquareBoundary> SetBoundaryProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, SquareBoundary>(nameof(SetBoundary));
+
+    public SquareBoundary SetBoundary
+    {
+        get => GetValue(SetBoundaryProperty);
+        set => SetValue(SetBoundaryProperty, value);
+    }
+
+    
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
     public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
 
@@ -146,19 +155,19 @@ public sealed class MandelbrotRenderer : Control
                 {
                     _isPanning = true;
                     _panningStartPoint = e.GetPosition(this);
-                    _panningStart = _setBoundary;
+                    _panningStart = SetBoundary;
                 }
                 else if (e.ClickCount == 2)
                 {
                     _isPanning = false;
                     var pos = e.GetPosition(this);
-                    _setBoundary = _setBoundary.ZoomIn((int)pos.X, (int)pos.Y);
+                    SetBoundary = SetBoundary.ZoomIn((int)pos.X, (int)pos.Y);
                     await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
                 }
             }
             else if (properties.IsRightButtonPressed && e.ClickCount == 2)
             {
-                _setBoundary = _setBoundary.ZoomOut(PixelBounds.Width, PixelBounds.Height);
+                SetBoundary = SetBoundary.ZoomOut(PixelBounds.Width, PixelBounds.Height);
                 await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
             }
         };
@@ -167,7 +176,7 @@ public sealed class MandelbrotRenderer : Control
             if (_isPanning)
             {
                 _isPanning = false;
-                _setBoundary = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
+                SetBoundary = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
                 await RequestRenderAsync(RenderInstructions.Moved(PixelBounds, _panningOffset));
             }
         };
@@ -177,7 +186,7 @@ public sealed class MandelbrotRenderer : Control
             {
                 _isPanning = false;
 
-                _setBoundary = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
+                SetBoundary = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
                 await RequestRenderAsync(RenderInstructions.Moved(PixelBounds, _panningOffset));
             }
         };
@@ -185,7 +194,7 @@ public sealed class MandelbrotRenderer : Control
         ResetViewCommand = ReactiveCommand.CreateFromTask(ResetLogicalAreaAsync);
         ZoomOutCommand = ReactiveCommand.CreateFromTask(() =>
         {
-            _setBoundary = _setBoundary.ZoomOut(PixelBounds.Width, PixelBounds.Height);
+            SetBoundary = SetBoundary.ZoomOut(PixelBounds.Width, PixelBounds.Height);
             return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
         });
     }
@@ -211,8 +220,8 @@ public sealed class MandelbrotRenderer : Control
 
         ViewPort = ViewPort.FromResolution(
             size,
-            _setBoundary.Center,
-            2d / _setBoundary.QuadrantLength);
+            SetBoundary.Center,
+            2d / SetBoundary.QuadrantLength);
 
         context.DrawImage(_frontBuffer,
             new Rect(
@@ -338,7 +347,7 @@ public sealed class MandelbrotRenderer : Control
 
     private Task ResetLogicalAreaAsync()
     {
-        _setBoundary = SquareBoundary.GetLargestCenteredSquareInside(PixelBounds.Width, PixelBounds.Height);
+        SetBoundary = SquareBoundary.GetLargestCenteredSquareInside(PixelBounds.Width, PixelBounds.Height);
         return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
     }
 
@@ -350,7 +359,7 @@ public sealed class MandelbrotRenderer : Control
     {
         var args = new RenderingArgs(
             instructions,
-            _setBoundary, 
+            SetBoundary, 
             Lookup, 
             Palette, 
             ViewPort, 

@@ -78,7 +78,7 @@ public sealed class VisitedRegions : IVisitedRegions
                 _nodes[nodeIndex] = node = QuadNode.MakeLongBranch(index);
             }
 
-            nodeIndex = node.GetChildIndex(quadrant);
+            nodeIndex = node.GetLongChildIndex(quadrant);
             node = _nodes[nodeIndex];
         }
 

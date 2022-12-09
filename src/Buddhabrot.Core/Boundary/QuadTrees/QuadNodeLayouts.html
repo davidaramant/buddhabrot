@@ -68,13 +68,15 @@
     <h1>Notes</h1>
     <p>VisitedRegions and RegionLookup use the same node format, but have some differences:</p>
     <ul>
-        <li>VisitedRegions does not fill out the region type of Branch or Leaf Quad nodes. This would need to be updated
+        <li>VisitedRegions does not fill out the region type of Leaf Quad nodes. This would need to be updated
             as the tree is mutated.</li>
         <li>RegionLookup does not use the Rejected region type. This is replaced with Unknown when the tree is built
             from VisitedRegions. This node type isn't visually interesting and just causes the quad tree to bloat in
             size.</li>
         <li>RegionLookup is normalized (subtrees can be referenced mulitple times). It is not intended to be modified.
         </li>
+        <li>VisitedRegions uses LongBranch nodes instead of Branch. This tree is substantially larger than RegionLookup
+            becuase of the lack of normalization and it needs the extra bits for the child index.</li>
     </ul>
 
     <h1>Node Types</h1>
@@ -208,6 +210,48 @@
             <td colspan="2">Node Type = 2</td>
         </tr>
     </table>
+    <h2>Long Branch</h2>
+    <table>
+        <tr>
+            <th>31</th>
+            <th>30</th>
+            <th>29</th>
+            <th>28</th>
+            <th>27</th>
+            <th>26</th>
+            <th>25</th>
+            <th>24</th>
+            <th>23</th>
+            <th>22</th>
+            <th>21</th>
+            <th>20</th>
+            <th>19</th>
+            <th>18</th>
+            <th>17</th>
+            <th>16</th>
+            <th>15</th>
+            <th>14</th>
+            <th>13</th>
+            <th>12</th>
+            <th>11</th>
+            <th>10</th>
+            <th>9</th>
+            <th>8</th>
+            <th>7</th>
+            <th>6</th>
+            <th>5</th>
+            <th>4</th>
+            <th>3</th>
+            <th>2</th>
+            <th>1</th>
+            <th>0</th>
+        </tr>
+        <tr>
+            <td colspan="30">Index to children</td>
+            <td colspan="2">Node Type = 3</td>
+        </tr>
+    </table>
+
 </body>
 
 </html>

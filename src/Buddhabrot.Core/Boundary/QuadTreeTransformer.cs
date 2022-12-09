@@ -21,8 +21,8 @@ public sealed class QuadTreeTransformer
 
     public RegionLookup Transform()
     {
-        var newUL = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.LL)]);
-        var newUR = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.LR)]);
+        var newUL = Normalize(_oldTree[_visitedRegions.Root.GetLongChildIndex(Quadrant.LL)]);
+        var newUR = Normalize(_oldTree[_visitedRegions.Root.GetLongChildIndex(Quadrant.LR)]);
 
         var rootChildrenIndex = _newTree.AddChildren(QuadNode.UnknownLeaf, QuadNode.UnknownLeaf, newUL, newUR);
         // No need to compute the root region type, it will always be border
@@ -36,11 +36,11 @@ public sealed class QuadTreeTransformer
         {
             NodeType.Leaf => node,
             NodeType.LeafQuad => NormalizeLeafQuad(node),
-            NodeType.Branch => MakeQuad(
-                Normalize(_oldTree[node.GetChildIndex(Quadrant.LL)]),
-                Normalize(_oldTree[node.GetChildIndex(Quadrant.LR)]),
-                Normalize(_oldTree[node.GetChildIndex(Quadrant.UL)]),
-                Normalize(_oldTree[node.GetChildIndex(Quadrant.UR)])),
+            NodeType.LongBranch => MakeQuad(
+                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.LL)]),
+                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.LR)]),
+                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.UL)]),
+                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.UR)])),
             _ => throw new Exception("This can't happen")
         };
 

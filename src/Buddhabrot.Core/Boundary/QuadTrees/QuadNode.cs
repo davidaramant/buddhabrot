@@ -25,10 +25,16 @@ public readonly struct QuadNode
 
     public static QuadNode MakeBranch(RegionType type, int childIndex) =>
         new((uint) childIndex << 4 | (uint) type << 2 | (uint) NodeType.Branch);
+    
+    public static QuadNode MakeLongBranch(int childIndex) =>
+        new((uint) childIndex << 2 | (uint) NodeType.LongBranch);
 
     public NodeType NodeType => (NodeType) (Encoded & 0b11);
     public RegionType RegionType => (RegionType) (Encoded >> 2 & 0b11);
 
+    public int LongChildIndex => (int) (Encoded >> 2);
+    public int GetLongChildIndex(Quadrant quadrant) => LongChildIndex + (int) quadrant;
+    
     public int ChildIndex => (int) (Encoded >> 4);
     public int GetChildIndex(Quadrant quadrant) => ChildIndex + (int) quadrant;
 
@@ -56,11 +62,12 @@ public readonly struct QuadNode
 
     private static int QuadrantOffset(Quadrant quadrant) => 10 - 2 * (int) quadrant;
 
-    public override string ToString() => $"{NodeType} ({RegionType})" + NodeType switch
+    public override string ToString() => NodeType + NodeType switch
     {
-        NodeType.Leaf => string.Empty,
-        NodeType.Branch => $" {ChildIndex}",
-        NodeType.LeafQuad => $" LL:{LL} LR:{LR} UL:{UL} UR:{UR}",
+        NodeType.Leaf =>  $" {RegionType}",
+        NodeType.Branch => $" {RegionType} {ChildIndex}",
+        NodeType.LongBranch => $" {LongChildIndex}",
+        NodeType.LeafQuad => $" ({RegionType}) LL:{LL} LR:{LR} UL:{UL} UR:{UR}",
         _ => "how could this have happened"
     };
 

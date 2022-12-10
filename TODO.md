@@ -8,7 +8,9 @@
   - [ ] Allow changing local files location
 - [x] NUnit test project for manual "tests"
 - [x] CI builds on GitHub
+  - [ ] Pretty reporting of test results
 - [x] Improve logging of calculating boundary so it can copied easier
+- [ ] Readme for boundary scanning
 
 ### Calculating Boundary
 

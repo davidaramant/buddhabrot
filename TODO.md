@@ -72,7 +72,8 @@
     - [ ] New mode for rendering border region interiors
       - [x] UI toggle for rendering interior
       - [ ] New iteration kernel method for running through a list of points
-      - [ ] Do the actual rendering
+      - [x] Do the actual rendering
+      - [ ] BUG: Panning & zooming causes things to go haywire with region interiors
   - [x] Nicer aesthetic
   - [ ] ~~Fill the Mandelbrot interior (scanline rendering)~~ - No good method of doing this
   - [ ] Pick palette to render with

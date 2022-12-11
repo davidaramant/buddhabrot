@@ -39,7 +39,7 @@
     - [x] Fixed-size cache for corners
     - [ ] Determine best amount of data to batch & cache
     - [] Visualization (video) of batches being cached & evicted
-- [ ] Investigating putting an index into the `VisitedRegions`
+- [x] Investigating putting an index into the `VisitedRegions` - EDIT: complete dud
 - [ ] Support diffing arbitrary quad trees
   - [ ] Do I need a more generic quad tree internal data structure? 
   - [ ] Expand RegionType to 3 bits

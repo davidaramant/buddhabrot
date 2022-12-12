@@ -38,12 +38,15 @@
     - [x] Batch data can be packed into a `ushort` (don't combine corners and centers, I think)
     - [x] Fixed-size cache for corners
     - [ ] Determine best amount of data to batch & cache
-    - [] Visualization (video) of batches being cached & evicted
+    - [ ] Visualization (video) of batches being cached & evicted
 - [x] Investigating putting an index into the `VisitedRegions` - EDIT: complete dud
 - [ ] Support diffing arbitrary quad trees
   - [ ] Do I need a more generic quad tree internal data structure? 
   - [ ] Expand RegionType to 3 bits
   - [ ] Generate quad tree diffs
+- [ ] "Holes" in boundary/filaments
+  - [ ] Is it actually a problem?
+  - [ ] Different way of calculating filaments?
 
 ### GUI
 
@@ -64,7 +67,7 @@
       - [x] Optimize this for real - saving it off is a hack (taken care of by the dual-quadtree approach)
   - [x] Show entire set boundary
   - [x] There is an unstable 1-pixel gap between regions
-  - [ ] ~~Rework how the logical area is calculated~~ (EDIT: what did this mean?)
+  - [x] ~~Rework how the logical area is calculated~~ (EDIT: what did this mean?)
   - [ ] Render region interiors
     - [x] `RenderTargetBitmap` - https://github.com/AvaloniaUI/Avalonia/issues/2492
     - [x] `RenderInstructions`
@@ -77,7 +80,7 @@
       - [x] Do the actual rendering
       - [ ] BUG: Panning & zooming causes things to go haywire with region interiors
   - [x] Nicer aesthetic
-  - [ ] ~~Fill the Mandelbrot interior (scanline rendering)~~ - No good method of doing this
+  - [x] ~~Fill the Mandelbrot interior (scanline rendering)~~ - No good method of doing this
   - [ ] Pick palette to render with
     - [x] UI for palette choices
     - [ ] Backend for picking palettes

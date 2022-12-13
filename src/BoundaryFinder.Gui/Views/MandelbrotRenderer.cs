@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
@@ -67,7 +69,8 @@ public sealed class MandelbrotRenderer : Control
     }
 
     public static readonly StyledProperty<RegionLookup> LookupProperty =
-        AvaloniaProperty.Register<MandelbrotRenderer, RegionLookup>(nameof(Lookup));
+        AvaloniaProperty.Register<MandelbrotRenderer, RegionLookup>(nameof(Lookup),
+            defaultValue: RegionLookup.Empty);
 
     public RegionLookup Lookup
     {
@@ -119,7 +122,7 @@ public sealed class MandelbrotRenderer : Control
         get => GetValue(SetBoundaryProperty);
         set => SetValue(SetBoundaryProperty, value);
     }
-    
+
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
     public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
 
@@ -196,6 +199,13 @@ public sealed class MandelbrotRenderer : Control
             SetBoundary = SetBoundary.ZoomOut(PixelBounds.Width, PixelBounds.Height);
             return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
         });
+        this.WhenAnyValue(x => x.Palette)
+            .SelectMany(async _ =>
+            {
+                await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+                return Unit.Default;
+            })
+            .Subscribe();
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
@@ -312,10 +322,8 @@ public sealed class MandelbrotRenderer : Control
                 // TODO: use vectors internally
                 // TODO: Why does this lock up the UI? It's already in a different Task, should this part be in a Task
                 // as well?
-                Parallel.For(0, points.Length, i =>
-                {
-                    escapeTimes[i] = ScalarKernel.FindEscapeTime(points[i], args.MaxIterations);
-                });
+                Parallel.For(0, points.Length,
+                    i => { escapeTimes[i] = ScalarKernel.FindEscapeTime(points[i], args.MaxIterations); });
 
                 for (int i = 0; i < points.Length; i++)
                 {
@@ -358,12 +366,12 @@ public sealed class MandelbrotRenderer : Control
     {
         var args = new RenderingArgs(
             instructions,
-            SetBoundary, 
-            Lookup, 
-            Palette, 
-            ViewPort, 
-            RenderInteriors, 
-            MinimumIterations, 
+            SetBoundary,
+            Lookup,
+            Palette,
+            ViewPort,
+            RenderInteriors,
+            MinimumIterations,
             MaximumIterations);
 
         switch (_state)

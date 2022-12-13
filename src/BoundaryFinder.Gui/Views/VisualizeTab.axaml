@@ -4,99 +4,103 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:views="clr-namespace:BoundaryFinder.Gui.Views"
              xmlns:vm="using:BoundaryFinder.Gui.ViewModels"
+             xmlns:viz="using:Buddhabrot.Core.Boundary.Visualization"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="BoundaryFinder.Gui.Views.VisualizeTab"
              x:CompileBindings="True"
              x:DataType="vm:VisualizeViewModel">
     <Grid
-        ColumnDefinitions="500,Auto,Auto,Auto,Auto,Auto,*,Auto,Auto,Auto"
         RowDefinitions="Auto,*,Auto">
-        <ComboBox
-            x:Name="BoundariesComboBox"
-            Grid.Row="0"
-            Grid.Column="0"
-            Margin="0,4"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Stretch"
-            Items="{Binding SavedBoundaries}"
-            SelectedItem="{Binding SelectedParameters}" />
-        
-        <Label
-            Grid.Row="0"
-            Grid.Column="1"
-            HorizontalAlignment="Right"
-            Margin="4"
-            Content="Minimum Iterations:" />
-        <NumericUpDown
-            Grid.Row="0"
-            Grid.Column="2"
-            IsEnabled="{Binding SelectedItem, ElementName=BoundariesComboBox, Converter={x:Static ObjectConverters.IsNotNull}}"
-            Classes="integerInput"
-            Increment="1000000"
-            Value="{Binding MinimumIterations}"
-            Maximum="{Binding MinimumIterationsCap}" />
-        <Label
-            Grid.Row="0"
-            Grid.Column="3"
-            HorizontalAlignment="Right"
-            Margin="4"
-            Content="Render Interiors:"/>
-        <ToggleSwitch
-            Grid.Row="0"
-            Grid.Column="4"
-            Margin="4"
-            IsChecked="{Binding #MandelbrotRenderer.RenderInteriors}"/>
-        <ComboBox
-            Grid.Row="0"
-            Grid.Column="5"
-            Margin="4"/>
-        
-        <ProgressBar
-            Grid.Row="0"
-            Grid.Column="6"
-            IsIndeterminate="True"
-            Margin="2,0"
-            IsVisible="{Binding #MandelbrotRenderer.IsBusy}" />
-        
-        <Label
-            Grid.Row="0"
-            Grid.Column="7"
-            Margin="4"
-            Content="{Binding #MandelbrotRenderer.SetBoundary.Scale, StringFormat=Scale: \{0\}x}"/>
-        <Button
-            Grid.Row="0"
-            Grid.Column="8"
-            Content="Reset View"
-            Command="{Binding #MandelbrotRenderer.ResetViewCommand}" />
-        <Button
-            Grid.Row="0"
-            Grid.Column="9"
-            Content="Zoom Out"
-            Command="{Binding #MandelbrotRenderer.ZoomOutCommand}" />
+        <Grid
+            ColumnDefinitions="500,Auto,Auto,Auto,Auto,*,Auto,Auto,Auto">
+            <ComboBox
+                x:Name="BoundariesComboBox"
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="0,4"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Stretch"
+                Items="{Binding SavedBoundaries}"
+                SelectedItem="{Binding SelectedParameters}" />
+
+            <Label
+                Grid.Row="0"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Margin="4"
+                Content="Minimum Iterations:" />
+            <NumericUpDown
+                Grid.Row="0"
+                Grid.Column="2"
+                IsEnabled="{Binding SelectedItem, ElementName=BoundariesComboBox, Converter={x:Static ObjectConverters.IsNotNull}}"
+                Classes="integerInput"
+                Increment="1000000"
+                Value="{Binding MinimumIterations}"
+                Maximum="{Binding MinimumIterationsCap}" />
+            <Label
+                Grid.Row="0"
+                Grid.Column="3"
+                HorizontalAlignment="Right"
+                Margin="4"
+                Content="Render Interiors:" />
+            <ToggleSwitch
+                Grid.Row="0"
+                Grid.Column="4"
+                Margin="4"
+                IsChecked="{Binding #MandelbrotRenderer.RenderInteriors}" />
+
+            <ProgressBar
+                Grid.Row="0"
+                Grid.Column="5"
+                IsIndeterminate="True"
+                Margin="2,0"
+                IsVisible="{Binding #MandelbrotRenderer.IsBusy}" />
+
+            <Label
+                Grid.Row="0"
+                Grid.Column="6"
+                Margin="4"
+                Content="{Binding #MandelbrotRenderer.SetBoundary.Scale, StringFormat=Scale: \{0\}x}" />
+            <Button
+                Grid.Row="0"
+                Grid.Column="7"
+                Content="Reset View"
+                Command="{Binding #MandelbrotRenderer.ResetViewCommand}" />
+            <Button
+                Grid.Row="0"
+                Grid.Column="8"
+                Content="Zoom Out"
+                Command="{Binding #MandelbrotRenderer.ZoomOutCommand}" />
+        </Grid>
 
         <Border
             Grid.Row="1"
-            Grid.Column="0"
-            Grid.ColumnSpan="10"
             BorderBrush="Black"
             BorderThickness="1">
             <views:MandelbrotRenderer
                 x:Name="MandelbrotRenderer"
                 Lookup="{Binding Lookup}"
                 MinimumIterations="{Binding MinimumIterations}"
-                MaximumIterations="{Binding SelectedParameters.MaxIterations}"/>
+                MaximumIterations="{Binding SelectedParameters.MaxIterations}" />
         </Border>
 
-        <StackPanel
-            Orientation="Horizontal"
+        <Grid
             Grid.Row="2"
             Grid.Column="0"
-            Grid.ColumnSpan="10">
+            ColumnDefinitions="*,Auto,Auto">
             <Label
+                Margin="4"
                 Content="{Binding #MandelbrotRenderer.ViewPort.LogicalArea}" />
+            <ComboBox
+                Grid.Column="1"
+                Margin="4"
+                Items="{x:Static viz:BasePalette.AllPalettes}"
+                SelectedItem="{Binding #MandelbrotRenderer.Palette}" />
             <Button
+                Grid.Column="2"
+                Margin="4"
                 Content="Save Quad Tree Image"
-                Command="{Binding SaveQuadTreeRenderingCommand}"/>
-        </StackPanel>
+                Command="{Binding SaveQuadTreeRenderingCommand}" />
+        </Grid>
     </Grid>
 </UserControl>

@@ -81,9 +81,9 @@
       - [ ] BUG: Panning & zooming causes things to go haywire with region interiors
   - [x] Nicer aesthetic
   - [x] ~~Fill the Mandelbrot interior (scanline rendering)~~ - No good method of doing this
-  - [ ] Pick palette to render with
+  - [x] Pick palette to render with
     - [x] UI for palette choices
-    - [ ] Backend for picking palettes
-    - [ ] More palettes to choose from
+    - [x] Backend for picking palettes
+  - [ ] More palettes to choose from
 - [ ] Update colors for the new region types
 - [ ] UI to create diff between two `RegionLookup`s

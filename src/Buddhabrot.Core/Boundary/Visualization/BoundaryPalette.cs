@@ -19,13 +19,22 @@ public interface IBoundaryPalette
 public abstract class BasePalette
 {
     public override string ToString() => GetType().Name.Replace("Palette", string.Empty).Humanize();
+
+    public static IReadOnlyCollection<IBoundaryPalette> AllPalettes { get; } = new IBoundaryPalette[]
+    {
+        PastelPalette.Instance,
+        BluePalette.Instance,
+    };
 }
 
 // https://coolors.co/96e2d9-4c7c80-011627-741a2f-e71d36-7f8b92-e4f8f4-caf1eb-2ec4b6-ff9f1c
 public sealed class PastelPalette : BasePalette, IBoundaryPalette
 {
     public static IBoundaryPalette Instance { get; } = new PastelPalette();
-    private PastelPalette(){}
+
+    private PastelPalette()
+    {
+    }
 
     public SKColor Visited { get; } = new(0xFFE4F8F4);
     public SKColor Background { get; } = new(0xFFcaf1eb);
@@ -42,7 +51,10 @@ public sealed class PastelPalette : BasePalette, IBoundaryPalette
 public sealed class BluePalette : BasePalette, IBoundaryPalette
 {
     public static IBoundaryPalette Instance { get; } = new BluePalette();
-    private BluePalette() { }
+
+    private BluePalette()
+    {
+    }
 
     public SKColor Border { get; } = new(0xFF212135);
     public SKColor Background { get; } = new(0xFFFFFFFF);
@@ -51,7 +63,7 @@ public sealed class BluePalette : BasePalette, IBoundaryPalette
     public SKColor BorderEmpty { get; } = new(0xFF264aa7);
     public SKColor BorderInSet => Border;
 
-    
+
     // Not updated
     public SKColor Visited { get; } = new(0xFFE4F8F4);
     public SKColor InSet { get; } = new(0xFF96e2d9);

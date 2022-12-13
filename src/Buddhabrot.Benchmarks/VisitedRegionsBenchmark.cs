@@ -23,7 +23,7 @@ public class VisitedRegionsBenchmark
     [ArgumentsSource(nameof(AllVisitedRegionsImplementations))]
     public void UseVisitedRegions(DescribedImplementation wrapper)
     {
-        var regions = wrapper.Regions;
+        var regions = wrapper.CreateRegions();
         for (int i = 0; i < _savedData.Metadata.Count; i++)
         {
             if (_savedData.CommandType(i) == VisitedRegionsDataSet.CommandType.Add)
@@ -37,7 +37,7 @@ public class VisitedRegionsBenchmark
         }
     }
 
-    public sealed record DescribedImplementation(IVisitedRegions Regions, string Description)
+    public sealed record DescribedImplementation(Func<IVisitedRegions> CreateRegions, string Description)
     {
         public override string ToString() => Description;
     }
@@ -45,16 +45,16 @@ public class VisitedRegionsBenchmark
     public IEnumerable<object> AllVisitedRegionsImplementations()
     {
         yield return new DescribedImplementation(
-            new HashSetVisitedRegions(),
+            () => new HashSetVisitedRegions(),
             "HashSet");
         yield return new DescribedImplementation(
-            new HashSetListVisitedRegions(VisitedRegionsDataSet.Size.QuadrantDivisions),
+            () => new HashSetListVisitedRegions(VisitedRegionsDataSet.Size.QuadrantDivisions),
             "List of HashSets");
         yield return new DescribedImplementation(
-            new VisitedRegions(VisitedRegionsDataSet.Size.QuadrantDivisions * 2),
+            () => new VisitedRegions(VisitedRegionsDataSet.Size.QuadrantDivisions * 2),
             "Quad Tree");
     }
-    
+
     public sealed class HashSetVisitedRegions : IVisitedRegions
     {
         private readonly HashSet<RegionId> _cache = new();

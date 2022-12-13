@@ -37,3 +37,23 @@ public sealed class PastelPalette : BasePalette, IBoundaryPalette
     public SKColor BorderEmpty { get; } = new(0xFF741a2f);
     public SKColor Filament { get; } = new(0xFFe71d36);
 }
+
+// https://colorkit.co/palette/212135-264aa7-02c9e0-f7fbfb-ffffff/
+public sealed class BluePalette : BasePalette, IBoundaryPalette
+{
+    public static IBoundaryPalette Instance { get; } = new BluePalette();
+    private BluePalette() { }
+
+    public SKColor Border { get; } = new(0xFF212135);
+    public SKColor Background { get; } = new(0xFFFFFFFF);
+    public SKColor InBounds { get; } = new(0xFFf7fbfb);
+    public SKColor Filament { get; } = new(0xFF02c9e0);
+    public SKColor BorderEmpty { get; } = new(0xFF264aa7);
+    public SKColor BorderInSet => Border;
+
+    
+    // Not updated
+    public SKColor Visited { get; } = new(0xFFE4F8F4);
+    public SKColor InSet { get; } = new(0xFF96e2d9);
+    public SKColor BorderInRange { get; } = new(0xFFff9f1c);
+}

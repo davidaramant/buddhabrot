@@ -58,7 +58,7 @@ public sealed class MandelbrotRenderer : Control
 
     public static readonly StyledProperty<IBoundaryPalette> PaletteProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, IBoundaryPalette>(nameof(Palette),
-            defaultValue: PastelPalette.Instance);
+            defaultValue: BluePalette.Instance);
 
     public IBoundaryPalette Palette
     {
@@ -119,7 +119,6 @@ public sealed class MandelbrotRenderer : Control
         get => GetValue(SetBoundaryProperty);
         set => SetValue(SetBoundaryProperty, value);
     }
-
     
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
     public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }

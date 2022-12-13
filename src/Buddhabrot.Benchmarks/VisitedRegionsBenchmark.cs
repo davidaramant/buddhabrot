@@ -26,13 +26,13 @@ public class VisitedRegionsBenchmark
         var regions = wrapper.CreateRegions();
         for (int i = 0; i < _savedData.Metadata.Count; i++)
         {
-            if (_savedData.CommandType(i) == VisitedRegionsDataSet.CommandType.Add)
+            if (_savedData.GetCommandType(i) == VisitedRegionsDataSet.CommandType.Add)
             {
-                regions.Visit(_savedData.Id(i), _savedData.RegionType(i));
+                regions.Visit(_savedData.GetId(i), _savedData.GetRegionType(i));
             }
             else
             {
-                regions.HasVisited(_savedData.Id(i));
+                regions.HasVisited(_savedData.GetId(i));
             }
         }
     }

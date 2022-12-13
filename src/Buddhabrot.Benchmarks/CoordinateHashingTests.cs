@@ -26,7 +26,7 @@ public static class CoordinateHashingTests
 
         for (int i = 0; i < sd.Count; i++)
         {
-            if (sd.CommandType(i) == VisitedRegionsDataSet.CommandType.Add)
+            if (sd.GetCommandType(i) == VisitedRegionsDataSet.CommandType.Add)
             {
                 var x = sd.X[i];
                 var y = sd.Y[i];

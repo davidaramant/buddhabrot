@@ -100,11 +100,11 @@ public static class VisitedRegionsDataSet
 
         public int Count => Metadata.Count;
 
-        public CommandType CommandType(int i) => (CommandType)(Metadata[i] & 1);
+        public CommandType GetCommandType(int i) => (CommandType)(Metadata[i] & 1);
 
-        public RegionType RegionType(int i) => (RegionType)(Metadata[i] >> 1);
+        public RegionType GetRegionType(int i) => (RegionType)(Metadata[i] >> 1);
 
-        public RegionId Id(int i) => new(X[i], Y[i]);
+        public RegionId GetId(int i) => new(X[i], Y[i]);
 
         public void LogAdd(RegionId id, RegionType type)
         {

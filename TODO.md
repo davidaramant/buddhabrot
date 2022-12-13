@@ -44,9 +44,9 @@
   - [ ] Do I need a more generic quad tree internal data structure? 
   - [ ] Expand RegionType to 3 bits
   - [ ] Generate quad tree diffs
-- [ ] "Holes" in boundary/filaments
-  - [ ] Is it actually a problem?
-  - [ ] Different way of calculating filaments?
+- [ ] Diagnose problems with algorithm:
+  - [ ] "Holes" in boundary/filaments
+  - [ ] Useless border regions around i = 0
 
 ### GUI
 

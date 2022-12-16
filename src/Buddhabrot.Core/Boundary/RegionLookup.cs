@@ -52,17 +52,17 @@ public sealed class RegionLookup
                 }
                 else if (currentQuad.NodeType == NodeType.LeafQuad)
                 {
-                    toCheck.Enqueue((boundary.LL, QuadNode.MakeLeaf(currentQuad.LL)));
-                    toCheck.Enqueue((boundary.LR, QuadNode.MakeLeaf(currentQuad.LR)));
-                    toCheck.Enqueue((boundary.UL, QuadNode.MakeLeaf(currentQuad.UL)));
-                    toCheck.Enqueue((boundary.UR, QuadNode.MakeLeaf(currentQuad.UR)));
+                    toCheck.Enqueue((boundary.SW, QuadNode.MakeLeaf(currentQuad.SW)));
+                    toCheck.Enqueue((boundary.SE, QuadNode.MakeLeaf(currentQuad.SE)));
+                    toCheck.Enqueue((boundary.NW, QuadNode.MakeLeaf(currentQuad.NW)));
+                    toCheck.Enqueue((boundary.NE, QuadNode.MakeLeaf(currentQuad.NE)));
                 }
                 else
                 {
-                    toCheck.Enqueue((boundary.LL, Nodes[currentQuad.GetChildIndex(Quadrant.LL)]));
-                    toCheck.Enqueue((boundary.LR, Nodes[currentQuad.GetChildIndex(Quadrant.LR)]));
-                    toCheck.Enqueue((boundary.UL, Nodes[currentQuad.GetChildIndex(Quadrant.UL)]));
-                    toCheck.Enqueue((boundary.UR, Nodes[currentQuad.GetChildIndex(Quadrant.UR)]));
+                    toCheck.Enqueue((boundary.SW, Nodes[currentQuad.GetChildIndex(Quadrant.SW)]));
+                    toCheck.Enqueue((boundary.SE, Nodes[currentQuad.GetChildIndex(Quadrant.SE)]));
+                    toCheck.Enqueue((boundary.NW, Nodes[currentQuad.GetChildIndex(Quadrant.NW)]));
+                    toCheck.Enqueue((boundary.NE, Nodes[currentQuad.GetChildIndex(Quadrant.NE)]));
                 }
             }
 
@@ -86,17 +86,17 @@ public sealed class RegionLookup
                 }
                 else if (currentQuad.NodeType == NodeType.LeafQuad)
                 {
-                    toCheck.Enqueue((boundary.UL, QuadNode.MakeLeaf(currentQuad.LL)));
-                    toCheck.Enqueue((boundary.UR, QuadNode.MakeLeaf(currentQuad.LR)));
-                    toCheck.Enqueue((boundary.LL, QuadNode.MakeLeaf(currentQuad.UL)));
-                    toCheck.Enqueue((boundary.LR, QuadNode.MakeLeaf(currentQuad.UR)));
+                    toCheck.Enqueue((boundary.NW, QuadNode.MakeLeaf(currentQuad.SW)));
+                    toCheck.Enqueue((boundary.NE, QuadNode.MakeLeaf(currentQuad.SE)));
+                    toCheck.Enqueue((boundary.SW, QuadNode.MakeLeaf(currentQuad.NW)));
+                    toCheck.Enqueue((boundary.SE, QuadNode.MakeLeaf(currentQuad.NE)));
                 }
                 else
                 {
-                    toCheck.Enqueue((boundary.UL, Nodes[currentQuad.GetChildIndex(Quadrant.LL)]));
-                    toCheck.Enqueue((boundary.UR, Nodes[currentQuad.GetChildIndex(Quadrant.LR)]));
-                    toCheck.Enqueue((boundary.LL, Nodes[currentQuad.GetChildIndex(Quadrant.UL)]));
-                    toCheck.Enqueue((boundary.LR, Nodes[currentQuad.GetChildIndex(Quadrant.UR)]));
+                    toCheck.Enqueue((boundary.NW, Nodes[currentQuad.GetChildIndex(Quadrant.SW)]));
+                    toCheck.Enqueue((boundary.NE, Nodes[currentQuad.GetChildIndex(Quadrant.SE)]));
+                    toCheck.Enqueue((boundary.SW, Nodes[currentQuad.GetChildIndex(Quadrant.NW)]));
+                    toCheck.Enqueue((boundary.SE, Nodes[currentQuad.GetChildIndex(Quadrant.NE)]));
                 }
             }
         }

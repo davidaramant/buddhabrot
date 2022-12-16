@@ -9,19 +9,19 @@
 public enum Quadrant
 {
     /// <summary>
-    /// Lower left
+    /// Southwest / Lower left
     /// </summary>
-    LL = 0,
+    SW = 0,
     /// <summary>
-    /// Lower right
+    /// Southeast / Lower right
     /// </summary>
-    LR = 1,
+    SE = 1,
     /// <summary>
-    /// Upper left
+    /// Northwest / Upper left
     /// </summary>
-    UL = 2,
+    NW = 2,
     /// <summary>
-    /// Upper right
+    /// Northeast / Upper right
     /// </summary>
-    UR = 3,
+    NE = 3,
 }

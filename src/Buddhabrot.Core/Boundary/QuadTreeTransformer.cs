@@ -7,7 +7,7 @@ public sealed class QuadTreeTransformer
     private readonly VisitedRegions _visitedRegions;
     private readonly IReadOnlyList<QuadNode> _oldTree;
     private readonly List<QuadNode> _newTree;
-    private readonly Dictionary<(QuadNode LL, QuadNode LR, QuadNode UL, QuadNode UR), QuadNode> _cache = new();
+    private readonly Dictionary<(QuadNode SW, QuadNode SE, QuadNode NW, QuadNode NE), QuadNode> _cache = new();
 
     public int Size => _cache.Count;
     public int NumCachedValuesUsed { get; private set; }
@@ -21,8 +21,8 @@ public sealed class QuadTreeTransformer
 
     public RegionLookup Transform()
     {
-        var newUL = Normalize(_oldTree[_visitedRegions.Root.GetLongChildIndex(Quadrant.LL)]);
-        var newUR = Normalize(_oldTree[_visitedRegions.Root.GetLongChildIndex(Quadrant.LR)]);
+        var newUL = Normalize(_oldTree[_visitedRegions.Root.GetLongChildIndex(Quadrant.SW)]);
+        var newUR = Normalize(_oldTree[_visitedRegions.Root.GetLongChildIndex(Quadrant.SE)]);
 
         var rootChildrenIndex = _newTree.AddChildren(QuadNode.UnknownLeaf, QuadNode.UnknownLeaf, newUL, newUR);
         // No need to compute the root region type, it will always be border
@@ -37,58 +37,58 @@ public sealed class QuadTreeTransformer
             NodeType.Leaf => node,
             NodeType.LeafQuad => NormalizeLeafQuad(node),
             NodeType.LongBranch => MakeQuad(
-                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.LL)]),
-                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.LR)]),
-                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.UL)]),
-                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.UR)])),
+                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.SW)]),
+                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.SE)]),
+                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.NW)]),
+                Normalize(_oldTree[node.GetLongChildIndex(Quadrant.NE)])),
             _ => throw new Exception("This can't happen")
         };
 
     public static QuadNode NormalizeLeafQuad(QuadNode leafQuad)
     {
-        if (leafQuad.LL == leafQuad.LR &&
-            leafQuad.LR == leafQuad.UL &&
-            leafQuad.UL == leafQuad.UR)
+        if (leafQuad.SW == leafQuad.SE &&
+            leafQuad.SE == leafQuad.NW &&
+            leafQuad.NW == leafQuad.NE)
         {
-            return QuadNode.MakeLeaf(FilterOutRejected(leafQuad.LL));
+            return QuadNode.MakeLeaf(FilterOutRejected(leafQuad.SW));
         }
 
         return QuadNode.MakeLeaf(
-            CondenseRegionType(leafQuad.LL, leafQuad.LR, leafQuad.UL, leafQuad.UR),
-            FilterOutRejected(leafQuad.LL),
-            FilterOutRejected(leafQuad.LR),
-            FilterOutRejected(leafQuad.UL),
-            FilterOutRejected(leafQuad.UR));
+            CondenseRegionType(leafQuad.SW, leafQuad.SE, leafQuad.NW, leafQuad.NE),
+            FilterOutRejected(leafQuad.SW),
+            FilterOutRejected(leafQuad.SE),
+            FilterOutRejected(leafQuad.NW),
+            FilterOutRejected(leafQuad.NE));
     }
 
-    public QuadNode MakeQuad(QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur)
+    public QuadNode MakeQuad(QuadNode sw, QuadNode se, QuadNode nw, QuadNode ne)
     {
-        if (ll.NodeType == NodeType.Leaf &&
-            ll == lr &&
-            lr == ul &&
-            ul == ur)
+        if (sw.NodeType == NodeType.Leaf &&
+            sw == se &&
+            se == nw &&
+            nw == ne)
         {
-            return ll;
+            return sw;
         }
 
-        if (ll.NodeType == NodeType.Leaf &&
-            lr.NodeType == NodeType.Leaf &&
-            ul.NodeType == NodeType.Leaf &&
-            ur.NodeType == NodeType.Leaf)
+        if (sw.NodeType == NodeType.Leaf &&
+            se.NodeType == NodeType.Leaf &&
+            nw.NodeType == NodeType.Leaf &&
+            ne.NodeType == NodeType.Leaf)
         {
             return QuadNode.MakeLeaf(
-                CondenseRegionType(ll, lr, ul, ur),
-                ll.RegionType,
-                lr.RegionType,
-                ul.RegionType,
-                ur.RegionType);
+                CondenseRegionType(sw, se, nw, ne),
+                sw.RegionType,
+                se.RegionType,
+                nw.RegionType,
+                ne.RegionType);
         }
 
-        var key = (ll, lr, ul, ur);
+        var key = (ll: sw, lr: se, ul: nw, ur: ne);
         if (!_cache.TryGetValue(key, out var node))
         {
-            var index = _newTree.AddChildren(ll, lr, ul, ur);
-            node = QuadNode.MakeBranch(CondenseRegionType(ll, lr, ul, ur),
+            var index = _newTree.AddChildren(sw, se, nw, ne);
+            node = QuadNode.MakeBranch(CondenseRegionType(sw, se, nw, ne),
                 index);
 
             _cache.Add(key, node);
@@ -108,18 +108,18 @@ public sealed class QuadTreeTransformer
             _ => type
         };
 
-    public static RegionType CondenseRegionType(QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur) =>
-        CondenseRegionType(ll.RegionType, lr.RegionType, ul.RegionType, ur.RegionType);
+    public static RegionType CondenseRegionType(QuadNode sw, QuadNode se, QuadNode nw, QuadNode ne) =>
+        CondenseRegionType(sw.RegionType, se.RegionType, nw.RegionType, ne.RegionType);
 
-    public static RegionType CondenseRegionType(RegionType ll, RegionType lr, RegionType ul, RegionType ur)
+    public static RegionType CondenseRegionType(RegionType sw, RegionType se, RegionType nw, RegionType ne)
     {
         int borderCount = 0;
         int filamentCount = 0;
 
-        Count(ll);
-        Count(lr);
-        Count(ul);
-        Count(ur);
+        Count(sw);
+        Count(se);
+        Count(nw);
+        Count(ne);
 
         if (borderCount == 0 && filamentCount == 0)
             return RegionType.Unknown;

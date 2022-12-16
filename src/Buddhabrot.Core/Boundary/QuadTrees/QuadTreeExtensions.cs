@@ -2,14 +2,14 @@
 
 public static class QuadTreeExtensions
 {
-    public static int AddChildren(this List<QuadNode> tree, QuadNode ll, QuadNode lr, QuadNode ul, QuadNode ur)
+    public static int AddChildren(this List<QuadNode> tree, QuadNode sw, QuadNode se, QuadNode nw, QuadNode ne)
     {
         var index = tree.Count;
 
-        tree.Add(ll);
-        tree.Add(lr);
-        tree.Add(ul);
-        tree.Add(ur);
+        tree.Add(sw);
+        tree.Add(se);
+        tree.Add(nw);
+        tree.Add(ne);
 
         return index;
     }

@@ -41,10 +41,10 @@ public class QuadDimensionDetermineQuadrantBenchmarks
                                             
             return (upper, right) switch
             {
-                (false, false) => Quadrant.LL,
-                (false, true) => Quadrant.LR,
-                (true, false) => Quadrant.UL,
-                (true, true) => Quadrant.UR,
+                (false, false) => Quadrant.SW,
+                (false, true) => Quadrant.SE,
+                (true, false) => Quadrant.NW,
+                (true, true) => Quadrant.NE,
             };
         }
     }

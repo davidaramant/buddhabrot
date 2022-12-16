@@ -35,10 +35,10 @@ public class QuadNodeGetQuadrantBenchmarks
         static RegionType GetQuadrant(QuadNode node, Quadrant quadrant) =>
             quadrant switch
             {
-                Quadrant.LL => node.LL,
-                Quadrant.LR => node.LR,
-                Quadrant.UL => node.UL,
-                Quadrant.UR => node.UR,
+                Quadrant.SW => node.SW,
+                Quadrant.SE => node.SE,
+                Quadrant.NW => node.NW,
+                Quadrant.NE => node.NE,
                 _ => throw new Exception("Can't happen")
             };
     }

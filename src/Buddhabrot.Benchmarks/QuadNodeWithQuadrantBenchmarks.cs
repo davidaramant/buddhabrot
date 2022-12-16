@@ -36,10 +36,10 @@ public class QuadNodeWithQuadrantBenchmarks
         static QuadNode WithQuadrant(QuadNode node, Quadrant quadrant, RegionType type) =>
             quadrant switch
             {
-                Quadrant.LL => node.WithLL(type),
-                Quadrant.LR => node.WithLR(type),
-                Quadrant.UL => node.WithUL(type),
-                Quadrant.UR => node.WithUR(type),
+                Quadrant.SW => node.WithSW(type),
+                Quadrant.SE => node.WithSE(type),
+                Quadrant.NW => node.WithNW(type),
+                Quadrant.NE => node.WithNE(type),
                 _ => throw new Exception("Can't happen")
             };
     }

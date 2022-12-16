@@ -12,14 +12,14 @@ public readonly struct QuadNode
 
     public static QuadNode MakeLeaf(
         RegionType type,
-        RegionType ll,
-        RegionType lr,
-        RegionType ul,
-        RegionType ur) => new(
-        (uint) ll << 10 |
-        (uint) lr << 8 |
-        (uint) ul << 6 |
-        (uint) ur << 4 |
+        RegionType sw,
+        RegionType se,
+        RegionType nw,
+        RegionType ne) => new(
+        (uint) sw << 10 |
+        (uint) se << 8 |
+        (uint) nw << 6 |
+        (uint) ne << 4 |
         (uint) type << 2 |
         (uint) NodeType.LeafQuad);
 
@@ -38,10 +38,10 @@ public readonly struct QuadNode
     public int ChildIndex => (int) (Encoded >> 4);
     public int GetChildIndex(Quadrant quadrant) => ChildIndex + (int) quadrant;
 
-    public RegionType LL => (RegionType) (Encoded >> 10 & 0b11);
-    public RegionType LR => (RegionType) (Encoded >> 8 & 0b11);
-    public RegionType UL => (RegionType) (Encoded >> 6 & 0b11);
-    public RegionType UR => (RegionType) (Encoded >> 4 & 0b11);
+    public RegionType SW => (RegionType) (Encoded >> 10 & 0b11);
+    public RegionType SE => (RegionType) (Encoded >> 8 & 0b11);
+    public RegionType NW => (RegionType) (Encoded >> 6 & 0b11);
+    public RegionType NE => (RegionType) (Encoded >> 4 & 0b11);
 
     public RegionType GetQuadrant(Quadrant quadrant)
     {
@@ -49,10 +49,10 @@ public readonly struct QuadNode
         return (RegionType) (Encoded >> offset & 0b11);
     }
 
-    public QuadNode WithLL(RegionType ll) => new(Encoded | (((uint) ll << 10) + (int) NodeType.LeafQuad));
-    public QuadNode WithLR(RegionType lr) => new(Encoded | (((uint) lr << 8) + (int) NodeType.LeafQuad));
-    public QuadNode WithUL(RegionType ul) => new(Encoded | (((uint) ul << 6) + (int) NodeType.LeafQuad));
-    public QuadNode WithUR(RegionType ur) => new(Encoded | (((uint) ur << 4) + (int) NodeType.LeafQuad));
+    public QuadNode WithSW(RegionType sw) => new(Encoded | (((uint) sw << 10) + (int) NodeType.LeafQuad));
+    public QuadNode WithSE(RegionType se) => new(Encoded | (((uint) se << 8) + (int) NodeType.LeafQuad));
+    public QuadNode WithNW(RegionType nw) => new(Encoded | (((uint) nw << 6) + (int) NodeType.LeafQuad));
+    public QuadNode WithNE(RegionType ne) => new(Encoded | (((uint) ne << 4) + (int) NodeType.LeafQuad));
 
     public QuadNode WithQuadrant(Quadrant quadrant, RegionType type)
     {
@@ -67,7 +67,7 @@ public readonly struct QuadNode
         NodeType.Leaf =>  $" {RegionType}",
         NodeType.Branch => $" {RegionType} {ChildIndex}",
         NodeType.LongBranch => $" {LongChildIndex}",
-        NodeType.LeafQuad => $" ({RegionType}) LL:{LL} LR:{LR} UL:{UL} UR:{UR}",
+        NodeType.LeafQuad => $" ({RegionType}) SW:{SW} SE:{SE} NW:{NW} NE:{NE}",
         _ => "how could this have happened"
     };
 

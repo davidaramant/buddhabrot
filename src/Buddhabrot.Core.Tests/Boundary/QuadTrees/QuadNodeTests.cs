@@ -35,10 +35,10 @@ public class QuadNodeTests
         node.NodeType.Should().Be(NodeType.LeafQuad);
         node.RegionType.Should().Be(type);
 
-        node.LL.Should().Be(RegionType.Filament);
-        node.LR.Should().Be(RegionType.Border);
-        node.UL.Should().Be(RegionType.Rejected);
-        node.UR.Should().Be(RegionType.Unknown);
+        node.SW.Should().Be(RegionType.Filament);
+        node.SE.Should().Be(RegionType.Border);
+        node.NW.Should().Be(RegionType.Rejected);
+        node.NE.Should().Be(RegionType.Unknown);
     }
 
     [Theory]
@@ -63,7 +63,7 @@ public class QuadNodeTests
 
         node.NodeType.Should().Be(NodeType.Leaf);
 
-        node = node.WithQuadrant(Quadrant.LL, RegionType.Border);
+        node = node.WithQuadrant(Quadrant.SW, RegionType.Border);
 
         node.NodeType.Should().Be(NodeType.LeafQuad);
     }
@@ -73,57 +73,57 @@ public class QuadNodeTests
     {
         var node = QuadNode.UnknownLeaf;
 
-        node = node.WithLL(RegionType.Filament);
+        node = node.WithSW(RegionType.Filament);
 
-        node.LL.Should().Be(RegionType.Filament);
-        node.LR.Should().Be(RegionType.Unknown);
-        node.UL.Should().Be(RegionType.Unknown);
-        node.UR.Should().Be(RegionType.Unknown);
+        node.SW.Should().Be(RegionType.Filament);
+        node.SE.Should().Be(RegionType.Unknown);
+        node.NW.Should().Be(RegionType.Unknown);
+        node.NE.Should().Be(RegionType.Unknown);
 
-        node = node.WithLR(RegionType.Border);
+        node = node.WithSE(RegionType.Border);
 
-        node.LL.Should().Be(RegionType.Filament);
-        node.LR.Should().Be(RegionType.Border);
-        node.UL.Should().Be(RegionType.Unknown);
-        node.UR.Should().Be(RegionType.Unknown);
+        node.SW.Should().Be(RegionType.Filament);
+        node.SE.Should().Be(RegionType.Border);
+        node.NW.Should().Be(RegionType.Unknown);
+        node.NE.Should().Be(RegionType.Unknown);
 
-        node = node.WithUL(RegionType.Rejected);
+        node = node.WithNW(RegionType.Rejected);
 
-        node.LL.Should().Be(RegionType.Filament);
-        node.LR.Should().Be(RegionType.Border);
-        node.UL.Should().Be(RegionType.Rejected);
-        node.UR.Should().Be(RegionType.Unknown);
+        node.SW.Should().Be(RegionType.Filament);
+        node.SE.Should().Be(RegionType.Border);
+        node.NW.Should().Be(RegionType.Rejected);
+        node.NE.Should().Be(RegionType.Unknown);
 
-        node = node.WithUR(RegionType.Rejected);
+        node = node.WithNE(RegionType.Rejected);
 
-        node.LL.Should().Be(RegionType.Filament);
-        node.LR.Should().Be(RegionType.Border);
-        node.UL.Should().Be(RegionType.Rejected);
-        node.UR.Should().Be(RegionType.Rejected);
+        node.SW.Should().Be(RegionType.Filament);
+        node.SE.Should().Be(RegionType.Border);
+        node.NW.Should().Be(RegionType.Rejected);
+        node.NE.Should().Be(RegionType.Rejected);
     }
 
     [Fact]
     public void ShouldUpdateChildrenWithQuadrant()
     {
-        QuadNode.UnknownLeaf.WithQuadrant(Quadrant.LL, RegionType.Border).Should().Be(
+        QuadNode.UnknownLeaf.WithQuadrant(Quadrant.SW, RegionType.Border).Should().Be(
             QuadNode.MakeLeaf(RegionType.Unknown,
                 RegionType.Border,
                 RegionType.Unknown,
                 RegionType.Unknown,
                 RegionType.Unknown));
-        QuadNode.UnknownLeaf.WithQuadrant(Quadrant.LR, RegionType.Border).Should().Be(
+        QuadNode.UnknownLeaf.WithQuadrant(Quadrant.SE, RegionType.Border).Should().Be(
             QuadNode.MakeLeaf(RegionType.Unknown,
                 RegionType.Unknown,
                 RegionType.Border,
                 RegionType.Unknown,
                 RegionType.Unknown));
-        QuadNode.UnknownLeaf.WithQuadrant(Quadrant.UL, RegionType.Border).Should().Be(
+        QuadNode.UnknownLeaf.WithQuadrant(Quadrant.NW, RegionType.Border).Should().Be(
             QuadNode.MakeLeaf(RegionType.Unknown,
                 RegionType.Unknown,
                 RegionType.Unknown,
                 RegionType.Border,
                 RegionType.Unknown));
-        QuadNode.UnknownLeaf.WithQuadrant(Quadrant.UR, RegionType.Border).Should().Be(
+        QuadNode.UnknownLeaf.WithQuadrant(Quadrant.NE, RegionType.Border).Should().Be(
             QuadNode.MakeLeaf(RegionType.Unknown,
                 RegionType.Unknown,
                 RegionType.Unknown,
@@ -132,10 +132,10 @@ public class QuadNodeTests
     }
 
     [Theory]
-    [InlineData(Quadrant.LL)]
-    [InlineData(Quadrant.LR)]
-    [InlineData(Quadrant.UL)]
-    [InlineData(Quadrant.UR)]
+    [InlineData(Quadrant.SW)]
+    [InlineData(Quadrant.SE)]
+    [InlineData(Quadrant.NW)]
+    [InlineData(Quadrant.NE)]
     public void ShouldGetQuadrant(Quadrant quadrant)
     {
         QuadNode.UnknownLeaf

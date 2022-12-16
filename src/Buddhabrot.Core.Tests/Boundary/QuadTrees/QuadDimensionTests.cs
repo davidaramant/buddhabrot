@@ -30,10 +30,10 @@ public class QuadDimensionTests
     }
 
     [Theory]
-    [InlineData(0, 0, Quadrant.LL)]
-    [InlineData(1, 0, Quadrant.LR)]
-    [InlineData(0, 1, Quadrant.UL)]
-    [InlineData(1, 1, Quadrant.UR)]
+    [InlineData(0, 0, Quadrant.SW)]
+    [InlineData(1, 0, Quadrant.SE)]
+    [InlineData(0, 1, Quadrant.NW)]
+    [InlineData(1, 1, Quadrant.NE)]
     public void ShouldDetermineQuadrant(int x, int y, Quadrant expected)
     {
         var d = new QuadDimensions(0, 0, 2);
@@ -62,6 +62,6 @@ public class QuadDimensionTests
             height--;
         }
 
-        quadrants.Should().BeEquivalentTo(new[] { Quadrant.LR, Quadrant.UL, Quadrant.UR });
+        quadrants.Should().BeEquivalentTo(new[] { Quadrant.SE, Quadrant.NW, Quadrant.NE });
     }
 }

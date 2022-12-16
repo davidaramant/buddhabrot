@@ -36,10 +36,10 @@ public class QuadDimensionGetQuadrantBenchmarks
         static QuadDimensions GetQuadrant(QuadDimensions q, Quadrant quadrant) =>
             quadrant switch
             {
-                Quadrant.LL => q.LL,
-                Quadrant.LR => q.LR,
-                Quadrant.UL => q.UL,
-                Quadrant.UR => q.UR,
+                Quadrant.SW => q.SW,
+                Quadrant.SE => q.SE,
+                Quadrant.NW => q.NW,
+                Quadrant.NE => q.NE,
                 _ => throw new Exception("Can't happen")
             };
     }

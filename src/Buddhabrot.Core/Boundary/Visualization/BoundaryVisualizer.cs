@@ -61,14 +61,14 @@ public static class BoundaryVisualizer
 
         var nodes = lookup.Nodes;
 
-        (QuadNode LL, QuadNode LR, QuadNode UL, QuadNode UR) GetChildren(QuadNode quad)
+        (QuadNode SW, QuadNode LR, QuadNode UL, QuadNode UR) GetChildren(QuadNode quad)
         {
             Debug.Assert(quad.NodeType == NodeType.Branch, "Attempted to get children of leaf node");
             return (
-                nodes[quad.GetChildIndex(Quadrant.LL)],
-                nodes[quad.GetChildIndex(Quadrant.LR)],
-                nodes[quad.GetChildIndex(Quadrant.UL)],
-                nodes[quad.GetChildIndex(Quadrant.UR)]);
+                nodes[quad.GetChildIndex(Quadrant.SW)],
+                nodes[quad.GetChildIndex(Quadrant.SE)],
+                nodes[quad.GetChildIndex(Quadrant.NW)],
+                nodes[quad.GetChildIndex(Quadrant.NE)]);
         }
 
         void DrawQuad(QuadTreeRenderer r, QuadNode quad, int depth, int x, int y)
@@ -84,10 +84,10 @@ public static class BoundaryVisualizer
 
             if (quad.NodeType == NodeType.LeafQuad)
             {
-                r.DrawCell(newX, newY, depth + 1, PickColorFromType(quad.LL));
-                r.DrawCell(newX + 1, newY, depth + 1, PickColorFromType(quad.LR));
-                r.DrawCell(newX, newY + 1, depth + 1, PickColorFromType(quad.UL));
-                r.DrawCell(newX + 1, newY + 1, depth + 1, PickColorFromType(quad.UR));
+                r.DrawCell(newX, newY, depth + 1, PickColorFromType(quad.SW));
+                r.DrawCell(newX + 1, newY, depth + 1, PickColorFromType(quad.SE));
+                r.DrawCell(newX, newY + 1, depth + 1, PickColorFromType(quad.NW));
+                r.DrawCell(newX + 1, newY + 1, depth + 1, PickColorFromType(quad.NE));
                 return;
             }
 

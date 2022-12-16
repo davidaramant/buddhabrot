@@ -144,33 +144,33 @@ public sealed class VisitedRegions : IVisitedRegions
         switch (node.NodeType)
         {
             case NodeType.LeafQuad:
-                if (node.LL == RegionType.Border)
+                if (node.SW == RegionType.Border)
                 {
-                    borderRegions.Add(dimensions.GetRegion(Quadrant.LL));
+                    borderRegions.Add(dimensions.GetRegion(Quadrant.SW));
                 }
 
-                if (node.LR == RegionType.Border)
+                if (node.SE == RegionType.Border)
                 {
-                    borderRegions.Add(dimensions.GetRegion(Quadrant.LR));
+                    borderRegions.Add(dimensions.GetRegion(Quadrant.SE));
                 }
 
-                if (node.UL == RegionType.Border)
+                if (node.NW == RegionType.Border)
                 {
-                    borderRegions.Add(dimensions.GetRegion(Quadrant.UL));
+                    borderRegions.Add(dimensions.GetRegion(Quadrant.NW));
                 }
 
-                if (node.UR == RegionType.Border)
+                if (node.NE == RegionType.Border)
                 {
-                    borderRegions.Add(dimensions.GetRegion(Quadrant.UR));
+                    borderRegions.Add(dimensions.GetRegion(Quadrant.NE));
                 }
 
                 break;
 
             case NodeType.LongBranch:
-                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.LL)], dimensions.LL, borderRegions);
-                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.LR)], dimensions.LR, borderRegions);
-                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.UL)], dimensions.UL, borderRegions);
-                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.UR)], dimensions.UR, borderRegions);
+                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.SW)], dimensions.SW, borderRegions);
+                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.SE)], dimensions.SE, borderRegions);
+                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.NW)], dimensions.NW, borderRegions);
+                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.NE)], dimensions.NE, borderRegions);
                 break;
         }
     }

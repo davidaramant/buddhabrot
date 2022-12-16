@@ -2,7 +2,7 @@
 
 public static class QuadTreeExtensions
 {
-    public static int AddChildren(this List<QuadNode> tree, QuadNode sw, QuadNode se, QuadNode nw, QuadNode ne)
+    public static int AddChildren<TNode>(this List<TNode> tree, TNode sw, TNode se, TNode nw, TNode ne)
     {
         var index = tree.Count;
 
@@ -13,7 +13,7 @@ public static class QuadTreeExtensions
 
         return index;
     }
-
-    public static int AddUnknownLeafChildren(this List<QuadNode> tree) =>
-        tree.AddChildren(QuadNode.UnknownLeaf, QuadNode.UnknownLeaf, QuadNode.UnknownLeaf, QuadNode.UnknownLeaf);
+    
+    public static int AddEmptyChildren(this List<VisitNode> tree) =>
+        tree.AddChildren(VisitNode.Empty, VisitNode.Empty, VisitNode.Empty, VisitNode.Empty);
 }

@@ -6,7 +6,7 @@ public readonly struct RegionNode
 
     public RegionNode(uint encoded) => Encoded = encoded;
     
-    public static readonly RegionNode UnknownLeaf = MakeLeaf(RegionType.Empty);
+    public static readonly RegionNode Empty = MakeLeaf(RegionType.Empty);
 
     public static RegionNode MakeLeaf(RegionType type) => new((uint) type << 1);
 

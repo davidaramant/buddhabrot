@@ -5,7 +5,7 @@ namespace Buddhabrot.Core.Boundary;
 
 public sealed class RegionLookup
 {
-    public IReadOnlyList<QuadNode> Nodes { get; }
+    public IReadOnlyList<RegionNode> Nodes { get; }
 
     public int Height { get; }
     public int NodeCount => Nodes.Count;
@@ -14,11 +14,11 @@ public sealed class RegionLookup
 
     private RegionLookup()
     {
-        Nodes = new[] {QuadNode.UnknownLeaf};
+        Nodes = new[] {RegionNode.Empty};
         Height = 1;
     }
 
-    public RegionLookup(IReadOnlyList<QuadNode> nodes, int height)
+    public RegionLookup(IReadOnlyList<RegionNode> nodes, int height)
     {
         Nodes = nodes;
         Height = height;
@@ -32,7 +32,7 @@ public sealed class RegionLookup
 
         foreach (var searchArea in searchAreas)
         {
-            var toCheck = new Queue<(SquareBoundary, QuadNode)>();
+            var toCheck = new Queue<(SquareBoundary, RegionNode)>();
             toCheck.Enqueue((bounds, Nodes.Last()));
 
             while (toCheck.Any())
@@ -46,16 +46,9 @@ public sealed class RegionLookup
                 if (intersection == Rectangle.Empty)
                     continue;
 
-                if (currentQuad.NodeType == NodeType.Leaf || boundary.IsPoint)
+                if (currentQuad.IsLeaf || boundary.IsPoint)
                 {
                     visibleAreas.Add((intersection, currentQuad.RegionType));
-                }
-                else if (currentQuad.NodeType == NodeType.LeafQuad)
-                {
-                    toCheck.Enqueue((boundary.SW, QuadNode.MakeLeaf(currentQuad.SW)));
-                    toCheck.Enqueue((boundary.SE, QuadNode.MakeLeaf(currentQuad.SE)));
-                    toCheck.Enqueue((boundary.NW, QuadNode.MakeLeaf(currentQuad.NW)));
-                    toCheck.Enqueue((boundary.NE, QuadNode.MakeLeaf(currentQuad.NE)));
                 }
                 else
                 {
@@ -80,16 +73,9 @@ public sealed class RegionLookup
                 if (intersection == Rectangle.Empty)
                     continue;
 
-                if (currentQuad.NodeType == NodeType.Leaf || boundary.IsPoint)
+                if (currentQuad.IsLeaf || boundary.IsPoint)
                 {
                     visibleAreas.Add((intersection, currentQuad.RegionType));
-                }
-                else if (currentQuad.NodeType == NodeType.LeafQuad)
-                {
-                    toCheck.Enqueue((boundary.NW, QuadNode.MakeLeaf(currentQuad.SW)));
-                    toCheck.Enqueue((boundary.NE, QuadNode.MakeLeaf(currentQuad.SE)));
-                    toCheck.Enqueue((boundary.SW, QuadNode.MakeLeaf(currentQuad.NW)));
-                    toCheck.Enqueue((boundary.SE, QuadNode.MakeLeaf(currentQuad.NE)));
                 }
                 else
                 {

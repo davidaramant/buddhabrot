@@ -24,30 +24,11 @@ public class VisitedRegionsToRegionLookupTests
     {
         var normalizer = new QuadTreeTransformer(new VisitedRegions());
         var node = normalizer.MakeQuad(
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf);
+            RegionNode.Empty,
+            RegionNode.Empty,
+            RegionNode.Empty,
+            RegionNode.Empty);
 
-        node.Should().Be(QuadNode.UnknownLeaf);
-    }
-
-    [Fact]
-    public void ShouldCreateLeafQuad()
-    {
-        var normalizer = new QuadTreeTransformer(new VisitedRegions());
-        var node = normalizer.MakeQuad(
-            QuadNode.MakeLeaf(RegionType.Border),
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf);
-
-        node.Should().Be(
-            QuadNode.MakeLeaf(
-                RegionType.Border,
-                RegionType.Border,
-                RegionType.Empty,
-                RegionType.Empty,
-                RegionType.Empty));
+        node.Should().Be(RegionNode.Empty);
     }
 }

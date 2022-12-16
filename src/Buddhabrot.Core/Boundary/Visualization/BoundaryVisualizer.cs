@@ -61,9 +61,9 @@ public static class BoundaryVisualizer
 
         var nodes = lookup.Nodes;
 
-        (QuadNode SW, QuadNode LR, QuadNode UL, QuadNode UR) GetChildren(QuadNode quad)
+        (RegionNode SW, RegionNode LR, RegionNode UL, RegionNode UR) GetChildren(RegionNode quad)
         {
-            Debug.Assert(quad.NodeType == NodeType.Branch, "Attempted to get children of leaf node");
+            Debug.Assert(quad.IsLeaf == false, "Attempted to get children of leaf node");
             return (
                 nodes[quad.GetChildIndex(Quadrant.SW)],
                 nodes[quad.GetChildIndex(Quadrant.SE)],
@@ -71,9 +71,9 @@ public static class BoundaryVisualizer
                 nodes[quad.GetChildIndex(Quadrant.NE)]);
         }
 
-        void DrawQuad(QuadTreeRenderer r, QuadNode quad, int depth, int x, int y)
+        void DrawQuad(QuadTreeRenderer r, RegionNode quad, int depth, int x, int y)
         {
-            if (quad.NodeType == NodeType.Leaf)
+            if (quad.IsLeaf)
             {
                 r.DrawCell(x, y, depth, PickColorFromType(quad.RegionType));
                 return;
@@ -82,20 +82,11 @@ public static class BoundaryVisualizer
             var newX = x << 1;
             var newY = y << 1;
 
-            if (quad.NodeType == NodeType.LeafQuad)
-            {
-                r.DrawCell(newX, newY, depth + 1, PickColorFromType(quad.SW));
-                r.DrawCell(newX + 1, newY, depth + 1, PickColorFromType(quad.SE));
-                r.DrawCell(newX, newY + 1, depth + 1, PickColorFromType(quad.NW));
-                r.DrawCell(newX + 1, newY + 1, depth + 1, PickColorFromType(quad.NE));
-                return;
-            }
-
-            var (ll, lr, ul, ur) = GetChildren(quad);
-            DrawQuad(r, ll, depth + 1, newX, newY);
-            DrawQuad(r, lr, depth + 1, newX + 1, newY);
-            DrawQuad(r, ul, depth + 1, newX, newY + 1);
-            DrawQuad(r, ur, depth + 1, newX + 1, newY + 1);
+            var (sw, se, nw, ne) = GetChildren(quad);
+            DrawQuad(r, sw, depth + 1, newX, newY);
+            DrawQuad(r, se, depth + 1, newX + 1, newY);
+            DrawQuad(r, nw, depth + 1, newX, newY + 1);
+            DrawQuad(r, ne, depth + 1, newX + 1, newY + 1);
         }
 
         var (_, _, topW, topE) = GetChildren(nodes.Last());
@@ -110,7 +101,6 @@ public static class BoundaryVisualizer
             {
                 RegionType.Border => palette.Border,
                 RegionType.Filament => palette.Filament,
-                RegionType.Rejected => palette.InSet,
                 RegionType.Empty => palette.InBounds,
                 _ => throw new Exception("Unknown region type")
             };

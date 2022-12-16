@@ -45,7 +45,7 @@ public static class BoundarySerializer
     {
         var quadTree = PersistedQuadTree.Load(stream);
         return new RegionLookup(
-            Unsafe.As<IReadOnlyList<QuadNode>>(quadTree.Nodes),
+            Unsafe.As<IReadOnlyList<RegionNode>>(quadTree.Nodes),
             quadTree.Height);
     }
 }

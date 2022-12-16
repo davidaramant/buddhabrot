@@ -8,7 +8,6 @@ namespace Buddhabrot.Core.Boundary;
 /// <remarks>
 /// A mutable quadtree that operates on region coordinates (+Y is UP).
 /// It will construct a quad tree that covers [-2,2] on the real axis and [0,4] on the imaginary axis.
-/// The region type is NOT computed for branch nodes or leaf quads.
 ///
 /// Initially this is a tree of height 3 leaf nodes at the second level. Having the root be a branch avoids some
 /// special cases.
@@ -16,21 +15,21 @@ namespace Buddhabrot.Core.Boundary;
 public sealed class VisitedRegions : IVisitedRegions
 {
     private QuadDimensions _dimensions = new(X: 0, Y: 0, Height: 3);
-    private QuadNode _root = QuadNode.MakeLongBranch(0);
-    private readonly List<QuadNode> _nodes;
+    private VisitNode _root = VisitNode.MakeBranch(0);
+    private readonly List<VisitNode> _nodes;
 
     public int Height => _dimensions.Height;
     public int NodeCount => _nodes.Count + 1;
-    public IReadOnlyList<QuadNode> Nodes => _nodes;
-    public QuadNode Root => _root;
+    public IReadOnlyList<VisitNode> Nodes => _nodes;
+    public VisitNode Root => _root;
 
     public VisitedRegions(int capacity = 0) =>
         _nodes = new(capacity)
         {
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf,
-            QuadNode.UnknownLeaf
+            VisitNode.Empty,
+            VisitNode.Empty,
+            VisitNode.Empty,
+            VisitNode.Empty
         };
 
     public void Visit(RegionId id, RegionType type)
@@ -40,12 +39,12 @@ public sealed class VisitedRegions : IVisitedRegions
         {
             var index = _nodes.AddChildren(
                 _root,
-                QuadNode.UnknownLeaf,
-                QuadNode.UnknownLeaf,
-                QuadNode.UnknownLeaf);
+                VisitNode.Empty,
+                VisitNode.Empty,
+                VisitNode.Empty);
 
             _dimensions = _dimensions.Expand();
-            _root = QuadNode.MakeLongBranch(index);
+            _root = VisitNode.MakeBranch(index);
         }
 
         var nodeIndex = -1;
@@ -69,16 +68,14 @@ public sealed class VisitedRegions : IVisitedRegions
             halfWidth /= 2;
             height--;
 
-            var nodeType = node.NodeType;
             // The only possible nodes are leaves and branches because of the height check
-
-            if (nodeType == NodeType.Leaf)
+            if (node.IsLeaf)
             {
-                var index = _nodes.AddUnknownLeafChildren();
-                _nodes[nodeIndex] = node = QuadNode.MakeLongBranch(index);
+                var index = _nodes.AddEmptyChildren();
+                _nodes[nodeIndex] = node = VisitNode.MakeBranch(index);
             }
 
-            nodeIndex = node.GetLongChildIndex(quadrant);
+            nodeIndex = node.GetChildIndex(quadrant);
             node = _nodes[nodeIndex];
         }
 
@@ -110,22 +107,18 @@ public sealed class VisitedRegions : IVisitedRegions
         x -= h * halfWidth;
         y -= v * halfWidth;
         halfWidth /= 2;
+
+        // We only insert Unknown leaves
+        if (node.IsLeaf)
+            return false;
+
+        if(node.IsLeafQuad)
+            return node.GetQuadrant(quadrant) != RegionType.Empty;
         
-        switch (node.NodeType)
-        {
-            // We only insert Unknown leaves
-            case NodeType.Leaf:
-                return false;
-
-            case NodeType.LeafQuad:
-                return node.GetQuadrant(quadrant) != RegionType.Empty;
-
-            case NodeType.LongBranch:
-                var index = node.GetLongChildIndex(quadrant);
-                node = _nodes[index];
-                break;
-        }
-
+        // Branch
+        var index = node.GetChildIndex(quadrant);
+        node = _nodes[index];
+        
         goto descendTree;
     }
 
@@ -138,40 +131,37 @@ public sealed class VisitedRegions : IVisitedRegions
         return regions;
     }
 
-    private void DescendNode(QuadNode node, QuadDimensions dimensions, List<RegionId> borderRegions)
+    private void DescendNode(VisitNode node, QuadDimensions dimensions, List<RegionId> borderRegions)
     {
         // All leaves are going to be empty; skip them
-        switch (node.NodeType)
+        if (node.IsLeafQuad)
         {
-            case NodeType.LeafQuad:
-                if (node.SW == RegionType.Border)
-                {
-                    borderRegions.Add(dimensions.GetRegion(Quadrant.SW));
-                }
+            if (node.SW == RegionType.Border)
+            {
+                borderRegions.Add(dimensions.GetRegion(Quadrant.SW));
+            }
 
-                if (node.SE == RegionType.Border)
-                {
-                    borderRegions.Add(dimensions.GetRegion(Quadrant.SE));
-                }
+            if (node.SE == RegionType.Border)
+            {
+                borderRegions.Add(dimensions.GetRegion(Quadrant.SE));
+            }
 
-                if (node.NW == RegionType.Border)
-                {
-                    borderRegions.Add(dimensions.GetRegion(Quadrant.NW));
-                }
+            if (node.NW == RegionType.Border)
+            {
+                borderRegions.Add(dimensions.GetRegion(Quadrant.NW));
+            }
 
-                if (node.NE == RegionType.Border)
-                {
-                    borderRegions.Add(dimensions.GetRegion(Quadrant.NE));
-                }
-
-                break;
-
-            case NodeType.LongBranch:
-                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.SW)], dimensions.SW, borderRegions);
-                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.SE)], dimensions.SE, borderRegions);
-                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.NW)], dimensions.NW, borderRegions);
-                DescendNode(_nodes[node.GetLongChildIndex(Quadrant.NE)], dimensions.NE, borderRegions);
-                break;
+            if (node.NE == RegionType.Border)
+            {
+                borderRegions.Add(dimensions.GetRegion(Quadrant.NE));
+            }
+        }
+        else if (node.IsBranch)
+        {
+            DescendNode(_nodes[node.GetChildIndex(Quadrant.SW)], dimensions.SW, borderRegions);
+            DescendNode(_nodes[node.GetChildIndex(Quadrant.SE)], dimensions.SE, borderRegions);
+            DescendNode(_nodes[node.GetChildIndex(Quadrant.NW)], dimensions.NW, borderRegions);
+            DescendNode(_nodes[node.GetChildIndex(Quadrant.NE)], dimensions.NE, borderRegions);
         }
     }
 }

@@ -111,7 +111,7 @@ public static class BoundaryVisualizer
                 RegionType.Border => palette.Border,
                 RegionType.Filament => palette.Filament,
                 RegionType.Rejected => palette.InSet,
-                RegionType.Unknown => palette.InBounds,
+                RegionType.Empty => palette.InBounds,
                 _ => throw new Exception("Unknown region type")
             };
     }

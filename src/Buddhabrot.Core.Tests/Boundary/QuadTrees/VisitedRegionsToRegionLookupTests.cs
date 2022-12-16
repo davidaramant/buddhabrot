@@ -6,9 +6,9 @@ namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
 public class VisitedRegionsToRegionLookupTests
 {
     [Theory]
-    [InlineData(RegionType.Border, RegionType.Unknown, RegionType.Unknown, RegionType.Unknown, RegionType.Border)]
-    [InlineData(RegionType.Border, RegionType.Filament, RegionType.Rejected, RegionType.Unknown, RegionType.Border)]
-    [InlineData(RegionType.Border, RegionType.Filament, RegionType.Filament, RegionType.Unknown, RegionType.Filament)]
+    [InlineData(RegionType.Border, RegionType.Empty, RegionType.Empty, RegionType.Empty, RegionType.Border)]
+    [InlineData(RegionType.Border, RegionType.Filament, RegionType.Rejected, RegionType.Empty, RegionType.Border)]
+    [InlineData(RegionType.Border, RegionType.Filament, RegionType.Filament, RegionType.Empty, RegionType.Filament)]
     public void ShouldCondenseRegionTypes(
         RegionType ll,
         RegionType lr,
@@ -46,8 +46,8 @@ public class VisitedRegionsToRegionLookupTests
             QuadNode.MakeLeaf(
                 RegionType.Border,
                 RegionType.Border,
-                RegionType.Unknown,
-                RegionType.Unknown,
-                RegionType.Unknown));
+                RegionType.Empty,
+                RegionType.Empty,
+                RegionType.Empty));
     }
 }

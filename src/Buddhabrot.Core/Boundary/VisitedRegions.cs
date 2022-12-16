@@ -118,7 +118,7 @@ public sealed class VisitedRegions : IVisitedRegions
                 return false;
 
             case NodeType.LeafQuad:
-                return node.GetQuadrant(quadrant) != RegionType.Unknown;
+                return node.GetQuadrant(quadrant) != RegionType.Empty;
 
             case NodeType.LongBranch:
                 var index = node.GetLongChildIndex(quadrant);

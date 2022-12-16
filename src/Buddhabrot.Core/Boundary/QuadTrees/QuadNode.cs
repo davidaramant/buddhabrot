@@ -6,7 +6,7 @@ public readonly struct QuadNode
 
     public QuadNode(uint encoded) => Encoded = encoded;
     
-    public static readonly QuadNode UnknownLeaf = MakeLeaf(RegionType.Unknown);
+    public static readonly QuadNode UnknownLeaf = MakeLeaf(RegionType.Empty);
 
     public static QuadNode MakeLeaf(RegionType type) => new((uint) type << 2);
 

@@ -39,7 +39,7 @@ public sealed class RegionLookup
             {
                 var (boundary, currentQuad) = toCheck.Dequeue();
 
-                if (currentQuad.RegionType == RegionType.Unknown)
+                if (currentQuad.RegionType == RegionType.Empty)
                     continue;
 
                 var intersection = boundary.IntersectWith(searchArea);
@@ -73,7 +73,7 @@ public sealed class RegionLookup
             {
                 var (boundary, currentQuad) = toCheck.Dequeue();
 
-                if (currentQuad.RegionType == RegionType.Unknown)
+                if (currentQuad.RegionType == RegionType.Empty)
                     continue;
 
                 var intersection = boundary.IntersectWith(searchArea);

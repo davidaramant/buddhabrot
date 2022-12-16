@@ -104,7 +104,7 @@ public sealed class QuadTreeTransformer
     private static RegionType FilterOutRejected(RegionType type) =>
         type switch
         {
-            RegionType.Rejected => RegionType.Unknown,
+            RegionType.Rejected => RegionType.Empty,
             _ => type
         };
 
@@ -122,7 +122,7 @@ public sealed class QuadTreeTransformer
         Count(ne);
 
         if (borderCount == 0 && filamentCount == 0)
-            return RegionType.Unknown;
+            return RegionType.Empty;
 
         if (borderCount >= filamentCount)
             return RegionType.Border;

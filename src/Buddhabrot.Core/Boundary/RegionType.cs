@@ -2,8 +2,12 @@
 
 public enum RegionType
 {
-    Unknown,
+    Empty,
     Border,
     Filament,
-    Rejected
+    Rejected,
+    InSet,
+    OnlyLeft,
+    OnlyRight,
+    MixedDiff
 }

@@ -50,7 +50,7 @@ public class BoundaryScanningProcess : BaseVisualization
 
         var colorLookup = new Dictionary<RegionType, SKColor>
         {
-            { RegionType.Unknown, palette.Visited },
+            { RegionType.Empty, palette.Visited },
             { RegionType.Border, palette.Border },
             { RegionType.Filament, palette.Filament },
             { RegionType.Rejected, palette.InSet },

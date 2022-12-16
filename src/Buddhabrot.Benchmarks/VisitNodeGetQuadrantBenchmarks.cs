@@ -4,7 +4,7 @@ using Buddhabrot.Core.Boundary.QuadTrees;
 
 namespace Buddhabrot.Benchmarks;
 
-public class QuadNodeGetQuadrantBenchmarks
+public class VisitNodeGetQuadrantBenchmarks
 {
     private const int Size = 100;
     private readonly Quadrant[] _quadrants = new Quadrant[Size];
@@ -22,7 +22,7 @@ public class QuadNodeGetQuadrantBenchmarks
     [Benchmark(Baseline = true)]
     public RegionType Switch()
     {
-        var node = QuadNode.UnknownLeaf;
+        var node = VisitNode.Empty;
 
         RegionType type = default;
         for (int i = 0; i < Size; i++)
@@ -32,7 +32,7 @@ public class QuadNodeGetQuadrantBenchmarks
 
         return type;
 
-        static RegionType GetQuadrant(QuadNode node, Quadrant quadrant) =>
+        static RegionType GetQuadrant(VisitNode node, Quadrant quadrant) =>
             quadrant switch
             {
                 Quadrant.SW => node.SW,
@@ -46,7 +46,7 @@ public class QuadNodeGetQuadrantBenchmarks
     [Benchmark]
     public RegionType Branchless()
     {
-        var node = QuadNode.UnknownLeaf;
+        var node = VisitNode.Empty;
 
         RegionType type = default;
         for (int i = 0; i < Size; i++)
@@ -56,7 +56,7 @@ public class QuadNodeGetQuadrantBenchmarks
 
         return type;
 
-        static RegionType GetQuadrant(QuadNode node, Quadrant quadrant)
+        static RegionType GetQuadrant(VisitNode node, Quadrant quadrant)
         {
             var offset = QuadrantOffset(quadrant);
             return (RegionType) (node.Encoded >> offset & 0b11);

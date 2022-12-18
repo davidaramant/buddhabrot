@@ -41,8 +41,8 @@
     - [ ] Visualization (video) of batches being cached & evicted
 - [x] Investigating putting an index into the `VisitedRegions` - EDIT: complete dud
 - [ ] Support diffing arbitrary quad trees
-  - [ ] Do I need a more generic quad tree internal data structure? 
-  - [ ] Expand RegionType to 3 bits
+  - [x] ~~Do I need a more generic quad tree internal data structure?~~ - Split into two types of trees 
+  - [x] Expand RegionType to 3 bits
   - [ ] Generate quad tree diffs
 - [ ] Diagnose problems with algorithm:
   - [ ] "Holes" in boundary/filaments
@@ -84,6 +84,7 @@
   - [x] Pick palette to render with
     - [x] UI for palette choices
     - [x] Backend for picking palettes
-  - [ ] More palettes to choose from
+  - [ ] More palettes to choose 
+  - [ ] Deep zooms on enormous trees are slow (optimize RegionLookup)
 - [ ] Update colors for the new region types
 - [ ] UI to create diff between two `RegionLookup`s

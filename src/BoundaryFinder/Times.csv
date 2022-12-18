@@ -1,4 +1,4 @@
-Date,Time,Duration,Duration (seconds),OS,CPU,RAM,Vertical Power,Divisions,Limit,Border Regions,VisitedRegion Nodes,RegionLookup Nodes,Normalized Size,Notes
+Date,Time,Duration,Duration (seconds),OS,CPU,RAM,Vertical Power,Divisions,Limit,Border Regions,VisitedRegion Nodes,RegionLookup Nodes,Deduplicated Size,Notes
 2022-12-07,4:02:47,"43 minutes, 58 seconds","2,638",macOS (13.0.1),Apple M1 Max 10 Cores,32 GB,16,"65,536","5,000,000","1,130,138","22,151,249","5,630,141",25%,"4x4 corners, 2x2 centers"
 2022-12-07,15:58:27,"29 minutes, 31 seconds","1,772",Microsoft Windows 10 Pro (10.0.19045),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,16,"65,536","5,000,000","1,130,138","22,151,249","5,630,141",25%,"4x4 corners, 2x2 centers"
 2022-12-07,18:47:48,"1 hour, 49 minutes","6,550",Microsoft Windows 10 Pro (10.0.19045),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,17,"131,072","5,000,000","2,739,961","73,633,001","17,301,061",23%,"4x4 corners, 2x2 centers"

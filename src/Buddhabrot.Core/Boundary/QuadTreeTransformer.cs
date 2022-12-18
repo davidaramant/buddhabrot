@@ -23,8 +23,8 @@ public sealed class QuadTreeTransformer
 
     public RegionLookup Transform()
     {
-        var newNW = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.SW)]);
-        var newNE = Normalize(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.SE)]);
+        var newNW = Transform(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.SW)]);
+        var newNE = Transform(_oldTree[_visitedRegions.Root.GetChildIndex(Quadrant.SE)]);
 
         var rootChildrenIndex = _newTree.AddChildren(RegionNode.Empty, RegionNode.Empty, newNW, newNE);
         // No need to compute the root region type, it will always be border
@@ -33,7 +33,7 @@ public sealed class QuadTreeTransformer
         return new RegionLookup(_newTree, _visitedRegions.Height);
     }
 
-    public RegionNode Normalize(VisitNode node)
+    private RegionNode Transform(VisitNode node)
     {
         if (node.IsLeaf)
             return MakeLeaf(node.RegionType);
@@ -46,10 +46,10 @@ public sealed class QuadTreeTransformer
                 MakeLeaf(node.NE));
 
         return MakeQuad(
-            Normalize(_oldTree[node.GetChildIndex(Quadrant.SW)]),
-            Normalize(_oldTree[node.GetChildIndex(Quadrant.SE)]),
-            Normalize(_oldTree[node.GetChildIndex(Quadrant.NW)]),
-            Normalize(_oldTree[node.GetChildIndex(Quadrant.NE)]));
+            Transform(_oldTree[node.GetChildIndex(Quadrant.SW)]),
+            Transform(_oldTree[node.GetChildIndex(Quadrant.SE)]),
+            Transform(_oldTree[node.GetChildIndex(Quadrant.NW)]),
+            Transform(_oldTree[node.GetChildIndex(Quadrant.NE)]));
     }
 
     public RegionNode MakeQuad(RegionNode sw, RegionNode se, RegionNode nw, RegionNode ne)

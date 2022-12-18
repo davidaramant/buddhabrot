@@ -22,8 +22,8 @@ public class VisitedRegionsToRegionLookupTests
     [Fact]
     public void ShouldCondenseIdenticalLeaves()
     {
-        var normalizer = new QuadTreeTransformer(new VisitedRegions());
-        var node = normalizer.MakeQuad(
+        var transformer = new QuadTreeTransformer(new VisitedRegions());
+        var node = transformer.MakeQuad(
             RegionNode.Empty,
             RegionNode.Empty,
             RegionNode.Empty,

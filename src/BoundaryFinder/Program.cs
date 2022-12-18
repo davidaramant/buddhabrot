@@ -15,7 +15,7 @@ class Program
         int NumVisitedRegionNodes,
         int NumRegionLookupNodes)
     {
-        public double NormalizedSize => (double)NumRegionLookupNodes / NumVisitedRegionNodes;
+        public double DeduplicatedSize => (double)NumRegionLookupNodes / NumVisitedRegionNodes;
     }
 
     public static int Main(string[] args)
@@ -90,7 +90,7 @@ class Program
         table.AddRow("Border regions", metrics.NumBorderRegions.ToString("N0"));
         table.AddRow($"{nameof(VisitedRegions)} nodes", metrics.NumVisitedRegionNodes.ToString("N0"));
         table.AddRow($"{nameof(RegionLookup)} nodes", metrics.NumRegionLookupNodes.ToString("N0"));
-        table.AddRow($"Normalized size", metrics.NormalizedSize.ToString("P0"));
+        table.AddRow($"Deduplicated size", metrics.DeduplicatedSize.ToString("P0"));
 
         AnsiConsole.Write(table);
 
@@ -118,7 +118,7 @@ class Program
                         metrics.NumBorderRegions.ToString("N0"),
                         metrics.NumVisitedRegionNodes.ToString("N0"),
                         metrics.NumRegionLookupNodes.ToString("N0"),
-                        metrics.NormalizedSize.ToString("P0"),
+                        metrics.DeduplicatedSize.ToString("P0"),
                         note
                     }.Select(EscapeCsv)));
         }

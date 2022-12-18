@@ -85,7 +85,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             var transformer = new QuadTreeTransformer(visitedRegions);
             var lookup = await Task.Run(() => transformer.Transform(), cancelToken);
             
-            _log($"Normalized quad tree to Region Lookup ({stopwatch.Elapsed.Humanize(2)})\n"+
+            _log($"Transformed quad tree to Region Lookup ({stopwatch.Elapsed.Humanize(2)})\n"+
                  $" - Went from {visitedRegions.NodeCount:N0} to {lookup.NodeCount:N0} nodes ({(double)lookup.NodeCount/visitedRegions.NodeCount:P})");
 
             _log(string.Empty);

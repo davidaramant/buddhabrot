@@ -10,8 +10,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        VisitedRegionsDataSet.Create();
-        BenchmarkRunner.Run<VisitedRegionsBenchmark>();
+        //VisitedRegionsDataSet.Create();
+        //BenchmarkRunner.Run<VisitedRegionsBenchmark>();
 
         //BenchmarkRunner.Run<QuadNodeWithQuadrantBenchmarks>();
         //BenchmarkRunner.Run<QuadNodeGetQuadrantBenchmarks>();
@@ -23,6 +23,8 @@ class Program
         
         //CoordinateHashingTests.ComputeHistograms();
         //BenchmarkRunner.Run<CoordinateHashingBenchmarks>();
+
+        BenchmarkRunner.Run<SquareBoundaryIntersectionBenchmarks>();
 
         // var vrb = new VisitedRegionsBenchmark();
         // vrb.LoadDataSet();

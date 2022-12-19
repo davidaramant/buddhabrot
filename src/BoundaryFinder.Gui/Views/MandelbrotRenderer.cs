@@ -43,6 +43,7 @@ public sealed class MandelbrotRenderer : Control
     private RenderingArgs? _nextFrameArgs;
     private CancellationTokenSource _cancelSource = new();
     private Task _renderingTask = Task.CompletedTask;
+    private readonly List<(System.Drawing.Rectangle, RegionType)> _areasToDraw = new();
 
     private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
     private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
@@ -286,14 +287,14 @@ public sealed class MandelbrotRenderer : Control
                     destRect: args.Instructions.DestRect);
             }
 
-            var areasToDraw =
-                args.Lookup.GetVisibleAreas(args.SetBoundary, args.Instructions.GetDirtyRectangles());
+            _areasToDraw.Clear();
+            args.Lookup.GetVisibleAreas(args.SetBoundary, args.Instructions.GetDirtyRectangles(), _areasToDraw);
 
             using var paint = new SKPaint();
 
             var positionsToRender = new List<System.Drawing.Point>();
 
-            foreach (var (area, type) in areasToDraw)
+            foreach (var (area, type) in _areasToDraw)
             {
                 if (type == RegionType.Border && args.RenderInteriors)
                 {

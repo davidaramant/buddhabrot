@@ -24,12 +24,11 @@ public sealed class RegionLookup
         Height = height;
     }
 
-    public IReadOnlyList<(Rectangle Area, RegionType Type)> GetVisibleAreas(
+    public void GetVisibleAreas(
         SquareBoundary bounds,
-        IEnumerable<Rectangle> searchAreas)
+        IEnumerable<Rectangle> searchAreas,
+        ICollection<(Rectangle, RegionType)> visibleAreas)
     {
-        var visibleAreas = new List<(Rectangle, RegionType)>();
-
         foreach (var searchArea in searchAreas)
         {
             var toCheck = new Queue<(SquareBoundary, RegionNode)>();
@@ -86,7 +85,5 @@ public sealed class RegionLookup
                 }
             }
         }
-
-        return visibleAreas;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Buddhabrot.Core.Boundary.QuadTrees;
+using Buddhabrot.Core.ExtensionMethods.Drawing;
 
 namespace Buddhabrot.Core.Boundary;
 
@@ -43,7 +44,7 @@ public sealed class RegionLookup
                     continue;
 
                 var intersection = boundary.IntersectWith(searchArea);
-                if (intersection == Rectangle.Empty)
+                if (intersection.IsInvalid())
                     continue;
 
                 if (currentQuad.IsLeaf || boundary.IsPoint)
@@ -70,7 +71,7 @@ public sealed class RegionLookup
                     continue;
 
                 var intersection = boundary.IntersectWith(searchArea);
-                if (intersection == Rectangle.Empty)
+                if (intersection.IsInvalid())
                     continue;
 
                 if (currentQuad.IsLeaf || boundary.IsPoint)

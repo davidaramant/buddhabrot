@@ -21,7 +21,7 @@ public class SquareBoundaryTests
         yield return new object[]
         {
             new Rectangle(new Point(10, 10), new Size(10, 10)),
-            Rectangle.Empty
+            new Rectangle(new Point(10, 10), new Size(-8, -8)),
         };
         yield return new object[]
         {

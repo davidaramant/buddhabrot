@@ -29,7 +29,7 @@ public readonly record struct SquareBoundary(
 
     public SquareBoundary SW => new(X, Y + QuadrantLength, Scale - 1);
     public SquareBoundary SE => new(X + QuadrantLength, Y + QuadrantLength, Scale - 1);
-    public SquareBoundary NW => this with { Scale = Scale - 1 };
+    public SquareBoundary NW => this with {Scale = Scale - 1};
     public SquareBoundary NE => new(X + QuadrantLength, Y, Scale - 1);
 
     public Rectangle IntersectWith(Rectangle rect)
@@ -40,13 +40,8 @@ public readonly record struct SquareBoundary(
         int x2 = Math.Min(rect.X + rect.Width, X + length);
         int y1 = Math.Max(rect.Y, Y);
         int y2 = Math.Min(rect.Y + rect.Height, Y + length);
-
-        if (x2 >= x1 && y2 >= y1)
-        {
-            return new Rectangle(x1, y1, x2 - x1, y2 - y1);
-        }
-
-        return Rectangle.Empty;
+        
+        return new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
 
     public override string ToString() => $"({X}, {Y}), SideLength = {1 << Scale}";

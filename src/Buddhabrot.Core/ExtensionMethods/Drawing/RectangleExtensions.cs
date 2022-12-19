@@ -14,4 +14,6 @@ public static class RectangleExtensions
             }
         }
     }
+
+    public static bool IsInvalid(this Rectangle rect) => rect.Width <= 0 || rect.Height <= 0;
 }

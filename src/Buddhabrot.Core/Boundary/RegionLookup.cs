@@ -5,6 +5,8 @@ namespace Buddhabrot.Core.Boundary;
 
 public sealed class RegionLookup
 {
+    // Instance is reused to give the poor GC a rest
+    private readonly Stack<(SquareBoundary, RegionNode)> _toCheck = new ();
     public IReadOnlyList<RegionNode> Nodes { get; }
 
     public int Height { get; }
@@ -31,12 +33,11 @@ public sealed class RegionLookup
     {
         foreach (var searchArea in searchAreas)
         {
-            var toCheck = new Queue<(SquareBoundary, RegionNode)>();
-            toCheck.Enqueue((bounds, Nodes.Last()));
+            _toCheck.Push((bounds, Nodes.Last()));
 
-            while (toCheck.Any())
+            while (_toCheck.Any())
             {
-                var (boundary, currentQuad) = toCheck.Dequeue();
+                var (boundary, currentQuad) = _toCheck.Pop();
 
                 if (currentQuad.RegionType == RegionType.Empty)
                     continue;
@@ -51,19 +52,19 @@ public sealed class RegionLookup
                 }
                 else
                 {
-                    toCheck.Enqueue((boundary.SW, Nodes[currentQuad.GetChildIndex(Quadrant.SW)]));
-                    toCheck.Enqueue((boundary.SE, Nodes[currentQuad.GetChildIndex(Quadrant.SE)]));
-                    toCheck.Enqueue((boundary.NW, Nodes[currentQuad.GetChildIndex(Quadrant.NW)]));
-                    toCheck.Enqueue((boundary.NE, Nodes[currentQuad.GetChildIndex(Quadrant.NE)]));
+                    _toCheck.Push((boundary.SW, Nodes[currentQuad.GetChildIndex(Quadrant.SW)]));
+                    _toCheck.Push((boundary.SE, Nodes[currentQuad.GetChildIndex(Quadrant.SE)]));
+                    _toCheck.Push((boundary.NW, Nodes[currentQuad.GetChildIndex(Quadrant.NW)]));
+                    _toCheck.Push((boundary.NE, Nodes[currentQuad.GetChildIndex(Quadrant.NE)]));
                 }
             }
 
             // Check the mirrored values to build the bottom of the set
-            toCheck.Enqueue((bounds, Nodes.Last()));
+            _toCheck.Push((bounds, Nodes.Last()));
 
-            while (toCheck.Any())
+            while (_toCheck.Any())
             {
-                var (boundary, currentQuad) = toCheck.Dequeue();
+                var (boundary, currentQuad) = _toCheck.Pop();
 
                 if (currentQuad.RegionType == RegionType.Empty)
                     continue;
@@ -78,10 +79,10 @@ public sealed class RegionLookup
                 }
                 else
                 {
-                    toCheck.Enqueue((boundary.NW, Nodes[currentQuad.GetChildIndex(Quadrant.SW)]));
-                    toCheck.Enqueue((boundary.NE, Nodes[currentQuad.GetChildIndex(Quadrant.SE)]));
-                    toCheck.Enqueue((boundary.SW, Nodes[currentQuad.GetChildIndex(Quadrant.NW)]));
-                    toCheck.Enqueue((boundary.SE, Nodes[currentQuad.GetChildIndex(Quadrant.NE)]));
+                    _toCheck.Push((boundary.NW, Nodes[currentQuad.GetChildIndex(Quadrant.SW)]));
+                    _toCheck.Push((boundary.NE, Nodes[currentQuad.GetChildIndex(Quadrant.SE)]));
+                    _toCheck.Push((boundary.SW, Nodes[currentQuad.GetChildIndex(Quadrant.NW)]));
+                    _toCheck.Push((boundary.SE, Nodes[currentQuad.GetChildIndex(Quadrant.NE)]));
                 }
             }
         }

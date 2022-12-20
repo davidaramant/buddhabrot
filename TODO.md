@@ -84,7 +84,7 @@
   - [x] Pick palette to render with
     - [x] UI for palette choices
     - [x] Backend for picking palettes
-  - [ ] More palettes to choose 
-  - [ ] Deep zooms on enormous trees are slow (optimize RegionLookup)
+  - [ ] More palettes to choose from
+  - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
 - [ ] Update colors for the new region types
 - [ ] UI to create diff between two `RegionLookup`s

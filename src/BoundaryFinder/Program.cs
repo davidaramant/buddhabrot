@@ -22,7 +22,7 @@ class Program
     {
         if (args.Length is < 2 or > 3 ||
             !int.TryParse(args[0], out var power) ||
-            !int.TryParse(args[1], out var limitMillions))
+            !double.TryParse(args[1], out var limitMillions))
         {
             Console.WriteLine("Arguments: power limit");
             Console.WriteLine(" - Power is the vertical power");
@@ -32,7 +32,7 @@ class Program
 
         var note = args.Length == 3 ? args[2] : string.Empty;
 
-        var limit = limitMillions * 1_000_000;
+        var limit = (int)(limitMillions * 1_000_000);
 
         var boundaryParameters = new BoundaryParameters(new AreaDivisions(power), limit);
 

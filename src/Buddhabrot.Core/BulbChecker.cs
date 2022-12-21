@@ -13,10 +13,10 @@ public static class BulbChecker
     /// Does a fast check to see if a complex number lies within one of the larger bulbs of the Mandelbrot set.
     /// </summary>
     public static bool IsInsideBulbs(Complex number) =>
-        IsInMainCardoid(number) ||
+        IsInMainCardioid(number) ||
         IsInPositiveCircularBulbs(number);
 
-    static bool IsInMainCardoid(Complex number)
+    static bool IsInMainCardioid(Complex number)
     {
         var realMinusFourth = number.Real - 0.25;
         var imagSquared = number.Imaginary * number.Imaginary;

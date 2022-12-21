@@ -8,7 +8,7 @@
   - [ ] Allow changing local files location
 - [x] NUnit test project for manual "tests"
 - [x] CI builds on GitHub
-  - [ ] Pretty reporting of test results
+  - [x] ~~Pretty reporting of test results~~ - Tried "Publish Test Results". It's super slow and gives wonky output.
 - [x] Improve logging of calculating boundary so it can copied easier
 - [ ] Readme for boundary scanning
 

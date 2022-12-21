@@ -15,8 +15,8 @@ public sealed class VisualizeViewModel : ViewModelBase
     private readonly BorderDataProvider _dataProvider;
     private readonly Action<string> _log;
     private BoundaryParameters _selectedParameters = new(new AreaDivisions(0), 0);
-    private readonly ObservableAsPropertyHelper<int> _minimumIterationsCap;
-    private int _minimumIterations = 0;
+    private int _minIterations = 0;
+    private int _maxIterations = 100_000;
     private RegionLookup _lookup = RegionLookup.Empty;
     
     public ObservableCollection<BoundaryParameters> SavedBoundaries => _dataProvider.SavedBoundaries;
@@ -27,12 +27,16 @@ public sealed class VisualizeViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedParameters, value);
     }
 
-    public int MinimumIterationsCap => _minimumIterationsCap.Value;
-
-    public int MinimumIterations
+    public int MinIterations
     {
-        get => _minimumIterations;
-        set => this.RaiseAndSetIfChanged(ref _minimumIterations, value);
+        get => _minIterations;
+        set => this.RaiseAndSetIfChanged(ref _minIterations, value);
+    }
+    
+    public int MaxIterations
+    {
+        get => _maxIterations;
+        set => this.RaiseAndSetIfChanged(ref _maxIterations, value);
     }
 
     public RegionLookup Lookup
@@ -49,10 +53,6 @@ public sealed class VisualizeViewModel : ViewModelBase
         _log = log;
 
         var loadLookupCommand = ReactiveCommand.Create<BoundaryParameters>(LoadLookup);
-
-        this.WhenAnyValue(x => x.SelectedParameters,
-                bp => bp?.MaxIterations - 1 ?? 0)
-            .ToProperty(this, x => x.MinimumIterationsCap, out _minimumIterationsCap);
 
         this.WhenPropertyChanged(x => x.SelectedParameters, notifyOnInitialValue: false)
             .Where(x => x.Value != null)
@@ -82,6 +82,8 @@ public sealed class VisualizeViewModel : ViewModelBase
             var lookup = _dataProvider.LoadLookup(SelectedParameters);
 
             Lookup = lookup;
+            MinIterations = SelectedParameters.MaxIterations / 10;
+            MaxIterations = SelectedParameters.MaxIterations;
             _log($"Quad tree nodes: {Lookup.NodeCount:N0}");
         }
         catch (Exception e)

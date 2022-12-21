@@ -23,6 +23,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore src/Buddhabrot.sln
     - name: Build
-      run: dotnet build --no-restore --configuration Release src/Buddhabrot.sln
+      run: dotnet build --no-restore -c Release src/Buddhabrot.sln
     - name: Test
-      run: dotnet test --no-build --verbosity normal --configuration Release src/Buddhabrot.sln
+      run: dotnet test --no-build --verbosity normal -c Release -l trx src/Buddhabrot.sln
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action/composite@v2
+      if: always()
+      with:
+        trx_files: "**/TestResults/*.trx"

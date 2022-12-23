@@ -29,8 +29,14 @@ class Program
             Console.WriteLine(" - Limit is the max iteration limit in millions (IE 5 = 5,000,000)");
             return -1;
         }
+        
+        #if DEBUG
+        Console.WriteLine("WARNING - running in debug mode!");
+        #endif
 
         var note = args.Length == 3 ? args[2] : string.Empty;
+        
+        Console.WriteLine($"Write results to log: {!string.IsNullOrEmpty(note)}");
 
         var limit = (int)(limitMillions * 1_000_000);
 

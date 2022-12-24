@@ -6,3 +6,4 @@ Date,Time,Duration,Duration (seconds),OS,CPU,RAM,Vertical Power,Divisions,Limit,
 2022-12-12,20:18:42,"3 hours, 51 minutes","13,881",Microsoft Windows 10 Pro (10.0.19045),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,18,"262,144","1,000,000","6,631,127","247,307,569","54,501,429",22%,Same code version as Mac
 2022-12-16,23:04:26,"5 hours, 25 minutes","19,532",macOS (13.1),Apple M1 Max 10 Cores,32 GB,18,"262,144","1,000,000","6,631,127","247,307,569","52,412,437",21%,After quad tree split
 2022-12-17,17:29:21,"17 hours, 44 minutes","63,882",macOS (13.1),Apple M1 Max 10 Cores,32 GB,19,"524,288","1,000,000","16,055,471","835,671,901","166,247,033",20%,Is this even possible?
+2022-12-23,22:47:48,"6 hours, 7 minutes","22,058",Microsoft Windows 10 Pro (10.0.19045),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,19,"524,288","100,000","16,373,789","835,355,317","166,522,265",20%,Windows

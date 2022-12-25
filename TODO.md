@@ -43,6 +43,7 @@
 - [ ] Support diffing arbitrary quad trees
   - [x] ~~Do I need a more generic quad tree internal data structure?~~ - Split into two types of trees 
   - [x] Expand RegionType to 3 bits
+  - [ ] Separate RegionType for VisitedRegions and RegionLookup
   - [ ] Generate quad tree diffs
 - [ ] Diagnose problems with algorithm:
   - [ ] "Holes" in boundary/filaments
@@ -84,6 +85,7 @@
   - [x] Pick palette to render with
     - [x] UI for palette choices
     - [x] Backend for picking palettes
+    - [ ] Faster palette lookup for RegionType (dictionary)
   - [ ] More palettes to choose from
   - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
 - [ ] Update colors for the new region types

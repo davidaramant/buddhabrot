@@ -45,6 +45,7 @@
   - [x] Expand RegionType to 3 bits
   - [x] Separate RegionType for VisitedRegions and RegionLookup
   - [ ] Generate quad tree diffs
+    - [x] Determine Region Type based on Left and Right
 - [ ] Diagnose problems with algorithm:
   - [ ] "Holes" in boundary/filaments
   - [ ] Useless border regions around i = 0
@@ -90,3 +91,8 @@
   - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
 - [ ] Update colors for the new region types
 - [ ] UI to create diff between two `RegionLookup`s
+  - [ ] New tab
+    - [ ] Select Left side
+    - [ ] Select Right side
+    - [ ] Compute
+  - [ ] Show diffs in drop down correctly on Visualize tab

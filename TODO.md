@@ -91,7 +91,7 @@
   - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
 - [ ] Update colors for the new region types
 - [ ] UI to create diff between two `RegionLookup`s
-  - [ ] New tab
+  - [x] New tab
     - [ ] Select Left side
     - [ ] Select Right side
     - [ ] Compute

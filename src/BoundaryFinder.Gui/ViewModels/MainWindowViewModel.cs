@@ -13,6 +13,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public VisualizeViewModel Visualize { get; }
     public CalculateBoundaryViewModel CalculateBoundary { get; }
+    public DiffViewModel Diff { get; }
     public SettingsViewModel Settings { get; }
 
     public string LogOutput
@@ -25,6 +26,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         Visualize = new VisualizeViewModel(_dataProvider, Log);
         CalculateBoundary = new CalculateBoundaryViewModel(_dataProvider, Log);
+        Diff = new DiffViewModel(_dataProvider, Log);
         Settings = new SettingsViewModel(_dataProvider, Log);
     }
     

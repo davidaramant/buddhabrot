@@ -24,6 +24,10 @@
             <TabItem Header="Calculate Boundary">
                 <views:CalculateBoundaryTab DataContext="{Binding CalculateBoundary}" />
             </TabItem>
+            
+            <TabItem Header="Calculate Diff">
+                <views:DiffTab DataContext="{Binding Diff}" />
+            </TabItem>
 
             <TabItem Header="Settings">
                 <views:SettingsTab DataContext="{Binding Settings}" />

@@ -28,7 +28,7 @@ public sealed class QuadTreeTransformer
 
         var rootChildrenIndex = _newTree.AddChildren(RegionNode.Empty, RegionNode.Empty, newNW, newNE);
         // No need to compute the root region type, it will always be border
-        _newTree.Add(RegionNode.MakeBranch(RegionType.Border, rootChildrenIndex));
+        _newTree.Add(RegionNode.MakeBranch(LookupRegionType.Border, rootChildrenIndex));
 
         return new RegionLookup(_newTree, _visitedRegions.Height);
     }
@@ -78,20 +78,20 @@ public sealed class QuadTreeTransformer
         return node;
     }
 
-    private static RegionNode MakeLeaf(RegionType type) => RegionNode.MakeLeaf(FilterRegionType(type));
+    private static RegionNode MakeLeaf(VisitedRegionType type) => RegionNode.MakeLeaf(FilterRegionType(type));
 
-    private static RegionType FilterRegionType(RegionType type) =>
+    private static LookupRegionType FilterRegionType(VisitedRegionType type) =>
         type switch
         {
-            RegionType.InSet => RegionType.Empty,
-            RegionType.Rejected => RegionType.Empty,
-            _ => type
+            VisitedRegionType.Border => LookupRegionType.Border,
+            VisitedRegionType.Filament => LookupRegionType.Filament,
+            _ => LookupRegionType.Empty
         };
 
-    public static RegionType CondenseRegionType(RegionNode sw, RegionNode se, RegionNode nw, RegionNode ne) =>
+    public static LookupRegionType CondenseRegionType(RegionNode sw, RegionNode se, RegionNode nw, RegionNode ne) =>
         CondenseRegionType(sw.RegionType, se.RegionType, nw.RegionType, ne.RegionType);
 
-    public static RegionType CondenseRegionType(RegionType sw, RegionType se, RegionType nw, RegionType ne)
+    public static LookupRegionType CondenseRegionType(LookupRegionType sw, LookupRegionType se, LookupRegionType nw, LookupRegionType ne)
     {
         int borderCount = 0;
         int filamentCount = 0;
@@ -102,22 +102,22 @@ public sealed class QuadTreeTransformer
         Count(ne);
 
         if (borderCount == 0 && filamentCount == 0)
-            return RegionType.Empty;
+            return LookupRegionType.Empty;
 
         if (borderCount >= filamentCount)
-            return RegionType.Border;
+            return LookupRegionType.Border;
 
-        return RegionType.Filament;
+        return LookupRegionType.Filament;
 
-        void Count(RegionType type)
+        void Count(LookupRegionType type)
         {
             switch (type)
             {
-                case RegionType.Border:
+                case LookupRegionType.Border:
                     borderCount++;
                     break;
 
-                case RegionType.Filament:
+                case LookupRegionType.Filament:
                     filamentCount++;
                     break;
             }

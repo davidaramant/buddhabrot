@@ -8,7 +8,7 @@ public class VisitNodeWithQuadrantBenchmarks
 {
     private const int Size = 100;
     private readonly Quadrant[] _quadrants = new Quadrant[Size];
-    private readonly RegionType[] _types = new RegionType[Size];
+    private readonly VisitedRegionType[] _types = new VisitedRegionType[Size];
 
     [GlobalSetup]
     public void FillArrays()
@@ -17,7 +17,7 @@ public class VisitNodeWithQuadrantBenchmarks
         for (int i = 0; i < Size; i++)
         {
             _quadrants[i] = (Quadrant) rand.Next(4);
-            _types[i] = (RegionType) rand.Next(4);
+            _types[i] = (VisitedRegionType) rand.Next(4);
         }
     }
 
@@ -33,7 +33,7 @@ public class VisitNodeWithQuadrantBenchmarks
 
         return node;
 
-        static VisitNode WithQuadrant(VisitNode node, Quadrant quadrant, RegionType type) =>
+        static VisitNode WithQuadrant(VisitNode node, Quadrant quadrant, VisitedRegionType type) =>
             quadrant switch
             {
                 Quadrant.SW => node.WithSW(type),
@@ -56,7 +56,7 @@ public class VisitNodeWithQuadrantBenchmarks
 
         return node;
 
-        static VisitNode WithQuadrant(VisitNode node, Quadrant quadrant, RegionType type)
+        static VisitNode WithQuadrant(VisitNode node, Quadrant quadrant, VisitedRegionType type)
         {
             var offset = 10 - 2 * (int) quadrant;
             return new(node.Encoded | ((uint) type << offset) + (int) NodeType.LeafQuad);

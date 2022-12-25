@@ -30,7 +30,7 @@ public sealed class RegionLookup
     public void GetVisibleAreas(
         SquareBoundary bounds,
         IEnumerable<Rectangle> searchAreas,
-        ICollection<(Rectangle, RegionType)> visibleAreas)
+        ICollection<(Rectangle, LookupRegionType)> visibleAreas)
     {
         foreach (var searchArea in searchAreas)
         {
@@ -40,7 +40,7 @@ public sealed class RegionLookup
             {
                 var (boundary, currentQuad) = _toCheck.Pop();
 
-                if (currentQuad.RegionType == RegionType.Empty)
+                if (currentQuad.RegionType == LookupRegionType.Empty)
                     continue;
 
                 var intersection = boundary.IntersectWith(searchArea);
@@ -67,7 +67,7 @@ public sealed class RegionLookup
             {
                 var (boundary, currentQuad) = _toCheck.Pop();
 
-                if (currentQuad.RegionType == RegionType.Empty)
+                if (currentQuad.RegionType == LookupRegionType.Empty)
                     continue;
 
                 var intersection = boundary.IntersectWith(searchArea);

@@ -13,18 +13,18 @@ public readonly struct VisitNode
 
     public VisitNode(uint encoded) => Encoded = encoded;
 
-    public static readonly VisitNode Empty = MakeLeaf(RegionType.Empty);
+    public static readonly VisitNode Empty = MakeLeaf(VisitedRegionType.Empty);
 
-    public static VisitNode MakeLeaf(RegionType type) => new((uint)type << 2);
+    public static VisitNode MakeLeaf(VisitedRegionType type) => new((uint)type << 2);
 
     public static VisitNode MakeLeaf(
-        RegionType sw,
-        RegionType se,
-        RegionType nw,
-        RegionType ne) => new(
-        (uint)sw << 11 |
-        (uint)se << 8 |
-        (uint)nw << 5 |
+        VisitedRegionType sw,
+        VisitedRegionType se,
+        VisitedRegionType nw,
+        VisitedRegionType ne) => new(
+        (uint)sw << 8 |
+        (uint)se << 6 |
+        (uint)nw << 4 |
         (uint)ne << 2 |
         0b10);
 
@@ -47,34 +47,34 @@ public readonly struct VisitNode
         }
     }
 
-    public RegionType RegionType => (RegionType)(Encoded >> 2 & 0b111);
+    public VisitedRegionType RegionType => (VisitedRegionType)(Encoded >> 2 & 0b11);
 
     public int ChildIndex => (int)(Encoded >> 1);
     public int GetChildIndex(Quadrant quadrant) => ChildIndex + (int)quadrant;
 
-    public RegionType SW => (RegionType)(Encoded >> 11 & 0b111);
-    public RegionType SE => (RegionType)(Encoded >> 8 & 0b111);
-    public RegionType NW => (RegionType)(Encoded >> 5 & 0b111);
-    public RegionType NE => (RegionType)(Encoded >> 2 & 0b111);
+    public VisitedRegionType SW => (VisitedRegionType)(Encoded >> 8 & 0b11);
+    public VisitedRegionType SE => (VisitedRegionType)(Encoded >> 6 & 0b11);
+    public VisitedRegionType NW => (VisitedRegionType)(Encoded >> 4 & 0b11);
+    public VisitedRegionType NE => (VisitedRegionType)(Encoded >> 2 & 0b11);
 
-    public RegionType GetQuadrant(Quadrant quadrant)
+    public VisitedRegionType GetQuadrant(Quadrant quadrant)
     {
         var offset = QuadrantOffset(quadrant);
-        return (RegionType)(Encoded >> offset & 0b111);
+        return (VisitedRegionType)(Encoded >> offset & 0b11);
     }
 
-    public VisitNode WithSW(RegionType sw) => new(Encoded | ((uint)sw << 11) | 0b10);
-    public VisitNode WithSE(RegionType se) => new(Encoded | ((uint)se << 8) | 0b10);
-    public VisitNode WithNW(RegionType nw) => new(Encoded | ((uint)nw << 5) | 0b10);
-    public VisitNode WithNE(RegionType ne) => new(Encoded | ((uint)ne << 2) | 0b10);
+    public VisitNode WithSW(VisitedRegionType sw) => new(Encoded | ((uint)sw << 8) | 0b10);
+    public VisitNode WithSE(VisitedRegionType se) => new(Encoded | ((uint)se << 6) | 0b10);
+    public VisitNode WithNW(VisitedRegionType nw) => new(Encoded | ((uint)nw << 4) | 0b10);
+    public VisitNode WithNE(VisitedRegionType ne) => new(Encoded | ((uint)ne << 2) | 0b10);
 
-    public VisitNode WithQuadrant(Quadrant quadrant, RegionType type)
+    public VisitNode WithQuadrant(Quadrant quadrant, VisitedRegionType type)
     {
         var offset = QuadrantOffset(quadrant);
         return new(Encoded | ((uint)type << offset) | 0b10);
     }
 
-    private static int QuadrantOffset(Quadrant quadrant) => 11 - 3 * (int)quadrant;
+    private static int QuadrantOffset(Quadrant quadrant) => 8 - 2 * (int)quadrant;
 
     public override string ToString() => NodeType + NodeType switch
     {

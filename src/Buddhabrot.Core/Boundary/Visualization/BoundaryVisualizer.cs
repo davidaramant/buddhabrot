@@ -96,12 +96,12 @@ public static class BoundaryVisualizer
 
         return image;
 
-        SKColor PickColorFromType(RegionType type) =>
+        SKColor PickColorFromType(LookupRegionType type) =>
             type switch
             {
-                RegionType.Border => palette.Border,
-                RegionType.Filament => palette.Filament,
-                RegionType.Empty => palette.InBounds,
+                LookupRegionType.Border => palette.Border,
+                LookupRegionType.Filament => palette.Filament,
+                LookupRegionType.Empty => palette.InBounds,
                 _ => throw new Exception("Unknown region type")
             };
     }

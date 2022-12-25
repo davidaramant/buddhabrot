@@ -58,7 +58,7 @@ public class VisitedRegionsBenchmark
     {
         private readonly HashSet<RegionId> _cache = new();
 
-        public void Visit(RegionId id, RegionType _) => _cache.Add(id);
+        public void Visit(RegionId id, VisitedRegionType _) => _cache.Add(id);
 
         public bool HasVisited(RegionId id) => _cache.Contains(id);
 

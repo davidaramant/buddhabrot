@@ -22,26 +22,26 @@ public static class BoundaryCalculator
 
             var corners = cornerComputer.GetRegionCorners(region);
 
-            RegionType regionType;
+            VisitedRegionType visitedRegionType;
 
             if (corners.ContainsBorder)
             {
-                regionType = RegionType.Border;
+                visitedRegionType = VisitedRegionType.Border;
             }
             else if (corners.InsideSet)
             {
-                regionType = RegionType.Rejected;
+                visitedRegionType = VisitedRegionType.Rejected;
             }
             else
             {
-                regionType = cornerComputer.DoesRegionContainFilaments(region)
-                    ? RegionType.Filament
-                    : RegionType.Rejected;
+                visitedRegionType = cornerComputer.DoesRegionContainFilaments(region)
+                    ? VisitedRegionType.Filament
+                    : VisitedRegionType.Rejected;
             }
 
-            visitedRegions.Visit(region, regionType);
+            visitedRegions.Visit(region, visitedRegionType);
 
-            if (regionType != RegionType.Rejected)
+            if (visitedRegionType != VisitedRegionType.Rejected)
             {
                 AddRegionToCheck(region.MoveUp());
                 AddRegionToCheck(region.MoveUpRight());

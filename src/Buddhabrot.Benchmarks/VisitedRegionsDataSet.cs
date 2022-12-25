@@ -76,7 +76,7 @@ public static class VisitedRegionsDataSet
 
         public VisitedRegionsProxy(int rows) => _visitedRegions = new VisitedRegions(rows);
 
-        public void Visit(RegionId id, RegionType type)
+        public void Visit(RegionId id, VisitedRegionType type)
         {
             Commands.LogAdd(id, type);
             _visitedRegions.Visit(id, type);
@@ -102,11 +102,11 @@ public static class VisitedRegionsDataSet
 
         public CommandType GetCommandType(int i) => (CommandType)(Metadata[i] & 1);
 
-        public RegionType GetRegionType(int i) => (RegionType)(Metadata[i] >> 1);
+        public VisitedRegionType GetRegionType(int i) => (VisitedRegionType)(Metadata[i] >> 1);
 
         public RegionId GetId(int i) => new(X[i], Y[i]);
 
-        public void LogAdd(RegionId id, RegionType type)
+        public void LogAdd(RegionId id, VisitedRegionType type)
         {
             Metadata.Add((byte)((byte)type << 1));
             X.Add(id.X);

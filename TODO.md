@@ -43,7 +43,7 @@
 - [ ] Support diffing arbitrary quad trees
   - [x] ~~Do I need a more generic quad tree internal data structure?~~ - Split into two types of trees 
   - [x] Expand RegionType to 3 bits
-  - [ ] Separate RegionType for VisitedRegions and RegionLookup
+  - [x] Separate RegionType for VisitedRegions and RegionLookup
   - [ ] Generate quad tree diffs
 - [ ] Diagnose problems with algorithm:
   - [ ] "Holes" in boundary/filaments

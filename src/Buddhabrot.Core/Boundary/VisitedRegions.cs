@@ -32,7 +32,7 @@ public sealed class VisitedRegions : IVisitedRegions
             VisitNode.Empty
         };
 
-    public void Visit(RegionId id, RegionType type)
+    public void Visit(RegionId id, VisitedRegionType type)
     {
         // Do we have to expand the tree?
         if (!_dimensions.Contains(id))
@@ -113,7 +113,7 @@ public sealed class VisitedRegions : IVisitedRegions
             return false;
 
         if(node.IsLeafQuad)
-            return node.GetQuadrant(quadrant) != RegionType.Empty;
+            return node.GetQuadrant(quadrant) != VisitedRegionType.Empty;
         
         // Branch
         var index = node.GetChildIndex(quadrant);
@@ -136,22 +136,22 @@ public sealed class VisitedRegions : IVisitedRegions
         // All leaves are going to be empty; skip them
         if (node.IsLeafQuad)
         {
-            if (node.SW == RegionType.Border)
+            if (node.SW == VisitedRegionType.Border)
             {
                 borderRegions.Add(dimensions.GetRegion(Quadrant.SW));
             }
 
-            if (node.SE == RegionType.Border)
+            if (node.SE == VisitedRegionType.Border)
             {
                 borderRegions.Add(dimensions.GetRegion(Quadrant.SE));
             }
 
-            if (node.NW == RegionType.Border)
+            if (node.NW == VisitedRegionType.Border)
             {
                 borderRegions.Add(dimensions.GetRegion(Quadrant.NW));
             }
 
-            if (node.NE == RegionType.Border)
+            if (node.NE == VisitedRegionType.Border)
             {
                 borderRegions.Add(dimensions.GetRegion(Quadrant.NE));
             }

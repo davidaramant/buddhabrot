@@ -35,6 +35,7 @@
 <body>
 <h1>Definitions</h1>
 <h2>Region Types</h2>
+<h3>Visited Region Types</h3>
 <table>
     <tr>
         <th>Value</th>
@@ -56,21 +57,44 @@
         <td>3</td>
         <td>Rejected</td>
     </tr>
+</table>
+<h3>Lookup Region Types</h3>
+<table>
+    <tr>
+        <th>Value</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>0</td>
+        <td>Empty</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Border</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Filament</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>?</td>
+    </tr>
     <tr>
         <td>4</td>
-        <td>InSet</td>
+        <td>?</td>
     </tr>
     <tr>
         <td>5</td>
-        <td>OnlyLeft</td>
+        <td>?</td>
     </tr>
     <tr>
         <td>6</td>
-        <td>OnlyRight</td>
+        <td>?</td>
     </tr>
     <tr>
         <td>7</td>
-        <td>MixedDiff</td>
+        <td>?</td>
     </tr>
 </table>
 <h2>Terms</h2>
@@ -88,11 +112,6 @@
 <h1>Notes</h1>
 <p>VisitedRegions and RegionLookup similar but distinct node formats. The two types of tree have some similarities and differences:</p>
 <ul>
-    <li>Both trees use the same RegionType enum, but do not use all 8 types.</li>
-    <li>RegionLookup does not use the Rejected or InSet region types. These are replaced with Unknown when the tree is built
-        from VisitedRegions. These node types aren't visually interesting and just causes the quad tree to bloat in
-        size.
-    </li>
     <li>RegionLookup is deduplicated (subtrees can be referenced multiple times). It is not intended to be modified.</li>
     <li>RegionLookup does not bother with the Leaf Quad node type. Since the tree is deduplicated, the space savings are minimal.</li>
 </ul>
@@ -135,8 +154,8 @@
         <th>0</th>
     </tr>
     <tr>
-        <td colspan="27" class="unused">Unused</td>
-        <td colspan="3">Region Type</td>
+        <td colspan="28" class="unused">Unused</td>
+        <td colspan="2">Region Type</td>
         <td>0</td>
         <td>0</td>
     </tr>
@@ -178,11 +197,11 @@
         <th>0</th>
     </tr>
     <tr>
-        <td colspan="18" class="unused">Unused</td>
-        <td colspan="3">SW</td>
-        <td colspan="3">SE</td>
-        <td colspan="3">NW</td>
-        <td colspan="3">NE</td>
+        <td colspan="22" class="unused">Unused</td>
+        <td colspan="2">SW</td>
+        <td colspan="2">SE</td>
+        <td colspan="2">NW</td>
+        <td colspan="2">NE</td>
         <td>1</td>
         <td>0</td>
     </tr>

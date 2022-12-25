@@ -1,13 +1,9 @@
 ﻿namespace Buddhabrot.Core.Boundary;
 
-public enum RegionType
+public enum VisitedRegionType
 {
     Empty,
     Border,
     Filament,
     Rejected,
-    InSet,
-    OnlyLeft,
-    OnlyRight,
-    MixedDiff
 }

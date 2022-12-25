@@ -20,11 +20,11 @@ public class VisitNodeGetQuadrantBenchmarks
     }
 
     [Benchmark(Baseline = true)]
-    public RegionType Switch()
+    public VisitedRegionType Switch()
     {
         var node = VisitNode.Empty;
 
-        RegionType type = default;
+        VisitedRegionType type = default;
         for (int i = 0; i < Size; i++)
         {
             type = GetQuadrant(node, _quadrants[i]);
@@ -32,7 +32,7 @@ public class VisitNodeGetQuadrantBenchmarks
 
         return type;
 
-        static RegionType GetQuadrant(VisitNode node, Quadrant quadrant) =>
+        static VisitedRegionType GetQuadrant(VisitNode node, Quadrant quadrant) =>
             quadrant switch
             {
                 Quadrant.SW => node.SW,
@@ -44,11 +44,11 @@ public class VisitNodeGetQuadrantBenchmarks
     }
 
     [Benchmark]
-    public RegionType Branchless()
+    public VisitedRegionType Branchless()
     {
         var node = VisitNode.Empty;
 
-        RegionType type = default;
+        VisitedRegionType type = default;
         for (int i = 0; i < Size; i++)
         {
             type = GetQuadrant(node, _quadrants[i]);
@@ -56,10 +56,10 @@ public class VisitNodeGetQuadrantBenchmarks
 
         return type;
 
-        static RegionType GetQuadrant(VisitNode node, Quadrant quadrant)
+        static VisitedRegionType GetQuadrant(VisitNode node, Quadrant quadrant)
         {
             var offset = QuadrantOffset(quadrant);
-            return (RegionType) (node.Encoded >> offset & 0b11);
+            return (VisitedRegionType) (node.Encoded >> offset & 0b11);
         }
     }
     

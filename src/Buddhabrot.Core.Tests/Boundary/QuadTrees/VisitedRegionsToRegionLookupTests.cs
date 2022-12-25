@@ -6,15 +6,14 @@ namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
 public class VisitedRegionsToRegionLookupTests
 {
     [Theory]
-    [InlineData(RegionType.Border, RegionType.Empty, RegionType.Empty, RegionType.Empty, RegionType.Border)]
-    [InlineData(RegionType.Border, RegionType.Filament, RegionType.Rejected, RegionType.Empty, RegionType.Border)]
-    [InlineData(RegionType.Border, RegionType.Filament, RegionType.Filament, RegionType.Empty, RegionType.Filament)]
+    [InlineData(LookupRegionType.Border, LookupRegionType.Empty, LookupRegionType.Empty, LookupRegionType.Empty, LookupRegionType.Border)]
+    [InlineData(LookupRegionType.Border, LookupRegionType.Filament, LookupRegionType.Filament, LookupRegionType.Empty, LookupRegionType.Filament)]
     public void ShouldCondenseRegionTypes(
-        RegionType ll,
-        RegionType lr,
-        RegionType ul,
-        RegionType ur,
-        RegionType expected)
+        LookupRegionType ll,
+        LookupRegionType lr,
+        LookupRegionType ul,
+        LookupRegionType ur,
+        LookupRegionType expected)
     {
         QuadTreeTransformer.CondenseRegionType(ll, lr, ul, ur).Should().Be(expected);
     }

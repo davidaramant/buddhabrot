@@ -18,7 +18,7 @@ public static class RegionLookupUtil
         var vr = new VisitedRegions(borderPoints.Length);
         foreach (var p in borderPoints)
         {
-            vr.Visit(new RegionId(p.X, p.Y), RegionType.Border);
+            vr.Visit(new RegionId(p.X, p.Y), VisitedRegionType.Border);
         }
 
         var transformer = new QuadTreeTransformer(vr);

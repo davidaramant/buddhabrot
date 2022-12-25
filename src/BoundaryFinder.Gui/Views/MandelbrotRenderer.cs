@@ -43,7 +43,7 @@ public sealed class MandelbrotRenderer : Control
     private RenderingArgs? _nextFrameArgs;
     private CancellationTokenSource _cancelSource = new();
     private Task _renderingTask = Task.CompletedTask;
-    private readonly List<(System.Drawing.Rectangle, RegionType)> _areasToDraw = new();
+    private readonly List<(System.Drawing.Rectangle, LookupRegionType)> _areasToDraw = new();
 
     private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
     private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
@@ -296,7 +296,7 @@ public sealed class MandelbrotRenderer : Control
 
             foreach (var (area, type) in _areasToDraw)
             {
-                if (type == RegionType.Border && args.RenderInteriors)
+                if (type == LookupRegionType.Border && args.RenderInteriors)
                 {
                     positionsToRender.AddRange(area.GetAllPositions());
                 }
@@ -304,9 +304,8 @@ public sealed class MandelbrotRenderer : Control
                 {
                     paint.Color = type switch
                     {
-                        RegionType.Border => args.Palette.Border,
-                        RegionType.Filament => args.Palette.Filament,
-                        RegionType.Rejected => args.Palette.InSet,
+                        LookupRegionType.Border => args.Palette.Border,
+                        LookupRegionType.Filament => args.Palette.Filament,
                         _ => args.Palette.InBounds,
                     };
 

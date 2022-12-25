@@ -25,7 +25,7 @@ public class BoundaryScanningProcess : BaseVisualization
         int MaxY,
         IReadOnlyList<Step> Steps);
 
-    public readonly record struct Step(int X, int Y, RegionType Type);
+    public readonly record struct Step(int X, int Y, VisitedRegionType Type);
 
     [Test]
     public void CreateAndSaveSession()
@@ -48,12 +48,12 @@ public class BoundaryScanningProcess : BaseVisualization
 
         var session = LoadSession();
 
-        var colorLookup = new Dictionary<RegionType, SKColor>
+        var colorLookup = new Dictionary<VisitedRegionType, SKColor>
         {
-            { RegionType.Empty, palette.Visited },
-            { RegionType.Border, palette.Border },
-            { RegionType.Filament, palette.Filament },
-            { RegionType.Rejected, palette.InSet },
+            { VisitedRegionType.Empty, palette.Visited },
+            { VisitedRegionType.Border, palette.Border },
+            { VisitedRegionType.Filament, palette.Filament },
+            { VisitedRegionType.Rejected, palette.InSet },
         };
 
         using var image = new RasterImage(session.MaxX + 1, session.MaxY + 1, scale: 2);
@@ -149,15 +149,15 @@ public class BoundaryScanningProcess : BaseVisualization
     private sealed class VisitedRegionProxy : IVisitedRegions
     {
         private readonly IVisitedRegions _real;
-        private readonly Action<RegionId, RegionType> _logVisit;
+        private readonly Action<RegionId, VisitedRegionType> _logVisit;
 
-        public VisitedRegionProxy(IVisitedRegions real, Action<RegionId, RegionType> logVisit)
+        public VisitedRegionProxy(IVisitedRegions real, Action<RegionId, VisitedRegionType> logVisit)
         {
             _real = real;
             _logVisit = logVisit;
         }
 
-        public void Visit(RegionId id, RegionType type)
+        public void Visit(RegionId id, VisitedRegionType type)
         {
             _logVisit(id, type);
 

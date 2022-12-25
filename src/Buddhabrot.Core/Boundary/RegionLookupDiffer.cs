@@ -32,22 +32,10 @@ public static class RegionLookupDiffer
         var cache = new Cache();
         var diffTree = new List<Node>();
 
-        var leftRoot = left.Nodes.Last();
-        var rightRoot = right.Nodes.Last();
-
-        var nwDiff = Diff(
-            left.Nodes, left.Nodes[leftRoot.GetChildIndex(Quadrant.NW)],
-            right.Nodes, right.Nodes[rightRoot.GetChildIndex(Quadrant.NW)],
-            diffTree, cache);
-        var neDiff = Diff(
-            left.Nodes, left.Nodes[leftRoot.GetChildIndex(Quadrant.NE)],
-            right.Nodes, right.Nodes[rightRoot.GetChildIndex(Quadrant.NE)],
-            diffTree, cache);
-
-        var rootChildrenIndex = diffTree.AddChildren(RegionNode.Empty, RegionNode.Empty, nwDiff, neDiff);
-        diffTree.Add(
-            RegionNode.MakeBranch(CondenseRegionType(RegionNode.Empty, RegionNode.Empty, nwDiff, neDiff),
-                rootChildrenIndex));
+        diffTree.Add(Diff(
+            left.Nodes, left.Nodes.Last(),
+            right.Nodes, right.Nodes.Last(),
+            diffTree, cache));
 
         return new RegionLookup(diffTree, height);
     }
@@ -60,17 +48,65 @@ public static class RegionLookupDiffer
         List<Node> diffTree,
         Cache cache)
     {
-        // TODO: Recurse
-        return Node.Empty;
+        if (left.IsLeaf && right.IsLeaf)
+            return Node.MakeLeaf(DetermineType(left.RegionType, right.RegionType));
+
+        if (!left.IsLeaf && !right.IsLeaf)
+        {
+            var sw = Diff(
+                leftTree, leftTree[left.GetChildIndex(Quadrant.SW)],
+                rightTree, rightTree[right.GetChildIndex(Quadrant.SW)],
+                diffTree, cache);
+
+            var se = Diff(
+                leftTree, leftTree[left.GetChildIndex(Quadrant.SE)],
+                rightTree, rightTree[right.GetChildIndex(Quadrant.SE)],
+                diffTree, cache);
+
+            var nw = Diff(
+                leftTree, leftTree[left.GetChildIndex(Quadrant.NW)],
+                rightTree, rightTree[right.GetChildIndex(Quadrant.NW)],
+                diffTree, cache);
+
+            var ne = Diff(
+                leftTree, leftTree[left.GetChildIndex(Quadrant.NE)],
+                rightTree, rightTree[right.GetChildIndex(Quadrant.NE)],
+                diffTree, cache);
+
+            return MakeQuad(diffTree, cache, sw, se, nw, ne);
+        }
+
+        return left.IsLeaf
+            ? CopySubtree(rightTree, right, rightType => DetermineType(left.RegionType, rightType), diffTree, cache)
+            : CopySubtree(leftTree, left, leftType => DetermineType(leftType, right.RegionType), diffTree, cache);
     }
 
-    private static RegionNode MakeQuad(
-        List<Node> nodes,
+    private static Node CopySubtree(
+        IReadOnlyList<Node> nodes,
+        Node node,
+        Func<Type, Type> determineType,
+        List<Node> diffTree,
+        Cache cache)
+    {
+        if (node.IsLeaf)
+            return Node.MakeLeaf(determineType(node.RegionType));
+
+        return MakeQuad(
+            diffTree,
+            cache,
+            sw: CopySubtree(nodes, nodes[node.GetChildIndex(Quadrant.SW)], determineType, diffTree, cache),
+            se: CopySubtree(nodes, nodes[node.GetChildIndex(Quadrant.SE)], determineType, diffTree, cache),
+            nw: CopySubtree(nodes, nodes[node.GetChildIndex(Quadrant.NW)], determineType, diffTree, cache),
+            ne: CopySubtree(nodes, nodes[node.GetChildIndex(Quadrant.NE)], determineType, diffTree, cache));
+    }
+
+    private static Node MakeQuad(
+        List<Node> diffTree,
         Cache cache,
-        RegionNode sw,
-        RegionNode se,
-        RegionNode nw,
-        RegionNode ne)
+        Node sw,
+        Node se,
+        Node nw,
+        Node ne)
     {
         if (sw.IsLeaf &&
             sw == se &&
@@ -83,7 +119,7 @@ public static class RegionLookupDiffer
         var key = (sw: sw, se: se, nw: nw, ne: ne);
         if (!cache.TryGetValue(key, out var node))
         {
-            var index = nodes.AddChildren(sw, se, nw, ne);
+            var index = diffTree.AddChildren(sw, se, nw, ne);
             node = RegionNode.MakeBranch(CondenseRegionType(sw, se, nw, ne), index);
 
             cache.Add(key, node);

@@ -9,6 +9,7 @@ public sealed class RegionLookup
     // Instance is reused to give the poor GC a rest
     private readonly Stack<(SquareBoundary, RegionNode)> _toCheck = new ();
     public IReadOnlyList<RegionNode> Nodes { get; }
+    private readonly RegionNode _root;
 
     public int Height { get; }
     public int NodeCount => Nodes.Count;
@@ -19,12 +20,14 @@ public sealed class RegionLookup
     {
         Nodes = new[] {RegionNode.Empty};
         Height = 1;
+        _root = Nodes.Last();
     }
 
     public RegionLookup(IReadOnlyList<RegionNode> nodes, int height)
     {
         Nodes = nodes;
         Height = height;
+        _root = nodes.Last();
     }
 
     public void GetVisibleAreas(
@@ -34,7 +37,7 @@ public sealed class RegionLookup
     {
         foreach (var searchArea in searchAreas)
         {
-            _toCheck.Push((bounds, Nodes.Last()));
+            _toCheck.Push((bounds, _root));
 
             while (_toCheck.Any())
             {
@@ -61,7 +64,7 @@ public sealed class RegionLookup
             }
 
             // Check the mirrored values to build the bottom of the set
-            _toCheck.Push((bounds, Nodes.Last()));
+            _toCheck.Push((bounds, _root));
 
             while (_toCheck.Any())
             {

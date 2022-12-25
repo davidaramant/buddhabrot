@@ -28,7 +28,7 @@ public sealed class QuadTreeTransformer
 
         var rootChildrenIndex = _newTree.AddChildren(RegionNode.Empty, RegionNode.Empty, newNW, newNE);
         // No need to compute the root region type, it will always be border
-        _newTree.Add(RegionNode.MakeBranch(LookupRegionType.Border, rootChildrenIndex));
+        _newTree.Add(RegionNode.MakeBranch(LookupRegionType.EmptyToBorder, rootChildrenIndex));
 
         return new RegionLookup(_newTree, _visitedRegions.Height);
     }
@@ -83,8 +83,8 @@ public sealed class QuadTreeTransformer
     private static LookupRegionType FilterRegionType(VisitedRegionType type) =>
         type switch
         {
-            VisitedRegionType.Border => LookupRegionType.Border,
-            VisitedRegionType.Filament => LookupRegionType.Filament,
+            VisitedRegionType.Border => LookupRegionType.EmptyToBorder,
+            VisitedRegionType.Filament => LookupRegionType.EmptyToFilament,
             _ => LookupRegionType.Empty
         };
 
@@ -105,19 +105,19 @@ public sealed class QuadTreeTransformer
             return LookupRegionType.Empty;
 
         if (borderCount >= filamentCount)
-            return LookupRegionType.Border;
+            return LookupRegionType.EmptyToBorder;
 
-        return LookupRegionType.Filament;
+        return LookupRegionType.EmptyToFilament;
 
         void Count(LookupRegionType type)
         {
             switch (type)
             {
-                case LookupRegionType.Border:
+                case LookupRegionType.EmptyToBorder:
                     borderCount++;
                     break;
 
-                case LookupRegionType.Filament:
+                case LookupRegionType.EmptyToFilament:
                     filamentCount++;
                     break;
             }

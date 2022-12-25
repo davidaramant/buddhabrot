@@ -99,8 +99,8 @@ public static class BoundaryVisualizer
         SKColor PickColorFromType(LookupRegionType type) =>
             type switch
             {
-                LookupRegionType.Border => palette.Border,
-                LookupRegionType.Filament => palette.Filament,
+                LookupRegionType.EmptyToBorder => palette.Border,
+                LookupRegionType.EmptyToFilament => palette.Filament,
                 LookupRegionType.Empty => palette.InBounds,
                 _ => throw new Exception("Unknown region type")
             };

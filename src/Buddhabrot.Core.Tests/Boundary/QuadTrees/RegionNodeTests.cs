@@ -5,10 +5,16 @@ namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
 
 public class RegionNodeTests
 {
+    public static IEnumerable<object[]> AllRegionTypes()
+    {
+        foreach (var entry in Enum.GetValues<LookupRegionType>())
+        {
+            yield return new object[] {entry};
+        }
+    }
+    
     [Theory]
-    [InlineData(LookupRegionType.Empty)]
-    [InlineData(LookupRegionType.Border)]
-    [InlineData(LookupRegionType.Filament)]
+    [MemberData(nameof(AllRegionTypes))]
     public void ShouldConstructLeafCorrectly(LookupRegionType type)
     {
         var node = RegionNode.MakeLeaf(type);
@@ -18,9 +24,7 @@ public class RegionNodeTests
     }
 
     [Theory]
-    [InlineData(LookupRegionType.Empty)]
-    [InlineData(LookupRegionType.Border)]
-    [InlineData(LookupRegionType.Filament)]
+    [MemberData(nameof(AllRegionTypes))]
     public void ShouldConstructBranchCorrectly(LookupRegionType type)
     {
         var node = RegionNode.MakeBranch(type, 123_456);

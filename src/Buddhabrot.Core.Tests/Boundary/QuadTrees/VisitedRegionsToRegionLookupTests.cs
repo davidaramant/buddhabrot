@@ -6,8 +6,8 @@ namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
 public class VisitedRegionsToRegionLookupTests
 {
     [Theory]
-    [InlineData(LookupRegionType.Border, LookupRegionType.Empty, LookupRegionType.Empty, LookupRegionType.Empty, LookupRegionType.Border)]
-    [InlineData(LookupRegionType.Border, LookupRegionType.Filament, LookupRegionType.Filament, LookupRegionType.Empty, LookupRegionType.Filament)]
+    [InlineData(LookupRegionType.EmptyToBorder, LookupRegionType.Empty, LookupRegionType.Empty, LookupRegionType.Empty, LookupRegionType.EmptyToBorder)]
+    [InlineData(LookupRegionType.EmptyToBorder, LookupRegionType.EmptyToFilament, LookupRegionType.EmptyToFilament, LookupRegionType.Empty, LookupRegionType.EmptyToFilament)]
     public void ShouldCondenseRegionTypes(
         LookupRegionType ll,
         LookupRegionType lr,

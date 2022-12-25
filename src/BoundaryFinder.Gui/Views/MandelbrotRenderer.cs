@@ -296,7 +296,7 @@ public sealed class MandelbrotRenderer : Control
 
             foreach (var (area, type) in _areasToDraw)
             {
-                if (type == LookupRegionType.Border && args.RenderInteriors)
+                if (type.IsBorder() && args.RenderInteriors)
                 {
                     positionsToRender.AddRange(area.GetAllPositions());
                 }
@@ -304,8 +304,8 @@ public sealed class MandelbrotRenderer : Control
                 {
                     paint.Color = type switch
                     {
-                        LookupRegionType.Border => args.Palette.Border,
-                        LookupRegionType.Filament => args.Palette.Filament,
+                        LookupRegionType.EmptyToBorder => args.Palette.Border,
+                        LookupRegionType.EmptyToFilament => args.Palette.Filament,
                         _ => args.Palette.InBounds,
                     };
 

@@ -28,15 +28,15 @@ public class RegionLookupTests
         {
             RegionNode.Empty,
             RegionNode.Empty,
-            RegionNode.MakeLeaf(LookupRegionType.Border),
+            RegionNode.MakeLeaf(LookupRegionType.EmptyToBorder),
             RegionNode.Empty,
             
             RegionNode.Empty,
             RegionNode.Empty,
-            RegionNode.MakeBranch(LookupRegionType.Border, 0), 
+            RegionNode.MakeBranch(LookupRegionType.EmptyToBorder, 0), 
             RegionNode.Empty,
             
-            RegionNode.MakeBranch(LookupRegionType.Border, 4), 
+            RegionNode.MakeBranch(LookupRegionType.EmptyToBorder, 4), 
         }, 2);
         var visibleAreas = new List<(Rectangle, LookupRegionType)>();
 

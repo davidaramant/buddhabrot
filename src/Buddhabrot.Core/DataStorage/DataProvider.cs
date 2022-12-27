@@ -7,7 +7,7 @@ public sealed class DataProvider
 {
     public string DataStoragePath { get; set; } = string.Empty;
 
-    public IReadOnlyList<BoundaryDataSet> GetBoundaryDataSets()
+    public IReadOnlyList<BoundaryDataSet> GetRegionLookupDataSets()
     {
         if (!Directory.Exists(DataStoragePath))
         {
@@ -15,7 +15,7 @@ public sealed class DataProvider
         }
 
         return
-            Directory.GetFiles(DataStoragePath, "*.boundaries")
+            Directory.GetFiles(DataStoragePath, "*.quadtree")
                 .Select(filePath => BoundaryDataSet.FromDescription(Path.GetFileNameWithoutExtension(filePath)))
                 .OrderBy(bp => bp)
                 .ToList();
@@ -32,7 +32,7 @@ public sealed class DataProvider
         using var stream = File.OpenRead(Path.Combine(DataStoragePath, ToBoundaryFileName(parameters)));
         return BoundarySerializer.LoadRegions(stream).Regions;
     }
-    
+
     public void SaveBoundaryRegions(BoundaryParameters parameters, IEnumerable<RegionId> regions, RegionLookup lookup)
     {
         if (!Directory.Exists(DataStoragePath))
@@ -60,7 +60,7 @@ public sealed class DataProvider
                 FileMode.Create);
         BoundarySerializer.Save(lookup, stream);
     }
-    
+
 
     private static string ToBoundaryFileName(BoundaryParameters parameters) =>
         parameters.Description + ".boundaries";

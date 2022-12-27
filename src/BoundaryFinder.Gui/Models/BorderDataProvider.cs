@@ -47,7 +47,7 @@ public sealed class BorderDataProvider
     private void RefreshSavedBoundaries()
     {
         SavedBoundaries.Clear();
-        SavedBoundaries.AddRange(_dataProvider.GetBoundaryDataSets());
+        SavedBoundaries.AddRange(_dataProvider.GetRegionLookupDataSets());
     }
 
     public void UpdateDataStoragePath(string newPath)

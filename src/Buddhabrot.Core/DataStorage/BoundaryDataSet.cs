@@ -34,7 +34,7 @@ public sealed record BoundaryDataSet(
 
     public static IComparer<BoundaryDataSet> Comparer { get; } = new IsDiffDescriptionRelationalComparer();
 
-    public static BoundaryDataSet Empty =>
+    public static readonly BoundaryDataSet Empty =
         new(false, new BoundaryParameters(new AreaDivisions(0), 0), "Nothing", "Nothing");
 
     public int CompareTo(BoundaryDataSet? other) => Comparer.Compare(this, other);
@@ -46,13 +46,13 @@ public sealed record BoundaryDataSet(
 
     public static BoundaryDataSet FromDiff(BoundaryParameters left, BoundaryParameters right)
     {
-        var description = $"Diff - {left.Description} - {right.Description}";
+        static string Shorthand(BoundaryParameters bp) => $"({bp.Divisions.VerticalPower}) {bp.MaxIterations:N0}";
         
         return new(
             IsDiff: true,
             Combine(left, right),
-            Description: description,
-            UserDescription: description);
+            Description: $"Diff - {left.Description} - {right.Description}",
+            UserDescription: $"Diff - {Shorthand(left)} | {Shorthand(right)}");
     }
 
     private static BoundaryParameters Combine(BoundaryParameters one, BoundaryParameters two) => new(

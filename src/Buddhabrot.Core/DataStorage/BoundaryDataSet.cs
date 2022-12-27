@@ -8,27 +8,36 @@ public sealed record BoundaryDataSet(
     string Description,
     string UserDescription) : IComparable<BoundaryDataSet>
 {
+    private sealed class IsDiffDescriptionRelationalComparer : IComparer<BoundaryDataSet>
+    {
+        public int Compare(BoundaryDataSet? x, BoundaryDataSet? y)
+        {
+            // Diffs come last
+            // Higher vertical powers come first
+            // Then the max iterations (higher first)
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return 1;
+            if (ReferenceEquals(null, x)) return -1;
+
+        
+            var diff = x.IsDiff.CompareTo(y.IsDiff);
+            if (diff != 0)
+                return diff;
+
+            var power = y.Parameters.Divisions.VerticalPower.CompareTo(x.Parameters.Divisions.VerticalPower);
+            if (power != 0)
+                return power;
+
+            return y.Parameters.MaxIterations.CompareTo(x.Parameters.MaxIterations);
+        }
+    }
+
+    public static IComparer<BoundaryDataSet> Comparer { get; } = new IsDiffDescriptionRelationalComparer();
+
     public static BoundaryDataSet Empty =>
         new(false, new BoundaryParameters(new AreaDivisions(0), 0), "Nothing", "Nothing");
-    
-    public int CompareTo(BoundaryDataSet? other)
-    {
-        // Diffs come last
-        // Higher vertical powers come first
-        // Then the max iterations (higher first)
-        
-        if (ReferenceEquals(this, other)) return 0;
-        if (ReferenceEquals(null, other)) return 1;
-        var diff = IsDiff.CompareTo(other.IsDiff);
-        if (diff != 0)
-            return diff;
 
-        var power = other.Parameters.Divisions.VerticalPower.CompareTo(Parameters.Divisions.VerticalPower);
-        if (power != 0)
-            return power;
-
-        return other.Parameters.MaxIterations.CompareTo(Parameters.MaxIterations);
-    }
+    public int CompareTo(BoundaryDataSet? other) => Comparer.Compare(this, other);
     
     public override string ToString() => UserDescription;
 

@@ -19,7 +19,8 @@
                 Grid.Column="0"
                 BorderThickness="1"
                 BorderBrush="Black"
-                Margin="4">
+                Margin="4"
+                HorizontalAlignment="Stretch">
             <ListBox
                 Items="{Binding LeftDataSets}"
                 SelectedItem="{Binding SelectedLeft}" />
@@ -29,7 +30,8 @@
                 Grid.Column="1"
                 BorderThickness="1"
                 BorderBrush="Black"
-                Margin="4">
+                Margin="4"
+                HorizontalAlignment="Stretch">
             <ListBox
                 Items="{Binding RightDataSets}"
                 SelectedItem="{Binding SelectedRight}" />

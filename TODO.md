@@ -92,7 +92,7 @@
 - [ ] Update colors for the new region types
 - [ ] UI to create diff between two `RegionLookup`s
   - [x] New tab
-    - [ ] Select Left side
-    - [ ] Select Right side
+    - [x] UI framework
+    - [ ] Queries for left & right side
     - [ ] Compute
   - [x] Show diffs in drop down correctly on Visualize tab

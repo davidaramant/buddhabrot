@@ -11,13 +11,13 @@ namespace BoundaryFinder.Gui.Models;
 public sealed class BorderDataProvider
 {
     private readonly string _defaultDataSetPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
         "Buddhabrot",
         "Mandelbrot Set Boundaries");
 
     private readonly DataProvider _dataProvider;
     public string LocalDataStoragePath => _dataProvider.DataStoragePath;
-    public ObservableCollection<BoundaryParameters> SavedBoundaries { get; } = new();
+    public ObservableCollection<BoundaryDataSet> SavedBoundaries { get; } = new();
 
     public BorderDataProvider(DataProvider dataProvider)
     {
@@ -38,10 +38,17 @@ public sealed class BorderDataProvider
         RefreshSavedBoundaries();
     }
 
+    public void SaveDiff(BoundaryParameters left, BoundaryParameters right, RegionLookup lookup)
+    {
+        _dataProvider.SaveDiff(left, right, lookup);
+
+        RefreshSavedBoundaries();
+    }
+
     private void RefreshSavedBoundaries()
     {
         SavedBoundaries.Clear();
-        SavedBoundaries.AddRange(_dataProvider.GetBoundaryParameters());
+        SavedBoundaries.AddRange(_dataProvider.GetBoundaryDataSets());
     }
 
     public void UpdateDataStoragePath(string newPath)
@@ -50,8 +57,5 @@ public sealed class BorderDataProvider
         RefreshSavedBoundaries();
     }
 
-    public IReadOnlyList<RegionId> LoadRegions(BoundaryParameters parameters) =>
-        _dataProvider.GetBoundaryRegions(parameters);
-
-    public RegionLookup LoadLookup(BoundaryParameters parameters) => _dataProvider.GetLookup(parameters);
+    public RegionLookup LoadLookup(BoundaryDataSet parameters) => _dataProvider.GetLookup(parameters);
 }

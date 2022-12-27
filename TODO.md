@@ -95,4 +95,4 @@
     - [ ] Select Left side
     - [ ] Select Right side
     - [ ] Compute
-  - [ ] Show diffs in drop down correctly on Visualize tab
+  - [x] Show diffs in drop down correctly on Visualize tab

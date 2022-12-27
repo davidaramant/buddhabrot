@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using BoundaryFinder.Gui.Models;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Visualization;
+using Buddhabrot.Core.DataStorage;
 using DynamicData.Binding;
 using ReactiveUI;
 
@@ -14,14 +15,14 @@ public sealed class VisualizeViewModel : ViewModelBase
 {
     private readonly BorderDataProvider _dataProvider;
     private readonly Action<string> _log;
-    private BoundaryParameters _selectedParameters = new(new AreaDivisions(0), 0);
+    private BoundaryDataSet _selectedParameters = BoundaryDataSet.Empty;
     private int _minIterations = 0;
     private int _maxIterations = 100_000;
     private RegionLookup _lookup = RegionLookup.Empty;
     
-    public ObservableCollection<BoundaryParameters> SavedBoundaries => _dataProvider.SavedBoundaries;
+    public ObservableCollection<BoundaryDataSet> SavedBoundaries => _dataProvider.SavedBoundaries;
 
-    public BoundaryParameters SelectedParameters
+    public BoundaryDataSet SelectedParameters
     {
         get => _selectedParameters;
         set => this.RaiseAndSetIfChanged(ref _selectedParameters, value);
@@ -52,7 +53,7 @@ public sealed class VisualizeViewModel : ViewModelBase
         _dataProvider = dataProvider;
         _log = log;
 
-        var loadLookupCommand = ReactiveCommand.Create<BoundaryParameters>(LoadLookup);
+        var loadLookupCommand = ReactiveCommand.Create<BoundaryDataSet>(LoadLookup);
 
         this.WhenPropertyChanged(x => x.SelectedParameters, notifyOnInitialValue: false)
             .Where(x => x.Value != null)
@@ -75,15 +76,15 @@ public sealed class VisualizeViewModel : ViewModelBase
         }
     }
 
-    private void LoadLookup(BoundaryParameters parameters)
+    private void LoadLookup(BoundaryDataSet parameters)
     {
         try
         {
             var lookup = _dataProvider.LoadLookup(SelectedParameters);
 
             Lookup = lookup;
-            MinIterations = SelectedParameters.MaxIterations / 10;
-            MaxIterations = SelectedParameters.MaxIterations;
+            MinIterations = SelectedParameters.Parameters.MaxIterations / 10;
+            MaxIterations = SelectedParameters.Parameters.MaxIterations;
             _log($"Quad tree nodes: {Lookup.NodeCount:N0}");
         }
         catch (Exception e)

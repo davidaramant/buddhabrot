@@ -6,6 +6,7 @@ using BoundaryFinder.Gui.Models;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.DataStorage;
+using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
 
@@ -19,8 +20,9 @@ public sealed class VisualizeViewModel : ViewModelBase
     private int _minIterations = 0;
     private int _maxIterations = 100_000;
     private RegionLookup _lookup = RegionLookup.Empty;
-    
-    public ObservableCollection<BoundaryDataSet> SavedBoundaries => _dataProvider.SavedBoundaries;
+
+    private readonly ReadOnlyObservableCollection<BoundaryDataSet> _savedBoundaries;
+    public ReadOnlyObservableCollection<BoundaryDataSet> SavedBoundaries => _savedBoundaries;
 
     public BoundaryDataSet SelectedParameters
     {
@@ -53,6 +55,8 @@ public sealed class VisualizeViewModel : ViewModelBase
         _dataProvider = dataProvider;
         _log = log;
 
+        _dataProvider.SavedBoundaries.Connect().Bind(out _savedBoundaries).Subscribe();
+        
         var loadLookupCommand = ReactiveCommand.Create<BoundaryDataSet>(LoadLookup);
 
         this.WhenPropertyChanged(x => x.SelectedParameters, notifyOnInitialValue: false)

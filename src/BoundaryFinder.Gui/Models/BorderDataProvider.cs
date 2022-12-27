@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage;
@@ -17,7 +16,7 @@ public sealed class BorderDataProvider
 
     private readonly DataProvider _dataProvider;
     public string LocalDataStoragePath => _dataProvider.DataStoragePath;
-    public ObservableCollection<BoundaryDataSet> SavedBoundaries { get; } = new();
+    public SourceList<BoundaryDataSet> SavedBoundaries { get; } = new();
 
     public BorderDataProvider(DataProvider dataProvider)
     {

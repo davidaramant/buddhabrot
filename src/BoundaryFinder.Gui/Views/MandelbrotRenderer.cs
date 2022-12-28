@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -302,12 +300,7 @@ public sealed class MandelbrotRenderer : Control
                 }
                 else
                 {
-                    paint.Color = type switch
-                    {
-                        LookupRegionType.EmptyToBorder => args.Palette.Border,
-                        LookupRegionType.EmptyToFilament => args.Palette.Filament,
-                        _ => args.Palette.InBounds,
-                    };
+                    paint.Color = args.Palette[type];
 
                     canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
                 }

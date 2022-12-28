@@ -75,7 +75,7 @@ public static class BoundaryVisualizer
         {
             if (quad.IsLeaf)
             {
-                r.DrawCell(x, y, depth, PickColorFromType(quad.RegionType));
+                r.DrawCell(x, y, depth, palette[quad.RegionType]);
                 return;
             }
 
@@ -95,14 +95,5 @@ public static class BoundaryVisualizer
             0, 0);
 
         return image;
-
-        SKColor PickColorFromType(LookupRegionType type) =>
-            type switch
-            {
-                LookupRegionType.EmptyToBorder => palette.Border,
-                LookupRegionType.EmptyToFilament => palette.Filament,
-                LookupRegionType.Empty => palette.InBounds,
-                _ => throw new Exception("Unknown region type")
-            };
     }
 }

@@ -5,19 +5,25 @@ namespace Buddhabrot.Core.Boundary.Visualization;
 
 public interface IBoundaryPalette
 {
-    SKColor Visited { get; }
     SKColor Background { get; }
     SKColor InBounds { get; }
-    SKColor InSet { get; }
-    SKColor Border { get; }
+    
+    // TODO: These should be based on a modifier or something, since "Border" is more than one color now
     SKColor BorderInSet { get; }
     SKColor BorderInRange { get; }
     SKColor BorderEmpty { get; }
-    SKColor Filament { get; }
+    
+    SKColor this[LookupRegionType type] { get; }
 }
 
 public abstract class BasePalette
 {
+    private readonly SKColor[] _palette;
+
+    public SKColor this[LookupRegionType type] => _palette[(int) type];
+
+    protected BasePalette(SKColor[] palette) => _palette = palette;
+
     public override string ToString() => GetType().Name.Replace("Palette", string.Empty).Humanize();
 
     public static IReadOnlyCollection<IBoundaryPalette> AllPalettes { get; } = new IBoundaryPalette[]
@@ -32,7 +38,18 @@ public sealed class PastelPalette : BasePalette, IBoundaryPalette
 {
     public static IBoundaryPalette Instance { get; } = new PastelPalette();
 
-    private PastelPalette()
+    private PastelPalette() : base(
+        new[]
+        {
+            SKColors.White, // Empty
+            new(0xFF011627), // EmptyToBorder
+            new(0xFFe71d36), // EmptyToFilament
+            SKColors.Black, // BorderToEmpty
+            SKColors.Purple, // BorderToFilament
+            SKColors.Gray, // FilamentToEmpty
+            SKColors.Aqua, // FilamentToBorder
+            SKColors.Red, // MixedDif
+        })
     {
     }
 
@@ -52,7 +69,18 @@ public sealed class BluePalette : BasePalette, IBoundaryPalette
 {
     public static IBoundaryPalette Instance { get; } = new BluePalette();
 
-    private BluePalette()
+    private BluePalette() : base(
+        new[]
+        {
+            SKColors.White, // Empty
+            new(0xFF212135), // EmptyToBorder
+            new(0xFF02c9e0), // EmptyToFilament
+            SKColors.DarkRed, // BorderToEmpty
+            SKColors.Purple, // BorderToFilament
+            SKColors.Red, // FilamentToEmpty
+            SKColors.MediumPurple, // FilamentToBorder
+            SKColors.Green, // MixedDif
+        })
     {
     }
 

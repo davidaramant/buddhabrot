@@ -39,8 +39,6 @@ public class BoundaryScanningProcess : BaseVisualization
     [Test]
     public async Task GenerateFramesAsync()
     {
-        var palette = PastelPalette.Instance;
-
         foreach (var png in OutputPath.GetFiles("*.png"))
         {
             png.Delete();
@@ -50,14 +48,14 @@ public class BoundaryScanningProcess : BaseVisualization
 
         var colorLookup = new Dictionary<VisitedRegionType, SKColor>
         {
-            { VisitedRegionType.Empty, palette.Visited },
-            { VisitedRegionType.Border, palette.Border },
-            { VisitedRegionType.Filament, palette.Filament },
-            { VisitedRegionType.Rejected, palette.InSet },
+            { VisitedRegionType.Empty, SKColors.White },
+            { VisitedRegionType.Border, SKColors.Blue },
+            { VisitedRegionType.Filament, SKColors.Aqua },
+            { VisitedRegionType.Rejected, SKColors.Gray },
         };
 
         using var image = new RasterImage(session.MaxX + 1, session.MaxY + 1, scale: 2);
-        image.Fill(palette.InBounds);
+        image.Fill(SKColors.White);
 
         var fire = new[]
         {

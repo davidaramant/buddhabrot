@@ -86,13 +86,14 @@
   - [x] Pick palette to render with
     - [x] UI for palette choices
     - [x] Backend for picking palettes
-    - [ ] Faster palette lookup for RegionType (dictionary)
+    - [x] Faster palette lookup for RegionType (dictionary)
+    - [ ] Show a palette legend in the UI
   - [ ] More palettes to choose from
   - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
 - [ ] Update colors for the new region types
-- [ ] UI to create diff between two `RegionLookup`s
+- [x] UI to create diff between two `RegionLookup`s
   - [x] New tab
     - [x] UI framework
     - [x] Queries for left & right side
-    - [ ] Compute
+    - [x] Compute
   - [x] Show diffs in drop down correctly on Visualize tab

@@ -99,7 +99,8 @@
                 x:Name="MandelbrotRenderer"
                 Lookup="{Binding Lookup}"
                 MinimumIterations="{Binding MinIterations}"
-                MaximumIterations="{Binding MaxIterations}" />
+                MaximumIterations="{Binding MaxIterations}"
+                Palette="{Binding Palette}"/>
         </Border>
 
         <Grid
@@ -113,7 +114,7 @@
                 Grid.Column="1"
                 Margin="4"
                 Items="{x:Static viz:BasePalette.AllPalettes}"
-                SelectedItem="{Binding #MandelbrotRenderer.Palette}" />
+                SelectedItem="{Binding Palette}" />
             <Button
                 Grid.Column="2"
                 Margin="4"

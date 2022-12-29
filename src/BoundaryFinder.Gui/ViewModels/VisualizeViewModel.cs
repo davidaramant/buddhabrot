@@ -20,6 +20,7 @@ public sealed class VisualizeViewModel : ViewModelBase
     private int _minIterations = 0;
     private int _maxIterations = 100_000;
     private RegionLookup _lookup = RegionLookup.Empty;
+    private IBoundaryPalette _palette = BluePalette.Instance;
 
     private readonly ReadOnlyObservableCollection<BoundaryDataSet> _savedBoundaries;
     public ReadOnlyObservableCollection<BoundaryDataSet> SavedBoundaries => _savedBoundaries;
@@ -46,6 +47,12 @@ public sealed class VisualizeViewModel : ViewModelBase
     {
         get => _lookup;
         private set => this.RaiseAndSetIfChanged(ref _lookup, value);
+    }
+    
+    public IBoundaryPalette Palette
+    {
+        get => _palette;
+        set => this.RaiseAndSetIfChanged(ref _palette, value);
     }
 
     public ReactiveCommand<Unit, Unit> SaveQuadTreeRenderingCommand { get; }

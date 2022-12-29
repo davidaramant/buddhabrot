@@ -91,6 +91,7 @@
   - [ ] More palettes to choose from
   - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
 - [ ] Update colors for the new region types
+  - [ ] Compute the colors for InSet/Outside/InRange
 - [x] UI to create diff between two `RegionLookup`s
   - [x] New tab
     - [x] UI framework

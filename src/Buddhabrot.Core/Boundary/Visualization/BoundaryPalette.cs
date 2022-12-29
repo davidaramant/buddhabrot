@@ -60,16 +60,8 @@ public sealed class PastelPalette : BasePalette, IBoundaryPalette
         })
     {
     }
-
-    public SKColor Visited { get; } = new(0xFFE4F8F4);
     public SKColor Background { get; } = new(0xFFcaf1eb);
     public SKColor InsideCircle { get; } = new(0xFFf1fcf8);
-    public SKColor InSet { get; } = new(0xFF96e2d9);
-    public SKColor Border { get; } = new(0xFF011627);
-    public SKColor BorderInSet { get; } = new(0xFF4c7c80);
-    public SKColor BorderInRange { get; } = new(0xFFff9f1c);
-    public SKColor BorderEmpty { get; } = new(0xFF741a2f);
-    public SKColor Filament { get; } = new(0xFFe71d36);
 }
 
 // https://colorkit.co/palette/212135-264aa7-02c9e0-f7fbfb-ffffff/
@@ -77,7 +69,8 @@ public sealed class BluePalette : BasePalette, IBoundaryPalette
 {
     public static IBoundaryPalette Instance { get; } = new BluePalette();
 
-    private BluePalette() : base(new[]
+    private BluePalette() : base(
+        new[]
         {   
             SKColors.Black, // InSet
             SKColors.DimGray, // OutsideSet
@@ -97,16 +90,6 @@ public sealed class BluePalette : BasePalette, IBoundaryPalette
     {
     }
 
-    public SKColor Border { get; } = new(0xFF212135);
     public SKColor Background { get; } = new(0xFFFFFFFF);
     public SKColor InsideCircle { get; } = new(0xFFf7fbfb);
-    public SKColor Filament { get; } = new(0xFF02c9e0);
-    public SKColor BorderEmpty { get; } = new(0xFF264aa7);
-    public SKColor BorderInSet => Border;
-
-
-    // Not updated
-    public SKColor Visited { get; } = new(0xFFE4F8F4);
-    public SKColor InSet { get; } = new(0xFF96e2d9);
-    public SKColor BorderInRange { get; } = new(0xFFff9f1c);
 }

@@ -46,7 +46,7 @@ public sealed class MandelbrotRenderer : Control
     private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
     private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
 
-    private PixelSize PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
+    private PixelSize PixelBounds => new(Math.Max(1, (int) Bounds.Width), Math.Max(1, (int) Bounds.Height));
 
     public static readonly StyledProperty<ViewPort> ViewPortProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, ViewPort>(nameof(ViewPort));
@@ -162,7 +162,7 @@ public sealed class MandelbrotRenderer : Control
                 {
                     _isPanning = false;
                     var pos = e.GetPosition(this);
-                    SetBoundary = SetBoundary.ZoomIn((int)pos.X, (int)pos.Y);
+                    SetBoundary = SetBoundary.ZoomIn((int) pos.X, (int) pos.Y);
                     await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
                 }
             }
@@ -212,8 +212,8 @@ public sealed class MandelbrotRenderer : Control
         if (_isPanning)
         {
             var currentPos = e.GetPosition(this);
-            var deltaX = (int)(currentPos.X - _panningStartPoint.X);
-            var deltaY = (int)(currentPos.Y - _panningStartPoint.Y);
+            var deltaX = (int) (currentPos.X - _panningStartPoint.X);
+            var deltaY = (int) (currentPos.Y - _panningStartPoint.Y);
 
             _panningOffset = new PixelVector(deltaX, deltaY);
             InvalidateVisual();
@@ -224,7 +224,7 @@ public sealed class MandelbrotRenderer : Control
 
     public override void Render(DrawingContext context)
     {
-        var size = new System.Drawing.Size((int)Bounds.Width, (int)Bounds.Height);
+        var size = new System.Drawing.Size((int) Bounds.Width, (int) Bounds.Height);
 
         ViewPort = ViewPort.FromResolution(
             size,
@@ -265,16 +265,16 @@ public sealed class MandelbrotRenderer : Control
         // TODO: Check for cancellation
         using (var context = _backBuffer.CreateDrawingContext(null))
         {
-            var skiaContext = (ISkiaDrawingContextImpl)context;
+            var skiaContext = (ISkiaDrawingContextImpl) context;
             var canvas = skiaContext.SkCanvas;
 
             canvas.DrawRect(0, 0, args.Width, args.Height,
-                new SKPaint { Color = args.Palette.Background });
+                new SKPaint {Color = args.Palette.Background});
 
             var center = args.SetBoundary.Center;
             var radius = args.SetBoundary.QuadrantLength;
 
-            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InBounds });
+            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint {Color = args.Palette.InsideCircle});
 
             if (args.Instructions.PasteFrontBuffer)
             {
@@ -294,7 +294,7 @@ public sealed class MandelbrotRenderer : Control
 
             foreach (var (area, type) in _areasToDraw)
             {
-                if (type.IsBorder() && args.RenderInteriors)
+                if (args.RenderInteriors && type.IsBorder())
                 {
                     positionsToRender.AddRange(area.GetAllPositions());
                 }
@@ -321,18 +321,14 @@ public sealed class MandelbrotRenderer : Control
                 for (int i = 0; i < points.Length; i++)
                 {
                     var time = escapeTimes[i];
-                    if (time.IsInfinite)
+                    var classification = time switch
                     {
-                        paint.Color = args.Palette.BorderInSet;
-                    }
-                    else if (time.Iterations > args.MinIterations)
-                    {
-                        paint.Color = args.Palette.BorderInRange;
-                    }
-                    else
-                    {
-                        paint.Color = args.Palette.BorderEmpty;
-                    }
+                        {IsInfinite: true} => PointClassification.InSet,
+                        var t when t.Iterations > args.MinIterations => PointClassification.InRange,
+                        _ => PointClassification.OutsideSet,
+                    };
+
+                    paint.Color = args.Palette[classification];
 
                     canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
                 }

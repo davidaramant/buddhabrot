@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive;
+using System.Threading.Tasks;
 using BoundaryFinder.Gui.Models;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage;
 using DynamicData;
 using DynamicData.Binding;
+using Humanizer;
 using ReactiveUI;
 
 namespace BoundaryFinder.Gui.ViewModels;
@@ -64,17 +67,20 @@ public sealed class DiffViewModel : ViewModelBase
         var canDiff = this.WhenAnyValue(t => t.SelectedLeft, t => t.SelectedRight,
             (left, right) => left != null && right != null);
 
-        ComputeDiffCommand = ReactiveCommand.Create(ComputeDiff, canDiff);
+        ComputeDiffCommand = ReactiveCommand.CreateFromTask(ComputeDiffAsync, canDiff);
     }
 
-    private void ComputeDiff()
+    private async Task ComputeDiffAsync()
     {
+        var timer = Stopwatch.StartNew();
         try
         {
             var left = _dataProvider.LoadLookup(SelectedLeft!);
             var right = _dataProvider.LoadLookup(SelectedRight!);
 
-            var diff = RegionLookupDiffer.Diff(left, right);
+            var diff = await Task.Run(() => RegionLookupDiffer.Diff(left, right));
+
+            _log($"Took {timer.Elapsed.Humanize(2)} to calculate diff of {diff.NodeCount:N0} nodes");
 
             _dataProvider.SaveDiff(SelectedLeft!.Parameters, SelectedRight!.Parameters, diff);
         }

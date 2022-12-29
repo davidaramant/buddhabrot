@@ -9,7 +9,7 @@ public enum LookupRegionType
     BorderToFilament,
     FilamentToEmpty,
     FilamentToBorder,
-    MixedDiff
+    MixedDiff,
 }
 
 public static class LookupRegionTypeExtensions

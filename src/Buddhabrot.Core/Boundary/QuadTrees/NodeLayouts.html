@@ -62,39 +62,46 @@
 <table>
     <tr>
         <th>Value</th>
-        <th>Description</th>
+        <th>Left Type</th>
+        <th>Right Type</th>
     </tr>
     <tr>
         <td>0</td>
-        <td>Empty</td>
+        <td colspan="2">Empty</td>
     </tr>
     <tr>
         <td>1</td>
-        <td>Empty -> Border</td>
+        <td>Empty</td>
+        <td>Border</td>
     </tr>
     <tr>
         <td>2</td>
-        <td>Empty -> Filament</td>
+        <td>Empty</td>
+        <td>Filament</td>
     </tr>
     <tr>
         <td>3</td>
-        <td>Border -> Empty</td>
+        <td>Border</td>
+        <td>Empty</td>
     </tr>
     <tr>
         <td>4</td>
-        <td>Border -> Filament</td>
+        <td>Border</td>
+        <td>Filament</td>
     </tr>
     <tr>
         <td>5</td>
-        <td>Filament -> Empty</td>
+        <td>Filament</td>
+        <td>Empty</td>
     </tr>
     <tr>
         <td>6</td>
-        <td>Filament -> Border</td>
+        <td>Filament</td>
+        <td>Border</td>
     </tr>
     <tr>
         <td>7</td>
-        <td>Mixed</td>
+        <td colspan="2">Mixed</td>
     </tr>
 </table>
 <h2>Terms</h2>
@@ -110,10 +117,20 @@
 </table>
 
 <h1>Notes</h1>
-<p>VisitedRegions and RegionLookup similar but distinct node formats. The two types of tree have some similarities and differences:</p>
+<p>VisitedRegions and RegionLookup use similar but distinct node formats. The two types of tree have some similarities
+    and differences:</p>
 <ul>
-    <li>RegionLookup is deduplicated (subtrees can be referenced multiple times). It is not intended to be modified.</li>
-    <li>RegionLookup does not bother with the Leaf Quad node type. Since the tree is deduplicated, the space savings are minimal.</li>
+    <li>VisitedRegions is mutable, RegionLookup is immutable.</li>
+    <li>Since RegionLookup is intended for display purposes (including zooming), every node has a region type.</li>
+    <li>RegionLookup is deduplicated (subtrees can be referenced multiple times).</li>
+    <li>RegionLookup does not bother with the Leaf Quad node type. Since the tree is deduplicated, the space savings are
+        minimal.
+    </li>
+    <li>RegionLookup does not care about Rejected regions. They are replaced with Empty.</li>
+    <li>Every RegionLookup is essentially a diff - either from nothing (IE, all Empty) to something, or two existing
+        RegionLookups. The UI prevents you from creating a diff of two diffs since that would be useless (but
+        technically supported).
+    </li>
 </ul>
 
 <h1>VisitedRegions Node Types</h1>

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using BoundaryFinder.Gui.Models;
@@ -54,6 +56,8 @@ public sealed class VisualizeViewModel : ViewModelBase
         get => _palette;
         set => this.RaiseAndSetIfChanged(ref _palette, value);
     }
+    
+    public IReadOnlyCollection<LegendColorViewModel> LegendColors { get; }
 
     public ReactiveCommand<Unit, Unit> SaveQuadTreeRenderingCommand { get; }
 
@@ -72,6 +76,10 @@ public sealed class VisualizeViewModel : ViewModelBase
             .InvokeCommand(loadLookupCommand);
 
         SaveQuadTreeRenderingCommand = ReactiveCommand.Create(SaveQuadTreeRendering);
+
+        LegendColors = Enum.GetValues<LookupRegionType>()
+            .Select(t => new LegendColorViewModel(this, t))
+            .ToList();
     }
 
     private void SaveQuadTreeRendering()

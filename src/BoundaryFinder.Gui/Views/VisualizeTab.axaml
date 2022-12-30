@@ -100,23 +100,44 @@
                 Lookup="{Binding Lookup}"
                 MinimumIterations="{Binding MinIterations}"
                 MaximumIterations="{Binding MaxIterations}"
-                Palette="{Binding Palette}"/>
+                Palette="{Binding Palette}" />
         </Border>
 
         <Grid
             Grid.Row="2"
             Grid.Column="0"
-            ColumnDefinitions="*,Auto,Auto">
+            ColumnDefinitions="*,Auto,Auto,Auto">
             <Label
                 Margin="4"
                 Content="{Binding #MandelbrotRenderer.ViewPort.LogicalArea}" />
-            <ComboBox
+            <Button
                 Grid.Column="1"
+                Margin="4"
+                Content="Palette:">
+                <Button.Flyout>
+                    <Flyout>
+                        <ItemsRepeater Items="{Binding LegendColors}">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate DataType="vm:LegendColorViewModel">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border BorderThickness="1" BorderBrush="Black" Margin="4">
+                                            <Rectangle Width="30" Height="30" Fill="{Binding Color}" />
+                                        </Border>
+                                        <TextBlock VerticalAlignment="Center" Text="{Binding Description}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+            <ComboBox
+                Grid.Column="2"
                 Margin="4"
                 Items="{x:Static viz:BasePalette.AllPalettes}"
                 SelectedItem="{Binding Palette}" />
             <Button
-                Grid.Column="2"
+                Grid.Column="3"
                 Margin="4"
                 Content="Save Quad Tree Image"
                 Command="{Binding SaveQuadTreeRenderingCommand}" />

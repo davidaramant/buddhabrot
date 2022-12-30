@@ -87,7 +87,7 @@
     - [x] UI for palette choices
     - [x] Backend for picking palettes
     - [x] Faster palette lookup for RegionType (dictionary)
-    - [ ] Show a palette legend in the UI
+    - [x] Show a palette legend in the UI
   - [ ] More palettes to choose from
   - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
 - [ ] Update colors for the new region types

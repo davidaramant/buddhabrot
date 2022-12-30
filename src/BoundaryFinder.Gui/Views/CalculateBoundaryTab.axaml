@@ -30,6 +30,9 @@
             Text="{Binding AreaDivisions.QuadrantDivisions, StringFormat=Quadrant Divisions: \{0:N0\}, Mode=OneWay}" />
 
         <TextBlock
+            Text="{Binding ImageSize, StringFormat=4x4 Image Size: \{0\}, Mode=OneWay}" />
+        
+        <TextBlock
             Text="{Binding AreaDivisions.RegionSideLength, StringFormat=Region Side Length: \{0\}, Mode=OneWay}" />
 
         <TextBlock

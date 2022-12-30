@@ -98,4 +98,4 @@
     - [x] Queries for left & right side
     - [x] Compute
   - [x] Show diffs in drop down correctly on Visualize tab
-- [ ] Update stats on Calculate page to show something useful (size as gigapixels)
+- [x] Update stats on Calculate page to show something useful (size as gigapixels)

@@ -41,7 +41,7 @@ public sealed class MandelbrotRenderer : Control
     private RenderingArgs? _nextFrameArgs;
     private CancellationTokenSource _cancelSource = new();
     private Task _renderingTask = Task.CompletedTask;
-    private readonly List<(System.Drawing.Rectangle, LookupRegionType)> _areasToDraw = new();
+    private readonly List<(System.Drawing.Rectangle Rect, LookupRegionType Type)> _areasToDraw = new();
 
     private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
     private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
@@ -292,6 +292,8 @@ public sealed class MandelbrotRenderer : Control
 
             if (args.RenderInteriors)
             {
+                _areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
+
                 var positionsToRender = new List<System.Drawing.Point>();
 
                 foreach (var (area, type) in _areasToDraw)

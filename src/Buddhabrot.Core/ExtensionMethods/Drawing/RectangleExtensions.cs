@@ -4,6 +4,8 @@ namespace Buddhabrot.Core.ExtensionMethods.Drawing;
 
 public static class RectangleExtensions
 {
+    public static int GetArea(this Rectangle rect) => rect.Width * rect.Height;
+    
     public static IEnumerable<Point> GetAllPositions(this Rectangle rect)
     {
         for (int row = 0; row < rect.Height; row++)

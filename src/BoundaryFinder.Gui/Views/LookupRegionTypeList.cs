@@ -30,7 +30,7 @@ public sealed class LookupRegionTypeList
         }
     }
 
-    public LookupRegionType Consume()
+    public LookupRegionType GetNextType()
     {
         if (_counts[_index] == 0)
         {

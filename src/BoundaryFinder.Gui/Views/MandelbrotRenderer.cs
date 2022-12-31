@@ -295,13 +295,12 @@ public sealed class MandelbrotRenderer : Control
                 _areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
 
                 var positionsToRender = new List<System.Drawing.Point>();
-
+                var types = new LookupRegionTypeList();
+                
                 foreach (var (area, type) in _areasToDraw)
                 {
-                    if (type.IsBorder())
-                    {
-                        positionsToRender.AddRange(area.GetAllPositions());
-                    }
+                    positionsToRender.AddRange(area.GetAllPositions());
+                    types.Add(type,area.GetArea());
                 }
 
                 var points = positionsToRender.Select(args.ViewPort.GetComplex).ToArray();
@@ -323,7 +322,9 @@ public sealed class MandelbrotRenderer : Control
                         var t when t.Iterations > args.MinIterations => PointClassification.InRange,
                         _ => PointClassification.OutsideSet,
                     };
-
+                    var type = types.GetNextType();
+                    
+                    // TODO: Update the palette to take in the type. Precompute the variants
                     paint.Color = args.Palette[classification];
 
                     canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);

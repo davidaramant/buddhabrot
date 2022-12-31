@@ -290,24 +290,18 @@ public sealed class MandelbrotRenderer : Control
 
             using var paint = new SKPaint();
 
-            var positionsToRender = new List<System.Drawing.Point>();
-
-            foreach (var (area, type) in _areasToDraw)
+            if (args.RenderInteriors)
             {
-                if (args.RenderInteriors && type.IsBorder())
-                {
-                    positionsToRender.AddRange(area.GetAllPositions());
-                }
-                else
-                {
-                    paint.Color = args.Palette[type];
+                var positionsToRender = new List<System.Drawing.Point>();
 
-                    canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
+                foreach (var (area, type) in _areasToDraw)
+                {
+                    if (type.IsBorder())
+                    {
+                        positionsToRender.AddRange(area.GetAllPositions());
+                    }
                 }
-            }
 
-            if (positionsToRender.Any())
-            {
                 var points = positionsToRender.Select(args.ViewPort.GetComplex).ToArray();
                 var escapeTimes = new EscapeTime[points.Length];
 
@@ -331,6 +325,15 @@ public sealed class MandelbrotRenderer : Control
                     paint.Color = args.Palette[classification];
 
                     canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
+                }
+            }
+            else
+            {
+                foreach (var (area, type) in _areasToDraw)
+                {
+                    paint.Color = args.Palette[type];
+
+                    canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
                 }
             }
         }

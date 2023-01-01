@@ -88,9 +88,9 @@
     - [x] Backend for picking palettes
     - [x] Faster palette lookup for RegionType (dictionary)
     - [x] Show a palette legend in the UI
-  - [ ] More palettes to choose from
+  - [x] More palettes to choose from
   - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
-- [ ] Update colors for the new region types
+- [x] Update colors for the new region types
   - [x] Associate a type with every pixel rendered 
   - [x] Compute the colors for InSet/Outside/InRange
 - [x] UI to create diff between two `RegionLookup`s

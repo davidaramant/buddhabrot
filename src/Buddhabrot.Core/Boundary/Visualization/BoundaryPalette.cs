@@ -1,3 +1,4 @@
+using Colourful;
 using Humanizer;
 using SkiaSharp;
 
@@ -43,10 +44,12 @@ public abstract class BasePalette
 
     public override string ToString() => GetType().Name.Replace("Palette", string.Empty).Humanize();
 
-    public static IReadOnlyCollection<IBoundaryPalette> AllPalettes { get; } = new IBoundaryPalette[]
+    public static IReadOnlyCollection<IBoundaryPalette> AllPalettes { get; } = new[]
     {
         PastelPalette.Instance,
         BluePalette.Instance,
+        HsvRainbowPalette.Instance,
+        LChuvRainbowPalette.Instance,
     };
 }
 
@@ -96,4 +99,83 @@ public sealed class BluePalette : BasePalette, IBoundaryPalette
 
     public SKColor Background { get; } = new(0xFFFFFFFF);
     public SKColor InsideCircle { get; } = new(0xFFf7fbfb);
+}
+
+public sealed class HsvRainbowPalette : BasePalette, IBoundaryPalette
+{
+    public static IBoundaryPalette Instance { get; } = new HsvRainbowPalette();
+
+    private HsvRainbowPalette() : base(
+        new[]
+        {
+            SKColors.White, // Empty
+            SKColor.FromHsv(0f / 7f * 360f, 100, 100), // EmptyToBorder
+            SKColor.FromHsv(1f / 7f * 360f, 100, 100), // EmptyToFilament
+            SKColor.FromHsv(2f / 7f * 360f, 100, 100), // BorderToEmpty
+            SKColor.FromHsv(3f / 7f * 360f, 100, 100), // BorderToFilament
+            SKColor.FromHsv(4f / 7f * 360f, 100, 100), // FilamentToEmpty
+            SKColor.FromHsv(5f / 7f * 360f, 100, 100), // FilamentToBorder
+            SKColor.FromHsv(6f / 7f * 360f, 100, 100), // MixedDif
+        })
+    {
+    }
+
+    public SKColor Background { get; } = new(0xFFFFFFFF);
+    public SKColor InsideCircle { get; } = new(0xFFf7fbfb);
+}
+
+public sealed class LChuvRainbowPalette : IBoundaryPalette
+{
+    public static IBoundaryPalette Instance { get; } = new LChuvRainbowPalette();
+
+    private readonly SKColor[] _palette;
+
+    public SKColor this[LookupRegionType type, PointClassification classification] =>
+        _palette[((int) type) * 3 + (int) classification];
+
+    public SKColor this[LookupRegionType type] => _palette[((int) type) * 3];
+
+    private LChuvRainbowPalette()
+    {
+        _palette = CreatePalette().ToArray();
+    }
+
+    public override string ToString() => "LChuv Rainbow";
+
+    public SKColor Background { get; } = new(0xFFFFFFFF);
+    public SKColor InsideCircle { get; } = new(0xFFf7fbfb);
+
+    private static IEnumerable<SKColor> CreatePalette()
+    {
+        yield return SKColors.White;
+        yield return SKColors.White;
+        yield return SKColors.White;
+
+        var rgbWorkingSpace = RGBWorkingSpaces.sRGB;
+
+        var lChuvToRgb = new ConverterBuilder().FromLChuv(rgbWorkingSpace.WhitePoint).ToRGB(rgbWorkingSpace).Build();
+
+        for (int i = 0; i < 7; i++)
+        {
+            double l = 100;
+            double c = 100;
+            double h = i / 7d * 360;
+            yield return Convert(new LChuvColor(l, c, h));
+
+            // Outside set
+            yield return Convert(new LChuvColor(l, 50, h));
+
+            // In Range
+            yield return Convert(new LChuvColor(l, c, (h + 180) % 360));
+        }
+
+        SKColor Convert(LChuvColor color)
+        {
+            var rgbColor = lChuvToRgb.Convert(color);
+            return new(
+                (byte) (rgbColor.R * 255),
+                (byte) (rgbColor.G * 255),
+                (byte) (rgbColor.B * 255));
+        }
+    }
 }

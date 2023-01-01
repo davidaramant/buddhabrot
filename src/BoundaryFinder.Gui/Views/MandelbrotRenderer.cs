@@ -135,7 +135,7 @@ public sealed class MandelbrotRenderer : Control
             {
                 await ResetLogicalAreaAsync();
             }
-            else if (e.Property.Name == nameof(RenderInteriors) && RenderInteriors)
+            else if (e.Property.Name == nameof(RenderInteriors))
             {
                 await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
             }
@@ -161,9 +161,12 @@ public sealed class MandelbrotRenderer : Control
                 else if (e.ClickCount == 2)
                 {
                     _isPanning = false;
-                    var pos = e.GetPosition(this);
-                    SetBoundary = SetBoundary.ZoomIn((int) pos.X, (int) pos.Y);
-                    await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+                    if (SetBoundary.Scale < 31)
+                    {
+                        var pos = e.GetPosition(this);
+                        SetBoundary = SetBoundary.ZoomIn((int) pos.X, (int) pos.Y);
+                        await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+                    }
                 }
             }
             else if (properties.IsRightButtonPressed && e.ClickCount == 2)

@@ -324,8 +324,7 @@ public sealed class MandelbrotRenderer : Control
                     };
                     var type = types.GetNextType();
                     
-                    // TODO: Update the palette to take in the type. Precompute the variants
-                    paint.Color = args.Palette[classification];
+                    paint.Color = args.Palette[type, classification];
 
                     canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
                 }

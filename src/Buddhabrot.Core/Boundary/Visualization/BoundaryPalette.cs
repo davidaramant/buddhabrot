@@ -7,23 +7,38 @@ public interface IBoundaryPalette
 {
     SKColor Background { get; }
     SKColor InsideCircle { get; }
-    
-    SKColor this[PointClassification type] { get; }
+
+    SKColor this[LookupRegionType type, PointClassification classification] { get; }
     SKColor this[LookupRegionType type] { get; }
 }
 
 public abstract class BasePalette
 {
-    private readonly SKColor[] _classPalette;
     private readonly SKColor[] _palette;
 
-    public SKColor this[PointClassification type] => _classPalette[(int) type];
-    public SKColor this[LookupRegionType type] => _palette[(int) type];
+    public SKColor this[LookupRegionType type, PointClassification classification] =>
+        _palette[((int) type) * 3 + (int) classification];
 
-    protected BasePalette(SKColor[] classPalette, SKColor[] palette)
+    public SKColor this[LookupRegionType type] => _palette[((int) type) * 3];
+
+    protected BasePalette(IEnumerable<SKColor> palette)
     {
-        _classPalette = classPalette;
-        _palette = palette;
+        _palette = palette.SelectMany(c =>
+        {
+            var variants = new SKColor[3];
+            // InSet
+            variants[0] = c;
+
+            c.ToHsv(out var h, out var s, out var v);
+
+            // OutsideSet
+            variants[1] = SKColor.FromHsv(h, 20, 100);
+
+            // InRange
+            variants[2] = SKColor.FromHsv((h + 180f) % 360f, 100, 100);
+
+            return variants;
+        }).ToArray();
     }
 
     public override string ToString() => GetType().Name.Replace("Palette", string.Empty).Humanize();
@@ -42,12 +57,6 @@ public sealed class PastelPalette : BasePalette, IBoundaryPalette
 
     private PastelPalette() : base(
         new[]
-        {   
-            SKColors.Black, // InSet
-            SKColors.DimGray, // OutsideSet
-            SKColors.SpringGreen, // InRange
-        },
-        new[]
         {
             SKColors.White, // Empty
             new(0xFF011627), // EmptyToBorder
@@ -60,6 +69,7 @@ public sealed class PastelPalette : BasePalette, IBoundaryPalette
         })
     {
     }
+
     public SKColor Background { get; } = new(0xFFcaf1eb);
     public SKColor InsideCircle { get; } = new(0xFFf1fcf8);
 }
@@ -70,12 +80,6 @@ public sealed class BluePalette : BasePalette, IBoundaryPalette
     public static IBoundaryPalette Instance { get; } = new BluePalette();
 
     private BluePalette() : base(
-        new[]
-        {   
-            SKColors.Black, // InSet
-            SKColors.DimGray, // OutsideSet
-            SKColors.SpringGreen, // InRange
-        },
         new[]
         {
             SKColors.White, // Empty

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Numerics;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -135,7 +135,7 @@ public sealed class MandelbrotRenderer : Control
             {
                 await ResetLogicalAreaAsync();
             }
-            else if (e.Property.Name == nameof(RenderInteriors))
+            else if (e.Property.Name == nameof(RenderInteriors) && RenderInteriors)
             {
                 await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
             }
@@ -245,7 +245,6 @@ public sealed class MandelbrotRenderer : Control
         SquareBoundary SetBoundary,
         RegionLookup Lookup,
         IBoundaryPalette Palette,
-        ViewPort ViewPort,
         bool RenderInteriors,
         int MinIterations,
         int MaxIterations)
@@ -292,18 +291,27 @@ public sealed class MandelbrotRenderer : Control
 
             if (args.RenderInteriors)
             {
+                var viewPort = ViewPort.FromResolution(
+                    new System.Drawing.Size(args.Width, args.Height),
+                    args.SetBoundary.Center,
+                    2d / args.SetBoundary.QuadrantLength);
                 _areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
 
                 var positionsToRender = new List<System.Drawing.Point>();
                 var types = new LookupRegionTypeList();
-                
+
                 foreach (var (area, type) in _areasToDraw)
                 {
                     positionsToRender.AddRange(area.GetAllPositions());
-                    types.Add(type,area.GetArea());
+                    types.Add(type, area.GetArea());
                 }
 
-                var points = positionsToRender.Select(args.ViewPort.GetComplex).ToArray();
+                var points = new Complex[positionsToRender.Count];
+                for (int i = 0; i < points.Length; i++)
+                {
+                    points[i] = viewPort.GetComplex(positionsToRender[i]);
+                }
+
                 var escapeTimes = new EscapeTime[points.Length];
 
                 // TODO: move this to function
@@ -323,7 +331,7 @@ public sealed class MandelbrotRenderer : Control
                         _ => PointClassification.OutsideSet,
                     };
                     var type = types.GetNextType();
-                    
+
                     paint.Color = args.Palette[type, classification];
 
                     canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
@@ -363,7 +371,6 @@ public sealed class MandelbrotRenderer : Control
             SetBoundary,
             Lookup,
             Palette,
-            ViewPort,
             RenderInteriors,
             MinimumIterations,
             MaximumIterations);

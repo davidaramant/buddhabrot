@@ -40,11 +40,11 @@
     - [ ] Determine best amount of data to batch & cache
     - [ ] Visualization (video) of batches being cached & evicted
 - [x] Investigating putting an index into the `VisitedRegions` - EDIT: complete dud
-- [ ] Support diffing arbitrary quad trees
+- [x] Support diffing arbitrary quad trees
   - [x] ~~Do I need a more generic quad tree internal data structure?~~ - Split into two types of trees 
   - [x] Expand RegionType to 3 bits
   - [x] Separate RegionType for VisitedRegions and RegionLookup
-  - [ ] Generate quad tree diffs
+  - [x] Generate quad tree diffs
     - [x] Determine Region Type based on Left and Right
 - [ ] Diagnose problems with algorithm:
   - [ ] "Holes" in boundary/filaments

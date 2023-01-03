@@ -52,7 +52,7 @@ public sealed record BoundaryDataSet(
             IsDiff: true,
             Combine(left, right),
             Description: $"Diff - {left.Description} - {right.Description}",
-            UserDescription: $"Diff - {Shorthand(left)} | {Shorthand(right)}");
+            UserDescription: $"Diff: {Shorthand(left)} → {Shorthand(right)}");
     }
 
     private static BoundaryParameters Combine(BoundaryParameters one, BoundaryParameters two) => new(

@@ -81,6 +81,7 @@
       - [ ] New iteration kernel method for running through a list of points
       - [x] Do the actual rendering
       - [x] BUG: Panning & zooming causes things to go haywire with region interiors
+      - [ ] Deal with splotchy in-range points (distance estimator somehow?)
   - [x] Nicer aesthetic
   - [x] ~~Fill the Mandelbrot interior (scanline rendering)~~ - No good method of doing this
   - [x] Pick palette to render with
@@ -100,3 +101,6 @@
     - [x] Compute
   - [x] Show diffs in drop down correctly on Visualize tab
 - [x] Update stats on Calculate page to show something useful (size as gigapixels)
+- [ ] Better way of showing location of cursor
+  - [ ] Remove that old junk region display
+  - [ ] Show complex point of cursor position

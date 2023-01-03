@@ -107,9 +107,6 @@
             Grid.Row="2"
             Grid.Column="0"
             ColumnDefinitions="*,Auto,Auto,Auto">
-            <Label
-                Margin="4"
-                Content="{Binding #MandelbrotRenderer.ViewPort.LogicalArea}" />
             <Button
                 Grid.Column="1"
                 Margin="4"

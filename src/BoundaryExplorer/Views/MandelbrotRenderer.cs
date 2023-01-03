@@ -48,15 +48,6 @@ public sealed class MandelbrotRenderer : Control
 
     private PixelSize PixelBounds => new(Math.Max(1, (int) Bounds.Width), Math.Max(1, (int) Bounds.Height));
 
-    public static readonly StyledProperty<ViewPort> ViewPortProperty =
-        AvaloniaProperty.Register<MandelbrotRenderer, ViewPort>(nameof(ViewPort));
-
-    public ViewPort ViewPort
-    {
-        get => GetValue(ViewPortProperty);
-        set => SetValue(ViewPortProperty, value);
-    }
-
     public static readonly StyledProperty<IBoundaryPalette> PaletteProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, IBoundaryPalette>(nameof(Palette),
             defaultValue: BluePalette.Instance);
@@ -225,15 +216,7 @@ public sealed class MandelbrotRenderer : Control
         base.OnPointerMoved(e);
     }
 
-    public override void Render(DrawingContext context)
-    {
-        var size = new System.Drawing.Size((int) Bounds.Width, (int) Bounds.Height);
-
-        ViewPort = ViewPort.FromResolution(
-            size,
-            SetBoundary.Center,
-            2d / SetBoundary.QuadrantLength);
-
+    public override void Render(DrawingContext context) =>
         context.DrawImage(_frontBuffer,
             new Rect(
                 _panningOffset.X,
@@ -241,7 +224,6 @@ public sealed class MandelbrotRenderer : Control
                 _frontBuffer.PixelSize.Width,
                 _frontBuffer.PixelSize.Height)
         );
-    }
 
     sealed record RenderingArgs(
         RenderInstructions Instructions,

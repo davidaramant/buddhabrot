@@ -102,6 +102,6 @@
   - [x] Show diffs in drop down correctly on Visualize tab
 - [x] Update stats on Calculate page to show something useful (size as gigapixels)
 - [ ] Better way of showing location of cursor
-  - [ ] Remove that old junk region display
+  - [x] Remove that old junk region display
   - [ ] Show complex point of cursor position
 - [ ] Move the global log to a tab, put logs on the calculator / diff tabs

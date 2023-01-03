@@ -20,7 +20,7 @@ public static class RegionLookupDiffer
             {(Type.EmptyToBorder, Type.EmptyToBorder), Type.Empty},
             {(Type.EmptyToBorder, Type.EmptyToFilament), Type.BorderToFilament},
 
-            {(Type.EmptyToFilament, Type.Empty), Type.Empty},
+            {(Type.EmptyToFilament, Type.Empty), Type.FilamentToEmpty},
             {(Type.EmptyToFilament, Type.EmptyToBorder), Type.FilamentToBorder},
             {(Type.EmptyToFilament, Type.EmptyToFilament), Type.Empty},
         };

@@ -45,7 +45,7 @@ public sealed class DiffViewModel : ViewModelBase
     public string LogOutput
     {
         get => _log;
-        set => this.RaiseAndSetIfChanged(ref _log, value);
+        private set => this.RaiseAndSetIfChanged(ref _log, value);
     }
 
     public DiffViewModel(BorderDataProvider dataProvider, Action<string> addToSystemLog)

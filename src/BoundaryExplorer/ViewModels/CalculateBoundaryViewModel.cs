@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using BoundaryExplorer.Models;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Images;
 using DynamicData.Binding;
 using Humanizer;
 using ReactiveUI;
@@ -46,7 +47,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     public string LogOutput
     {
         get => _log;
-        set => this.RaiseAndSetIfChanged(ref _log, value);
+        private set => this.RaiseAndSetIfChanged(ref _log, value);
     }
 
     public CalculateBoundaryViewModel(BorderDataProvider dataProvider, Action<string> addToSystemLog)
@@ -59,8 +60,8 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             .Select(v =>
             {
                 var pixels = (2L << v.Value) * (2L << v.Value);
-                var metric = ToMetricPixelSize(pixels);
-                var base2 = ToBase2PixelSize(pixels);
+                var metric = ImageSizeDescription.ToMetric(pixels);
+                var base2 = ImageSizeDescription.ToBase2(pixels);
 
                 return $"{metric} ({base2})";
             })
@@ -73,46 +74,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
         FindBoundary.IsExecuting.ToProperty(this, x => x.IsFindingBoundary, out _isFindingBoundary);
         CancelFindingBoundary = ReactiveCommand.Create(() => { }, FindBoundary.IsExecuting);
     }
-
-    [SuppressMessage("ReSharper", "IdentifierTypo")]
-    [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    private static string ToBase2PixelSize(long pixels)
-    {
-        const long kibipixel = 1_024;
-        const long mebipixel = kibipixel * kibipixel;
-        const long gibipixel = kibipixel * mebipixel;
-        const long tebipixel = kibipixel * gibipixel;
-
-        return pixels switch
-        {
-            < kibipixel => $"{pixels} pixels",
-            < mebipixel => $"{pixels/kibipixel} kibipixels",
-            < gibipixel => $"{pixels/mebipixel} mebipixels",
-            < tebipixel => $"{pixels/gibipixel} gibipixels",
-            _ => $"{pixels/tebipixel:N0} tebipixels",
-        };
-    }
     
-    [SuppressMessage("ReSharper", "IdentifierTypo")]
-    [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    private static string ToMetricPixelSize(long pixels)
-    {
-        const long kilopixel = 1_000;
-        const long megapixel = kilopixel * kilopixel;
-        const long gigapixel = kilopixel * megapixel;
-        const long terapixel = kilopixel * gigapixel;
-
-        return pixels switch
-        {
-            < kilopixel => $"{pixels} pixels",
-            < megapixel => $"{(double)pixels/kilopixel:N1} kilopixels",
-            < gigapixel => $"{(double)pixels/megapixel:N1} megapixels",
-            < terapixel => $"{(double)pixels/gigapixel:N1} gigapixels",
-            _ => $"{(double)pixels/terapixel:N1} terapixels",
-        };
-    }
-
-
     private async Task FindBoundaryAsync(CancellationToken cancelToken)
     {
         try
@@ -155,7 +117,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            _addToSystemLog(e.ToString());
+            _addToSystemLog("Error calculating boundary:" + e);
         }
     }
     

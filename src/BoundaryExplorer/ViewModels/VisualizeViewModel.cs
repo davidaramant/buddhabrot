@@ -66,7 +66,12 @@ public sealed class VisualizeViewModel : ViewModelBase
         _dataProvider = dataProvider;
         _addToSystemLog = addToSystemLog;
 
-        _dataProvider.SavedBoundaries.Connect().Bind(out _savedBoundaries).Subscribe();
+        _dataProvider
+            .SavedBoundaries
+            .Connect()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out _savedBoundaries)
+            .Subscribe();
         
         var loadLookupCommand = ReactiveCommand.Create<BoundaryDataSet>(LoadLookup);
 

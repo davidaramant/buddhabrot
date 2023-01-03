@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using BoundaryExplorer.Models;
@@ -56,6 +57,7 @@ public sealed class DiffViewModel : ViewModelBase
             .SavedBoundaries
             .Connect()
             .Filter(b => !b.IsDiff)
+            .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _leftDataSets)
             .Subscribe();
 
@@ -67,6 +69,7 @@ public sealed class DiffViewModel : ViewModelBase
             .AutoRefreshOnObservable(_ => selectedLeftObservable)
             .Filter(b => !b.IsDiff && b != SelectedLeft)
             .Sort(BoundaryDataSet.Comparer)
+            .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _rightDataSets)
             .Subscribe();
 

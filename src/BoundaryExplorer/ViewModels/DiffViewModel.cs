@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using BoundaryExplorer.Models;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage;
@@ -21,6 +22,7 @@ public sealed class DiffViewModel : ViewModelBase
     private BoundaryDataSet? _selectedRight = null;
     private readonly ReadOnlyObservableCollection<BoundaryDataSet> _leftDataSets;
     private readonly ReadOnlyObservableCollection<BoundaryDataSet> _rightDataSets;
+    private string _log = string.Empty;
 
     public ReadOnlyObservableCollection<BoundaryDataSet> LeftDataSets => _leftDataSets;
     public ReadOnlyObservableCollection<BoundaryDataSet> RightDataSets => _rightDataSets;
@@ -38,6 +40,12 @@ public sealed class DiffViewModel : ViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> ComputeDiffCommand { get; }
+
+    public string LogOutput
+    {
+        get => _log;
+        set => this.RaiseAndSetIfChanged(ref _log, value);
+    }
 
     public DiffViewModel(BorderDataProvider dataProvider, Action<string> addToSystemLog)
     {
@@ -78,7 +86,7 @@ public sealed class DiffViewModel : ViewModelBase
 
             var diff = await Task.Run(() => RegionLookupDiffer.Diff(left, right));
 
-            _addToSystemLog($"Took {timer.Elapsed.Humanize(2)} to calculate diff of {diff.NodeCount:N0} nodes");
+            AddToLog($"Took {timer.Elapsed.Humanize(2)} to calculate diff of {diff.NodeCount:N0} nodes");
 
             _dataProvider.SaveDiff(SelectedLeft!.Parameters, SelectedRight!.Parameters, diff);
         }
@@ -87,4 +95,6 @@ public sealed class DiffViewModel : ViewModelBase
             _addToSystemLog("Failed creating diff: " + e);
         }
     }
+
+    private void AddToLog(string msg) => Dispatcher.UIThread.Post(() => LogOutput += msg + Environment.NewLine);
 }

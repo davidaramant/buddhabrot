@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using BoundaryExplorer.Models;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Utilities;
 using DynamicData.Binding;
 using Humanizer;
 using ReactiveUI;
@@ -24,6 +23,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     private readonly ObservableAsPropertyHelper<AreaDivisions> _areaDivisions;
     private readonly ObservableAsPropertyHelper<string> _imageSize;
     private readonly ObservableAsPropertyHelper<bool> _isFindingBoundary;
+    private string _log = string.Empty;
 
     public int MaximumIterations
     {
@@ -43,6 +43,11 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> FindBoundary { get; }
     public ReactiveCommand<Unit, Unit> CancelFindingBoundary { get; }
     public bool IsFindingBoundary => _isFindingBoundary.Value;
+    public string LogOutput
+    {
+        get => _log;
+        set => this.RaiseAndSetIfChanged(ref _log, value);
+    }
 
     public CalculateBoundaryViewModel(BorderDataProvider dataProvider, Action<string> addToSystemLog)
     {
@@ -122,23 +127,22 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
                 () => BoundaryCalculator.VisitBoundary(boundaryParameters, visitedRegions, cancelToken),
                 cancelToken);
 
-            _addToSystemLog(DateTime.Now.ToString("s"));
-            _addToSystemLog(ComputerDescription.GetSingleLine());
-            _addToSystemLog($"Visited boundary for {boundaryParameters} ({stopwatch.Elapsed.Humanize(2)})");
+            AddToLog(DateTime.Now.ToString("s"));
+            AddToLog($"Visited boundary for {boundaryParameters} ({stopwatch.Elapsed.Humanize(2)})");
             stopwatch.Restart();
 
             var boundaryRegions = visitedRegions.GetBoundaryRegions();
 
-            _addToSystemLog($"Found {boundaryRegions.Count:N0} boundary regions ({stopwatch.Elapsed.Humanize(2)})");
+            AddToLog($"Found {boundaryRegions.Count:N0} boundary regions ({stopwatch.Elapsed.Humanize(2)})");
             stopwatch.Restart();
 
             var transformer = new QuadTreeTransformer(visitedRegions);
             var lookup = await Task.Run(() => transformer.Transform(), cancelToken);
 
-            _addToSystemLog($"Transformed quad tree to Region Lookup ({stopwatch.Elapsed.Humanize(2)})\n" +
-                 $" - Went from {visitedRegions.NodeCount:N0} to {lookup.NodeCount:N0} nodes ({(double) lookup.NodeCount / visitedRegions.NodeCount:P})");
+            AddToLog($"Transformed quad tree to Region Lookup ({stopwatch.Elapsed.Humanize(2)})\n" +
+                     $" - Went from {visitedRegions.NodeCount:N0} to {lookup.NodeCount:N0} nodes ({(double) lookup.NodeCount / visitedRegions.NodeCount:P})");
 
-            _addToSystemLog(string.Empty);
+            AddToLog(string.Empty);
 
             _dataProvider.SaveBorderData(
                 boundaryParameters,
@@ -154,4 +158,6 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             _addToSystemLog(e.ToString());
         }
     }
+    
+    private void AddToLog(string msg) => Dispatcher.UIThread.Post(() => LogOutput += msg + Environment.NewLine);
 }

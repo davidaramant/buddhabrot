@@ -105,4 +105,4 @@
   - [x] Remove that old junk region display
   - [ ] Show complex point of cursor position
 - [x] Move the global log to a tab
-- [ ] Put logs on the calculator / diff tabs
+- [x] Put logs on the calculator / diff tabs

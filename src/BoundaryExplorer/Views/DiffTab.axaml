@@ -13,7 +13,7 @@
           MinWidth="800"
           HorizontalAlignment="Center"
           ColumnDefinitions="*,*"
-          RowDefinitions="*,Auto">
+          RowDefinitions="*,Auto,100">
         
         <Border Grid.Row="0"
                 Grid.Column="0"
@@ -47,5 +47,15 @@
             HorizontalAlignment="Center"
             Command="{Binding ComputeDiffCommand}"
             Content="Compute Diff" />
+        
+        <TextBox
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="4"
+            IsReadOnly="True"
+            TextWrapping="Wrap"
+            VerticalContentAlignment="Stretch"
+            Text="{Binding LogOutput, Mode=OneWay}" />
     </Grid>
 </UserControl>

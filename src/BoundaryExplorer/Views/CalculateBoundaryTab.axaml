@@ -8,45 +8,58 @@
              x:Class="BoundaryExplorer.Views.CalculateBoundaryTab"
              x:CompileBindings="True"
              x:DataType="vm:CalculateBoundaryViewModel">
-    <StackPanel Orientation="Vertical" MaxWidth="800" Spacing="8">
-        <views:LabeledIntegerUpDown
-            Text="Iteration Maximum:"
-            Increment="1000000"
-            Value="{Binding MaximumIterations}" />
+    <Grid RowDefinitions="Auto,Auto,*" MaxWidth="800">
+        <StackPanel Orientation="Vertical" Spacing="8">
+            <views:LabeledIntegerUpDown
+                Text="Iteration Maximum:"
+                Increment="1000000"
+                Value="{Binding MaximumIterations}" />
 
-        <Label Content="Vertical Division 2^n Power:" />
-        <Slider
-            Minimum="1"
-            Maximum="30"
-            TickFrequency="1"
-            TickPlacement="Outside"
-            IsSnapToTickEnabled="True"
-            Value="{Binding VerticalDivisionPower}" />
+            <Label Content="Vertical Division 2^n Power:" />
+            <Slider
+                Minimum="1"
+                Maximum="30"
+                TickFrequency="1"
+                TickPlacement="Outside"
+                IsSnapToTickEnabled="True"
+                Value="{Binding VerticalDivisionPower}" />
 
-        <TextBlock
-            Text="{Binding VerticalDivisionPower, StringFormat=Power: \{0:N0\}, Mode=OneWay}" />
+            <TextBlock
+                Text="{Binding VerticalDivisionPower, StringFormat=Power: \{0:N0\}, Mode=OneWay}" />
 
-        <TextBlock
-            Text="{Binding AreaDivisions.QuadrantDivisions, StringFormat=Quadrant Divisions: \{0:N0\}, Mode=OneWay}" />
+            <TextBlock
+                Text="{Binding AreaDivisions.QuadrantDivisions, StringFormat=Quadrant Divisions: \{0:N0\}, Mode=OneWay}" />
 
-        <TextBlock
-            Text="{Binding ImageSize, StringFormat=4x4 Image Size: \{0\}, Mode=OneWay}" />
-        
-        <TextBlock
-            Text="{Binding AreaDivisions.RegionSideLength, StringFormat=Region Side Length: \{0\}, Mode=OneWay}" />
+            <TextBlock
+                Text="{Binding ImageSize, StringFormat=4x4 Image Size: \{0\}, Mode=OneWay}" />
 
-        <TextBlock
-            Text="{Binding AreaDivisions.RegionArea, StringFormat=Region Area: \{0\}, Mode=OneWay}" />
+            <TextBlock
+                Text="{Binding AreaDivisions.RegionSideLength, StringFormat=Region Side Length: \{0\}, Mode=OneWay}" />
 
-        <Button
-            Content="Find Boundary"
-            Command="{Binding FindBoundary}" />
-        <Button
-            Content="Cancel"
-            Command="{Binding CancelFindingBoundary}" />
+            <TextBlock
+                Text="{Binding AreaDivisions.RegionArea, StringFormat=Region Area: \{0\}, Mode=OneWay}" />
 
-        <ProgressBar
-            IsIndeterminate="True"
-            IsVisible="{Binding IsFindingBoundary}" />
-    </StackPanel>
+            <Button
+                Content="Find Boundary"
+                Command="{Binding FindBoundary}" />
+            <Button
+                Content="Cancel"
+                Command="{Binding CancelFindingBoundary}" />
+
+            <ProgressBar
+                IsIndeterminate="{Binding IsFindingBoundary}" />
+
+        </StackPanel>
+        <Label
+            Grid.Row="1">
+            Log:
+        </Label>
+        <TextBox
+            Grid.Row="2"
+            Margin="4"
+            IsReadOnly="True"
+            TextWrapping="Wrap"
+            VerticalContentAlignment="Top"
+            Text="{Binding LogOutput, Mode=OneWay}" />
+    </Grid>
 </UserControl>

@@ -16,7 +16,7 @@ namespace BoundaryExplorer.ViewModels;
 public sealed class DiffViewModel : ViewModelBase
 {
     private readonly BorderDataProvider _dataProvider;
-    private readonly Action<string> _log;
+    private readonly Action<string> _addToSystemLog;
     private BoundaryDataSet? _selectedLeft = null;
     private BoundaryDataSet? _selectedRight = null;
     private readonly ReadOnlyObservableCollection<BoundaryDataSet> _leftDataSets;
@@ -39,16 +39,15 @@ public sealed class DiffViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> ComputeDiffCommand { get; }
 
-    public DiffViewModel(BorderDataProvider dataProvider, Action<string> log)
+    public DiffViewModel(BorderDataProvider dataProvider, Action<string> addToSystemLog)
     {
         _dataProvider = dataProvider;
-        _log = log;
+        _addToSystemLog = addToSystemLog;
 
         dataProvider
             .SavedBoundaries
             .Connect()
             .Filter(b => !b.IsDiff)
-            //.ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _leftDataSets)
             .Subscribe();
 
@@ -60,7 +59,6 @@ public sealed class DiffViewModel : ViewModelBase
             .AutoRefreshOnObservable(_ => selectedLeftObservable)
             .Filter(b => !b.IsDiff && b != SelectedLeft)
             .Sort(BoundaryDataSet.Comparer)
-            //.ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _rightDataSets)
             .Subscribe();
 
@@ -80,13 +78,13 @@ public sealed class DiffViewModel : ViewModelBase
 
             var diff = await Task.Run(() => RegionLookupDiffer.Diff(left, right));
 
-            _log($"Took {timer.Elapsed.Humanize(2)} to calculate diff of {diff.NodeCount:N0} nodes");
+            _addToSystemLog($"Took {timer.Elapsed.Humanize(2)} to calculate diff of {diff.NodeCount:N0} nodes");
 
             _dataProvider.SaveDiff(SelectedLeft!.Parameters, SelectedRight!.Parameters, diff);
         }
         catch (Exception e)
         {
-            _log("Failed creating diff: " + e);
+            _addToSystemLog("Failed creating diff: " + e);
         }
     }
 }

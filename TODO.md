@@ -104,4 +104,5 @@
 - [ ] Better way of showing location of cursor
   - [x] Remove that old junk region display
   - [ ] Show complex point of cursor position
-- [ ] Move the global log to a tab, put logs on the calculator / diff tabs
+- [x] Move the global log to a tab
+- [ ] Put logs on the calculator / diff tabs

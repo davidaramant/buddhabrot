@@ -17,7 +17,7 @@ namespace BoundaryExplorer.ViewModels;
 public sealed class VisualizeViewModel : ViewModelBase
 {
     private readonly BorderDataProvider _dataProvider;
-    private readonly Action<string> _log;
+    private readonly Action<string> _addToSystemLog;
     private BoundaryDataSet _selectedParameters = BoundaryDataSet.Empty;
     private int _minIterations = 0;
     private int _maxIterations = 100_000;
@@ -61,10 +61,10 @@ public sealed class VisualizeViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> SaveQuadTreeRenderingCommand { get; }
 
-    public VisualizeViewModel(BorderDataProvider dataProvider, Action<string> log)
+    public VisualizeViewModel(BorderDataProvider dataProvider, Action<string> addToSystemLog)
     {
         _dataProvider = dataProvider;
-        _log = log;
+        _addToSystemLog = addToSystemLog;
 
         _dataProvider.SavedBoundaries.Connect().Bind(out _savedBoundaries).Subscribe();
         
@@ -91,7 +91,7 @@ public sealed class VisualizeViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            _log(e.ToString());
+            _addToSystemLog(e.ToString());
         }
     }
 
@@ -104,11 +104,11 @@ public sealed class VisualizeViewModel : ViewModelBase
             Lookup = lookup;
             MinIterations = SelectedParameters.Parameters.MaxIterations / 10;
             MaxIterations = SelectedParameters.Parameters.MaxIterations;
-            _log($"Quad tree nodes: {Lookup.NodeCount:N0}");
+            _addToSystemLog($"Quad tree nodes: {Lookup.NodeCount:N0}");
         }
         catch (Exception e)
         {
-            _log(e.ToString());
+            _addToSystemLog(e.ToString());
         }
     }
 }

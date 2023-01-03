@@ -14,52 +14,21 @@
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
+    <TabControl>
+        <TabItem Header="Visualize">
+            <views:VisualizeTab DataContext="{Binding Visualize}" />
+        </TabItem>
 
-    <Grid RowDefinitions="*,Auto,0" x:Name="GridLayout">
-        <TabControl Grid.Row="0">
-            <TabItem Header="Visualize">
-                <views:VisualizeTab DataContext="{Binding Visualize}" />
-            </TabItem>
+        <TabItem Header="Calculate Boundary">
+            <views:CalculateBoundaryTab DataContext="{Binding CalculateBoundary}" />
+        </TabItem>
 
-            <TabItem Header="Calculate Boundary">
-                <views:CalculateBoundaryTab DataContext="{Binding CalculateBoundary}" />
-            </TabItem>
-            
-            <TabItem Header="Calculate Diff">
-                <views:DiffTab DataContext="{Binding Diff}" />
-            </TabItem>
+        <TabItem Header="Calculate Diff">
+            <views:DiffTab DataContext="{Binding Diff}" />
+        </TabItem>
 
-            <TabItem Header="Settings">
-                <views:SettingsTab DataContext="{Binding Settings}" />
-            </TabItem>
-
-        </TabControl>
-
-        <GridSplitter
-            Grid.Row="1"
-            ResizeDirection="Rows" />
-        <Button
-            Grid.Row="1"
-            HorizontalAlignment="Right"
-            Content="⨯"
-            Background="Transparent"
-            Click="CloseButtonClicked"/>
-        <Label
-            Grid.Row="1"
-            HorizontalAlignment="Center"
-            IsHitTestVisible="False"
-            FontWeight="Bold"
-            Content="· · ·" />
-
-        <TextBox
-            x:Name="LogBox"
-            Grid.Row="2"
-            IsVisible="False"
-            Margin="4"
-            IsReadOnly="True"
-            TextWrapping="Wrap"
-            VerticalContentAlignment="Stretch"
-            Text="{Binding LogOutput, Mode=OneWay}" />
-
-    </Grid>
+        <TabItem Header="Settings">
+            <views:SettingsTab DataContext="{Binding Settings}" />
+        </TabItem>
+    </TabControl>
 </Window>

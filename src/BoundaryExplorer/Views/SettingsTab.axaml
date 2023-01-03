@@ -19,5 +19,12 @@
 						Command="{Binding OpenFilePathCommand}"/>
         <Label>System Information:</Label>
         <TextBlock Text="{Binding SystemInformation}"/>
+        <Label Margin="0,4,0,0">System Log:</Label>
+        <TextBox
+            Margin="4"
+            IsReadOnly="True"
+            TextWrapping="Wrap"
+            VerticalContentAlignment="Stretch"
+            Text="{Binding SystemLogOutput, Mode=OneWay}" />
     </StackPanel>
 </UserControl>

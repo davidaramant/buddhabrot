@@ -11,6 +11,7 @@ namespace BoundaryExplorer.ViewModels;
 public sealed class SettingsViewModel : ViewModelBase
 {
     private string _dataSetPath;
+    private string _systemLog = string.Empty;
 
     public string DataSetPath
     {
@@ -23,8 +24,14 @@ public sealed class SettingsViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> OpenFilePathCommand { get; }
 
     public string SystemInformation { get; }
+    
+    public string SystemLogOutput
+    {
+        get => _systemLog;
+        set => this.RaiseAndSetIfChanged(ref _systemLog, value);
+    }
 
-    public SettingsViewModel(BorderDataProvider dataProvider, Action<string> log)
+    public SettingsViewModel(BorderDataProvider dataProvider)
     {
         _dataSetPath = dataProvider.LocalDataStoragePath;
 

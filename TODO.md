@@ -1,6 +1,6 @@
 # TODO
 
-## BoundaryExplorer / BoundaryFinder
+## BoundaryFinder
 
 ### Misc
 
@@ -50,7 +50,7 @@
   - [ ] "Holes" in boundary/filaments
   - [ ] Useless border regions around i = 0
 
-### GUI
+## BoundaryExplorer
 
 - [x] Better busy indicator
 - [x] Allow log area to be hidden

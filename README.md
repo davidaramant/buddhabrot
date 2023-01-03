@@ -9,9 +9,13 @@ WIP. The eventual result will be a collection of programs that can be used to cr
 
 The suite is composed of the following programs:
 
-## Boundary Scanner
+## Boundary Finder
 
 Finds the border regions of the Mandelbrot set where the high-iteration Buddhabrot points live.
+
+## Boundary Explorer
+
+A GUI program to visually explore the boundary data sets.
 
 ## Point Finder
 

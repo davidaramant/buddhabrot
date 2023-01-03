@@ -1,0 +1,146 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:BoundaryExplorer.Views"
+             xmlns:vm="using:BoundaryExplorer.ViewModels"
+             xmlns:viz="using:Buddhabrot.Core.Boundary.Visualization"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoundaryExplorer.Views.VisualizeTab"
+             x:CompileBindings="True"
+             x:DataType="vm:VisualizeViewModel">
+    <Grid
+        RowDefinitions="Auto,*,Auto">
+        <Grid
+            ColumnDefinitions="450,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto,Auto,Auto">
+            <ComboBox
+                x:Name="BoundariesComboBox"
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="0,4"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Stretch"
+                Items="{Binding SavedBoundaries}"
+                SelectedItem="{Binding SelectedParameters}" />
+
+            <Label
+                Grid.Row="0"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Margin="4"
+                Content="Min Iterations:" />
+            <NumericUpDown
+                Grid.Row="0"
+                Grid.Column="2"
+                IsEnabled="{Binding SelectedItem, ElementName=BoundariesComboBox, Converter={x:Static ObjectConverters.IsNotNull}}"
+                Classes="integerInput"
+                Width="160"
+                Increment="10000"
+                Minimum="0"
+                Value="{Binding MinIterations}"
+                Maximum="{Binding MaxIterations}" />
+            <Label
+                Grid.Row="0"
+                Grid.Column="3"
+                HorizontalAlignment="Right"
+                Margin="4"
+                Content="Max Iterations:" />
+            <NumericUpDown
+                Grid.Row="0"
+                Grid.Column="4"
+                IsEnabled="{Binding SelectedItem, ElementName=BoundariesComboBox, Converter={x:Static ObjectConverters.IsNotNull}}"
+                Classes="integerInput"
+                Width="160"
+                Increment="10000"
+                Minimum="{Binding MinIterations}"
+                Value="{Binding MaxIterations}"
+                Maximum="20000000" />
+            <Label
+                Grid.Row="0"
+                Grid.Column="5"
+                HorizontalAlignment="Right"
+                Margin="4"
+                Content="Render Interiors:" />
+            <ToggleSwitch
+                Grid.Row="0"
+                Grid.Column="6"
+                Margin="4"
+                IsChecked="{Binding #MandelbrotRenderer.RenderInteriors}" />
+
+            <ProgressBar
+                Grid.Row="0"
+                Grid.Column="7"
+                IsIndeterminate="True"
+                Margin="2,0"
+                IsVisible="{Binding #MandelbrotRenderer.IsBusy}" />
+
+            <Label
+                Grid.Row="0"
+                Grid.Column="8"
+                Margin="4"
+                Content="{Binding #MandelbrotRenderer.SetBoundary.Scale, StringFormat=Scale: \{0\}x}" />
+            <Button
+                Grid.Row="0"
+                Grid.Column="9"
+                Content="Reset View"
+                Command="{Binding #MandelbrotRenderer.ResetViewCommand}" />
+            <Button
+                Grid.Row="0"
+                Grid.Column="10"
+                Content="Zoom Out"
+                Command="{Binding #MandelbrotRenderer.ZoomOutCommand}" />
+        </Grid>
+
+        <Border
+            Grid.Row="1"
+            BorderBrush="Black"
+            BorderThickness="1">
+            <views:MandelbrotRenderer
+                x:Name="MandelbrotRenderer"
+                Lookup="{Binding Lookup}"
+                MinimumIterations="{Binding MinIterations}"
+                MaximumIterations="{Binding MaxIterations}"
+                Palette="{Binding Palette}" />
+        </Border>
+
+        <Grid
+            Grid.Row="2"
+            Grid.Column="0"
+            ColumnDefinitions="*,Auto,Auto,Auto">
+            <Label
+                Margin="4"
+                Content="{Binding #MandelbrotRenderer.ViewPort.LogicalArea}" />
+            <Button
+                Grid.Column="1"
+                Margin="4"
+                Content="Palette:">
+                <Button.Flyout>
+                    <Flyout>
+                        <ItemsRepeater Items="{Binding LegendColors}">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate DataType="vm:LegendColorViewModel">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border BorderThickness="1" BorderBrush="Black" Margin="4">
+                                            <Rectangle Width="30" Height="30" Fill="{Binding Color}" />
+                                        </Border>
+                                        <TextBlock VerticalAlignment="Center" Text="{Binding Description}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+            <ComboBox
+                Grid.Column="2"
+                Margin="4"
+                Items="{x:Static viz:BasePalette.AllPalettes}"
+                SelectedItem="{Binding Palette}" />
+            <Button
+                Grid.Column="3"
+                Margin="4"
+                Content="Save Quad Tree Image"
+                Command="{Binding SaveQuadTreeRenderingCommand}" />
+        </Grid>
+    </Grid>
+</UserControl>

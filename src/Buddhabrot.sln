@@ -13,13 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.Benchmarks", "Bu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.Core", "Buddhabrot.Core\Buddhabrot.Core.csproj", "{2CAF96A9-247F-4FCC-9092-56470AEC2A93}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoundaryFinder.Gui", "BoundaryFinder.Gui\BoundaryFinder.Gui.csproj", "{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoundaryExplorer", "BoundaryExplorer\BoundaryExplorer.csproj", "{17EE5178-D3E1-413B-A81E-4DF75D53ED3F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.Core.Tests", "Buddhabrot.Core.Tests\Buddhabrot.Core.Tests.csproj", "{E82D8C6A-E711-4AEF-8581-12748D6BEE32}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddhabrot.ManualVisualizations", "Buddhabrot.ManualVisualizations\Buddhabrot.ManualVisualizations.csproj", "{26398991-6EAC-4338-B3C3-7688774C87EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoundaryFinder.Tests", "BoundaryFinder.Tests\BoundaryFinder.Tests.csproj", "{0F43442F-0027-4A64-B47F-358CDEB5E158}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoundaryExplorer.Tests", "BoundaryExplorer.Tests\BoundaryExplorer.Tests.csproj", "{0F43442F-0027-4A64-B47F-358CDEB5E158}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoundaryFinder", "BoundaryFinder\BoundaryFinder.csproj", "{4665F5B5-E3D6-4778-A564-765FC548941E}"
 EndProject

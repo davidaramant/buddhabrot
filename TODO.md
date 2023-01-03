@@ -1,6 +1,6 @@
 # TODO
 
-## BoundaryFinder
+## BoundaryExplorer / BoundaryFinder
 
 ### Misc
 

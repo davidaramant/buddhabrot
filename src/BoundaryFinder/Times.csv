@@ -8,3 +8,4 @@ Date,Time,Duration,Duration (seconds),OS,CPU,RAM,Vertical Power,Divisions,Limit,
 2022-12-17,17:29:21,"17 hours, 44 minutes","63,882",macOS (13.1),Apple M1 Max 10 Cores,32 GB,19,"524,288","1,000,000","16,055,471","835,671,901","166,247,033",20%,Is this even possible?
 2022-12-23,22:47:48,"6 hours, 7 minutes","22,058",Microsoft Windows 10 Pro (10.0.19045),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,19,"524,288","100,000","16,373,789","835,355,317","166,522,265",20%,Windows
 2022-12-27,23:53:35,"1 hour, 47 minutes","6,442",Microsoft Windows 10 Pro (10.0.19045),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,18,"262,144","100,000","6,611,430","247,211,973","52,459,361",21%,For diff purposes
+2023-01-08,16:50:07,"2 minutes, 18 seconds",139,macOS (13.1),Apple M1 Max 10 Cores,32 GB,14,"16,384","1,000,000","192,546","2,094,493","643,885",31%,Baseline before 4x filament check

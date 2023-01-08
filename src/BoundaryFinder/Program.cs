@@ -20,13 +20,31 @@ class Program
 
     public static int Main(string[] args)
     {
-        if (args.Length is < 2 or > 3 ||
-            !int.TryParse(args[0], out var power) ||
-            !double.TryParse(args[1], out var limitMillions))
+        static void DisplayUsage()
         {
             Console.WriteLine("Arguments: power limit");
             Console.WriteLine(" - Power is the vertical power");
             Console.WriteLine(" - Limit is the max iteration limit in millions (IE 5 = 5,000,000)");
+        }
+        
+        if (args.Length is < 2 or > 3)
+        {
+            Console.WriteLine($"Incorrect number of arguments: {args.Length} (expected 2 or 3)");
+            DisplayUsage();
+            return -1;
+        }
+        
+        if (!int.TryParse(args[0], out var power))
+        {
+            Console.WriteLine("Could not parse power.");
+            DisplayUsage();
+            return -1;
+        }
+        
+        if (!double.TryParse(args[1], out var limitMillions))
+        {
+            Console.WriteLine("Could not parse iteration limit.");
+            DisplayUsage();
             return -1;
         }
         

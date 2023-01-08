@@ -1,7 +1,10 @@
-﻿namespace Buddhabrot.Core.Tests;
+﻿using Humanizer;
+
+namespace Buddhabrot.Core.Tests;
 
 public class IntervalTests
 {
+
     [Theory]
     [InlineData(0, 1, 2, 3, false)] // Distinct
     [InlineData(0, 1, 0, 1, true)] // Equal

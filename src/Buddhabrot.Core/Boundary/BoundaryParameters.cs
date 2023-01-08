@@ -19,6 +19,6 @@ public sealed record BoundaryParameters(
         var match = descriptionRegex.Match(description);
         return new BoundaryParameters(
             Divisions: new AreaDivisions(int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands)),
-            MaxIterations: (int)match.Groups[2].Value.FromMetric());
+            MaxIterations: (int)Math.Ceiling(match.Groups[2].Value.FromMetric()));
     }
 }

@@ -34,9 +34,7 @@ public static class BoundaryCalculator
             }
             else
             {
-                visitedRegionType = cornerComputer.DoesRegionContainFilaments(region)
-                    ? VisitedRegionType.Filament
-                    : VisitedRegionType.Rejected;
+                visitedRegionType = cornerComputer.DoesRegionContainFilaments(region);
             }
 
             visitedRegions.Visit(region, visitedRegionType);

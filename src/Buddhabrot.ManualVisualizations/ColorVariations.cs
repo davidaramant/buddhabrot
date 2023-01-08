@@ -20,7 +20,7 @@ public class ColorVariations : BaseVisualization
 
         using var image = new RasterImage(3, types.Length, scale: 100);
 
-        foreach (IBoundaryPalette palette in BasePalette.AllPalettes)
+        foreach (IBoundaryPalette palette in IBoundaryPalette.AllPalettes)
         {
             for (int i = 0; i < types.Length; i++)
             {

@@ -11,38 +11,6 @@ public interface IBoundaryPalette
 
     SKColor this[LookupRegionType type, PointClassification classification] { get; }
     SKColor this[LookupRegionType type] { get; }
-}
-
-public abstract class BasePalette
-{
-    private readonly SKColor[] _palette;
-
-    public SKColor this[LookupRegionType type, PointClassification classification] =>
-        _palette[((int) type) * 3 + (int) classification];
-
-    public SKColor this[LookupRegionType type] => _palette[((int) type) * 3];
-
-    protected BasePalette(IEnumerable<SKColor> palette)
-    {
-        _palette = palette.SelectMany(c =>
-        {
-            var variants = new SKColor[3];
-            // InSet
-            variants[0] = c;
-
-            c.ToHsv(out var h, out var s, out var v);
-
-            // OutsideSet
-            variants[1] = SKColor.FromHsv(h, 20, 100);
-
-            // InRange
-            variants[2] = SKColor.FromHsv((h + 180f) % 360f, 100, 100);
-
-            return variants;
-        }).ToArray();
-    }
-
-    public override string ToString() => GetType().Name.Replace("Palette", string.Empty).Humanize();
 
     public static IReadOnlyCollection<IBoundaryPalette> AllPalettes { get; } = new[]
     {
@@ -50,11 +18,48 @@ public abstract class BasePalette
         BluePalette.Instance,
         HsvRainbowPalette.Instance,
         LChuvRainbowPalette.Instance,
+        BlackAndWhitePalette.Instance,
     };
 }
 
+public abstract class BasePalette
+{
+    private readonly SKColor[] _palette;
+
+    public SKColor this[LookupRegionType type, PointClassification classification] =>
+        _palette[((int)type) * 3 + (int)classification];
+
+    public SKColor this[LookupRegionType type] => _palette[((int)type) * 3];
+
+    protected BasePalette(SKColor[] palette) => _palette = palette;
+
+    public override string ToString() => GetType().Name.Replace("Palette", string.Empty).Humanize();
+}
+
+public abstract class ComputedPalette : BasePalette
+{
+    protected ComputedPalette(IEnumerable<SKColor> palette) : base(palette.SelectMany(c =>
+    {
+        var variants = new SKColor[3];
+        // InSet
+        variants[0] = c;
+
+        c.ToHsv(out var h, out var s, out var v);
+
+        // OutsideSet
+        variants[1] = SKColor.FromHsv(h, 20, 100);
+
+        // InRange
+        variants[2] = SKColor.FromHsv((h + 180f) % 360f, 100, 100);
+
+        return variants;
+    }).ToArray())
+    {
+    }
+}
+
 // https://coolors.co/96e2d9-4c7c80-011627-741a2f-e71d36-7f8b92-e4f8f4-caf1eb-2ec4b6-ff9f1c
-public sealed class PastelPalette : BasePalette, IBoundaryPalette
+public sealed class PastelPalette : ComputedPalette, IBoundaryPalette
 {
     public static IBoundaryPalette Instance { get; } = new PastelPalette();
 
@@ -78,7 +83,7 @@ public sealed class PastelPalette : BasePalette, IBoundaryPalette
 }
 
 // https://colorkit.co/palette/212135-264aa7-02c9e0-f7fbfb-ffffff/
-public sealed class BluePalette : BasePalette, IBoundaryPalette
+public sealed class BluePalette : ComputedPalette, IBoundaryPalette
 {
     public static IBoundaryPalette Instance { get; } = new BluePalette();
 
@@ -101,7 +106,7 @@ public sealed class BluePalette : BasePalette, IBoundaryPalette
     public SKColor InsideCircle { get; } = new(0xFFf7fbfb);
 }
 
-public sealed class HsvRainbowPalette : BasePalette, IBoundaryPalette
+public sealed class HsvRainbowPalette : ComputedPalette, IBoundaryPalette
 {
     public static IBoundaryPalette Instance { get; } = new HsvRainbowPalette();
 
@@ -124,20 +129,12 @@ public sealed class HsvRainbowPalette : BasePalette, IBoundaryPalette
     public SKColor InsideCircle { get; } = new(0xFFf7fbfb);
 }
 
-public sealed class LChuvRainbowPalette : IBoundaryPalette
+public sealed class LChuvRainbowPalette : BasePalette, IBoundaryPalette
 {
     public static IBoundaryPalette Instance { get; } = new LChuvRainbowPalette();
 
-    private readonly SKColor[] _palette;
-
-    public SKColor this[LookupRegionType type, PointClassification classification] =>
-        _palette[((int) type) * 3 + (int) classification];
-
-    public SKColor this[LookupRegionType type] => _palette[((int) type) * 3];
-
-    private LChuvRainbowPalette()
+    private LChuvRainbowPalette() : base(CreatePalette().ToArray())
     {
-        _palette = CreatePalette().ToArray();
     }
 
     public override string ToString() => "LChuv Rainbow";
@@ -173,9 +170,22 @@ public sealed class LChuvRainbowPalette : IBoundaryPalette
         {
             var rgbColor = lChuvToRgb.Convert(color);
             return new(
-                (byte) (rgbColor.R * 255),
-                (byte) (rgbColor.G * 255),
-                (byte) (rgbColor.B * 255));
+                (byte)(rgbColor.R * 255),
+                (byte)(rgbColor.G * 255),
+                (byte)(rgbColor.B * 255));
         }
     }
+}
+
+public sealed class BlackAndWhitePalette : BasePalette, IBoundaryPalette
+{
+    public static IBoundaryPalette Instance { get; } = new BlackAndWhitePalette();
+
+    private BlackAndWhitePalette() : base(
+        Enumerable.Repeat(new[] { SKColors.Black, SKColors.LightGray, SKColors.Gold }, 8).SelectMany(c => c).ToArray())
+    {
+    }
+
+    public SKColor Background { get; } = new(0xFFFFFFFF);
+    public SKColor InsideCircle { get; } = new(0xFFfcfcfc);
 }

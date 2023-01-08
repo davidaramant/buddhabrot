@@ -89,7 +89,8 @@
     - [x] Backend for picking palettes
     - [x] Faster palette lookup for RegionType (dictionary)
     - [x] Show a palette legend in the UI
-  - [x] More palettes to choose from
+  - [x] More palettes to choose 
+  - [x] Black & White palette for max contrast
   - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
 - [x] Update colors for the new region types
   - [x] Associate a type with every pixel rendered 

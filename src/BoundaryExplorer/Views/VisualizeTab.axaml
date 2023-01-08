@@ -131,7 +131,7 @@
             <ComboBox
                 Grid.Column="2"
                 Margin="4"
-                Items="{x:Static viz:BasePalette.AllPalettes}"
+                Items="{x:Static viz:IBoundaryPalette.AllPalettes}"
                 SelectedItem="{Binding Palette}" />
             <Button
                 Grid.Column="3"

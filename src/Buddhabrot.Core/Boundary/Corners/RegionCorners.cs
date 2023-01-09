@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Collections.Specialized;
 using System.Numerics;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Utilities;
@@ -9,10 +8,6 @@ namespace Buddhabrot.Core.Boundary.Corners;
 public sealed class RegionCorners
 {
     private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCorners = new(64,
-        defaultKey: RegionBatchId.Invalid,
-        getIndex: cbi => cbi.GetHashCode64());
-
-    private readonly FixedSizeCache<RegionBatchId, BoolVector8> _cachedCenters = new(64,
         defaultKey: RegionBatchId.Invalid,
         getIndex: cbi => cbi.GetHashCode64());
 
@@ -37,18 +32,40 @@ public sealed class RegionCorners
 
     public VisitedRegionType CheckRegionForFilaments(RegionId region)
     {
-        var batchId = region.ToBatchId();
-        if (!_cachedCenters.TryGetValue(batchId, out var batch))
+        var centers = ArrayPool<Complex>.Shared.Rent(4);
+
+        centers[0] = ToComplex(region.X + 0.25, region.Y + 0.25);
+        centers[1] = ToComplex(region.X + 0.75, region.Y + 0.25);
+        centers[2] = ToComplex(region.X + 0.25, region.Y + 0.75);
+        centers[3] = ToComplex(region.X + 0.75, region.Y + 0.75);
+
+        int numBorder = 0;
+        int numFilament = 0;
+
+        Parallel.For(0, 4, i =>
         {
-            batch = ComputeCenterBatch(batchId);
-            _cachedCenters.Add(batchId, batch);
-        }
+            var distance = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
 
-        var index = region.GetBatchIndex() * 2;
-        if (!batch[index])
-            return VisitedRegionType.Rejected;
+            // TODO: Make FindExteriorDistance return a tuple of (iterations,distance) to avoid this comparison
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (distance == double.MaxValue)
+            {
+                Interlocked.Increment(ref numBorder);
+            }
+            else if (distance <= (RegionWidth / 4))
+            {
+                Interlocked.Increment(ref numFilament);
+            }
+        });
 
-        return batch[index + 1] ? VisitedRegionType.Border : VisitedRegionType.Filament;
+        ArrayPool<Complex>.Shared.Return(centers);
+
+        return (numBorder, numFilament) switch
+        {
+            (0, 0) => VisitedRegionType.Rejected,
+            (4, _) => VisitedRegionType.Border,
+            (_, _) => VisitedRegionType.Filament,
+        };
     }
 
     public RegionClassification ClassifyRegion(RegionId region)
@@ -62,6 +79,7 @@ public sealed class RegionCorners
                 numCorners++;
             }
         }
+
         CheckCorner(region.LowerLeftCorner());
         CheckCorner(region.LowerRightCorner());
         CheckCorner(region.UpperLeftCorner());
@@ -109,60 +127,6 @@ public sealed class RegionCorners
         return batch;
     }
 
-    private BoolVector8 ComputeCenterBatch(RegionBatchId id)
-    {
-        var centers = ArrayPool<Complex>.Shared.Rent(RegionBatchId.RegionArea);
-        var centerContainsFilaments = ArrayPool<VisitedRegionType>.Shared.Rent(RegionBatchId.RegionArea);
-
-        var bottomLeftRegion = id.GetBottomLeftRegion();
-        for (int y = 0; y < RegionBatchId.RegionWidth; y++)
-        {
-            for (int x = 0; x < RegionBatchId.RegionWidth; x++)
-            {
-                centers[y * RegionBatchId.RegionWidth + x] = GetRegionCenter(bottomLeftRegion + new Offset(x, y));
-            }
-        }
-
-        Parallel.For(0, 4,
-            i =>
-            {
-                var distance = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
-
-                centerContainsFilaments[i] = distance switch
-                {
-                    double.MaxValue => VisitedRegionType.Border,
-                    var d when d <= (RegionWidth / 2) => VisitedRegionType.Filament,
-                    _ => VisitedRegionType.Rejected
-                };
-            }
-        );
-
-        var batch = BoolVector8.Empty;
-
-        for (int i = 0; i < RegionBatchId.RegionArea; i++)
-        {
-            var type = centerContainsFilaments[i];
-
-            var index = i * 2;
-
-            switch (type)
-            {
-                case VisitedRegionType.Border:
-                    batch = batch.WithBit(index).WithBit(index + 1);
-                    break;
-                case VisitedRegionType.Filament:
-                    batch = batch.WithBit(index);
-                    break;
-            }
-        }
-
-        ArrayPool<Complex>.Shared.Return(centers);
-        ArrayPool<VisitedRegionType>.Shared.Return(centerContainsFilaments);
-
-        return batch;
-    }
-
     private Complex ToComplex(CornerId id) => ToComplex(id.X, id.Y);
-    private Complex GetRegionCenter(RegionId id) => ToComplex(id.X + 0.5, id.Y + 0.5);
     private Complex ToComplex(double x, double y) => new(real: x * RegionWidth - 2, imaginary: y * RegionWidth);
 }

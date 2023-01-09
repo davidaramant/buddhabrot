@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections.Specialized;
 using System.Numerics;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Utilities;
@@ -34,7 +35,7 @@ public sealed class RegionCorners
         return batch[corner.GetBatchIndex()];
     }
 
-    public VisitedRegionType DoesRegionContainFilaments(RegionId region)
+    public VisitedRegionType CheckRegionForFilaments(RegionId region)
     {
         var batchId = region.ToBatchId();
         if (!_cachedCenters.TryGetValue(batchId, out var batch))
@@ -50,12 +51,29 @@ public sealed class RegionCorners
         return batch[index + 1] ? VisitedRegionType.Border : VisitedRegionType.Filament;
     }
 
-    public CornersInSet GetRegionCorners(RegionId region) =>
-        new(
-            UpperLeft: IsCornerInSet(region.UpperLeftCorner()),
-            UpperRight: IsCornerInSet(region.UpperRightCorner()),
-            LowerRight: IsCornerInSet(region.LowerRightCorner()),
-            LowerLeft: IsCornerInSet(region.LowerLeftCorner()));
+    public RegionClassification ClassifyRegion(RegionId region)
+    {
+        int numCorners = 0;
+
+        void CheckCorner(CornerId corner)
+        {
+            if (IsCornerInSet(corner))
+            {
+                numCorners++;
+            }
+        }
+        CheckCorner(region.LowerLeftCorner());
+        CheckCorner(region.LowerRightCorner());
+        CheckCorner(region.UpperLeftCorner());
+        CheckCorner(region.UpperRightCorner());
+
+        return numCorners switch
+        {
+            0 => RegionClassification.NoCornersInSet,
+            4 => RegionClassification.AllCornersInSet,
+            _ => RegionClassification.MixedCorners,
+        };
+    }
 
     private BoolVector16 ComputeCornerBatch(RegionBatchId id)
     {

@@ -20,22 +20,12 @@ public static class BoundaryCalculator
             if (visitedRegions.HasVisited(region))
                 continue;
 
-            var corners = cornerComputer.GetRegionCorners(region);
-
-            VisitedRegionType visitedRegionType;
-
-            if (corners.ContainsBorder)
+            var visitedRegionType = cornerComputer.ClassifyRegion(region) switch
             {
-                visitedRegionType = VisitedRegionType.Border;
-            }
-            else if (corners.InsideSet)
-            {
-                visitedRegionType = VisitedRegionType.Rejected;
-            }
-            else
-            {
-                visitedRegionType = cornerComputer.DoesRegionContainFilaments(region);
-            }
+                RegionClassification.MixedCorners => VisitedRegionType.Border,
+                RegionClassification.AllCornersInSet => VisitedRegionType.Rejected,
+                _ => cornerComputer.CheckRegionForFilaments(region)
+            };
 
             visitedRegions.Visit(region, visitedRegionType);
 

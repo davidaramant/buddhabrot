@@ -28,6 +28,91 @@ public sealed class RegionInspector
 
         return batch[corner.GetBatchIndex()];
     }
+    
+    private (int InSet, int Close) SampleRegionInterior(RegionId region)
+    {
+        var centers = ArrayPool<Complex>.Shared.Rent(16);
+
+        for (int y = 0; y < 4; y++)
+        {
+            for (int x = 0; x < 4; x++)
+            {
+                centers[y * 4 + x] = ToComplex(region.X + x * 0.25 + 0.125, region.Y + y * 0.25 + 0.125);
+            }
+        }
+
+        int inSet = 0;
+        int close = 0;
+
+        Parallel.For(0, 4, i =>
+        {
+            var (iterations, distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
+
+            if (iterations.IsInfinite)
+            {
+                Interlocked.Increment(ref inSet);
+            }
+            else if (distance <= (RegionWidth / 8))
+            {
+                Interlocked.Increment(ref close);
+            }
+        });
+
+        ArrayPool<Complex>.Shared.Return(centers);
+
+        return (inSet, close);
+    }
+
+    public (int CornersInSet, int InteriorsInSet, int InteriorsClose) InspectRegion(RegionId region)
+    {
+        int cornersInSet = 0;
+
+        void CheckCorner(CornerId corner)
+        {
+            if (IsCornerInSet(corner))
+            {
+                cornersInSet++;
+            }
+        }
+
+        CheckCorner(region.LowerLeftCorner());
+        CheckCorner(region.LowerRightCorner());
+        CheckCorner(region.UpperLeftCorner());
+        CheckCorner(region.UpperRightCorner());
+
+        var (interiorInSet, interiorClose) = SampleRegionInterior(region);
+
+        return (cornersInSet, interiorInSet, interiorClose);
+    }
+
+    public VisitedRegionType ClassifyRegion(int cornersInSet, int interiorsInSet, int interiorsClose)
+    {
+        // Rejected
+        // Border
+        // Filament
+        // Mediocre
+        return (cornersInSet, interiorsInSet, interiorsClose) switch
+        {
+            // Totally empty
+            (0, 0, 0) => VisitedRegionType.Rejected,
+
+            // Inside set
+            (4, 16, _) => VisitedRegionType.Rejected,
+
+            // Only edge is in set (attempted fix for junk stuff around i = 0)
+            (2, 0, 4) => VisitedRegionType.Mediocre,
+
+            // Corners inside (valley)
+            {cornersInSet: 4, interiorsInSet: > 0, interiorsClose: > 0} => VisitedRegionType.Border,
+
+            // "Good" region
+//            {cornersInSet:>0, interiorInSet:}
+            _ => VisitedRegionType.Filament
+        };
+    }
+    
+    
+    
 
     private VisitedRegionType CheckRegionForFilaments(RegionId region)
     {

@@ -63,12 +63,12 @@ public static class ScalarKernel
         return EscapeTime.Infinite;
     }
 
-    public static double FindExteriorDistance(Complex c, int maxIterations)
+    public static (EscapeTime Iterations, double Distance) FindExteriorDistance(Complex c, int maxIterations)
     {
         // http://mrob.com/pub/muency/distanceestimator.html
 
         if (BulbChecker.IsInsideBulbs(c))
-            return double.MaxValue;
+            return (EscapeTime.Infinite, 0);
 
         var zReal = 0.0;
         var zImag = 0.0;
@@ -93,7 +93,7 @@ public static class ScalarKernel
             stepsTaken++;
 
             //dZ = 2 * z * dZ + 1;
-            var temp =2 * (zReal * dZReal - zImag * dZImag) + 1;
+            var temp = 2 * (zReal * dZReal - zImag * dZImag) + 1;
             dZImag = 2 * (zReal * dZImag + zImag * dZReal);
             dZReal = temp;
 
@@ -101,7 +101,7 @@ public static class ScalarKernel
             zReal = z2Real - z2Imag + c.Real;
 
             if ((oldZReal == zReal && oldZImag == zImag) || (olderZReal == zReal && olderZImag == zImag))
-                return double.MaxValue;
+                return (EscapeTime.Infinite, 0);
 
             z2Real = zReal * zReal;
             z2Imag = zImag * zImag;
@@ -110,7 +110,7 @@ public static class ScalarKernel
             {
                 var magZ = Hypot(zReal, zImag);
                 var magDZ = Hypot(dZReal, dZImag);
-                return Math.Log(magZ * magZ) * magZ / magDZ;
+                return (new EscapeTime(i), Math.Log(magZ * magZ) * magZ / magDZ);
             }
 
             if (stepsTaken == stepLimit)
@@ -125,7 +125,7 @@ public static class ScalarKernel
         }
 
         // Match the normal escape time algorithm and treat falling out of the loop as being in the set
-        return double.MaxValue;
+        return (EscapeTime.Infinite, 0);
     }
 
     private static double Hypot(double a, double b)

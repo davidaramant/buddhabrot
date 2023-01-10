@@ -20,7 +20,7 @@ public class FilamentVisualizations : BaseVisualization
     [Test]
     public void ShouldCalculateFilaments()
     {
-        var escapeLimitsThousands = new[] {1, 5, 10};
+        var escapeLimitsThousands = new[] { 1, 5, 10 };
 
         using var image = new RasterImage(_viewPort.Resolution);
 
@@ -57,7 +57,7 @@ public class FilamentVisualizations : BaseVisualization
                 continue;
 
             var c = _viewPort.GetComplex(point);
-            var distance = ScalarKernel.FindExteriorDistance(c, max);
+            var (_, distance) = ScalarKernel.FindExteriorDistance(c, max);
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             var containsBorderOrFilament = distance == Double.MaxValue || distance < _viewPort.PixelWidth / 2;
 
@@ -66,17 +66,17 @@ public class FilamentVisualizations : BaseVisualization
 
             if (containsBorderOrFilament)
             {
-                AddPointToCheck(point with {X = point.X + 1});
-                AddPointToCheck(point with {X = point.X - 1});
-                AddPointToCheck(point with {Y = point.Y + 1});
-                AddPointToCheck(point with {Y = point.Y - 1});
+                AddPointToCheck(point with { X = point.X + 1 });
+                AddPointToCheck(point with { X = point.X - 1 });
+                AddPointToCheck(point with { Y = point.Y + 1 });
+                AddPointToCheck(point with { Y = point.Y - 1 });
 
                 if (checkDiagonals)
                 {
-                    AddPointToCheck(point with {X = point.X + 1, Y = point.Y + 1});
-                    AddPointToCheck(point with {X = point.X + 1, Y = point.Y - 1});
-                    AddPointToCheck(point with {X = point.X - 1, Y = point.Y + 1});
-                    AddPointToCheck(point with {X = point.X - 1, Y = point.Y - 1});
+                    AddPointToCheck(point with { X = point.X + 1, Y = point.Y + 1 });
+                    AddPointToCheck(point with { X = point.X + 1, Y = point.Y - 1 });
+                    AddPointToCheck(point with { X = point.X - 1, Y = point.Y + 1 });
+                    AddPointToCheck(point with { X = point.X - 1, Y = point.Y - 1 });
                 }
             }
         }
@@ -115,7 +115,7 @@ public class FilamentVisualizations : BaseVisualization
         {
             for (int col = 0; col < viewPort.Resolution.Width; col++)
             {
-                var distance =
+                var (_, distance) =
                     ScalarKernel.FindExteriorDistance(viewPort.GetComplex(col, row), max);
 
                 image.SetPixel(col, row, PickColorFromDistance(viewPort, distance));

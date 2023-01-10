@@ -30,7 +30,7 @@ public sealed class RegionCorners
         return batch[corner.GetBatchIndex()];
     }
 
-    public VisitedRegionType CheckRegionForFilaments(RegionId region)
+    private VisitedRegionType CheckRegionForFilaments(RegionId region)
     {
         var centers = ArrayPool<Complex>.Shared.Rent(4);
 
@@ -44,11 +44,9 @@ public sealed class RegionCorners
 
         Parallel.For(0, 4, i =>
         {
-            var distance = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
+            var (iterations,distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
 
-            // TODO: Make FindExteriorDistance return a tuple of (iterations,distance) to avoid this comparison
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (distance == double.MaxValue)
+            if (iterations.IsInfinite)
             {
                 Interlocked.Increment(ref numBorder);
             }

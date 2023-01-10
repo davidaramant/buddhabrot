@@ -68,7 +68,7 @@ public sealed class RegionCorners
         };
     }
 
-    public RegionClassification ClassifyRegion(RegionId region)
+    public VisitedRegionType ClassifyRegion(RegionId region)
     {
         int numCorners = 0;
 
@@ -87,9 +87,9 @@ public sealed class RegionCorners
 
         return numCorners switch
         {
-            0 => RegionClassification.NoCornersInSet,
-            4 => RegionClassification.AllCornersInSet,
-            _ => RegionClassification.MixedCorners,
+            0 => CheckRegionForFilaments(region),
+            4 => VisitedRegionType.Rejected,
+            _ => VisitedRegionType.Border,
         };
     }
 

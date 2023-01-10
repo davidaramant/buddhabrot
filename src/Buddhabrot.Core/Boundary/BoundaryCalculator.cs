@@ -20,16 +20,11 @@ public static class BoundaryCalculator
             if (visitedRegions.HasVisited(region))
                 continue;
 
-            var visitedRegionType = cornerComputer.ClassifyRegion(region) switch
-            {
-                RegionClassification.MixedCorners => VisitedRegionType.Border,
-                RegionClassification.AllCornersInSet => VisitedRegionType.Rejected,
-                _ => cornerComputer.CheckRegionForFilaments(region)
-            };
+            var regionType = cornerComputer.ClassifyRegion(region);
 
-            visitedRegions.Visit(region, visitedRegionType);
+            visitedRegions.Visit(region, regionType);
 
-            if (visitedRegionType != VisitedRegionType.Rejected)
+            if (regionType != VisitedRegionType.Rejected)
             {
                 AddRegionToCheck(region.MoveUp());
                 AddRegionToCheck(region.MoveUpRight());

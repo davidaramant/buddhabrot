@@ -38,7 +38,7 @@
     - [x] Batch data can be packed into a `ushort` (don't combine corners and centers, I think)
     - [x] Fixed-size cache for corners
     - [ ] Determine best amount of data to batch & cache
-    - [ ] Visualization (video) of batches being cached & evicted
+    - [x] ~~Visualization (video) of batches being cached & evicted~~ - This seems pointless
 - [x] Investigating putting an index into the `VisitedRegions` - EDIT: complete dud
 - [x] Support diffing arbitrary quad trees
   - [x] ~~Do I need a more generic quad tree internal data structure?~~ - Split into two types of trees 
@@ -48,8 +48,9 @@
     - [x] Determine Region Type based on Left and Right
 - [ ] Diagnose problems with algorithm:
   - [x] Super sample interior of region
-  - [ ] "Holes" in boundary/filaments
-  - [ ] Useless border regions around i = 0
+  - [ ] Heuristic for regions
+    - [ ] "Holes" in boundary/filaments
+    - [ ] Useless border regions around i = 0
 
 ## BoundaryExplorer
 

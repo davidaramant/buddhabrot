@@ -14,6 +14,6 @@ public static class QuadTreeExtensions
         return index;
     }
     
-    public static int AddEmptyChildren(this List<VisitNode> tree) =>
-        tree.AddChildren(VisitNode.Empty, VisitNode.Empty, VisitNode.Empty, VisitNode.Empty);
+    public static int AddUnknownChildren(this List<VisitNode> tree) =>
+        tree.AddChildren(VisitNode.Unknown, VisitNode.Unknown, VisitNode.Unknown, VisitNode.Unknown);
 }

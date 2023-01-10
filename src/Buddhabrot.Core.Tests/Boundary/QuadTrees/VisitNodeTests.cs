@@ -6,7 +6,7 @@ namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
 public class VisitNodeTests
 {
     [Theory]
-    [InlineData(VisitedRegionType.Empty)]
+    [InlineData(VisitedRegionType.Unknown)]
     [InlineData(VisitedRegionType.Border)]
     [InlineData(VisitedRegionType.Filament)]
     [InlineData(VisitedRegionType.Rejected)]
@@ -25,14 +25,14 @@ public class VisitNodeTests
             VisitedRegionType.Filament,
             VisitedRegionType.Border,
             VisitedRegionType.Rejected,
-            VisitedRegionType.Empty);
+            VisitedRegionType.Unknown);
 
         node.NodeType.Should().Be(VisitNodeType.LeafQuad);
 
         node.SW.Should().Be(VisitedRegionType.Filament);
         node.SE.Should().Be(VisitedRegionType.Border);
         node.NW.Should().Be(VisitedRegionType.Rejected);
-        node.NE.Should().Be(VisitedRegionType.Empty);
+        node.NE.Should().Be(VisitedRegionType.Unknown);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class VisitNodeTests
     [Fact]
     public void ShouldChangeNodeTypeWhenSettingChildRegion()
     {
-        var node = VisitNode.Empty;
+        var node = VisitNode.Unknown;
 
         node.NodeType.Should().Be(VisitNodeType.Leaf);
 
@@ -60,28 +60,28 @@ public class VisitNodeTests
     [Fact]
     public void ShouldUpdateChildren()
     {
-        var node = VisitNode.Empty;
+        var node = VisitNode.Unknown;
 
         node = node.WithSW(VisitedRegionType.Filament);
 
         node.SW.Should().Be(VisitedRegionType.Filament);
-        node.SE.Should().Be(VisitedRegionType.Empty);
-        node.NW.Should().Be(VisitedRegionType.Empty);
-        node.NE.Should().Be(VisitedRegionType.Empty);
+        node.SE.Should().Be(VisitedRegionType.Unknown);
+        node.NW.Should().Be(VisitedRegionType.Unknown);
+        node.NE.Should().Be(VisitedRegionType.Unknown);
 
         node = node.WithSE(VisitedRegionType.Border);
 
         node.SW.Should().Be(VisitedRegionType.Filament);
         node.SE.Should().Be(VisitedRegionType.Border);
-        node.NW.Should().Be(VisitedRegionType.Empty);
-        node.NE.Should().Be(VisitedRegionType.Empty);
+        node.NW.Should().Be(VisitedRegionType.Unknown);
+        node.NE.Should().Be(VisitedRegionType.Unknown);
 
         node = node.WithNW(VisitedRegionType.Rejected);
 
         node.SW.Should().Be(VisitedRegionType.Filament);
         node.SE.Should().Be(VisitedRegionType.Border);
         node.NW.Should().Be(VisitedRegionType.Rejected);
-        node.NE.Should().Be(VisitedRegionType.Empty);
+        node.NE.Should().Be(VisitedRegionType.Unknown);
 
         node = node.WithNE(VisitedRegionType.Rejected);
 
@@ -94,29 +94,29 @@ public class VisitNodeTests
     [Fact]
     public void ShouldUpdateChildrenWithQuadrant()
     {
-        VisitNode.Empty.WithQuadrant(Quadrant.SW, VisitedRegionType.Border).Should().Be(
+        VisitNode.Unknown.WithQuadrant(Quadrant.SW, VisitedRegionType.Border).Should().Be(
             VisitNode.MakeLeaf(
                 VisitedRegionType.Border,
-                VisitedRegionType.Empty,
-                VisitedRegionType.Empty,
-                VisitedRegionType.Empty));
-        VisitNode.Empty.WithQuadrant(Quadrant.SE, VisitedRegionType.Border).Should().Be(
+                VisitedRegionType.Unknown,
+                VisitedRegionType.Unknown,
+                VisitedRegionType.Unknown));
+        VisitNode.Unknown.WithQuadrant(Quadrant.SE, VisitedRegionType.Border).Should().Be(
             VisitNode.MakeLeaf(
-                VisitedRegionType.Empty,
+                VisitedRegionType.Unknown,
                 VisitedRegionType.Border,
-                VisitedRegionType.Empty,
-                VisitedRegionType.Empty));
-        VisitNode.Empty.WithQuadrant(Quadrant.NW, VisitedRegionType.Border).Should().Be(
+                VisitedRegionType.Unknown,
+                VisitedRegionType.Unknown));
+        VisitNode.Unknown.WithQuadrant(Quadrant.NW, VisitedRegionType.Border).Should().Be(
             VisitNode.MakeLeaf(
-                VisitedRegionType.Empty,
-                VisitedRegionType.Empty,
+                VisitedRegionType.Unknown,
+                VisitedRegionType.Unknown,
                 VisitedRegionType.Border,
-                VisitedRegionType.Empty));
-        VisitNode.Empty.WithQuadrant(Quadrant.NE, VisitedRegionType.Border).Should().Be(
+                VisitedRegionType.Unknown));
+        VisitNode.Unknown.WithQuadrant(Quadrant.NE, VisitedRegionType.Border).Should().Be(
             VisitNode.MakeLeaf(
-                VisitedRegionType.Empty,
-                VisitedRegionType.Empty,
-                VisitedRegionType.Empty,
+                VisitedRegionType.Unknown,
+                VisitedRegionType.Unknown,
+                VisitedRegionType.Unknown,
                 VisitedRegionType.Border));
     }
 
@@ -127,7 +127,7 @@ public class VisitNodeTests
     [InlineData(Quadrant.NE)]
     public void ShouldGetQuadrant(Quadrant quadrant)
     {
-        VisitNode.Empty
+        VisitNode.Unknown
             .WithQuadrant(quadrant, VisitedRegionType.Border)
             .GetQuadrant(quadrant)
             .Should().Be(VisitedRegionType.Border);

@@ -13,7 +13,7 @@ public readonly struct VisitNode
 
     public VisitNode(uint encoded) => Encoded = encoded;
 
-    public static readonly VisitNode Empty = MakeLeaf(VisitedRegionType.Empty);
+    public static readonly VisitNode Unknown = MakeLeaf(VisitedRegionType.Unknown);
 
     public static VisitNode MakeLeaf(VisitedRegionType type) => new((uint)type << 2);
 

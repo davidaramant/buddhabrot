@@ -24,7 +24,7 @@ public class VisitNodeWithQuadrantBenchmarks
     [Benchmark(Baseline = true)]
     public VisitNode Switch()
     {
-        var node = VisitNode.Empty;
+        var node = VisitNode.Unknown;
 
         for (int i = 0; i < Size; i++)
         {
@@ -47,7 +47,7 @@ public class VisitNodeWithQuadrantBenchmarks
     [Benchmark]
     public VisitNode Branchless()
     {
-        var node = VisitNode.Empty;
+        var node = VisitNode.Unknown;
 
         for (int i = 0; i < Size; i++)
         {

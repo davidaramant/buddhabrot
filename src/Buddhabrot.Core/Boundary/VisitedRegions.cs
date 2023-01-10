@@ -26,22 +26,27 @@ public sealed class VisitedRegions : IVisitedRegions
     public VisitedRegions(int capacity = 0) =>
         _nodes = new(capacity)
         {
-            VisitNode.Empty,
-            VisitNode.Empty,
-            VisitNode.Empty,
-            VisitNode.Empty
+            VisitNode.Unknown,
+            VisitNode.Unknown,
+            VisitNode.Unknown,
+            VisitNode.Unknown
         };
 
     public void Visit(RegionId id, VisitedRegionType type)
     {
+        if (type == VisitedRegionType.Mediocre)
+        {
+            type = VisitedRegionType.Rejected;
+        }
+        
         // Do we have to expand the tree?
         if (!_dimensions.Contains(id))
         {
             var index = _nodes.AddChildren(
                 _root,
-                VisitNode.Empty,
-                VisitNode.Empty,
-                VisitNode.Empty);
+                VisitNode.Unknown,
+                VisitNode.Unknown,
+                VisitNode.Unknown);
 
             _dimensions = _dimensions.Expand();
             _root = VisitNode.MakeBranch(index);
@@ -71,7 +76,7 @@ public sealed class VisitedRegions : IVisitedRegions
             // The only possible nodes are leaves and branches because of the height check
             if (node.IsLeaf)
             {
-                var index = _nodes.AddEmptyChildren();
+                var index = _nodes.AddUnknownChildren();
                 _nodes[nodeIndex] = node = VisitNode.MakeBranch(index);
             }
 
@@ -113,7 +118,7 @@ public sealed class VisitedRegions : IVisitedRegions
             return false;
 
         if(node.IsLeafQuad)
-            return node.GetQuadrant(quadrant) != VisitedRegionType.Empty;
+            return node.GetQuadrant(quadrant) != VisitedRegionType.Unknown;
         
         // Branch
         var index = node.GetChildIndex(quadrant);

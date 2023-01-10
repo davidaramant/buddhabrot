@@ -22,7 +22,7 @@ public class VisitNodeGetQuadrantBenchmarks
     [Benchmark(Baseline = true)]
     public VisitedRegionType Switch()
     {
-        var node = VisitNode.Empty;
+        var node = VisitNode.Unknown;
 
         VisitedRegionType type = default;
         for (int i = 0; i < Size; i++)
@@ -46,7 +46,7 @@ public class VisitNodeGetQuadrantBenchmarks
     [Benchmark]
     public VisitedRegionType Branchless()
     {
-        var node = VisitNode.Empty;
+        var node = VisitNode.Unknown;
 
         VisitedRegionType type = default;
         for (int i = 0; i < Size; i++)

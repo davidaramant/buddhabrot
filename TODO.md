@@ -113,5 +113,5 @@
 - [x] Put logs on the calculator / diff tabs
 - [ ] Display heuristics about a region
   - [ ] UI to pick a region
-  - [ ] Calculate heuristics
+  - [x] Calculate heuristics
   - [ ] Display heuristics

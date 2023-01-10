@@ -14,3 +14,4 @@ Date,Time,Duration,Duration (seconds),OS,CPU,RAM,Vertical Power,Divisions,Limit,
 2023-01-09,10:14:46,"1 minute, 27 seconds",88,Microsoft Windows 10 Pro (10.0.19045),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,14,"16,384","1,000,000","194,931","2,094,573","644,477",31%,Filaments can find boundaries
 2023-01-09,13:21:56,"1 minute, 24 seconds",85,Microsoft Windows 10 Pro (10.0.19045),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,14,"16,384","1,000,000","194,931","2,094,573","644,477",31%,Use enum instead of RegionCorners
 2023-01-09,13:51:25,"1 minute, 44 seconds",105,Microsoft Windows 10 Pro (10.0.19045),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,14,"16,384","1,000,000","194,545","2,233,721","651,557",29%,Check 4x for filaments
+2023-01-09,21:44:36,"2 minutes, 20 seconds",140,macOS (13.1),Apple M1 Max 10 Cores,32 GB,14,"16,384","1,000,000","194,545","2,233,721","651,557",29%,4x check on Mac

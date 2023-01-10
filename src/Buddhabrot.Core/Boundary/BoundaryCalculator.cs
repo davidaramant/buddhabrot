@@ -9,7 +9,7 @@ public static class BoundaryCalculator
         IVisitedRegions visitedRegions,
         CancellationToken cancelToken = default)
     {
-        var cornerComputer = new RegionCorners(boundaryParameters);
+        var inspector = new RegionInspector(boundaryParameters);
         Queue<RegionId> regionsToCheck = new();
         regionsToCheck.Enqueue(new RegionId(0, 0));
 
@@ -20,7 +20,7 @@ public static class BoundaryCalculator
             if (visitedRegions.HasVisited(region))
                 continue;
 
-            var regionType = cornerComputer.ClassifyRegion(region);
+            var regionType = inspector.ClassifyRegion(region);
 
             visitedRegions.Visit(region, regionType);
 

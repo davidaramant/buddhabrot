@@ -104,6 +104,6 @@
 - [x] Update stats on Calculate page to show something useful (size as gigapixels)
 - [ ] Better way of showing location of cursor
   - [x] Remove that old junk region display
-  - [ ] Show complex point of cursor position
+  - [x] Show complex point of cursor position - even better, showing the region
 - [x] Move the global log to a tab
 - [x] Put logs on the calculator / diff tabs

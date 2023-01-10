@@ -107,6 +107,7 @@
             Grid.Row="2"
             Grid.Column="0"
             ColumnDefinitions="*,Auto,Auto,Auto">
+            <Label Content="{Binding #MandelbrotRenderer.CursorRegion}"/>
             <Button
                 Grid.Column="1"
                 Margin="4"

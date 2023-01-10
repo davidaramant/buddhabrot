@@ -11,7 +11,7 @@ public readonly record struct RegionId(int X, int Y)
     public static RegionId FromEncodedPosition(int encodedPosition) =>
         new(encodedPosition & ushort.MaxValue, encodedPosition >> 16);
 
-    public override string ToString() => $"Region ({X}, {Y})";
+    public override string ToString() => $"Region ({X:N0}, {Y:N0})";
 
     public static RegionId operator +(RegionId id, Offset offset) =>
         new(id.X + offset.X, id.Y + offset.Y);

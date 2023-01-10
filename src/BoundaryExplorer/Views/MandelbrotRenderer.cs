@@ -42,11 +42,12 @@ public sealed class MandelbrotRenderer : Control
     private CancellationTokenSource _cancelSource = new();
     private Task _renderingTask = Task.CompletedTask;
     private readonly List<(System.Drawing.Rectangle Rect, LookupRegionType Type)> _areasToDraw = new();
+    private ViewPort? _viewPort = null;
 
     private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
     private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
 
-    private PixelSize PixelBounds => new(Math.Max(1, (int) Bounds.Width), Math.Max(1, (int) Bounds.Height));
+    private PixelSize PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
 
     public static readonly StyledProperty<IBoundaryPalette> PaletteProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, IBoundaryPalette>(nameof(Palette),
@@ -113,6 +114,16 @@ public sealed class MandelbrotRenderer : Control
         set => SetValue(SetBoundaryProperty, value);
     }
 
+    public static readonly StyledProperty<RegionId> CursorRegionProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, RegionId>(nameof(CursorRegion),
+            defaultValue: new RegionId(0, 0));
+
+    public RegionId CursorRegion
+    {
+        get => GetValue(CursorRegionProperty);
+        set => SetValue(CursorRegionProperty, value);
+    }
+
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
     public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
 
@@ -137,6 +148,26 @@ public sealed class MandelbrotRenderer : Control
             await RequestRenderAsync(RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize,
                 newSize: PixelBounds));
         };
+        PointerMoved += (_, e) =>
+        {
+            var point = e.GetPosition(this);
+            var v = _viewPort;
+            if (v != null)
+            {
+                var cursorPosition = v.GetComplex((int)point.X, (int)point.Y);
+                var r = cursorPosition.Real+2;
+                var i = Math.Abs(cursorPosition.Imaginary);
+
+                if (r is >= 0 and < 4 && i < 2 && Lookup.Height > 2)
+                {
+                    var side = new AreaDivisions(Lookup.Height - 2).RegionSideLength;
+
+                    int ToInt(double l) => (int)(l / side);
+
+                    CursorRegion = new RegionId(ToInt(r), ToInt(i));
+                }
+            }
+        };
         PointerPressed += async (_, e) =>
         {
             var properties = e.GetCurrentPoint(this).Properties;
@@ -155,7 +186,7 @@ public sealed class MandelbrotRenderer : Control
                     if (SetBoundary.Scale < 31)
                     {
                         var pos = e.GetPosition(this);
-                        SetBoundary = SetBoundary.ZoomIn((int) pos.X, (int) pos.Y);
+                        SetBoundary = SetBoundary.ZoomIn((int)pos.X, (int)pos.Y);
                         await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
                     }
                 }
@@ -206,8 +237,8 @@ public sealed class MandelbrotRenderer : Control
         if (_isPanning)
         {
             var currentPos = e.GetPosition(this);
-            var deltaX = (int) (currentPos.X - _panningStartPoint.X);
-            var deltaY = (int) (currentPos.Y - _panningStartPoint.Y);
+            var deltaX = (int)(currentPos.X - _panningStartPoint.X);
+            var deltaY = (int)(currentPos.Y - _panningStartPoint.Y);
 
             _panningOffset = new PixelVector(deltaX, deltaY);
             InvalidateVisual();
@@ -216,7 +247,13 @@ public sealed class MandelbrotRenderer : Control
         base.OnPointerMoved(e);
     }
 
-    public override void Render(DrawingContext context) =>
+    public override void Render(DrawingContext context)
+    {
+        _viewPort = ViewPort.FromResolution(
+            new System.Drawing.Size(PixelBounds.Width, PixelBounds.Height),
+            SetBoundary.Center,
+            2d / SetBoundary.QuadrantLength);
+
         context.DrawImage(_frontBuffer,
             new Rect(
                 _panningOffset.X,
@@ -224,6 +261,7 @@ public sealed class MandelbrotRenderer : Control
                 _frontBuffer.PixelSize.Width,
                 _frontBuffer.PixelSize.Height)
         );
+    }
 
     sealed record RenderingArgs(
         RenderInstructions Instructions,
@@ -249,16 +287,16 @@ public sealed class MandelbrotRenderer : Control
         // TODO: Check for cancellation
         using (var context = _backBuffer.CreateDrawingContext(null))
         {
-            var skiaContext = (ISkiaDrawingContextImpl) context;
+            var skiaContext = (ISkiaDrawingContextImpl)context;
             var canvas = skiaContext.SkCanvas;
 
             canvas.DrawRect(0, 0, args.Width, args.Height,
-                new SKPaint {Color = args.Palette.Background});
+                new SKPaint { Color = args.Palette.Background });
 
             var center = args.SetBoundary.Center;
             var radius = args.SetBoundary.QuadrantLength;
 
-            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint {Color = args.Palette.InsideCircle});
+            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InsideCircle });
 
             if (args.Instructions.PasteFrontBuffer)
             {
@@ -311,7 +349,7 @@ public sealed class MandelbrotRenderer : Control
                     var time = escapeTimes[i];
                     var classification = time switch
                     {
-                        {IsInfinite: true} => PointClassification.InSet,
+                        { IsInfinite: true } => PointClassification.InSet,
                         var t when t.Iterations > args.MinIterations => PointClassification.InRange,
                         _ => PointClassification.OutsideSet,
                     };

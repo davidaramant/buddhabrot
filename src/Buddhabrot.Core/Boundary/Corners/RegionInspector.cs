@@ -112,7 +112,31 @@ public sealed class RegionInspector
     }
     
     
-    
+    // TODO: Make this use Inspect & Classify once those are good
+    public VisitedRegionType ClassifyRegion(RegionId region)
+    {
+        int numCorners = 0;
+
+        void CheckCorner(CornerId corner)
+        {
+            if (IsCornerInSet(corner))
+            {
+                numCorners++;
+            }
+        }
+
+        CheckCorner(region.LowerLeftCorner());
+        CheckCorner(region.LowerRightCorner());
+        CheckCorner(region.UpperLeftCorner());
+        CheckCorner(region.UpperRightCorner());
+
+        return numCorners switch
+        {
+            0 => CheckRegionForFilaments(region),
+            4 => VisitedRegionType.Rejected,
+            _ => VisitedRegionType.Border,
+        };
+    }
 
     private VisitedRegionType CheckRegionForFilaments(RegionId region)
     {
@@ -147,31 +171,6 @@ public sealed class RegionInspector
             (0, 0) => VisitedRegionType.Rejected,
             (4, _) => VisitedRegionType.Border,
             (_, _) => VisitedRegionType.Filament,
-        };
-    }
-
-    public VisitedRegionType ClassifyRegion(RegionId region)
-    {
-        int numCorners = 0;
-
-        void CheckCorner(CornerId corner)
-        {
-            if (IsCornerInSet(corner))
-            {
-                numCorners++;
-            }
-        }
-
-        CheckCorner(region.LowerLeftCorner());
-        CheckCorner(region.LowerRightCorner());
-        CheckCorner(region.UpperLeftCorner());
-        CheckCorner(region.UpperRightCorner());
-
-        return numCorners switch
-        {
-            0 => CheckRegionForFilaments(region),
-            4 => VisitedRegionType.Rejected,
-            _ => VisitedRegionType.Border,
         };
     }
 

@@ -47,6 +47,7 @@
   - [x] Generate quad tree diffs
     - [x] Determine Region Type based on Left and Right
 - [ ] Diagnose problems with algorithm:
+  - [x] Super sample interior of region
   - [ ] "Holes" in boundary/filaments
   - [ ] Useless border regions around i = 0
 
@@ -82,6 +83,8 @@
       - [x] Do the actual rendering
       - [x] BUG: Panning & zooming causes things to go haywire with region interiors
       - [ ] Deal with splotchy in-range points (distance estimator somehow?)
+        - [ ] Multiple options of rendering interior
+        - [ ] Implement DE interior rendering
   - [x] Nicer aesthetic
   - [x] ~~Fill the Mandelbrot interior (scanline rendering)~~ - No good method of doing this
   - [x] Pick palette to render with
@@ -102,7 +105,7 @@
     - [x] Compute
   - [x] Show diffs in drop down correctly on Visualize tab
 - [x] Update stats on Calculate page to show something useful (size as gigapixels)
-- [ ] Better way of showing location of cursor
+- [x] Better way of showing location of cursor
   - [x] Remove that old junk region display
   - [x] Show complex point of cursor position - even better, showing the region
 - [x] Move the global log to a tab

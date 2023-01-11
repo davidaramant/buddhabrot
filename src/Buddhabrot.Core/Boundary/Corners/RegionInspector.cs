@@ -16,7 +16,7 @@ public sealed class RegionInspector
     private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
 
     public RegionInspector(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
-    
+
     private bool IsCornerInSet(CornerId corner)
     {
         var batchId = corner.ToBatchId();
@@ -28,7 +28,7 @@ public sealed class RegionInspector
 
         return batch[corner.GetBatchIndex()];
     }
-    
+
     private (int InSet, int Close) SampleRegionInterior(RegionId region)
     {
         var centers = ArrayPool<Complex>.Shared.Rent(16);
@@ -87,31 +87,22 @@ public sealed class RegionInspector
 
     public VisitedRegionType ClassifyRegion(int cornersInSet, int interiorsInSet, int interiorsClose)
     {
-        // Rejected
-        // Border
-        // Filament
-        // Mediocre
-        return (cornersInSet, interiorsInSet, interiorsClose) switch
+        // TODO: Corners need to be involved; interiors don't touch everything
+        return (interiorsInSet, interiorsClose) switch
         {
             // Totally empty
-            (0, 0, 0) => VisitedRegionType.Rejected,
+            (0, 0) => VisitedRegionType.Rejected,
 
             // Inside set
-            (4, 16, _) => VisitedRegionType.Rejected,
+            (16, _) => VisitedRegionType.Rejected,
 
-            // Only edge is in set (attempted fix for junk stuff around i = 0)
-            (2, 0, 4) => VisitedRegionType.Mediocre,
+            {interiorsInSet: > 1} => VisitedRegionType.Border,
 
-            // Corners inside (valley)
-            {cornersInSet: 4, interiorsInSet: > 0, interiorsClose: > 0} => VisitedRegionType.Border,
-
-            // "Good" region
-//            {cornersInSet:>0, interiorInSet:}
             _ => VisitedRegionType.Filament
         };
     }
-    
-    
+
+
     // TODO: Make this use Inspect & Classify once those are good
     public VisitedRegionType ClassifyRegion(RegionId region)
     {
@@ -152,7 +143,7 @@ public sealed class RegionInspector
 
         Parallel.For(0, 4, i =>
         {
-            var (iterations,distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
+            var (iterations, distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
 
             if (iterations.IsInfinite)
             {

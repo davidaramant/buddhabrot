@@ -34,11 +34,6 @@ public sealed class VisitedRegions : IVisitedRegions
 
     public void Visit(RegionId id, VisitedRegionType type)
     {
-        if (type == VisitedRegionType.Mediocre)
-        {
-            type = VisitedRegionType.Rejected;
-        }
-        
         // Do we have to expand the tree?
         if (!_dimensions.Contains(id))
         {

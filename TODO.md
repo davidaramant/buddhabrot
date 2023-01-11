@@ -111,7 +111,7 @@
   - [x] Show complex point of cursor position - even better, showing the region
 - [x] Move the global log to a tab
 - [x] Put logs on the calculator / diff tabs
-- [ ] Display heuristics about a region
-  - [ ] UI to pick a region
+- [x] Display heuristics about a region
+  - [x] UI to pick a region
   - [x] Calculate heuristics
-  - [ ] Display heuristics
+  - [x] Display heuristics

@@ -14,6 +14,7 @@ using Avalonia.Skia;
 using Avalonia.Threading;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Corners;
 using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
@@ -29,6 +30,8 @@ public sealed class MandelbrotRenderer : Control
     private Point _panningStartPoint;
     private SquareBoundary _panningStart;
     private PixelVector _panningOffset = new();
+    private bool _inspectMode = false;
+    private RegionInspector _regionInspector = new(new BoundaryParameters(new AreaDivisions(1), 1));
 
     private enum RenderState
     {
@@ -47,7 +50,7 @@ public sealed class MandelbrotRenderer : Control
     private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
     private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
 
-    private PixelSize PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
+    private PixelSize PixelBounds => new(Math.Max(1, (int) Bounds.Width), Math.Max(1, (int) Bounds.Height));
 
     public static readonly StyledProperty<IBoundaryPalette> PaletteProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, IBoundaryPalette>(nameof(Palette),
@@ -124,8 +127,19 @@ public sealed class MandelbrotRenderer : Control
         set => SetValue(CursorRegionProperty, value);
     }
 
+    public static readonly StyledProperty<string> InspectionResultsProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, string>(nameof(InspectionResults),
+            defaultValue: string.Empty);
+
+    public string InspectionResults
+    {
+        get => GetValue(InspectionResultsProperty);
+        set => SetValue(InspectionResultsProperty, value);
+    }
+
     public ReactiveCommand<Unit, Unit> ResetViewCommand { get; }
     public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleInspectModeCommand { get; }
 
     public MandelbrotRenderer()
     {
@@ -154,15 +168,15 @@ public sealed class MandelbrotRenderer : Control
             var v = _viewPort;
             if (v != null)
             {
-                var cursorPosition = v.GetComplex((int)point.X, (int)point.Y);
-                var r = cursorPosition.Real+2;
+                var cursorPosition = v.GetComplex((int) point.X, (int) point.Y);
+                var r = cursorPosition.Real + 2;
                 var i = Math.Abs(cursorPosition.Imaginary);
 
                 if (r is >= 0 and < 4 && i < 2 && Lookup.Height > 2)
                 {
                     var side = new AreaDivisions(Lookup.Height - 2).RegionSideLength;
 
-                    int ToInt(double l) => (int)(l / side);
+                    int ToInt(double l) => (int) (l / side);
 
                     CursorRegion = new RegionId(ToInt(r), ToInt(i));
                 }
@@ -186,15 +200,30 @@ public sealed class MandelbrotRenderer : Control
                     if (SetBoundary.Scale < 31)
                     {
                         var pos = e.GetPosition(this);
-                        SetBoundary = SetBoundary.ZoomIn((int)pos.X, (int)pos.Y);
+                        SetBoundary = SetBoundary.ZoomIn((int) pos.X, (int) pos.Y);
                         await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
                     }
                 }
             }
-            else if (properties.IsRightButtonPressed && e.ClickCount == 2)
+            else if (!_inspectMode && properties.IsRightButtonPressed && e.ClickCount == 2)
             {
                 SetBoundary = SetBoundary.ZoomOut(PixelBounds.Width, PixelBounds.Height);
                 await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+            }
+            else if (_inspectMode && properties.IsRightButtonPressed)
+            {
+                var results = _regionInspector.InspectRegion(CursorRegion);
+                var type = _regionInspector.ClassifyRegion(
+                    results.CornersInSet,
+                    results.InteriorsInSet,
+                    results.InteriorsClose);
+
+                InspectionResults =
+                    $"({CursorRegion.X:N0}, {CursorRegion.Y:N0}) = " +
+                    $"Corners: {results.CornersInSet}, " +
+                    $"Inside: {results.InteriorsInSet}, " +
+                    $"Inside Close: {results.InteriorsClose} " +
+                    $"=> {type}";
             }
         };
         PointerReleased += async (_, e) =>
@@ -223,6 +252,7 @@ public sealed class MandelbrotRenderer : Control
             SetBoundary = SetBoundary.ZoomOut(PixelBounds.Width, PixelBounds.Height);
             return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
         });
+        ToggleInspectModeCommand = ReactiveCommand.Create(() => { _inspectMode = !_inspectMode; });
         this.WhenAnyValue(x => x.Palette)
             .SelectMany(async _ =>
             {
@@ -230,6 +260,16 @@ public sealed class MandelbrotRenderer : Control
                 return Unit.Default;
             })
             .Subscribe();
+        // HACK: MaxIterations is set after Lookup
+        this.WhenAnyValue(x => x.MaximumIterations)
+            .Select(maxIterations =>
+            {
+                _regionInspector = new RegionInspector(
+                    new BoundaryParameters(
+                        new AreaDivisions(Lookup.Height - 2),
+                        maxIterations));
+                return Unit.Default;
+            }).Subscribe();
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
@@ -237,8 +277,8 @@ public sealed class MandelbrotRenderer : Control
         if (_isPanning)
         {
             var currentPos = e.GetPosition(this);
-            var deltaX = (int)(currentPos.X - _panningStartPoint.X);
-            var deltaY = (int)(currentPos.Y - _panningStartPoint.Y);
+            var deltaX = (int) (currentPos.X - _panningStartPoint.X);
+            var deltaY = (int) (currentPos.Y - _panningStartPoint.Y);
 
             _panningOffset = new PixelVector(deltaX, deltaY);
             InvalidateVisual();
@@ -287,16 +327,16 @@ public sealed class MandelbrotRenderer : Control
         // TODO: Check for cancellation
         using (var context = _backBuffer.CreateDrawingContext(null))
         {
-            var skiaContext = (ISkiaDrawingContextImpl)context;
+            var skiaContext = (ISkiaDrawingContextImpl) context;
             var canvas = skiaContext.SkCanvas;
 
             canvas.DrawRect(0, 0, args.Width, args.Height,
-                new SKPaint { Color = args.Palette.Background });
+                new SKPaint {Color = args.Palette.Background});
 
             var center = args.SetBoundary.Center;
             var radius = args.SetBoundary.QuadrantLength;
 
-            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InsideCircle });
+            canvas.DrawCircle(center.X, center.Y, radius, new SKPaint {Color = args.Palette.InsideCircle});
 
             if (args.Instructions.PasteFrontBuffer)
             {
@@ -349,7 +389,7 @@ public sealed class MandelbrotRenderer : Control
                     var time = escapeTimes[i];
                     var classification = time switch
                     {
-                        { IsInfinite: true } => PointClassification.InSet,
+                        {IsInfinite: true} => PointClassification.InSet,
                         var t when t.Iterations > args.MinIterations => PointClassification.InRange,
                         _ => PointClassification.OutsideSet,
                     };

@@ -44,7 +44,7 @@ public sealed class RegionInspector
         int inSet = 0;
         int close = 0;
 
-        Parallel.For(0, 4, i =>
+        Parallel.For(0, centers.Length, i =>
         {
             var (iterations, distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
 
@@ -87,16 +87,17 @@ public sealed class RegionInspector
 
     public VisitedRegionType ClassifyRegion(int cornersInSet, int interiorsInSet, int interiorsClose)
     {
-        // TODO: Corners need to be involved; interiors don't touch everything
-        return (interiorsInSet, interiorsClose) switch
+        return (cornersInSet, interiorsInSet, interiorsClose) switch
         {
             // Totally empty
-            (0, 0) => VisitedRegionType.Rejected,
+            (0, 0, 0) => VisitedRegionType.Rejected,
 
             // Inside set
-            (16, _) => VisitedRegionType.Rejected,
+            (4, 16, _) => VisitedRegionType.Rejected,
 
-            {interiorsInSet: > 1} => VisitedRegionType.Border,
+            {cornersInSet: > 0, interiorsInSet: 0} => VisitedRegionType.Filament,
+            
+            {interiorsInSet: > 0, interiorsClose: > 1} => VisitedRegionType.Border,
 
             _ => VisitedRegionType.Filament
         };

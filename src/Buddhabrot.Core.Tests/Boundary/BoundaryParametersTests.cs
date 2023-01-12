@@ -21,4 +21,14 @@ public class BoundaryParametersTests
         bp.Divisions.VerticalPower.Should().Be(8);
         bp.MaxIterations.Should().Be(1_000_000);
     }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("Some string")]
+    public void ShouldRoundTripMetadata(string metadata)
+    {
+        var bp = new BoundaryParameters(new AreaDivisions(1), 10, metadata);
+        var roundTripped = BoundaryParameters.FromDescription(bp.Description);
+        roundTripped.Metadata.Should().Be(metadata);
+    }
 }

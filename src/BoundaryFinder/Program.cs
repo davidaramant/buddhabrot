@@ -70,7 +70,7 @@ class Program
                 var timer = Stopwatch.StartNew();
                 var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
 
-                BoundaryCalculator.VisitBoundary(new CornerFirstRegionClassifier(boundaryParameters), visitedRegions, CancellationToken.None);
+                BoundaryCalculator.VisitBoundary(IRegionClassifier.Create(boundaryParameters), visitedRegions, CancellationToken.None);
 
                 var boundaryRegions = visitedRegions.GetBoundaryRegions();
 

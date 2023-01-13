@@ -88,7 +88,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
 
             await Task.Run(
-                () => BoundaryCalculator.VisitBoundary(new CornerFirstRegionClassifier(boundaryParameters), visitedRegions, cancelToken),
+                () => BoundaryCalculator.VisitBoundary(IRegionClassifier.Create(boundaryParameters), visitedRegions, cancelToken),
                 cancelToken);
 
             AddToLog(DateTime.Now.ToString("s"));

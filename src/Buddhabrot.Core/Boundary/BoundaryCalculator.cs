@@ -1,4 +1,4 @@
-using Buddhabrot.Core.Boundary.Corners;
+using Buddhabrot.Core.Boundary.Classifiers;
 
 namespace Buddhabrot.Core.Boundary;
 

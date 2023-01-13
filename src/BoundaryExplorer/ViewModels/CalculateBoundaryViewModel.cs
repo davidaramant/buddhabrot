@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using BoundaryExplorer.Models;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.Corners;
+using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.Images;
 using DynamicData.Binding;
 using Humanizer;

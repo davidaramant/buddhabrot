@@ -1,6 +1,6 @@
-﻿using static Buddhabrot.Core.Boundary.Corners.RegionBatchId;
+﻿using static Buddhabrot.Core.Boundary.Classifiers.RegionBatchId;
 
-namespace Buddhabrot.Core.Boundary.Corners;
+namespace Buddhabrot.Core.Boundary.Classifiers;
 
 public static class RegionBatchExtensions
 {

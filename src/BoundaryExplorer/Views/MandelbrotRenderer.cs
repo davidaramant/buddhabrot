@@ -14,7 +14,7 @@ using Avalonia.Skia;
 using Avalonia.Threading;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.Corners;
+using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.ExtensionMethods.Drawing;

@@ -1,6 +1,6 @@
 ﻿using Buddhabrot.Core.Utilities;
 
-namespace Buddhabrot.Core.Boundary.Corners;
+namespace Buddhabrot.Core.Boundary.Classifiers;
 
 public readonly record struct RegionBatchId(int X, int Y)
 {

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.Corners;
+using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.DataStorage;
 using Buddhabrot.Core.Utilities;
 using Humanizer;

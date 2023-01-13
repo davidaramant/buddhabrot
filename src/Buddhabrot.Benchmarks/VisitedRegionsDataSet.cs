@@ -1,5 +1,5 @@
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.Corners;
+using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.ManualVisualizations;
 using Humanizer;
 using ProtoBuf;

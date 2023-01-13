@@ -3,7 +3,7 @@ using System.Numerics;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Utilities;
 
-namespace Buddhabrot.Core.Boundary.Corners;
+namespace Buddhabrot.Core.Boundary.Classifiers;
 
 public sealed class Interior16RegionClassifier : IRegionClassifier
 {

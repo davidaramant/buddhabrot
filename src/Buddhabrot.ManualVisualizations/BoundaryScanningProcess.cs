@@ -2,7 +2,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.Corners;
+using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;

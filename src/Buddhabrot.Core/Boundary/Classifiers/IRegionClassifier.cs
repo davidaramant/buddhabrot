@@ -1,4 +1,4 @@
-namespace Buddhabrot.Core.Boundary.Corners;
+namespace Buddhabrot.Core.Boundary.Classifiers;
 
 public interface IRegionClassifier
 {

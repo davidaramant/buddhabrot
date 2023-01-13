@@ -8,7 +8,7 @@ public sealed record BoundaryDataSet(
     string Description,
     string UserDescription) : IComparable<BoundaryDataSet>
 {
-    private sealed class IsDiffDescriptionRelationalComparer : IComparer<BoundaryDataSet>
+    private sealed class DataSetRelationalComparer : IComparer<BoundaryDataSet>
     {
         public int Compare(BoundaryDataSet? x, BoundaryDataSet? y)
         {
@@ -19,7 +19,7 @@ public sealed record BoundaryDataSet(
             if (ReferenceEquals(null, y)) return 1;
             if (ReferenceEquals(null, x)) return -1;
 
-        
+
             var diff = x.IsDiff.CompareTo(y.IsDiff);
             if (diff != 0)
                 return diff;
@@ -28,17 +28,21 @@ public sealed record BoundaryDataSet(
             if (power != 0)
                 return power;
 
-            return y.Parameters.MaxIterations.CompareTo(x.Parameters.MaxIterations);
+            var maxComp = y.Parameters.MaxIterations.CompareTo(x.Parameters.MaxIterations);
+            if (maxComp != 0)
+                return maxComp;
+
+            return String.Compare(x.Description, y.Description, StringComparison.Ordinal);
         }
     }
 
-    public static IComparer<BoundaryDataSet> Comparer { get; } = new IsDiffDescriptionRelationalComparer();
+    public static IComparer<BoundaryDataSet> Comparer { get; } = new DataSetRelationalComparer();
 
     public static readonly BoundaryDataSet Empty =
         new(false, new BoundaryParameters(new AreaDivisions(0), 0), "Nothing", "Nothing");
 
     public int CompareTo(BoundaryDataSet? other) => Comparer.Compare(this, other);
-    
+
     public override string ToString() => UserDescription;
 
     public static BoundaryDataSet FromBoundary(BoundaryParameters parameters) =>
@@ -46,8 +50,11 @@ public sealed record BoundaryDataSet(
 
     public static BoundaryDataSet FromDiff(BoundaryParameters left, BoundaryParameters right)
     {
-        static string Shorthand(BoundaryParameters bp) => $"({bp.Divisions.VerticalPower}) {bp.MaxIterations:N0}";
-        
+        static string Shorthand(BoundaryParameters bp) => $"({bp.Divisions.VerticalPower}) {bp.MaxIterations:N0}" +
+                                                          (string.IsNullOrEmpty(bp.Metadata)
+                                                              ? string.Empty
+                                                              : $" {bp.Description}");
+
         return new(
             IsDiff: true,
             Combine(left, right),
@@ -63,7 +70,7 @@ public sealed record BoundaryDataSet(
     {
         if (description.StartsWith("Diff"))
         {
-            var parts = description.Split("-");
+            var parts = description.Split(" - ");
             return FromDiff(
                 BoundaryParameters.FromDescription(parts[1].Trim()),
                 BoundaryParameters.FromDescription(parts[2].Trim()));

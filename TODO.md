@@ -53,6 +53,11 @@
     - [ ] Useless border regions around i = 0
 - [x] Allow metadata in boundary file names (IE specify variants of same dataset)
 - [ ] Allow specifying heuristic to use for boundary detection
+  - [x] Interface for region classifier
+  - [x] Break out new heuristic to different class
+  - [ ] 2x2 heuristic
+  - [ ] Command line argument for BoundaryFinder for heuristic
+  - [ ] Benchmarks for heuristics
 
 ## BoundaryExplorer
 

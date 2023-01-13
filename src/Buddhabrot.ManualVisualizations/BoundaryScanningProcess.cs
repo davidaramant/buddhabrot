@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Corners;
 using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;
@@ -130,7 +131,7 @@ public class BoundaryScanningProcess : BaseVisualization
         int maxX = 0;
         int maxY = 0;
         BoundaryCalculator.VisitBoundary(
-            parameters,           
+            new RegionInspector(parameters),           
             visitedRegions: new VisitedRegionProxy(new HashSetListVisitedRegions(parameters.Divisions.QuadrantDivisions), (regionId, type) =>
             {
                 maxX = Math.Max(maxX, regionId.X);

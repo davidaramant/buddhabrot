@@ -1,4 +1,5 @@
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Corners;
 using Buddhabrot.ManualVisualizations;
 using Humanizer;
 using ProtoBuf;
@@ -9,12 +10,12 @@ namespace Buddhabrot.Benchmarks;
 public static class VisitedRegionsDataSet
 {
     public static readonly AreaDivisions Size = new(16);
-    
+
     private static readonly string DataFilePath =
         Path.Combine(
             DataLocation.CreateDirectory("Benchmarks", nameof(VisitedRegionsDataSet).Humanize()).FullName,
             "VisitedRegions.bin");
-    
+
     public static void Create()
     {
         if (!File.Exists(DataFilePath))
@@ -34,7 +35,7 @@ public static class VisitedRegionsDataSet
 
                     var proxy = new VisitedRegionsProxy(bp.Divisions.QuadrantDivisions);
                     BoundaryCalculator.VisitBoundary(
-                        bp,
+                        new RegionInspector(bp),
                         visitedRegions: proxy);
 
                     boundaryTask.StopTask();
@@ -59,15 +60,15 @@ public static class VisitedRegionsDataSet
     public static SavedData Load()
     {
         Console.Out.WriteLine("Loading data set...");
-        
+
         using var fs = File.OpenRead(DataFilePath);
         var sd = Serializer.Deserialize<SavedData>(fs);
-        
+
         Console.Out.WriteLine($"Loaded {sd.Metadata.Count:N0} commands");
 
         return sd;
     }
-    
+
     private sealed class VisitedRegionsProxy : IVisitedRegions
     {
         private readonly VisitedRegions _visitedRegions;
@@ -88,7 +89,7 @@ public static class VisitedRegionsDataSet
             return _visitedRegions.HasVisited(id);
         }
     }
-    
+
     #region Data Format
 
     [ProtoContract]

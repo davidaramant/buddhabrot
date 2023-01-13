@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Corners;
 using Buddhabrot.Core.DataStorage;
 using Buddhabrot.Core.Utilities;
 using Humanizer;
@@ -69,7 +70,7 @@ class Program
                 var timer = Stopwatch.StartNew();
                 var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
 
-                BoundaryCalculator.VisitBoundary(boundaryParameters, visitedRegions, CancellationToken.None);
+                BoundaryCalculator.VisitBoundary(new RegionInspector(boundaryParameters), visitedRegions, CancellationToken.None);
 
                 var boundaryRegions = visitedRegions.GetBoundaryRegions();
 

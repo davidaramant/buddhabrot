@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using BoundaryExplorer.Models;
 using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Corners;
 using Buddhabrot.Core.Images;
 using DynamicData.Binding;
 using Humanizer;
@@ -44,6 +45,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> FindBoundary { get; }
     public ReactiveCommand<Unit, Unit> CancelFindingBoundary { get; }
     public bool IsFindingBoundary => _isFindingBoundary.Value;
+
     public string LogOutput
     {
         get => _log;
@@ -74,7 +76,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
         FindBoundary.IsExecuting.ToProperty(this, x => x.IsFindingBoundary, out _isFindingBoundary);
         CancelFindingBoundary = ReactiveCommand.Create(() => { }, FindBoundary.IsExecuting);
     }
-    
+
     private async Task FindBoundaryAsync(CancellationToken cancelToken)
     {
         try
@@ -86,7 +88,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
 
             await Task.Run(
-                () => BoundaryCalculator.VisitBoundary(boundaryParameters, visitedRegions, cancelToken),
+                () => BoundaryCalculator.VisitBoundary(new RegionInspector(boundaryParameters), visitedRegions, cancelToken),
                 cancelToken);
 
             AddToLog(DateTime.Now.ToString("s"));
@@ -102,7 +104,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             var lookup = await Task.Run(() => transformer.Transform(), cancelToken);
 
             AddToLog($"Transformed quad tree to Region Lookup ({stopwatch.Elapsed.Humanize(2)})\n" +
-                     $" - Went from {visitedRegions.NodeCount:N0} to {lookup.NodeCount:N0} nodes ({(double) lookup.NodeCount / visitedRegions.NodeCount:P})");
+                     $" - Went from {visitedRegions.NodeCount:N0} to {lookup.NodeCount:N0} nodes ({(double)lookup.NodeCount / visitedRegions.NodeCount:P})");
 
             AddToLog(string.Empty);
 
@@ -120,6 +122,6 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
             _addToSystemLog("Error calculating boundary:" + e);
         }
     }
-    
+
     private void AddToLog(string msg) => Dispatcher.UIThread.Post(() => LogOutput += msg + Environment.NewLine);
 }

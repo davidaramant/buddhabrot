@@ -5,7 +5,7 @@ using Buddhabrot.Core.Utilities;
 
 namespace Buddhabrot.Core.Boundary.Corners;
 
-public sealed class RegionInspector
+public sealed class RegionInspector : IRegionClassifier
 {
     private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCorners = new(64,
         defaultKey: RegionBatchId.Invalid,

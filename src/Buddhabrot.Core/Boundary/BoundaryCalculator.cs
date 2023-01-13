@@ -5,11 +5,10 @@ namespace Buddhabrot.Core.Boundary;
 public static class BoundaryCalculator
 {
     public static void VisitBoundary(
-        BoundaryParameters boundaryParameters,
+        IRegionClassifier classifier,
         IVisitedRegions visitedRegions,
         CancellationToken cancelToken = default)
     {
-        var inspector = new RegionInspector(boundaryParameters);
         Queue<RegionId> regionsToCheck = new();
         regionsToCheck.Enqueue(new RegionId(0, 0));
 
@@ -20,7 +19,7 @@ public static class BoundaryCalculator
             if (visitedRegions.HasVisited(region))
                 continue;
 
-            var regionType = inspector.ClassifyRegion(region);
+            var regionType = classifier.ClassifyRegion(region);
 
             visitedRegions.Visit(region, regionType);
 

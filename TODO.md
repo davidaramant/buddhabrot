@@ -51,7 +51,8 @@
   - [ ] Heuristic for regions
     - [ ] "Holes" in boundary/filaments
     - [ ] Useless border regions around i = 0
-- [ ] Allow metadata in boundary file names (IE specify variants of same dataset)
+- [x] Allow metadata in boundary file names (IE specify variants of same dataset)
+- [ ] Allow specifying heuristic to use for boundary detection
 
 ## BoundaryExplorer
 

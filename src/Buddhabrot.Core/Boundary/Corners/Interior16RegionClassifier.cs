@@ -5,7 +5,7 @@ using Buddhabrot.Core.Utilities;
 
 namespace Buddhabrot.Core.Boundary.Corners;
 
-public sealed class RegionInspector : IRegionClassifier
+public sealed class Interior16RegionClassifier : IRegionClassifier
 {
     private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCorners = new(64,
         defaultKey: RegionBatchId.Invalid,
@@ -15,7 +15,7 @@ public sealed class RegionInspector : IRegionClassifier
 
     private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
 
-    public RegionInspector(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
+    public Interior16RegionClassifier(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
 
     private bool IsCornerInSet(CornerId corner)
     {
@@ -103,67 +103,10 @@ public sealed class RegionInspector : IRegionClassifier
         };
     }
 
-
-    // TODO: Make this use Inspect & Classify once those are good
     public VisitedRegionType ClassifyRegion(RegionId region)
     {
-        int numCorners = 0;
-
-        void CheckCorner(CornerId corner)
-        {
-            if (IsCornerInSet(corner))
-            {
-                numCorners++;
-            }
-        }
-
-        CheckCorner(region.LowerLeftCorner());
-        CheckCorner(region.LowerRightCorner());
-        CheckCorner(region.UpperLeftCorner());
-        CheckCorner(region.UpperRightCorner());
-
-        return numCorners switch
-        {
-            0 => CheckRegionForFilaments(region),
-            4 => VisitedRegionType.Rejected,
-            _ => VisitedRegionType.Border,
-        };
-    }
-
-    private VisitedRegionType CheckRegionForFilaments(RegionId region)
-    {
-        var centers = ArrayPool<Complex>.Shared.Rent(4);
-
-        centers[0] = ToComplex(region.X + 0.25, region.Y + 0.25);
-        centers[1] = ToComplex(region.X + 0.75, region.Y + 0.25);
-        centers[2] = ToComplex(region.X + 0.25, region.Y + 0.75);
-        centers[3] = ToComplex(region.X + 0.75, region.Y + 0.75);
-
-        int numBorder = 0;
-        int numFilament = 0;
-
-        Parallel.For(0, 4, i =>
-        {
-            var (iterations, distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
-
-            if (iterations.IsInfinite)
-            {
-                Interlocked.Increment(ref numBorder);
-            }
-            else if (distance <= (RegionWidth / 4))
-            {
-                Interlocked.Increment(ref numFilament);
-            }
-        });
-
-        ArrayPool<Complex>.Shared.Return(centers);
-
-        return (numBorder, numFilament) switch
-        {
-            (0, 0) => VisitedRegionType.Rejected,
-            (4, _) => VisitedRegionType.Border,
-            (_, _) => VisitedRegionType.Filament,
-        };
+        var result = InspectRegion(region);
+        return ClassifyRegion(result.CornersInSet, result.InteriorsInSet, result.InteriorsClose);
     }
 
     private BoolVector16 ComputeCornerBatch(RegionBatchId id)

@@ -31,7 +31,7 @@ public sealed class MandelbrotRenderer : Control
     private SquareBoundary _panningStart;
     private PixelVector _panningOffset = new();
     private bool _inspectMode = false;
-    private RegionInspector _regionInspector = new(new BoundaryParameters(new AreaDivisions(1), 1));
+    private Interior16RegionClassifier _regionClassifier = new(new BoundaryParameters(new AreaDivisions(1), 1));
 
     private enum RenderState
     {
@@ -212,8 +212,8 @@ public sealed class MandelbrotRenderer : Control
             }
             else if (_inspectMode && properties.IsRightButtonPressed)
             {
-                var results = _regionInspector.InspectRegion(CursorRegion);
-                var type = _regionInspector.ClassifyRegion(
+                var results = _regionClassifier.InspectRegion(CursorRegion);
+                var type = _regionClassifier.ClassifyRegion(
                     results.CornersInSet,
                     results.InteriorsInSet,
                     results.InteriorsClose);
@@ -264,7 +264,7 @@ public sealed class MandelbrotRenderer : Control
         this.WhenAnyValue(x => x.MaximumIterations)
             .Select(maxIterations =>
             {
-                _regionInspector = new RegionInspector(
+                _regionClassifier = new Interior16RegionClassifier(
                     new BoundaryParameters(
                         new AreaDivisions(Lookup.Height - 2),
                         maxIterations));

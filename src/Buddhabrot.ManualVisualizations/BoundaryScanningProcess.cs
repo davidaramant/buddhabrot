@@ -131,7 +131,7 @@ public class BoundaryScanningProcess : BaseVisualization
         int maxX = 0;
         int maxY = 0;
         BoundaryCalculator.VisitBoundary(
-            new RegionInspector(parameters),           
+            new CornerFirstRegionClassifier(parameters),           
             visitedRegions: new VisitedRegionProxy(new HashSetListVisitedRegions(parameters.Divisions.QuadrantDivisions), (regionId, type) =>
             {
                 maxX = Math.Max(maxX, regionId.X);

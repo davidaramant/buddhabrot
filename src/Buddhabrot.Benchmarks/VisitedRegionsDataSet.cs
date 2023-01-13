@@ -35,7 +35,7 @@ public static class VisitedRegionsDataSet
 
                     var proxy = new VisitedRegionsProxy(bp.Divisions.QuadrantDivisions);
                     BoundaryCalculator.VisitBoundary(
-                        new RegionInspector(bp),
+                        new CornerFirstRegionClassifier(bp),
                         visitedRegions: proxy);
 
                     boundaryTask.StopTask();

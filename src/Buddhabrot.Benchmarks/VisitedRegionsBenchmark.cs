@@ -9,7 +9,7 @@ using Spectre.Console;
 
 namespace Buddhabrot.Benchmarks;
 
-[SimpleJob(RunStrategy.Monitoring, warmupCount: 1, targetCount: 3)]
+[SimpleJob(RunStrategy.Monitoring, warmupCount: 1, iterationCount: 3)]
 [MemoryDiagnoser]
 public class VisitedRegionsBenchmark
 {

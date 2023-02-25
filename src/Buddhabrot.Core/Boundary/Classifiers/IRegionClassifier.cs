@@ -3,6 +3,7 @@ namespace Buddhabrot.Core.Boundary.Classifiers;
 public enum ClassifierType
 {
     CornerFirst,
+    Internal4,
     Internal16,
 }
 

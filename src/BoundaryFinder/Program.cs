@@ -26,7 +26,7 @@ class Program
     /// <param name="limitMillions">Iteration limit in million</param>
     /// <param name="note">A note for this run. Implies that the times will be saved to Times.csv</param>
     /// <param name="classifier">Which classifier to use.</param>
-    public static int Main(int power, double limitMillions, string note = "", ClassifierType? classifier = null)
+    public static int Main(int power, double limitMillions, string note = "", ClassifierType classifier = ClassifierType.Default)
     {
 #if DEBUG
         Console.WriteLine("WARNING - running in debug mode!");
@@ -36,15 +36,7 @@ class Program
 
         var limit = (int) (limitMillions * 1_000_000);
 
-        static (string, ClassifierType) GetMetadata(ClassifierType? classifierType)
-        {
-            if (classifierType == null)
-                return (string.Empty, ClassifierType.CornerFirst);
-            // Why is this abomination needed?
-            return ((string, ClassifierType)) (classifierType!.ToString().Humanize(), classifierType!);
-        }
-
-        var (metadata, ct) = GetMetadata(classifier);
+        var metadata = classifier == ClassifierType.Default ? string.Empty : classifier.ToString();
         var boundaryParameters = new BoundaryParameters(new AreaDivisions(power), limit, metadata);
 
         Metrics? metrics = null;
@@ -56,7 +48,7 @@ class Program
                 var timer = Stopwatch.StartNew();
                 var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
 
-                BoundaryCalculator.VisitBoundary(IRegionClassifier.Create(boundaryParameters, ct),
+                BoundaryCalculator.VisitBoundary(IRegionClassifier.Create(boundaryParameters, classifier),
                     visitedRegions,
                     CancellationToken.None);
 

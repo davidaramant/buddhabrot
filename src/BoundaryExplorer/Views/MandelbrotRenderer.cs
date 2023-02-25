@@ -143,12 +143,7 @@ public sealed class MandelbrotRenderer : Control
     public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
     public ReactiveCommand<Unit, Unit> ToggleInspectModeCommand { get; }
 
-    public IReadOnlyCollection<ClassifierType> ClassifierTypes { get; } = new[]
-    {
-        ClassifierType.CornerFirst,
-        ClassifierType.Internal4,
-        ClassifierType.Internal16
-    };
+    public IReadOnlyCollection<ClassifierType> ClassifierTypes { get; } = Enum.GetValues<ClassifierType>();
 
     public static readonly StyledProperty<ClassifierType> SelectedClassifierProperty =
         AvaloniaProperty.Register<MandelbrotRenderer, ClassifierType>(nameof(SelectedClassifier),

@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -26,6 +26,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     private readonly ObservableAsPropertyHelper<string> _imageSize;
     private readonly ObservableAsPropertyHelper<bool> _isFindingBoundary;
     private string _log = string.Empty;
+    private ClassifierType _selectedClassifier;
 
     public int MaximumIterations
     {
@@ -37,6 +38,14 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
     {
         get => _verticalDivisionPower;
         set => this.RaiseAndSetIfChanged(ref _verticalDivisionPower, value);
+    }
+    
+    public IReadOnlyCollection<ClassifierType> ClassifierTypes { get; } = Enum.GetValues<ClassifierType>();
+
+    public ClassifierType SelectedClassifier
+    {
+        get => _selectedClassifier;
+        set => this.RaiseAndSetIfChanged(ref _selectedClassifier, value);
     }
 
     public AreaDivisions AreaDivisions => _areaDivisions.Value;
@@ -83,12 +92,15 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
         {
             var stopwatch = Stopwatch.StartNew();
 
-            var boundaryParameters = new BoundaryParameters(AreaDivisions, MaximumIterations);
+            var metadata = _selectedClassifier == ClassifierType.Default
+                ? string.Empty
+                : _selectedClassifier.ToString();
+            var boundaryParameters = new BoundaryParameters(AreaDivisions, MaximumIterations, metadata);
 
             var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
 
             await Task.Run(
-                () => BoundaryCalculator.VisitBoundary(IRegionClassifier.Create(boundaryParameters), visitedRegions, cancelToken),
+                () => BoundaryCalculator.VisitBoundary(IRegionClassifier.Create(boundaryParameters, _selectedClassifier), visitedRegions, cancelToken),
                 cancelToken);
 
             AddToLog(DateTime.Now.ToString("s"));

@@ -23,7 +23,13 @@
                 TickPlacement="Outside"
                 IsSnapToTickEnabled="True"
                 Value="{Binding VerticalDivisionPower}" />
-
+            
+            <Label Content="Region Classifier:"/>
+            <ComboBox
+                HorizontalAlignment="Stretch"
+                Items="{Binding ClassifierTypes}"
+                SelectedItem="{Binding SelectedClassifier}" />
+            
             <TextBlock
                 Text="{Binding VerticalDivisionPower, StringFormat=Power: \{0:N0\}, Mode=OneWay}" />
 

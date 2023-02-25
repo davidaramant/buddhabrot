@@ -57,7 +57,7 @@
   - [x] Break out new heuristic to different class
   - [x] 2x2 heuristic
   - [x] Command line argument for BoundaryFinder for heuristic
-  - [ ] GUI for heuristic for completeness when generating boundaries 
+  - [x] GUI for heuristic for completeness when generating boundaries 
   - [ ] Benchmarks for heuristics
 
 ## BoundaryExplorer

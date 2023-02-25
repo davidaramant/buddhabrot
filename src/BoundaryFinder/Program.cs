@@ -16,50 +16,36 @@ class Program
         int NumVisitedRegionNodes,
         int NumRegionLookupNodes)
     {
-        public double DeduplicatedSize => (double)NumRegionLookupNodes / NumVisitedRegionNodes;
+        public double DeduplicatedSize => (double) NumRegionLookupNodes / NumVisitedRegionNodes;
     }
 
-    public static int Main(string[] args)
+    /// <summary>
+    /// Computes boundary sets. 
+    /// </summary>
+    /// <param name="power">Vertical power</param>
+    /// <param name="limitMillions">Iteration limit in million</param>
+    /// <param name="note">A note for this run. Implies that the times will be saved to Times.csv</param>
+    /// <param name="classifier">Which classifier to use.</param>
+    public static int Main(int power, double limitMillions, string note = "", ClassifierType? classifier = null)
     {
-        static void DisplayUsage()
-        {
-            Console.WriteLine("Arguments: power limit");
-            Console.WriteLine(" - Power is the vertical power");
-            Console.WriteLine(" - Limit is the max iteration limit in millions (IE 5 = 5,000,000)");
-        }
-        
-        if (args.Length is < 2 or > 3)
-        {
-            Console.WriteLine($"Incorrect number of arguments: {args.Length} (expected 2 or 3)");
-            DisplayUsage();
-            return -1;
-        }
-        
-        if (!int.TryParse(args[0], out var power))
-        {
-            Console.WriteLine("Could not parse power.");
-            DisplayUsage();
-            return -1;
-        }
-        
-        if (!double.TryParse(args[1], out var limitMillions))
-        {
-            Console.WriteLine("Could not parse iteration limit.");
-            DisplayUsage();
-            return -1;
-        }
-        
-        #if DEBUG
+#if DEBUG
         Console.WriteLine("WARNING - running in debug mode!");
-        #endif
+#endif
 
-        var note = args.Length == 3 ? args[2] : string.Empty;
-        
         Console.WriteLine($"Write results to log: {!string.IsNullOrEmpty(note)}");
 
-        var limit = (int)(limitMillions * 1_000_000);
+        var limit = (int) (limitMillions * 1_000_000);
 
-        var boundaryParameters = new BoundaryParameters(new AreaDivisions(power), limit);
+        static (string, ClassifierType) GetMetadata(ClassifierType? classifierType)
+        {
+            if (classifierType == null)
+                return (string.Empty, ClassifierType.CornerFirst);
+            // Why is this abomination needed?
+            return ((string, ClassifierType)) (classifierType!.ToString().Humanize(), classifierType!);
+        }
+
+        var (metadata, ct) = GetMetadata(classifier);
+        var boundaryParameters = new BoundaryParameters(new AreaDivisions(power), limit, metadata);
 
         Metrics? metrics = null;
 
@@ -70,7 +56,9 @@ class Program
                 var timer = Stopwatch.StartNew();
                 var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
 
-                BoundaryCalculator.VisitBoundary(IRegionClassifier.Create(boundaryParameters), visitedRegions, CancellationToken.None);
+                BoundaryCalculator.VisitBoundary(IRegionClassifier.Create(boundaryParameters, ct),
+                    visitedRegions,
+                    CancellationToken.None);
 
                 var boundaryRegions = visitedRegions.GetBoundaryRegions();
 

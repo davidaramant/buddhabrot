@@ -15,6 +15,7 @@ public interface IRegionClassifier
         type switch
         {
             ClassifierType.CornerFirst => new CornerFirstRegionClassifier(bp),
+            ClassifierType.Internal4 => new Interior4RegionClassifier(bp),
             ClassifierType.Internal16 => new Interior16RegionClassifier(bp),
             _ => throw new ArgumentException("Unknown classifier type: " + type)
         };

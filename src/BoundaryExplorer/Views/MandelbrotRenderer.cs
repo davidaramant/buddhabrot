@@ -141,6 +141,23 @@ public sealed class MandelbrotRenderer : Control
     public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
     public ReactiveCommand<Unit, Unit> ToggleInspectModeCommand { get; }
 
+    public IReadOnlyCollection<ClassifierType> ClassifierTypes { get; } = new[]
+    {
+        ClassifierType.CornerFirst,
+        ClassifierType.Internal4,
+        ClassifierType.Internal16
+    };
+
+    public static readonly StyledProperty<ClassifierType> SelectedClassifierProperty =
+        AvaloniaProperty.Register<MandelbrotRenderer, ClassifierType>(nameof(SelectedClassifier),
+            defaultValue: ClassifierType.CornerFirst);
+
+    public ClassifierType SelectedClassifier
+    {
+        get => GetValue(SelectedClassifierProperty);
+        set => SetValue(SelectedClassifierProperty, value);
+    }
+
     public MandelbrotRenderer()
     {
         ClipToBounds = true;

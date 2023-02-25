@@ -55,9 +55,9 @@
 - [ ] Allow specifying heuristic to use for boundary detection
   - [x] Interface for region classifier
   - [x] Break out new heuristic to different class
-  - [ ] 2x2 heuristic
-  - [ ] Command line argument for BoundaryFinder for heuristic
-  - [ ] GUI for heuristic for completeness 
+  - [x] 2x2 heuristic
+  - [x] Command line argument for BoundaryFinder for heuristic
+  - [ ] GUI for heuristic for completeness when generating boundaries 
   - [ ] Benchmarks for heuristics
 
 ## BoundaryExplorer
@@ -123,3 +123,4 @@
   - [x] UI to pick a region
   - [x] Calculate heuristics
   - [x] Display heuristics
+  - [ ] Choose which type of heuristic to display

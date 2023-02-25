@@ -94,7 +94,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
 
             var metadata = _selectedClassifier == ClassifierType.Default
                 ? string.Empty
-                : _selectedClassifier.ToString();
+                : _selectedClassifier.ToString().Humanize();
             var boundaryParameters = new BoundaryParameters(AreaDivisions, MaximumIterations, metadata);
 
             var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);

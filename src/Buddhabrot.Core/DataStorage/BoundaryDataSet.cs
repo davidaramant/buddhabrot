@@ -53,7 +53,7 @@ public sealed record BoundaryDataSet(
         static string Shorthand(BoundaryParameters bp) => $"({bp.Divisions.VerticalPower}) {bp.MaxIterations:N0}" +
                                                           (string.IsNullOrEmpty(bp.Metadata)
                                                               ? string.Empty
-                                                              : $" {bp.Description}");
+                                                              : $" {bp.Metadata}");
 
         return new(
             IsDiff: true,

@@ -10,6 +10,7 @@ public enum ClassifierType
 public interface IRegionClassifier
 {
     VisitedRegionType ClassifyRegion(RegionId region);
+    (VisitedRegionType, string) DescribeRegion(RegionId region);
 
     public static IRegionClassifier Create(BoundaryParameters bp, ClassifierType type = ClassifierType.CornerFirst) =>
         type switch

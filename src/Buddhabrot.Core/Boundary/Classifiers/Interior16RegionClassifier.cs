@@ -63,7 +63,7 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
         return (inSet, close);
     }
 
-    public (int CornersInSet, int InteriorsInSet, int InteriorsClose) InspectRegion(RegionId region)
+    private (int CornersInSet, int InteriorsInSet, int InteriorsClose) InspectRegion(RegionId region)
     {
         int cornersInSet = 0;
 
@@ -85,7 +85,7 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
         return (cornersInSet, interiorInSet, interiorClose);
     }
 
-    public VisitedRegionType ClassifyRegion(int cornersInSet, int interiorsInSet, int interiorsClose)
+    private VisitedRegionType ClassifyRegion(int cornersInSet, int interiorsInSet, int interiorsClose)
     {
         return (cornersInSet, interiorsInSet, interiorsClose) switch
         {
@@ -96,7 +96,7 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
             (4, 16, _) => VisitedRegionType.Rejected,
 
             {cornersInSet: > 0, interiorsInSet: 0} => VisitedRegionType.Filament,
-            
+
             {interiorsInSet: > 0, interiorsClose: > 1} => VisitedRegionType.Border,
 
             _ => VisitedRegionType.Filament
@@ -107,6 +107,15 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
     {
         var result = InspectRegion(region);
         return ClassifyRegion(result.CornersInSet, result.InteriorsInSet, result.InteriorsClose);
+    }
+
+    public (VisitedRegionType, string) DescribeRegion(RegionId region)
+    {
+        var result = InspectRegion(region);
+        var description = $"Corners: {result.CornersInSet}, " +
+                          $"Inside: {result.InteriorsInSet}, " +
+                          $"Inside Close: {result.InteriorsClose} ";
+        return (ClassifyRegion(result.CornersInSet, result.InteriorsInSet, result.InteriorsClose), description);
     }
 
     private BoolVector16 ComputeCornerBatch(RegionBatchId id)

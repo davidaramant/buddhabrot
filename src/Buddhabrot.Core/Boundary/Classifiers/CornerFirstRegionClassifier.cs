@@ -54,6 +54,32 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
         };
     }
 
+    public (VisitedRegionType, string) DescribeRegion(RegionId region)
+    {
+        int numCorners = 0;
+
+        void CheckCorner(CornerId corner)
+        {
+            if (IsCornerInSet(corner))
+            {
+                numCorners++;
+            }
+        }
+
+        CheckCorner(region.LowerLeftCorner());
+        CheckCorner(region.LowerRightCorner());
+        CheckCorner(region.UpperLeftCorner());
+        CheckCorner(region.UpperRightCorner());
+
+        return numCorners switch
+        {
+            0 => DescribeCheckRegionForFilaments(region),
+            4 => (VisitedRegionType.Rejected, $"Corners: {numCorners}"),
+            _ => (VisitedRegionType.Border, $"Corners: {numCorners}"),
+        };
+    }
+
+
     private VisitedRegionType CheckRegionForFilaments(RegionId region)
     {
         var centers = ArrayPool<Complex>.Shared.Rent(4);
@@ -63,7 +89,7 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
         centers[2] = ToComplex(region.X + 0.25, region.Y + 0.75);
         centers[3] = ToComplex(region.X + 0.75, region.Y + 0.75);
 
-        int numBorder = 0;
+        int numInSet = 0;
         int numFilament = 0;
 
         Parallel.For(0, 4, i =>
@@ -72,7 +98,7 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 
             if (iterations.IsInfinite)
             {
-                Interlocked.Increment(ref numBorder);
+                Interlocked.Increment(ref numInSet);
             }
             else if (distance <= (RegionWidth / 4))
             {
@@ -82,11 +108,47 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 
         ArrayPool<Complex>.Shared.Return(centers);
 
-        return (numBorder, numFilament) switch
+        return (numInSet, numFilament) switch
         {
             (0, 0) => VisitedRegionType.Rejected,
             (4, _) => VisitedRegionType.Border,
             (_, _) => VisitedRegionType.Filament,
+        };
+    }
+
+    private (VisitedRegionType, string) DescribeCheckRegionForFilaments(RegionId region)
+    {
+        var centers = ArrayPool<Complex>.Shared.Rent(4);
+
+        centers[0] = ToComplex(region.X + 0.25, region.Y + 0.25);
+        centers[1] = ToComplex(region.X + 0.75, region.Y + 0.25);
+        centers[2] = ToComplex(region.X + 0.25, region.Y + 0.75);
+        centers[3] = ToComplex(region.X + 0.75, region.Y + 0.75);
+
+        int numInSet = 0;
+        int numClose = 0;
+
+        Parallel.For(0, 4, i =>
+        {
+            var (iterations, distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
+
+            if (iterations.IsInfinite)
+            {
+                Interlocked.Increment(ref numInSet);
+            }
+            else if (distance <= (RegionWidth / 4))
+            {
+                Interlocked.Increment(ref numClose);
+            }
+        });
+
+        ArrayPool<Complex>.Shared.Return(centers);
+
+        return (numInSet, numClose) switch
+        {
+            (0, 0) => (VisitedRegionType.Rejected, "In Set: 0, Close: 0"),
+            (4, _) => (VisitedRegionType.Border, $"In Set: {numInSet}, Close: {numClose}"),
+            (_, _) => (VisitedRegionType.Filament, $"In Set: {numInSet}, Close: {numClose}"),
         };
     }
 

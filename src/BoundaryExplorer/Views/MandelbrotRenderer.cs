@@ -31,7 +31,9 @@ public sealed class MandelbrotRenderer : Control
     private SquareBoundary _panningStart;
     private PixelVector _panningOffset = new();
     private bool _inspectMode = false;
-    private Interior16RegionClassifier _regionClassifier = new(new BoundaryParameters(new AreaDivisions(1), 1));
+
+    private IRegionClassifier _regionClassifier =
+        new CornerFirstRegionClassifier(new BoundaryParameters(new AreaDivisions(1), 1));
 
     private enum RenderState
     {
@@ -229,17 +231,11 @@ public sealed class MandelbrotRenderer : Control
             }
             else if (_inspectMode && properties.IsRightButtonPressed)
             {
-                var results = _regionClassifier.InspectRegion(CursorRegion);
-                var type = _regionClassifier.ClassifyRegion(
-                    results.CornersInSet,
-                    results.InteriorsInSet,
-                    results.InteriorsClose);
+                var (type,description) = _regionClassifier.DescribeRegion(CursorRegion);
 
                 InspectionResults =
                     $"({CursorRegion.X:N0}, {CursorRegion.Y:N0}) = " +
-                    $"Corners: {results.CornersInSet}, " +
-                    $"Inside: {results.InteriorsInSet}, " +
-                    $"Inside Close: {results.InteriorsClose} " +
+                    description +
                     $"=> {type}";
             }
         };
@@ -279,14 +275,26 @@ public sealed class MandelbrotRenderer : Control
             .Subscribe();
         // HACK: MaxIterations is set after Lookup
         this.WhenAnyValue(x => x.MaximumIterations)
-            .Select(maxIterations =>
+            .Select(_ =>
             {
-                _regionClassifier = new Interior16RegionClassifier(
-                    new BoundaryParameters(
-                        new AreaDivisions(Lookup.Height - 2),
-                        maxIterations));
+                RecreateRegionClassifier();
                 return Unit.Default;
             }).Subscribe();
+        this.WhenAnyValue(x => x.SelectedClassifier)
+            .Select(_ =>
+            {
+                RecreateRegionClassifier();
+                return Unit.Default;
+            }).Subscribe();
+    }
+
+    private void RecreateRegionClassifier()
+    {
+        _regionClassifier = IRegionClassifier.Create(
+            new BoundaryParameters(
+                new AreaDivisions(Lookup.Height - 2),
+                MaximumIterations),
+            SelectedClassifier);
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)

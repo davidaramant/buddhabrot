@@ -123,4 +123,4 @@
   - [x] UI to pick a region
   - [x] Calculate heuristics
   - [x] Display heuristics
-  - [ ] Choose which type of heuristic to display
+  - [x] Choose which type of heuristic to display

@@ -44,7 +44,7 @@ public sealed class Interior4RegionClassifier : IRegionClassifier
         int inSet = 0;
         int close = 0;
 
-        Parallel.For(0, centers.Length, i =>
+        Parallel.For(0, 4, i =>
         {
             var (iterations, distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
 
@@ -52,7 +52,7 @@ public sealed class Interior4RegionClassifier : IRegionClassifier
             {
                 Interlocked.Increment(ref inSet);
             }
-            else if (distance <= (RegionWidth / 8))
+            else if (distance <= (RegionWidth / 2))
             {
                 Interlocked.Increment(ref close);
             }
@@ -85,23 +85,15 @@ public sealed class Interior4RegionClassifier : IRegionClassifier
         return (cornersInSet, interiorInSet, interiorClose);
     }
 
-    public VisitedRegionType ClassifyRegion(int cornersInSet, int interiorsInSet, int interiorsClose)
-    {
-        return (cornersInSet, interiorsInSet, interiorsClose) switch
+    public VisitedRegionType ClassifyRegion(int cornersInSet, int interiorsInSet, int interiorsClose) =>
+        (cornersInSet, interiorsInSet, interiorsClose) switch
         {
-            // Totally empty
-            (0, 0, 0) => VisitedRegionType.Rejected,
-
-            // Inside set
-            (4, 4, _) => VisitedRegionType.Rejected,
-
+            (0, 0, 0) => VisitedRegionType.Rejected, // Totally empty
+            (4, 4, _) => VisitedRegionType.Rejected, // Inside set
             {cornersInSet: > 0, interiorsInSet: 0} => VisitedRegionType.Filament,
-            
             {interiorsInSet: > 0, interiorsClose: > 1} => VisitedRegionType.Border,
-
             _ => VisitedRegionType.Filament
         };
-    }
 
     public VisitedRegionType ClassifyRegion(RegionId region)
     {

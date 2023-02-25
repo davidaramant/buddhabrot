@@ -44,7 +44,7 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
         int inSet = 0;
         int close = 0;
 
-        Parallel.For(0, centers.Length, i =>
+        Parallel.For(0, 16, i =>
         {
             var (iterations, distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
 

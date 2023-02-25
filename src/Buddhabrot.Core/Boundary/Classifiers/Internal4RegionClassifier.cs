@@ -90,8 +90,9 @@ public sealed class Interior4RegionClassifier : IRegionClassifier
         {
             (0, 0, 0) => VisitedRegionType.Rejected, // Totally empty
             (4, 4, _) => VisitedRegionType.Rejected, // Inside set
-            {cornersInSet: > 0, interiorsInSet: 0} => VisitedRegionType.Filament,
-            {interiorsInSet: > 0, interiorsClose: > 1} => VisitedRegionType.Border,
+            {cornersInSet: > 0, interiorsInSet: 0, interiorsClose: > 2} => VisitedRegionType.Border,
+            {cornersInSet: > 0, interiorsInSet: > 0} => VisitedRegionType.Border,
+            {interiorsInSet: > 0, interiorsClose: > 0} => VisitedRegionType.Border,
             _ => VisitedRegionType.Filament
         };
 
@@ -100,7 +101,7 @@ public sealed class Interior4RegionClassifier : IRegionClassifier
         var result = InspectRegion(region);
         return ClassifyRegion(result.CornersInSet, result.InteriorsInSet, result.InteriorsClose);
     }
-    
+
     public (VisitedRegionType, string) DescribeRegion(RegionId region)
     {
         var result = InspectRegion(region);
@@ -109,7 +110,6 @@ public sealed class Interior4RegionClassifier : IRegionClassifier
                           $"Inside Close: {result.InteriorsClose} ";
         return (ClassifyRegion(result.CornersInSet, result.InteriorsInSet, result.InteriorsClose), description);
     }
-
 
     private BoolVector16 ComputeCornerBatch(RegionBatchId id)
     {

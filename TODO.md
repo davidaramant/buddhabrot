@@ -39,6 +39,7 @@
     - [x] Fixed-size cache for corners
     - [ ] Determine best amount of data to batch & cache
     - [x] ~~Visualization (video) of batches being cached & evicted~~ - This seems pointless
+  - [ ] Benchmark boundary calculation process
 - [x] Investigating putting an index into the `VisitedRegions` - EDIT: complete dud
 - [x] Support diffing arbitrary quad trees
   - [x] ~~Do I need a more generic quad tree internal data structure?~~ - Split into two types of trees 
@@ -46,19 +47,19 @@
   - [x] Separate RegionType for VisitedRegions and RegionLookup
   - [x] Generate quad tree diffs
     - [x] Determine Region Type based on Left and Right
-- [ ] Diagnose problems with algorithm:
+- [x] Diagnose problems with algorithm:
   - [x] Super sample interior of region
-  - [ ] Heuristic for regions
-    - [ ] "Holes" in boundary/filaments
-    - [ ] Useless border regions around i = 0
+  - [x] Heuristic for regions
+    - [x] "Holes" in boundary/filaments
+    - [x] Useless border regions around i = 0 - EDIT: "Good enough" fix found
 - [x] Allow metadata in boundary file names (IE specify variants of same dataset)
-- [ ] Allow specifying heuristic to use for boundary detection
+- [x] Allow specifying heuristic to use for boundary detection
   - [x] Interface for region classifier
   - [x] Break out new heuristic to different class
   - [x] 2x2 heuristic
   - [x] Command line argument for BoundaryFinder for heuristic
   - [x] GUI for heuristic for completeness when generating boundaries 
-  - [ ] Benchmarks for heuristics
+  - [x] ~~Benchmarks for heuristics~~ - No. Just benchmark the entire operation. I'm going with Internal4
 
 ## BoundaryExplorer
 

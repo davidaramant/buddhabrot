@@ -9,20 +9,17 @@ namespace Buddhabrot.Core.Boundary.Visualization;
 
 public static class BoundaryVisualizer
 {
-    public static RasterImage RenderBoundary(IReadOnlyList<RegionId> regions)
+    public static RasterImage RenderBorderRegion(
+        Size resolution,
+        AreaDivisions divisions,
+        RegionId regionId,
+        IterationRange iterationRange)
     {
-        // TODO: Deal with flipped Y
-        var maxBounds = regions.Aggregate<RegionId, (int X, int Y)>((0, 0),
-            (max, areaId) => (Math.Max(max.X, areaId.X), Math.Max(max.Y, areaId.Y)));
-
-        var img = new RasterImage(width: maxBounds.X + 1, height: maxBounds.Y + 1);
-        img.Fill(Color.White);
-        foreach (var region in regions)
-        {
-            img.SetPixel(region.X, region.Y, Color.Red);
-        }
-
-        return img;
+        var viewPort = ViewPort.FromRegionId(
+            resolution,
+            divisions,
+            regionId);
+        return RenderBorderRegion(viewPort, iterationRange);
     }
 
     public static RasterImage RenderBorderRegion(ViewPort viewPort, IterationRange iterationRange)

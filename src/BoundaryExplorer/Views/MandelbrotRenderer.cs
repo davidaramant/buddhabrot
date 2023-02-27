@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Reactive;
@@ -226,7 +227,7 @@ public sealed class MandelbrotRenderer : Control
             }
             else if (_inspectMode && properties.IsRightButtonPressed)
             {
-                var (type,description) = _regionClassifier.DescribeRegion(CursorRegion);
+                var (type, description) = _regionClassifier.DescribeRegion(CursorRegion);
 
                 InspectionResults =
                     $"({CursorRegion.X:N0}, {CursorRegion.Y:N0}) = " +
@@ -389,22 +390,19 @@ public sealed class MandelbrotRenderer : Control
                     types.Add(type, area.GetArea());
                 }
 
-                var points = new Complex[positionsToRender.Count];
-                for (int i = 0; i < points.Length; i++)
+                var numPoints = positionsToRender.Count;
+                var points = ArrayPool<Complex>.Shared.Rent(numPoints);
+                var escapeTimes = ArrayPool<EscapeTime>.Shared.Rent(numPoints);
+
+                for (int i = 0; i < numPoints; i++)
                 {
                     points[i] = viewPort.GetComplex(positionsToRender[i]);
                 }
 
-                var escapeTimes = new EscapeTime[points.Length];
+                // TODO: Why does this lock up the UI? It's already in a different Task, should this part be in a Task as well?
+                VectorKernel.FindEscapeTimes(points, escapeTimes, numPoints, args.MaxIterations);
 
-                // TODO: move this to function
-                // TODO: use vectors internally
-                // TODO: Why does this lock up the UI? It's already in a different Task, should this part be in a Task
-                // as well?
-                Parallel.For(0, points.Length,
-                    i => { escapeTimes[i] = ScalarKernel.FindEscapeTime(points[i], args.MaxIterations); });
-
-                for (int i = 0; i < points.Length; i++)
+                for (int i = 0; i < numPoints; i++)
                 {
                     var time = escapeTimes[i];
                     var classification = time switch
@@ -419,6 +417,9 @@ public sealed class MandelbrotRenderer : Control
 
                     canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
                 }
+
+                ArrayPool<Complex>.Shared.Return(points);
+                ArrayPool<EscapeTime>.Shared.Return(escapeTimes);
             }
             else
             {

@@ -1,8 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System.Buffers;
+using System.Diagnostics;
 using System.Drawing;
+using System.Numerics;
 using Buddhabrot.Core.Boundary.QuadTrees;
 using Buddhabrot.Core.Images;
 using Buddhabrot.Core.Calculations;
+using Buddhabrot.Core.ExtensionMethods.Drawing;
 using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary.Visualization;
@@ -26,19 +29,36 @@ public static class BoundaryVisualizer
     {
         var img = new RasterImage(viewPort.Resolution.Width, viewPort.Resolution.Height);
 
-        Parallel.For(0, img.Height, y =>
+        var numPoints = viewPort.Resolution.GetArea();
+        var points = ArrayPool<Complex>.Shared.Rent(numPoints);
+        var results = ArrayPool<EscapeTime>.Shared.Rent(numPoints);
+
+        for (int y = 0; y < img.Height; y++)
+        {
+            for (int x = 0; x < img.Width; x++)
+            {
+                points[y * img.Width + x] = viewPort.GetComplex(x, y);
+            }
+        }
+
+        VectorKernel.FindEscapeTimes(points, results, numPoints: numPoints, maxIterations: iterationRange.Max);
+
+        for (int y = 0; y < img.Height; y++)
         {
             for (int x = 0; x < img.Width; x++)
             {
                 img.SetPixel(x, y,
-                    ScalarKernel.FindEscapeTime(viewPort.GetComplex(x, y), iterationRange.Max) switch
+                    results[y * img.Width + x] switch
                     {
                         {IsInfinite: true} => Color.MidnightBlue,
                         var et when et.Iterations >= iterationRange.Min => Color.Red,
                         _ => Color.White,
                     });
             }
-        });
+        }
+
+        ArrayPool<Complex>.Shared.Return(points);
+        ArrayPool<EscapeTime>.Shared.Return(results);
 
         return img;
     }

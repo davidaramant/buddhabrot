@@ -81,21 +81,34 @@ public sealed class DiffViewModel : ViewModelBase
 
     private async Task ComputeDiffAsync()
     {
-        var timer = Stopwatch.StartNew();
         try
         {
-            var left = _dataProvider.LoadLookup(SelectedLeft!);
-            var right = _dataProvider.LoadLookup(SelectedRight!);
-
-            var diff = await Task.Run(() => RegionLookupDiffer.Diff(left, right));
-
-            AddToLog($"Took {timer.Elapsed.Humanize(2)} to calculate diff of {diff.NodeCount:N0} nodes");
+            var diff = await Task.Run(() =>
+            {
+                var left = Time(() => _dataProvider.LoadLookup(SelectedLeft!),
+                    (elapsed, _) => $"Loaded left in {elapsed}");
+                var right = Time(() => _dataProvider.LoadLookup(SelectedRight!),
+                    (elapsed, _) => $"Loaded right in {elapsed}");
+                var diff = Time(() => RegionLookupDiffer.Diff(left, right),
+                    (elapsed, diff) => $"Took {elapsed} to calculate diff of {diff.NodeCount:N0} nodes");
+                return diff;
+            });
 
             _dataProvider.SaveDiff(SelectedLeft!.Parameters, SelectedRight!.Parameters, diff);
         }
         catch (Exception e)
         {
-            _addToSystemLog("Failed creating diff: " + e);
+            var error = "Failed creating diff: " + e;
+            AddToLog(error);
+            _addToSystemLog(error);
+        }
+
+        T Time<T>(Func<T> generate, Func<string, T, string> makeMsg)
+        {
+            var timer = Stopwatch.StartNew();
+            var item = generate();
+            AddToLog(makeMsg(timer.Elapsed.Humanize(1), item));
+            return item;
         }
     }
 

@@ -7,183 +7,181 @@ namespace Buddhabrot.Benchmarks;
 
 public class FixedSizeCacheBenchmarks
 {
-    public const int DataSize = 100;
-    public const int LookupsPerData = 8;
-    // Varying this doesn't tell us anything because we are not simulating the consequences of something not being in the cache.
-    public const int CacheSize = 32;
+	public const int DataSize = 100;
+	public const int LookupsPerData = 8;
 
-    private RegionId[] _keys = Array.Empty<RegionId>();
-    private RegionId[] _lookups = Array.Empty<RegionId>();
+	// Varying this doesn't tell us anything because we are not simulating the consequences of something not being in the cache.
+	public const int CacheSize = 32;
 
-    [GlobalSetup]
-    public void FillArrays()
-    {
-        var rand = new Random(0);
-        _keys = new RegionId[DataSize];
-        _lookups = new RegionId[DataSize * LookupsPerData];
-        for (int i = 0; i < DataSize; i++)
-        {
-            _keys[i] = MakeId(i);
+	private RegionId[] _keys = Array.Empty<RegionId>();
+	private RegionId[] _lookups = Array.Empty<RegionId>();
 
-            for (int j = 0; j < LookupsPerData; j++)
-            {
-                var li = i * LookupsPerData + j;
-                _lookups[li] = MakeId(i);
-            }
-        }
+	[GlobalSetup]
+	public void FillArrays()
+	{
+		var rand = new Random(0);
+		_keys = new RegionId[DataSize];
+		_lookups = new RegionId[DataSize * LookupsPerData];
+		for (int i = 0; i < DataSize; i++)
+		{
+			_keys[i] = MakeId(i);
 
-        RegionId MakeId(int i) => new(
-            X: rand.Next(i, i + LookupsPerData),
-            Y: rand.Next(i, i + LookupsPerData));
-    }
+			for (int j = 0; j < LookupsPerData; j++)
+			{
+				var li = i * LookupsPerData + j;
+				_lookups[li] = MakeId(i);
+			}
+		}
 
-    [Benchmark(Baseline = true)]
-    public int LinearSearchRingBuffers()
-    {
-        var cache = new LinearSearchRingBuffersCache<RegionId, int>(CacheSize);
+		RegionId MakeId(int i) => new(X: rand.Next(i, i + LookupsPerData), Y: rand.Next(i, i + LookupsPerData));
+	}
 
-        int sum = 0;
-        for (int i = 0; i < DataSize; i++)
-        {
-            cache.Add(_keys[i], _keys[i].X);
+	[Benchmark(Baseline = true)]
+	public int LinearSearchRingBuffers()
+	{
+		var cache = new LinearSearchRingBuffersCache<RegionId, int>(CacheSize);
 
-            for (int j = 0; j < LookupsPerData; j++)
-            {
-                var li = i * LookupsPerData + j;
+		int sum = 0;
+		for (int i = 0; i < DataSize; i++)
+		{
+			cache.Add(_keys[i], _keys[i].X);
 
-                if (cache.TryGetValue(_lookups[li], out var val))
-                {
-                    sum += val;
-                }
-            }
-        }
+			for (int j = 0; j < LookupsPerData; j++)
+			{
+				var li = i * LookupsPerData + j;
 
-        return sum;
-    }
+				if (cache.TryGetValue(_lookups[li], out var val))
+				{
+					sum += val;
+				}
+			}
+		}
 
-    [Benchmark]
-    public int CacheTable()
-    {
-        var cache = new CacheTable<RegionId, int>(CacheSize, 4);
+		return sum;
+	}
 
-        int sum = 0;
-        for (int i = 0; i < DataSize; i++)
-        {
-            cache[_keys[i]] = _keys[i].X;
+	[Benchmark]
+	public int CacheTable()
+	{
+		var cache = new CacheTable<RegionId, int>(CacheSize, 4);
 
-            for (int j = 0; j < LookupsPerData; j++)
-            {
-                var li = i * LookupsPerData + j;
+		int sum = 0;
+		for (int i = 0; i < DataSize; i++)
+		{
+			cache[_keys[i]] = _keys[i].X;
 
-                if (cache.TryGetValue(_lookups[li], out var val))
-                {
-                    sum += val;
-                }
-            }
-        }
+			for (int j = 0; j < LookupsPerData; j++)
+			{
+				var li = i * LookupsPerData + j;
 
-        return sum;
-    }
+				if (cache.TryGetValue(_lookups[li], out var val))
+				{
+					sum += val;
+				}
+			}
+		}
 
-    [Benchmark]
-    public int HashingRingBuffer()
-    {
-        var cache = new HashingRingBufferCache<RegionId, int>(CacheSize, new RegionId(-1, -1));
+		return sum;
+	}
 
-        int sum = 0;
-        for (int i = 0; i < DataSize; i++)
-        {
-            cache.Add(_keys[i], _keys[i].X);
+	[Benchmark]
+	public int HashingRingBuffer()
+	{
+		var cache = new HashingRingBufferCache<RegionId, int>(CacheSize, new RegionId(-1, -1));
 
-            for (int j = 0; j < LookupsPerData; j++)
-            {
-                var li = i * LookupsPerData + j;
+		int sum = 0;
+		for (int i = 0; i < DataSize; i++)
+		{
+			cache.Add(_keys[i], _keys[i].X);
 
-                if (cache.TryGetValue(_lookups[li], out var val))
-                {
-                    sum += val;
-                }
-            }
-        }
+			for (int j = 0; j < LookupsPerData; j++)
+			{
+				var li = i * LookupsPerData + j;
 
-        return sum;
-    }
+				if (cache.TryGetValue(_lookups[li], out var val))
+				{
+					sum += val;
+				}
+			}
+		}
 
-    public sealed class LinearSearchRingBuffersCache<TKey, TValue>
-        where TKey : struct
-        where TValue : struct
-    {
-        private readonly RingBuffer<TKey> _keyCache;
-        private readonly RingBuffer<TValue> _valueCache;
+		return sum;
+	}
 
-        public int Count => _keyCache.Count;
+	public sealed class LinearSearchRingBuffersCache<TKey, TValue>
+		where TKey : struct
+		where TValue : struct
+	{
+		private readonly RingBuffer<TKey> _keyCache;
+		private readonly RingBuffer<TValue> _valueCache;
 
-        public LinearSearchRingBuffersCache(int maxSize)
-        {
-            _keyCache = new(maxSize);
-            _valueCache = new(maxSize);
-        }
+		public int Count => _keyCache.Count;
 
-        public void Add(TKey key, TValue value)
-        {
-            _keyCache.Add(key);
-            _valueCache.Add(value);
-        }
+		public LinearSearchRingBuffersCache(int maxSize)
+		{
+			_keyCache = new(maxSize);
+			_valueCache = new(maxSize);
+		}
 
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            // Use a for loop to avoid allocating an enumerator
-            for (int i = 0; i < _keyCache.Count; i++)
-            {
-                if (_keyCache[i].Equals(key))
-                {
-                    value = _valueCache[i];
-                    return true;
-                }
-            }
+		public void Add(TKey key, TValue value)
+		{
+			_keyCache.Add(key);
+			_valueCache.Add(value);
+		}
 
-            value = default;
+		public bool TryGetValue(TKey key, out TValue value)
+		{
+			// Use a for loop to avoid allocating an enumerator
+			for (int i = 0; i < _keyCache.Count; i++)
+			{
+				if (_keyCache[i].Equals(key))
+				{
+					value = _valueCache[i];
+					return true;
+				}
+			}
 
-            return false;
-        }
-    }
+			value = default;
 
-    public sealed class HashingRingBufferCache<TKey, TValue>
-        where TKey : struct
-        where TValue : struct
-    {
-        private readonly TKey[] _keys;
-        private readonly TValue[] _values;
-        private readonly int _capacity;
+			return false;
+		}
+	}
 
-        public HashingRingBufferCache(int capacity, TKey defaultKey)
-        {
-            _capacity = capacity;
-            _keys = new TKey[capacity];
-            Array.Fill(_keys, defaultKey);
-            _values = new TValue[capacity];
-        }
+	public sealed class HashingRingBufferCache<TKey, TValue>
+		where TKey : struct
+		where TValue : struct
+	{
+		private readonly TKey[] _keys;
+		private readonly TValue[] _values;
+		private readonly int _capacity;
 
+		public HashingRingBufferCache(int capacity, TKey defaultKey)
+		{
+			_capacity = capacity;
+			_keys = new TKey[capacity];
+			Array.Fill(_keys, defaultKey);
+			_values = new TValue[capacity];
+		}
 
-        public void Add(TKey key, TValue value)
-        {
-            var index = (uint)key.GetHashCode() % _capacity;
-            _keys[index] = key;
-            _values[index] = value;
-        }
+		public void Add(TKey key, TValue value)
+		{
+			var index = (uint)key.GetHashCode() % _capacity;
+			_keys[index] = key;
+			_values[index] = value;
+		}
 
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            var index = (uint)key.GetHashCode() % _capacity;
-            if (_keys[index].Equals(key))
-            {
-                value = _values[index];
-                return true;
-            }
+		public bool TryGetValue(TKey key, out TValue value)
+		{
+			var index = (uint)key.GetHashCode() % _capacity;
+			if (_keys[index].Equals(key))
+			{
+				value = _values[index];
+				return true;
+			}
 
-            value = default;
+			value = default;
 
-            return false;
-        }
-    }
+			return false;
+		}
+	}
 }

@@ -2,7 +2,7 @@
 
 public enum PointClassification
 {
-    InSet,
-    OutsideSet,
-    InRange
+	InSet,
+	OutsideSet,
+	InRange
 }

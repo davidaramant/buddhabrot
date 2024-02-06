@@ -1,2 +1,1 @@
 ﻿namespace Buddhabrot.Core.Boundary;
-

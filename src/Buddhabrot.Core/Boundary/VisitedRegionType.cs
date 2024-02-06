@@ -2,8 +2,8 @@
 
 public enum VisitedRegionType
 {
-    Unknown,
-    Border,
-    Filament,
-    Rejected,
+	Unknown,
+	Border,
+	Filament,
+	Rejected,
 }

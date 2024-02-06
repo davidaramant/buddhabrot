@@ -7,120 +7,120 @@ namespace Buddhabrot.Benchmarks;
 
 public class QuadDimensionDetermineQuadrantBenchmarks
 {
-    private const int Size = 100;
-    private readonly RegionId[] _regions = new RegionId[Size];
+	private const int Size = 100;
+	private readonly RegionId[] _regions = new RegionId[Size];
 
-    [GlobalSetup]
-    public void FillArrays()
-    {
-        var rand = new Random(0);
-        for (int i = 0; i < Size; i++)
-        {
-            _regions[i] = new RegionId(rand.Next(4), rand.Next(4));
-        }
-    }
+	[GlobalSetup]
+	public void FillArrays()
+	{
+		var rand = new Random(0);
+		for (int i = 0; i < Size; i++)
+		{
+			_regions[i] = new RegionId(rand.Next(4), rand.Next(4));
+		}
+	}
 
-    [Benchmark(Baseline = true)]
-    public Quadrant Switch()
-    {
-        var qd = new QuadDimensions(0, 0, 2);
+	[Benchmark(Baseline = true)]
+	public Quadrant Switch()
+	{
+		var qd = new QuadDimensions(0, 0, 2);
 
-        Quadrant d = default;
+		Quadrant d = default;
 
-        for (int i = 0; i < Size; i++)
-        {
-            d = DetermineQuadrant(qd, _regions[i]);
-        }
+		for (int i = 0; i < Size; i++)
+		{
+			d = DetermineQuadrant(qd, _regions[i]);
+		}
 
-        return d;
+		return d;
 
-        static Quadrant DetermineQuadrant(QuadDimensions q, RegionId id)
-        {
-            var upper = id.Y >= q.Y + q.QuadrantLength;
-            var right = id.X >= q.X + q.QuadrantLength;
-                                            
-            return (upper, right) switch
-            {
-                (false, false) => Quadrant.SW,
-                (false, true) => Quadrant.SE,
-                (true, false) => Quadrant.NW,
-                (true, true) => Quadrant.NE,
-            };
-        }
-    }
+		static Quadrant DetermineQuadrant(QuadDimensions q, RegionId id)
+		{
+			var upper = id.Y >= q.Y + q.QuadrantLength;
+			var right = id.X >= q.X + q.QuadrantLength;
 
-    [Benchmark]
-    public Quadrant BranchlessTernary()
-    {
-        var qd = new QuadDimensions(0, 0, 3);
+			return (upper, right) switch
+			{
+				(false, false) => Quadrant.SW,
+				(false, true) => Quadrant.SE,
+				(true, false) => Quadrant.NW,
+				(true, true) => Quadrant.NE,
+			};
+		}
+	}
 
-        Quadrant d = default;
+	[Benchmark]
+	public Quadrant BranchlessTernary()
+	{
+		var qd = new QuadDimensions(0, 0, 3);
 
-        for (int i = 0; i < Size; i++)
-        {
-            d = DetermineQuadrant(qd, _regions[i]);
-        }
+		Quadrant d = default;
 
-        return d;
+		for (int i = 0; i < Size; i++)
+		{
+			d = DetermineQuadrant(qd, _regions[i]);
+		}
 
-        static Quadrant DetermineQuadrant(QuadDimensions q, RegionId id)
-        {
-            var xComponent = (id.X >= q.X + q.QuadrantLength) ? 1 : 0;
-            var yComponent = (id.Y >= q.Y + q.QuadrantLength) ? 2 : 0;
+		return d;
 
-            return (Quadrant) (xComponent + yComponent);
-        }
-    }
-    
-    [Benchmark]
-    public Quadrant BranchlessBoolToInt()
-    {
-        var qd = new QuadDimensions(0, 0, 3);
+		static Quadrant DetermineQuadrant(QuadDimensions q, RegionId id)
+		{
+			var xComponent = (id.X >= q.X + q.QuadrantLength) ? 1 : 0;
+			var yComponent = (id.Y >= q.Y + q.QuadrantLength) ? 2 : 0;
 
-        Quadrant d = default;
+			return (Quadrant)(xComponent + yComponent);
+		}
+	}
 
-        for (int i = 0; i < Size; i++)
-        {
-            d = DetermineQuadrant(qd, _regions[i]);
-        }
+	[Benchmark]
+	public Quadrant BranchlessBoolToInt()
+	{
+		var qd = new QuadDimensions(0, 0, 3);
 
-        return d;
+		Quadrant d = default;
 
-        static Quadrant DetermineQuadrant(QuadDimensions q, RegionId id)
-        {
-            var xComponent = BoolToInt(id.X >= q.X + q.QuadrantLength);
-            var yComponent = BoolToInt(id.Y >= q.Y + q.QuadrantLength) << 1;
+		for (int i = 0; i < Size; i++)
+		{
+			d = DetermineQuadrant(qd, _regions[i]);
+		}
 
-            return (Quadrant) (xComponent + yComponent);
-        }
-        
-        static unsafe int BoolToInt(bool b) 
-        {
-            return *(Byte*)&b;         
-        }
-    }
-    
-    [Benchmark]
-    public Quadrant Division()
-    {
-        var qd = new QuadDimensions(0, 0, 3);
+		return d;
 
-        Quadrant d = default;
+		static Quadrant DetermineQuadrant(QuadDimensions q, RegionId id)
+		{
+			var xComponent = BoolToInt(id.X >= q.X + q.QuadrantLength);
+			var yComponent = BoolToInt(id.Y >= q.Y + q.QuadrantLength) << 1;
 
-        for (int i = 0; i < Size; i++)
-        {
-            d = DetermineQuadrant(qd, _regions[i]);
-        }
+			return (Quadrant)(xComponent + yComponent);
+		}
 
-        return d;
+		static unsafe int BoolToInt(bool b)
+		{
+			return *(Byte*)&b;
+		}
+	}
 
-        static Quadrant DetermineQuadrant(QuadDimensions q, RegionId id)
-        {
-            var halfWidth = q.QuadrantLength;
-            var xComponent = id.X / halfWidth;
-            var yComponent = (id.Y / halfWidth) << 1;
+	[Benchmark]
+	public Quadrant Division()
+	{
+		var qd = new QuadDimensions(0, 0, 3);
 
-            return (Quadrant) (xComponent + yComponent);
-        }
-    }
+		Quadrant d = default;
+
+		for (int i = 0; i < Size; i++)
+		{
+			d = DetermineQuadrant(qd, _regions[i]);
+		}
+
+		return d;
+
+		static Quadrant DetermineQuadrant(QuadDimensions q, RegionId id)
+		{
+			var halfWidth = q.QuadrantLength;
+			var xComponent = id.X / halfWidth;
+			var yComponent = (id.Y / halfWidth) << 1;
+
+			return (Quadrant)(xComponent + yComponent);
+		}
+	}
 }

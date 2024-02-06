@@ -6,13 +6,13 @@ namespace BoundaryExplorer.Views;
 
 public partial class DiffTab : UserControl
 {
-    public DiffTab()
-    {
-        InitializeComponent();
-    }
+	public DiffTab()
+	{
+		InitializeComponent();
+	}
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+	private void InitializeComponent()
+	{
+		AvaloniaXamlLoader.Load(this);
+	}
 }

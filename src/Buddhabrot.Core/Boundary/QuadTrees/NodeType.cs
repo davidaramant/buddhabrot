@@ -2,8 +2,8 @@
 
 public enum NodeType
 {
-    Leaf = 0,
-    Branch = 1,
-    LeafQuad = 2,
-    LongBranch = 3,
+	Leaf = 0,
+	Branch = 1,
+	LeafQuad = 2,
+	LongBranch = 3,
 }

@@ -6,13 +6,13 @@ namespace BoundaryExplorer.Views;
 
 public partial class VisualizeTab : UserControl
 {
-    public VisualizeTab()
-    {
-        InitializeComponent();
-    }
+	public VisualizeTab()
+	{
+		InitializeComponent();
+	}
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+	private void InitializeComponent()
+	{
+		AvaloniaXamlLoader.Load(this);
+	}
 }

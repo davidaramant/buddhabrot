@@ -1,2 +1,3 @@
 # Workaround for bug
 printWidth: 120
+useTabs: true

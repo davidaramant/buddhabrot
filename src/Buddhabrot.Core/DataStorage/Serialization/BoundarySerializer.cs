@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.QuadTrees;
 using Buddhabrot.Core.DataStorage.Serialization.Internal;

@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using System.Numerics;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Utilities;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia.Threading;
 using BoundaryExplorer.Models;
 using Buddhabrot.Core.DataStorage;

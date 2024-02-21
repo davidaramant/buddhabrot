@@ -1,4 +1,4 @@
-﻿using Humanizer;
+using Humanizer;
 
 namespace Buddhabrot.Core.Tests;
 

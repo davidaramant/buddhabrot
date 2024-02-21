@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core;
+namespace Buddhabrot.Core;
 
 public sealed record IterationRange(int Min, int Max)
 {

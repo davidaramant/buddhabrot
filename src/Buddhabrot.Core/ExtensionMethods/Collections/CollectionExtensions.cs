@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.ExtensionMethods.Collections;
+namespace Buddhabrot.Core.ExtensionMethods.Collections;
 
 public static class CollectionExtensions
 {

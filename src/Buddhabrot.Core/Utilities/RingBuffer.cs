@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Utilities;
+namespace Buddhabrot.Core.Utilities;
 
 public sealed class RingBuffer<T> : IReadOnlyCollection<T>
 {

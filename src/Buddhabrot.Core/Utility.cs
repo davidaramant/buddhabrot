@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core;
+namespace Buddhabrot.Core;
 
 public static class Utility
 {

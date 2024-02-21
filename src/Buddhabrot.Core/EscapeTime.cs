@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core;
+namespace Buddhabrot.Core;
 
 public readonly record struct EscapeTime(int Iterations)
 {

@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using Buddhabrot.Core.Boundary.QuadTrees;
 
 namespace Buddhabrot.Core.Boundary;

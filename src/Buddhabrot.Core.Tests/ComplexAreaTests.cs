@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Tests;
+namespace Buddhabrot.Core.Tests;
 
 public class ComplexAreaTests
 {

@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Buddhabrot.Core.Boundary;
 
 namespace Buddhabrot.Core.Tests.Boundary;

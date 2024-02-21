@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Boundary.Visualization;
+namespace Buddhabrot.Core.Boundary.Visualization;
 
 public enum PointClassification
 {

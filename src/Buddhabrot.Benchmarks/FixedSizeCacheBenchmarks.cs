@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Utilities;
 using CacheTable;

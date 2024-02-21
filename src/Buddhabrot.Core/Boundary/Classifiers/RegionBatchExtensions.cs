@@ -1,4 +1,4 @@
-﻿using static Buddhabrot.Core.Boundary.Classifiers.RegionBatchId;
+using static Buddhabrot.Core.Boundary.Classifiers.RegionBatchId;
 
 namespace Buddhabrot.Core.Boundary.Classifiers;
 

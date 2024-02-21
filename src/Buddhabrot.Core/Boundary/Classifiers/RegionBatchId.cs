@@ -1,4 +1,4 @@
-﻿using Buddhabrot.Core.Utilities;
+using Buddhabrot.Core.Utilities;
 
 namespace Buddhabrot.Core.Boundary.Classifiers;
 

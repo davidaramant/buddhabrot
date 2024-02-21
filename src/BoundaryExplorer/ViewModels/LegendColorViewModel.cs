@@ -1,4 +1,4 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using Avalonia.Media;
 using BoundaryExplorer.Extensions;
 using Buddhabrot.Core.Boundary;

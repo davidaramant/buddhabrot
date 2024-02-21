@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using BenchmarkDotNet.Attributes;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.QuadTrees;

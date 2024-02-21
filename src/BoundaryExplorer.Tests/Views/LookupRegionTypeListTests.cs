@@ -1,4 +1,4 @@
-﻿using BoundaryExplorer.Views;
+using BoundaryExplorer.Views;
 using Buddhabrot.Core.Boundary;
 
 namespace BoundaryExplorer.Tests.Views;

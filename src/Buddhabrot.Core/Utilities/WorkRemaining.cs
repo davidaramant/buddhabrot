@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Utilities;
+namespace Buddhabrot.Core.Utilities;
 
 /// <summary>
 /// Keeps track of remaining work.

@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Boundary.QuadTrees;
+namespace Buddhabrot.Core.Boundary.QuadTrees;
 
 public static class QuadTreeExtensions
 {

@@ -1,4 +1,4 @@
-﻿using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary;
 
 namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
 

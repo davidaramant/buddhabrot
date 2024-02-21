@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reactive;
 using System.Runtime.InteropServices;
 using BoundaryExplorer.Models;

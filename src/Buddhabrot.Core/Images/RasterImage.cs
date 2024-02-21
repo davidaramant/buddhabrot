@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using SkiaSharp;
 

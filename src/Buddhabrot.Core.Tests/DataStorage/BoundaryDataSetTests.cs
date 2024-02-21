@@ -1,4 +1,4 @@
-﻿using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.DataStorage;
 
 namespace Buddhabrot.Core.Tests.DataStorage;

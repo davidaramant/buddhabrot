@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 
 namespace Buddhabrot.Core.DataStorage.Serialization.Internal;
 

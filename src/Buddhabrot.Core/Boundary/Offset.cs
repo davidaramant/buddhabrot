@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Boundary;
+namespace Buddhabrot.Core.Boundary;
 
 /// <summary>
 /// A position offset with +Y going UP

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using BenchmarkDotNet.Running;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.ManualVisualizations;

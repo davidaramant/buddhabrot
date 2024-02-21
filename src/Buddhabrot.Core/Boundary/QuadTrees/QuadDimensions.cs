@@ -1,4 +1,4 @@
-﻿namespace Buddhabrot.Core.Boundary.QuadTrees;
+namespace Buddhabrot.Core.Boundary.QuadTrees;
 
 /// <summary>
 /// Dimensions for a quad in region coordinates (+Y is up)

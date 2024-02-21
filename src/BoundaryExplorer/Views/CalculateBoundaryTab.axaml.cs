@@ -6,13 +6,13 @@ namespace BoundaryExplorer.Views;
 
 public partial class CalculateBoundaryTab : UserControl
 {
-	public CalculateBoundaryTab()
-	{
-		InitializeComponent();
-	}
+    public CalculateBoundaryTab()
+    {
+        InitializeComponent();
+    }
 
-	private void InitializeComponent()
-	{
-		AvaloniaXamlLoader.Load(this);
-	}
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
 }

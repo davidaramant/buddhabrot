@@ -3,87 +3,87 @@ using Buddhabrot.Core.Boundary;
 namespace Buddhabrot.Core.DataStorage;
 
 public sealed record BoundaryDataSet(
-	bool IsDiff,
-	BoundaryParameters Parameters,
-	string Description,
-	string UserDescription
+    bool IsDiff,
+    BoundaryParameters Parameters,
+    string Description,
+    string UserDescription
 ) : IComparable<BoundaryDataSet>
 {
-	private sealed class DataSetRelationalComparer : IComparer<BoundaryDataSet>
-	{
-		public int Compare(BoundaryDataSet? x, BoundaryDataSet? y)
-		{
-			// Diffs come last
-			// Higher vertical powers come first
-			// Then the max iterations (higher first)
-			if (ReferenceEquals(x, y))
-				return 0;
-			if (ReferenceEquals(null, y))
-				return 1;
-			if (ReferenceEquals(null, x))
-				return -1;
+    private sealed class DataSetRelationalComparer : IComparer<BoundaryDataSet>
+    {
+        public int Compare(BoundaryDataSet? x, BoundaryDataSet? y)
+        {
+            // Diffs come last
+            // Higher vertical powers come first
+            // Then the max iterations (higher first)
+            if (ReferenceEquals(x, y))
+                return 0;
+            if (ReferenceEquals(null, y))
+                return 1;
+            if (ReferenceEquals(null, x))
+                return -1;
 
-			var diff = x.IsDiff.CompareTo(y.IsDiff);
-			if (diff != 0)
-				return diff;
+            var diff = x.IsDiff.CompareTo(y.IsDiff);
+            if (diff != 0)
+                return diff;
 
-			var power = y.Parameters.Divisions.VerticalPower.CompareTo(x.Parameters.Divisions.VerticalPower);
-			if (power != 0)
-				return power;
+            var power = y.Parameters.Divisions.VerticalPower.CompareTo(x.Parameters.Divisions.VerticalPower);
+            if (power != 0)
+                return power;
 
-			var maxComp = y.Parameters.MaxIterations.CompareTo(x.Parameters.MaxIterations);
-			if (maxComp != 0)
-				return maxComp;
+            var maxComp = y.Parameters.MaxIterations.CompareTo(x.Parameters.MaxIterations);
+            if (maxComp != 0)
+                return maxComp;
 
-			return String.Compare(x.Description, y.Description, StringComparison.Ordinal);
-		}
-	}
+            return String.Compare(x.Description, y.Description, StringComparison.Ordinal);
+        }
+    }
 
-	public static IComparer<BoundaryDataSet> Comparer { get; } = new DataSetRelationalComparer();
+    public static IComparer<BoundaryDataSet> Comparer { get; } = new DataSetRelationalComparer();
 
-	public static readonly BoundaryDataSet Empty =
-		new(false, new BoundaryParameters(new AreaDivisions(0), 0), "Nothing", "Nothing");
+    public static readonly BoundaryDataSet Empty =
+        new(false, new BoundaryParameters(new AreaDivisions(0), 0), "Nothing", "Nothing");
 
-	public int CompareTo(BoundaryDataSet? other) => Comparer.Compare(this, other);
+    public int CompareTo(BoundaryDataSet? other) => Comparer.Compare(this, other);
 
-	public override string ToString() => UserDescription;
+    public override string ToString() => UserDescription;
 
-	public static BoundaryDataSet FromBoundary(BoundaryParameters parameters) =>
-		new(IsDiff: false, parameters, parameters.Description, parameters.ToString());
+    public static BoundaryDataSet FromBoundary(BoundaryParameters parameters) =>
+        new(IsDiff: false, parameters, parameters.Description, parameters.ToString());
 
-	public static BoundaryDataSet FromDiff(BoundaryParameters left, BoundaryParameters right)
-	{
-		static string Shorthand(BoundaryParameters bp) =>
-			$"({bp.Divisions.VerticalPower}) {bp.MaxIterations:N0}"
-			+ (string.IsNullOrEmpty(bp.Metadata) ? string.Empty : $" {bp.Metadata}");
+    public static BoundaryDataSet FromDiff(BoundaryParameters left, BoundaryParameters right)
+    {
+        static string Shorthand(BoundaryParameters bp) =>
+            $"({bp.Divisions.VerticalPower}) {bp.MaxIterations:N0}"
+            + (string.IsNullOrEmpty(bp.Metadata) ? string.Empty : $" {bp.Metadata}");
 
-		return new(
-			IsDiff: true,
-			Combine(left, right),
-			Description: $"Diff - {left.Description} - {right.Description}",
-			UserDescription: $"Diff: {Shorthand(left)} → {Shorthand(right)}"
-		);
-	}
+        return new(
+            IsDiff: true,
+            Combine(left, right),
+            Description: $"Diff - {left.Description} - {right.Description}",
+            UserDescription: $"Diff: {Shorthand(left)} → {Shorthand(right)}"
+        );
+    }
 
-	private static BoundaryParameters Combine(BoundaryParameters one, BoundaryParameters two) =>
-		new(
-			new AreaDivisions(Math.Max(one.Divisions.VerticalPower, two.Divisions.VerticalPower)),
-			Math.Max(one.MaxIterations, two.MaxIterations)
-		);
+    private static BoundaryParameters Combine(BoundaryParameters one, BoundaryParameters two) =>
+        new(
+            new AreaDivisions(Math.Max(one.Divisions.VerticalPower, two.Divisions.VerticalPower)),
+            Math.Max(one.MaxIterations, two.MaxIterations)
+        );
 
-	public static BoundaryDataSet FromDescription(string description)
-	{
-		if (description.StartsWith("Diff"))
-		{
-			var parts = description.Split(" - ");
-			return FromDiff(
-				BoundaryParameters.FromDescription(parts[1].Trim()),
-				BoundaryParameters.FromDescription(parts[2].Trim())
-			);
-		}
-		else
-		{
-			return FromBoundary(BoundaryParameters.FromDescription(description));
-		}
-	}
+    public static BoundaryDataSet FromDescription(string description)
+    {
+        if (description.StartsWith("Diff"))
+        {
+            var parts = description.Split(" - ");
+            return FromDiff(
+                BoundaryParameters.FromDescription(parts[1].Trim()),
+                BoundaryParameters.FromDescription(parts[2].Trim())
+            );
+        }
+        else
+        {
+            return FromBoundary(BoundaryParameters.FromDescription(description));
+        }
+    }
 }

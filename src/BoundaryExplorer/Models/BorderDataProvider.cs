@@ -9,53 +9,53 @@ namespace BoundaryExplorer.Models;
 
 public sealed class BorderDataProvider
 {
-    private readonly string _defaultDataSetPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "Buddhabrot",
-        "Mandelbrot Set Boundaries"
-    );
+	private readonly string _defaultDataSetPath = Path.Combine(
+		Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+		"Buddhabrot",
+		"Mandelbrot Set Boundaries"
+	);
 
-    private readonly DataProvider _dataProvider;
-    public string LocalDataStoragePath => _dataProvider.DataStoragePath;
-    public SourceList<BoundaryDataSet> SavedBoundaries { get; } = new();
+	private readonly DataProvider _dataProvider;
+	public string LocalDataStoragePath => _dataProvider.DataStoragePath;
+	public SourceList<BoundaryDataSet> SavedBoundaries { get; } = new();
 
-    public BorderDataProvider(DataProvider dataProvider)
-    {
-        _dataProvider = dataProvider;
+	public BorderDataProvider(DataProvider dataProvider)
+	{
+		_dataProvider = dataProvider;
 
-        if (string.IsNullOrWhiteSpace(_dataProvider.DataStoragePath))
-        {
-            _dataProvider.DataStoragePath = _defaultDataSetPath;
-        }
+		if (string.IsNullOrWhiteSpace(_dataProvider.DataStoragePath))
+		{
+			_dataProvider.DataStoragePath = _defaultDataSetPath;
+		}
 
-        RefreshSavedBoundaries();
-    }
+		RefreshSavedBoundaries();
+	}
 
-    public void SaveBorderData(BoundaryParameters parameters, IEnumerable<RegionId> regions, RegionLookup lookup)
-    {
-        _dataProvider.SaveBoundaryRegions(parameters, regions, lookup);
+	public void SaveBorderData(BoundaryParameters parameters, IEnumerable<RegionId> regions, RegionLookup lookup)
+	{
+		_dataProvider.SaveBoundaryRegions(parameters, regions, lookup);
 
-        RefreshSavedBoundaries();
-    }
+		RefreshSavedBoundaries();
+	}
 
-    public void SaveDiff(BoundaryParameters left, BoundaryParameters right, RegionLookup lookup)
-    {
-        _dataProvider.SaveDiff(left, right, lookup);
+	public void SaveDiff(BoundaryParameters left, BoundaryParameters right, RegionLookup lookup)
+	{
+		_dataProvider.SaveDiff(left, right, lookup);
 
-        RefreshSavedBoundaries();
-    }
+		RefreshSavedBoundaries();
+	}
 
-    private void RefreshSavedBoundaries()
-    {
-        SavedBoundaries.Clear();
-        SavedBoundaries.AddRange(_dataProvider.GetRegionLookupDataSets());
-    }
+	private void RefreshSavedBoundaries()
+	{
+		SavedBoundaries.Clear();
+		SavedBoundaries.AddRange(_dataProvider.GetRegionLookupDataSets());
+	}
 
-    public void UpdateDataStoragePath(string newPath)
-    {
-        _dataProvider.DataStoragePath = newPath;
-        RefreshSavedBoundaries();
-    }
+	public void UpdateDataStoragePath(string newPath)
+	{
+		_dataProvider.DataStoragePath = newPath;
+		RefreshSavedBoundaries();
+	}
 
-    public RegionLookup LoadLookup(BoundaryDataSet parameters) => _dataProvider.GetLookup(parameters);
+	public RegionLookup LoadLookup(BoundaryDataSet parameters) => _dataProvider.GetLookup(parameters);
 }

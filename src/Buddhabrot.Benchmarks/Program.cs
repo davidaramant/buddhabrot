@@ -8,44 +8,44 @@ namespace Buddhabrot.Benchmarks;
 
 class Program
 {
-    static void Main(string[] args)
-    {
-        //VisitedRegionsDataSet.Create();
-        //BenchmarkRunner.Run<VisitedRegionsBenchmark>();
+	static void Main(string[] args)
+	{
+		//VisitedRegionsDataSet.Create();
+		//BenchmarkRunner.Run<VisitedRegionsBenchmark>();
 
-        //BenchmarkRunner.Run<QuadNodeWithQuadrantBenchmarks>();
-        //BenchmarkRunner.Run<QuadNodeGetQuadrantBenchmarks>();
+		//BenchmarkRunner.Run<QuadNodeWithQuadrantBenchmarks>();
+		//BenchmarkRunner.Run<QuadNodeGetQuadrantBenchmarks>();
 
-        //BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
-        //BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
+		//BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
+		//BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
 
-        //BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
+		//BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
 
-        //CoordinateHashingTests.ComputeHistograms();
-        //BenchmarkRunner.Run<CoordinateHashingBenchmarks>();
+		//CoordinateHashingTests.ComputeHistograms();
+		//BenchmarkRunner.Run<CoordinateHashingBenchmarks>();
 
-        BenchmarkRunner.Run<SquareBoundaryIntersectionBenchmarks>();
+		BenchmarkRunner.Run<SquareBoundaryIntersectionBenchmarks>();
 
-        // var vrb = new VisitedRegionsBenchmark();
-        // vrb.LoadDataSet();
-        // Console.Out.WriteLine("Visiting regions...");
-        // vrb.UseVisitedRegions(new VisitedRegionsBenchmark.DescribedImplementation(
-        //     new VisitedRegions(VisitedRegionsBenchmark.Size.QuadrantDivisions * 2), "Whatever"));
-    }
+		// var vrb = new VisitedRegionsBenchmark();
+		// vrb.LoadDataSet();
+		// Console.Out.WriteLine("Visiting regions...");
+		// vrb.UseVisitedRegions(new VisitedRegionsBenchmark.DescribedImplementation(
+		//     new VisitedRegions(VisitedRegionsBenchmark.Size.QuadrantDivisions * 2), "Whatever"));
+	}
 
-    private static void SimpleBenchmark<T>(Func<T> method, string name)
-    {
-        Console.WriteLine($"{new string('-', 20)}\n{name}\nResult: {method()}");
-        GC.Collect();
-        const int trials = 3;
-        var timer = Stopwatch.StartNew();
+	private static void SimpleBenchmark<T>(Func<T> method, string name)
+	{
+		Console.WriteLine($"{new string('-', 20)}\n{name}\nResult: {method()}");
+		GC.Collect();
+		const int trials = 3;
+		var timer = Stopwatch.StartNew();
 
-        for (int i = 0; i < trials; i++)
-        {
-            GC.KeepAlive(method());
-        }
+		for (int i = 0; i < trials; i++)
+		{
+			GC.KeepAlive(method());
+		}
 
-        timer.Stop();
-        Console.WriteLine(timer.Elapsed.Humanize(2));
-    }
+		timer.Stop();
+		Console.WriteLine(timer.Elapsed.Humanize(2));
+	}
 }

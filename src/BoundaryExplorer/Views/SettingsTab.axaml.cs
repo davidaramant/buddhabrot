@@ -6,13 +6,13 @@ namespace BoundaryExplorer.Views;
 
 public partial class SettingsTab : UserControl
 {
-    public SettingsTab()
-    {
-        InitializeComponent();
-    }
+	public SettingsTab()
+	{
+		InitializeComponent();
+	}
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+	private void InitializeComponent()
+	{
+		AvaloniaXamlLoader.Load(this);
+	}
 }

@@ -22,7 +22,7 @@
                 Margin="4"
                 HorizontalAlignment="Stretch">
             <ListBox
-                Items="{Binding LeftDataSets}"
+                ItemsSource="{Binding LeftDataSets}"
                 SelectedItem="{Binding SelectedLeft}" />
         </Border>
         
@@ -33,7 +33,7 @@
                 Margin="4"
                 HorizontalAlignment="Stretch">
             <ListBox
-                Items="{Binding RightDataSets}"
+                ItemsSource="{Binding RightDataSets}"
                 SelectedItem="{Binding SelectedRight}" />
         </Border>
         

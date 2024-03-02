@@ -125,3 +125,10 @@
   - [x] Calculate heuristics
   - [x] Display heuristics
   - [x] Choose which type of heuristic to display
+
+### Avalonia 11 Upgrade
+
+- [ ] `NumericUpDown` has changed from `double` to `decimal`
+- [ ] What is going on with UI control properties?
+- [ ] `VisualizeTab`: `ItemsRepeater` is gone?
+- [ ] `MandelbrotRenderer` - What's the fastest way to draw now?

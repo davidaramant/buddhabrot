@@ -27,7 +27,7 @@
             <Label Content="Region Classifier:"/>
             <ComboBox
                 HorizontalAlignment="Stretch"
-                Items="{Binding ClassifierTypes}"
+                ItemsSource="{Binding ClassifierTypes}"
                 SelectedItem="{Binding SelectedClassifier}" />
             
             <TextBlock

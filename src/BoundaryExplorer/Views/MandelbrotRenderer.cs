@@ -13,6 +13,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Skia;
 using Avalonia.Threading;
+using BoundaryExplorer.Extensions;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
@@ -360,23 +361,48 @@ public sealed class MandelbrotRenderer : Control
 		}
 
 		// TODO: Check for cancellation
-		using (var context = _backBuffer.CreateDrawingContext(null))
+		using (var context = _backBuffer.CreateDrawingContext())
 		{
-			var skiaContext = (ISkiaDrawingContextImpl)context;
-			var canvas = skiaContext.SkCanvas;
+			//context.
 
-			canvas.DrawRect(0, 0, args.Width, args.Height, new SKPaint { Color = args.Palette.Background });
+			// Where is this thing????????????????
+			// var leaseFeature = context.GetFeature<ISkiaSharpApiLeaseFeature>();
+			// if (leaseFeature == null)
+			// 	throw new InvalidProgramException("What does this mean????");
+			// using var lease = leaseFeature.Lease();
+			// var canvas = lease.SkCanvas;
+			// dynamic skiaContext = default!; //(ISkiaDrawingContextImpl)context;
+			// var canvas = skiaContext.SkCanvas;
+
+			//canvas.DrawRect(0, 0, args.Width, args.Height, new SKPaint { Color = args.Palette.Background });
+			context.DrawRectangle(
+				new SolidColorBrush(args.Palette.Background.ToAvaloniaColor()),
+				pen: null,
+				new Rect(0, 0, args.Width, args.Height)
+			);
 
 			var center = args.SetBoundary.Center;
 			var radius = args.SetBoundary.QuadrantLength;
 
-			canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InsideCircle });
+			//canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InsideCircle });
+			context.DrawEllipse(
+				new SolidColorBrush(args.Palette.InsideCircle.ToAvaloniaColor()),
+				pen: null,
+				new Point(center.X, center.Y),
+				radiusX: radius,
+				radiusY: radius
+			);
 
 			if (args.Instructions.PasteFrontBuffer)
 			{
-				context.DrawBitmap(
-					_frontBuffer.PlatformImpl,
-					opacity: 1,
+				// context.DrawBitmap(
+				// 	_frontBuffer,
+				// 	opacity: 1,
+				// 	sourceRect: args.Instructions.SourceRect,
+				// 	destRect: args.Instructions.DestRect
+				// );
+				context.DrawImage(
+					source: _frontBuffer,
 					sourceRect: args.Instructions.SourceRect,
 					destRect: args.Instructions.DestRect
 				);
@@ -430,7 +456,12 @@ public sealed class MandelbrotRenderer : Control
 
 					paint.Color = args.Palette[type, classification];
 
-					canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
+					//canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
+					context.DrawRectangle(
+						brush: new SolidColorBrush(args.Palette[type, classification].ToAvaloniaColor()),
+						pen: null,
+						new Rect(positionsToRender[i].X, positionsToRender[i].Y, width: 1, height: 1)
+					);
 				}
 
 				ArrayPool<Complex>.Shared.Return(points);
@@ -442,7 +473,12 @@ public sealed class MandelbrotRenderer : Control
 				{
 					paint.Color = args.Palette[type];
 
-					canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
+					//canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
+					context.DrawRectangle(
+						brush: new SolidColorBrush(args.Palette[type].ToAvaloniaColor()),
+						pen: null,
+						new Rect(area.X, area.Y, area.Width, area.Height)
+					);
 				}
 			}
 		}
@@ -521,7 +557,7 @@ public sealed class MandelbrotRenderer : Control
 
 	private async Task CancelRenderingAsync()
 	{
-		_cancelSource.Cancel();
+		await _cancelSource.CancelAsync();
 		await _renderingTask;
 		_cancelSource = new();
 	}

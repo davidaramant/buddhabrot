@@ -20,7 +20,7 @@
                 Margin="0,4"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Stretch"
-                Items="{Binding SavedBoundaries}"
+                ItemsSource="{Binding SavedBoundaries}"
                 SelectedItem="{Binding SelectedParameters}" />
 
             <Label
@@ -108,15 +108,15 @@
             Grid.Column="0"
             ColumnDefinitions="Auto,150,Auto,*,Auto,Auto,Auto">
             <ToggleButton Command="{Binding #MandelbrotRenderer.ToggleInspectModeCommand}">Inspect Mode</ToggleButton>
-            
+
             <ComboBox
                 Grid.Column="1"
                 Margin="4"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Stretch"
-                Items="{Binding #MandelbrotRenderer.ClassifierTypes}"
+                ItemsSource="{Binding #MandelbrotRenderer.ClassifierTypes}"
                 SelectedItem="{Binding #MandelbrotRenderer.SelectedClassifier}" />
-            
+
             <Label
                 Grid.Column="2"
                 Margin="4"
@@ -130,7 +130,7 @@
                 Content="Palette:">
                 <Button.Flyout>
                     <Flyout>
-                        <ItemsRepeater Items="{Binding LegendColors}">
+                        <ItemsRepeater ItemsSource="{Binding LegendColors}">
                             <ItemsRepeater.ItemTemplate>
                                 <DataTemplate DataType="vm:LegendColorViewModel">
                                     <StackPanel Orientation="Horizontal">
@@ -148,7 +148,7 @@
             <ComboBox
                 Grid.Column="5"
                 Margin="4"
-                Items="{x:Static viz:IBoundaryPalette.AllPalettes}"
+                ItemsSource="{x:Static viz:IBoundaryPalette.AllPalettes}"
                 SelectedItem="{Binding Palette}" />
             <Button
                 Grid.Column="6"

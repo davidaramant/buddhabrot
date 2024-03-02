@@ -34,8 +34,8 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 	public static RenderInstructions Everything(PixelSize newSize) =>
 		new(
 			pasteFrontBuffer: false,
-			sourceRect: Rect.Empty,
-			destRect: Rect.Empty,
+			sourceRect: default,
+			destRect: default,
 			firstDirtyRect: new PixelRect(new PixelPoint(0, 0), newSize),
 			secondDirtyRect: null,
 			size: newSize

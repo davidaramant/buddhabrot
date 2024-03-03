@@ -125,3 +125,6 @@
   - [x] Calculate heuristics
   - [x] Display heuristics
   - [x] Choose which type of heuristic to display
+- [ ] Refactor how rendering is done
+  - [ ] Rendering to an `SKCanvas` or whatever should be a distinct operation
+  - [ ] UI should just be concerned with drawing the `SKImage` on the `RenderingTargetBitmap`

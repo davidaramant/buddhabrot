@@ -128,3 +128,5 @@
 - [ ] Refactor how rendering is done
   - [ ] Rendering to an `SKCanvas` or whatever should be a distinct operation
   - [ ] UI should just be concerned with drawing the `SKImage` on the `RenderingTargetBitmap`
+  - [ ] PoC for handling image buffers
+  - [ ] Research into how to parallelize rendering of pixels

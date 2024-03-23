@@ -59,7 +59,7 @@ public class VisitNodeWithQuadrantBenchmarks
 		static VisitNode WithQuadrant(VisitNode node, Quadrant quadrant, VisitedRegionType type)
 		{
 			var offset = 10 - 2 * (int)quadrant;
-			return new(node.Encoded | ((uint)type << offset) + (int)NodeType.LeafQuad);
+			return new(node.Encoded | ((uint)type << offset) + (int)VisitNodeType.LeafQuad);
 		}
 	}
 }

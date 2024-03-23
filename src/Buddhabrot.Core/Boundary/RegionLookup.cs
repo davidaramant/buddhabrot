@@ -20,14 +20,14 @@ public sealed class RegionLookup
 	{
 		Nodes = new[] { RegionNode.Empty };
 		Height = 1;
-		_root = Nodes.Last();
+		_root = Nodes[^1];
 	}
 
 	public RegionLookup(IReadOnlyList<RegionNode> nodes, int height)
 	{
 		Nodes = nodes;
 		Height = height;
-		_root = nodes.Last();
+		_root = nodes[^1];
 	}
 
 	public void GetVisibleAreas(

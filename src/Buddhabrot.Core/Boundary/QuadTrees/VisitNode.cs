@@ -7,11 +7,9 @@ public enum VisitNodeType
 	LeafQuad,
 }
 
-public readonly struct VisitNode
+public readonly struct VisitNode(uint encoded)
 {
-	public readonly uint Encoded;
-
-	public VisitNode(uint encoded) => Encoded = encoded;
+	public readonly uint Encoded = encoded;
 
 	public static readonly VisitNode Unknown = MakeLeaf(VisitedRegionType.Unknown);
 

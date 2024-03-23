@@ -140,33 +140,21 @@ public static class ScalarKernel
 		a = Math.Abs(a);
 		b = Math.Abs(b);
 
-		double small,
-			large;
-		if (a < b)
-		{
-			small = a;
-			large = b;
-		}
-		else
-		{
-			small = b;
-			large = a;
-		}
+		var (small, large) = a < b ? (a, b) : (b, a);
 
 		if (small == 0.0)
 		{
-			return (large);
+			return large;
 		}
-		else if (double.IsPositiveInfinity(large) && !double.IsNaN(small))
+
+		if (double.IsPositiveInfinity(large) && !double.IsNaN(small))
 		{
 			// The NaN test is necessary so we don't return +inf when small=NaN and large=+inf.
 			// NaN in any other place returns NaN without any special handling.
 			return (double.PositiveInfinity);
 		}
-		else
-		{
-			double ratio = small / large;
-			return (large * Math.Sqrt(1.0 + ratio * ratio));
-		}
+
+		double ratio = small / large;
+		return large * Math.Sqrt(1.0 + ratio * ratio);
 	}
 }

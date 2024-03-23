@@ -1,10 +1,8 @@
 namespace Buddhabrot.Core.Boundary.QuadTrees;
 
-public readonly struct RegionNode
+public readonly struct RegionNode(uint encoded)
 {
-	public readonly uint Encoded;
-
-	public RegionNode(uint encoded) => Encoded = encoded;
+	public readonly uint Encoded = encoded;
 
 	public static readonly RegionNode Empty = MakeLeaf(LookupRegionType.Empty);
 

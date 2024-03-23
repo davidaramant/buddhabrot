@@ -1,51 +1,38 @@
 using System.Diagnostics;
 using BenchmarkDotNet.Running;
-using Buddhabrot.Core.Boundary;
-using Buddhabrot.ManualVisualizations;
+using Buddhabrot.Benchmarks;
 using Humanizer;
 
-namespace Buddhabrot.Benchmarks;
-
-class Program
+static void SimpleBenchmark<T>(Func<T> method, string name)
 {
-	static void Main(string[] args)
+	Console.WriteLine($"{new string('-', 20)}\n{name}\nResult: {method()}");
+	GC.Collect();
+	const int trials = 3;
+	var timer = Stopwatch.StartNew();
+
+	for (int i = 0; i < trials; i++)
 	{
-		//VisitedRegionsDataSet.Create();
-		//BenchmarkRunner.Run<VisitedRegionsBenchmark>();
-
-		//BenchmarkRunner.Run<QuadNodeWithQuadrantBenchmarks>();
-		//BenchmarkRunner.Run<QuadNodeGetQuadrantBenchmarks>();
-
-		//BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
-		//BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
-
-		//BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
-
-		//CoordinateHashingTests.ComputeHistograms();
-		//BenchmarkRunner.Run<CoordinateHashingBenchmarks>();
-
-		BenchmarkRunner.Run<SquareBoundaryIntersectionBenchmarks>();
-
-		// var vrb = new VisitedRegionsBenchmark();
-		// vrb.LoadDataSet();
-		// Console.Out.WriteLine("Visiting regions...");
-		// vrb.UseVisitedRegions(new VisitedRegionsBenchmark.DescribedImplementation(
-		//     new VisitedRegions(VisitedRegionsBenchmark.Size.QuadrantDivisions * 2), "Whatever"));
+		GC.KeepAlive(method());
 	}
 
-	private static void SimpleBenchmark<T>(Func<T> method, string name)
-	{
-		Console.WriteLine($"{new string('-', 20)}\n{name}\nResult: {method()}");
-		GC.Collect();
-		const int trials = 3;
-		var timer = Stopwatch.StartNew();
-
-		for (int i = 0; i < trials; i++)
-		{
-			GC.KeepAlive(method());
-		}
-
-		timer.Stop();
-		Console.WriteLine(timer.Elapsed.Humanize(2));
-	}
+	timer.Stop();
+	Console.WriteLine(timer.Elapsed.Humanize(2));
 }
+
+// TODO: Commenting these out is a nightmare since stuff will break
+// Make an enum or something about which ones to run. Put in a list and loop over it.
+
+VisitedRegionsDataSet.Create();
+BenchmarkRunner.Run<VisitedRegionsBenchmark>();
+
+BenchmarkRunner.Run<VisitNodeWithQuadrantBenchmarks>();
+BenchmarkRunner.Run<VisitNodeGetQuadrantBenchmarks>();
+
+BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
+BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
+
+BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
+
+CoordinateHashingTests.ComputeHistograms();
+BenchmarkRunner.Run<CoordinateHashingBenchmarks>();
+BenchmarkRunner.Run<SquareBoundaryIntersectionBenchmarks>();

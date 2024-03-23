@@ -52,7 +52,7 @@ class Program
 			.Spinner(Spinner.Known.SquareCorners)
 			.Start(
 				$"Finding boundary... (started {DateTime.Now:HH:mm:ss})",
-				ctx =>
+				_ =>
 				{
 					var timer = Stopwatch.StartNew();
 					var visitedRegions = new VisitedRegions(
@@ -105,7 +105,7 @@ class Program
 		table.AddRow("Border regions", metrics.NumBorderRegions.ToString("N0"));
 		table.AddRow($"{nameof(VisitedRegions)} nodes", metrics.NumVisitedRegionNodes.ToString("N0"));
 		table.AddRow($"{nameof(RegionLookup)} nodes", metrics.NumRegionLookupNodes.ToString("N0"));
-		table.AddRow($"Deduplicated size", metrics.DeduplicatedSize.ToString("P0"));
+		table.AddRow("Deduplicated size", metrics.DeduplicatedSize.ToString("P0"));
 
 		AnsiConsole.Write(table);
 

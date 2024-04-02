@@ -1,38 +1,56 @@
-using System.Diagnostics;
 using BenchmarkDotNet.Running;
 using Buddhabrot.Benchmarks;
-using Humanizer;
 
-static void SimpleBenchmark<T>(Func<T> method, string name)
+// ReSharper disable InconsistentNaming
+
+var toRun = new[]
 {
-	Console.WriteLine($"{new string('-', 20)}\n{name}\nResult: {method()}");
-	GC.Collect();
-	const int trials = 3;
-	var timer = Stopwatch.StartNew();
+	Benchmark.VisitedRegions,
+	Benchmark.VisitNode_GetQuadrant,
+	Benchmark.VisitNode_WithQuadrant,
+	Benchmark.FixedSizeCache,
+	Benchmark.CoordinateHashing,
+	Benchmark.SquareBoundaryIntersections
+};
 
-	for (int i = 0; i < trials; i++)
+foreach (var benchmark in toRun)
+{
+	switch (benchmark)
 	{
-		GC.KeepAlive(method());
-	}
+		case Benchmark.VisitedRegions:
+			VisitedRegionsDataSet.Create();
+			BenchmarkRunner.Run<VisitedRegionsBenchmark>();
+			break;
 
-	timer.Stop();
-	Console.WriteLine(timer.Elapsed.Humanize(2));
+		case Benchmark.VisitNode_WithQuadrant:
+			BenchmarkRunner.Run<VisitNodeWithQuadrantBenchmarks>();
+			break;
+
+		case Benchmark.VisitNode_GetQuadrant:
+			BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
+			break;
+
+		case Benchmark.FixedSizeCache:
+			BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
+			break;
+
+		case Benchmark.CoordinateHashing:
+			CoordinateHashingTests.ComputeHistograms();
+			BenchmarkRunner.Run<CoordinateHashingBenchmarks>();
+			break;
+
+		case Benchmark.SquareBoundaryIntersections:
+			BenchmarkRunner.Run<SquareBoundaryIntersectionBenchmarks>();
+			break;
+	}
 }
 
-// TODO: Commenting these out is a nightmare since stuff will break
-// Make an enum or something about which ones to run. Put in a list and loop over it.
-
-VisitedRegionsDataSet.Create();
-BenchmarkRunner.Run<VisitedRegionsBenchmark>();
-
-BenchmarkRunner.Run<VisitNodeWithQuadrantBenchmarks>();
-BenchmarkRunner.Run<VisitNodeGetQuadrantBenchmarks>();
-
-BenchmarkRunner.Run<QuadDimensionDetermineQuadrantBenchmarks>();
-BenchmarkRunner.Run<QuadDimensionGetQuadrantBenchmarks>();
-
-BenchmarkRunner.Run<FixedSizeCacheBenchmarks>();
-
-CoordinateHashingTests.ComputeHistograms();
-BenchmarkRunner.Run<CoordinateHashingBenchmarks>();
-BenchmarkRunner.Run<SquareBoundaryIntersectionBenchmarks>();
+enum Benchmark
+{
+	VisitedRegions,
+	VisitNode_WithQuadrant,
+	VisitNode_GetQuadrant,
+	FixedSizeCache,
+	CoordinateHashing,
+	SquareBoundaryIntersections
+}

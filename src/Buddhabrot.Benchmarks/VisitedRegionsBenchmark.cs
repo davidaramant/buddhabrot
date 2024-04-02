@@ -9,6 +9,9 @@ using Spectre.Console;
 
 namespace Buddhabrot.Benchmarks;
 
+/// <summary>
+/// Compares the various ways to keep track of the visited regions.
+/// </summary>
 [SimpleJob(RunStrategy.Monitoring, warmupCount: 1, iterationCount: 3)]
 [MemoryDiagnoser]
 public class VisitedRegionsBenchmark

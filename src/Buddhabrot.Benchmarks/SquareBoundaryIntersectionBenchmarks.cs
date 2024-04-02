@@ -1,10 +1,12 @@
 using System.Drawing;
 using BenchmarkDotNet.Attributes;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.QuadTrees;
 
 namespace Buddhabrot.Benchmarks;
 
+/// <summary>
+/// Different ways to compute the intersection of two square boundaries
+/// </summary>
 public class SquareBoundaryIntersectionBenchmarks
 {
 	private const int Size = 100;

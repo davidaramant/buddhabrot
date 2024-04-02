@@ -16,6 +16,13 @@ public static class VisitedRegionsDataSet
 		"VisitedRegions.bin"
 	);
 
+	private static readonly Lazy<SavedData> DataSet =
+		new(() =>
+		{
+			using var fs = File.OpenRead(DataFilePath);
+			return Serializer.Deserialize<SavedData>(fs);
+		});
+
 	public static void Create()
 	{
 		if (!File.Exists(DataFilePath))
@@ -54,10 +61,12 @@ public static class VisitedRegionsDataSet
 
 	public static SavedData Load()
 	{
+		if (!File.Exists(DataFilePath))
+			throw new ArgumentException("Data set has not been created. This takes a while!!");
+
 		Console.Out.WriteLine("Loading data set...");
 
-		using var fs = File.OpenRead(DataFilePath);
-		var sd = Serializer.Deserialize<SavedData>(fs);
+		var sd = DataSet.Value;
 
 		Console.Out.WriteLine($"Loaded {sd.Metadata.Count:N0} commands");
 

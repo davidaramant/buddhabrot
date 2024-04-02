@@ -4,6 +4,9 @@ using Buddhabrot.Core.Boundary.QuadTrees;
 
 namespace Buddhabrot.Benchmarks;
 
+/// <summary>
+/// Compares different ways of making a node now with a quadrant set
+/// </summary>
 public class VisitNodeWithQuadrantBenchmarks
 {
 	private const int Size = 100;

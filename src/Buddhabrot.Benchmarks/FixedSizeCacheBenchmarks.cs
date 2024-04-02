@@ -5,6 +5,9 @@ using CacheTable;
 
 namespace Buddhabrot.Benchmarks;
 
+/// <summary>
+/// Different ways to do a fixed-size cache
+/// </summary>
 public class FixedSizeCacheBenchmarks
 {
 	public const int DataSize = 100;

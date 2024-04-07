@@ -5,12 +5,13 @@ using Buddhabrot.Benchmarks;
 
 var toRun = new[]
 {
-	Benchmark.VisitedRegions,
-	Benchmark.VisitNode_GetQuadrant,
-	Benchmark.VisitNode_WithQuadrant,
-	Benchmark.FixedSizeCache,
-	Benchmark.CoordinateHashing,
-	Benchmark.SquareBoundaryIntersections
+	// Benchmark.VisitedRegions,
+	// Benchmark.VisitNode_GetQuadrant,
+	// Benchmark.VisitNode_WithQuadrant,
+	// Benchmark.FixedSizeCache,
+	// Benchmark.CoordinateHashing,
+	// Benchmark.SquareBoundaryIntersections
+	Benchmark.RenderRegion
 };
 
 foreach (var benchmark in toRun)
@@ -42,6 +43,10 @@ foreach (var benchmark in toRun)
 		case Benchmark.SquareBoundaryIntersections:
 			BenchmarkRunner.Run<SquareBoundaryIntersectionBenchmarks>();
 			break;
+
+		case Benchmark.RenderRegion:
+			RenderRegions.Run();
+			break;
 	}
 }
 
@@ -52,5 +57,6 @@ enum Benchmark
 	VisitNode_GetQuadrant,
 	FixedSizeCache,
 	CoordinateHashing,
-	SquareBoundaryIntersections
+	SquareBoundaryIntersections,
+	RenderRegion
 }

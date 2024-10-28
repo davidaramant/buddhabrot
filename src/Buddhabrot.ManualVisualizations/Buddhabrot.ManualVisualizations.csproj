@@ -9,18 +9,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CliWrap" Version="3.6.6" />
-        <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-        <PackageReference Include="NUnit" Version="4.1.0" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-        <PackageReference Include="NUnit.Analyzers" Version="4.1.0"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PackageReference Include="CliWrap" />
+        <PackageReference Include="Humanizer.Core" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="NUnit" />
+        <PackageReference Include="NUnit3TestAdapter" />
+        <PackageReference Include="NUnit.Analyzers"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="6.0.2"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PackageReference Include="coverlet.collector"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
-        <PackageReference Include="Spectre.Console" Version="0.48.0" />
+        <PackageReference Include="Spectre.Console" />
     </ItemGroup>
 
     <ItemGroup>

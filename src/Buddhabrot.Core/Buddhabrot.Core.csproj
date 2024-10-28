@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Colourful" Version="3.2.0" />
-      <PackageReference Include="Hardware.Info" Version="100.1.0" />
-      <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-      <PackageReference Include="protobuf-net" Version="3.2.30" />
-      <PackageReference Include="SkiaSharp" Version="2.88.7" />
+      <PackageReference Include="Colourful" />
+      <PackageReference Include="Hardware.Info" />
+      <PackageReference Include="Humanizer.Core" />
+      <PackageReference Include="protobuf-net" />
+      <PackageReference Include="SkiaSharp" />
     </ItemGroup>
 
 </Project>

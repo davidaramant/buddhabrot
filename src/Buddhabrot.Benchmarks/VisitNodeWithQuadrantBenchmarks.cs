@@ -43,7 +43,7 @@ public class VisitNodeWithQuadrantBenchmarks
 				Quadrant.SE => node.WithSE(type),
 				Quadrant.NW => node.WithNW(type),
 				Quadrant.NE => node.WithNE(type),
-				_ => throw new Exception("Can't happen")
+				_ => throw new Exception("Can't happen"),
 			};
 	}
 

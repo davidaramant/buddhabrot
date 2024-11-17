@@ -136,7 +136,7 @@ class Program
 							metrics.NumVisitedRegionNodes.ToString("N0"),
 							metrics.NumRegionLookupNodes.ToString("N0"),
 							metrics.DeduplicatedSize.ToString("P0"),
-							note
+							note,
 						}.Select(EscapeCsv)
 					)
 			);

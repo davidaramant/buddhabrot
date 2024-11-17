@@ -11,7 +11,7 @@ var toRun = new[]
 	// Benchmark.FixedSizeCache,
 	// Benchmark.CoordinateHashing,
 	// Benchmark.SquareBoundaryIntersections
-	Benchmark.RenderRegion
+	Benchmark.RenderRegion,
 };
 
 foreach (var benchmark in toRun)
@@ -58,5 +58,5 @@ enum Benchmark
 	FixedSizeCache,
 	CoordinateHashing,
 	SquareBoundaryIntersections,
-	RenderRegion
+	RenderRegion,
 }

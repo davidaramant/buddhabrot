@@ -37,7 +37,7 @@ public class RenderInstructionsTests
 				OldSize: new PixelSize(100, 100),
 				NewSize: new PixelSize(50, 50),
 				DirtyRects: Enumerable.Empty<Rectangle>()
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -46,7 +46,7 @@ public class RenderInstructionsTests
 				OldSize: new PixelSize(100, 100),
 				NewSize: new PixelSize(150, 100),
 				DirtyRects: new[] { new Rectangle(100, 0, 50, 100) }
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -55,7 +55,7 @@ public class RenderInstructionsTests
 				OldSize: new PixelSize(100, 100),
 				NewSize: new PixelSize(100, 150),
 				DirtyRects: new[] { new Rectangle(0, 100, 100, 50) }
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -64,7 +64,7 @@ public class RenderInstructionsTests
 				OldSize: new PixelSize(100, 100),
 				NewSize: new PixelSize(150, 150),
 				DirtyRects: new[] { new Rectangle(100, 0, 50, 150), new Rectangle(0, 100, 100, 50) }
-			)
+			),
 		};
 	}
 
@@ -102,7 +102,7 @@ public class RenderInstructionsTests
 				SourceRect: new Rect(25, 0, 75, 100),
 				DestRect: new Rect(0, 0, 75, 100),
 				DirtyRects: new[] { new Rectangle(75, 0, 25, 100) }
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -113,7 +113,7 @@ public class RenderInstructionsTests
 				SourceRect: new Rect(0, 0, 75, 100),
 				DestRect: new Rect(25, 0, 75, 100),
 				DirtyRects: new[] { new Rectangle(0, 0, 25, 100) }
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -124,7 +124,7 @@ public class RenderInstructionsTests
 				SourceRect: new Rect(0, 25, 100, 75),
 				DestRect: new Rect(0, 0, 100, 75),
 				DirtyRects: new[] { new Rectangle(0, 75, 100, 25) }
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -135,7 +135,7 @@ public class RenderInstructionsTests
 				SourceRect: new Rect(0, 0, 100, 75),
 				DestRect: new Rect(0, 25, 100, 75),
 				DirtyRects: new[] { new Rectangle(0, 0, 100, 25) }
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -145,8 +145,8 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(-25, -25),
 				SourceRect: new Rect(25, 25, 75, 75),
 				DestRect: new Rect(0, 0, 75, 75),
-				DirtyRects: new[] { new Rectangle(75, 0, 25, 100), new Rectangle(0, 75, 75, 25), }
-			)
+				DirtyRects: new[] { new Rectangle(75, 0, 25, 100), new Rectangle(0, 75, 75, 25) }
+			),
 		};
 		yield return new object[]
 		{
@@ -156,8 +156,8 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(25, -25),
 				SourceRect: new Rect(0, 25, 75, 75),
 				DestRect: new Rect(25, 0, 75, 75),
-				DirtyRects: new[] { new Rectangle(0, 0, 25, 100), new Rectangle(25, 75, 75, 25), }
-			)
+				DirtyRects: new[] { new Rectangle(0, 0, 25, 100), new Rectangle(25, 75, 75, 25) }
+			),
 		};
 		yield return new object[]
 		{
@@ -167,8 +167,8 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(-25, 25),
 				SourceRect: new Rect(25, 0, 75, 75),
 				DestRect: new Rect(0, 25, 75, 75),
-				DirtyRects: new[] { new Rectangle(75, 0, 25, 100), new Rectangle(0, 0, 75, 25), }
-			)
+				DirtyRects: new[] { new Rectangle(75, 0, 25, 100), new Rectangle(0, 0, 75, 25) }
+			),
 		};
 		yield return new object[]
 		{
@@ -178,8 +178,8 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(25, 25),
 				SourceRect: new Rect(0, 0, 75, 75),
 				DestRect: new Rect(25, 25, 75, 75),
-				DirtyRects: new[] { new Rectangle(0, 0, 25, 100), new Rectangle(25, 0, 75, 25), }
-			)
+				DirtyRects: new[] { new Rectangle(0, 0, 25, 100), new Rectangle(25, 0, 75, 25) }
+			),
 		};
 	}
 

@@ -79,7 +79,7 @@ public readonly struct VisitNode(uint encoded)
 			VisitNodeType.Leaf => $" {RegionType}",
 			VisitNodeType.Branch => $" {ChildIndex}",
 			VisitNodeType.LeafQuad => $" SW:{SW} SE:{SE} NW:{NW} NE:{NE}",
-			_ => "how could this have happened"
+			_ => "how could this have happened",
 		};
 
 	#region Equality

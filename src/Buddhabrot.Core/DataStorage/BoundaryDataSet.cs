@@ -41,8 +41,12 @@ public sealed record BoundaryDataSet(
 
 	public static IComparer<BoundaryDataSet> Comparer { get; } = new DataSetRelationalComparer();
 
-	public static readonly BoundaryDataSet Empty =
-		new(false, new BoundaryParameters(new AreaDivisions(0), 0), "Nothing", "Nothing");
+	public static readonly BoundaryDataSet Empty = new(
+		false,
+		new BoundaryParameters(new AreaDivisions(0), 0),
+		"Nothing",
+		"Nothing"
+	);
 
 	public int CompareTo(BoundaryDataSet? other) => Comparer.Compare(this, other);
 

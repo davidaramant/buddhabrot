@@ -7,8 +7,11 @@ namespace Buddhabrot.Core.Boundary.Classifiers;
 
 public sealed class Interior16RegionClassifier : IRegionClassifier
 {
-	private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCorners =
-		new(64, defaultKey: RegionBatchId.Invalid, getIndex: cbi => cbi.GetHashCode64());
+	private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCorners = new(
+		64,
+		defaultKey: RegionBatchId.Invalid,
+		getIndex: cbi => cbi.GetHashCode64()
+	);
 
 	private readonly BoundaryParameters _boundaryParams;
 
@@ -105,7 +108,7 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
 
 			{ interiorsInSet: > 0, interiorsClose: > 1 } => VisitedRegionType.Border,
 
-			_ => VisitedRegionType.Filament
+			_ => VisitedRegionType.Filament,
 		};
 	}
 

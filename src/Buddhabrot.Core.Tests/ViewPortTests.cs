@@ -84,7 +84,7 @@ public sealed class ViewPortTests
 				new Point(0, 0),
 				1,
 				ExpectedArea: new ComplexArea(new Interval(0, 100), new Interval(-100, 0))
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -94,7 +94,7 @@ public sealed class ViewPortTests
 				new Point(0, 0),
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(0, 10), new Interval(-10, 0))
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -104,7 +104,7 @@ public sealed class ViewPortTests
 				new Point(50, 0),
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(-5, 5), new Interval(-10, 0))
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -114,7 +114,7 @@ public sealed class ViewPortTests
 				new Point(0, 50),
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(0, 10), new Interval(-5, 5))
-			)
+			),
 		};
 	}
 

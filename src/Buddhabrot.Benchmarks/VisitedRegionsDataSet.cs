@@ -16,12 +16,11 @@ public static class VisitedRegionsDataSet
 		"VisitedRegions.bin"
 	);
 
-	private static readonly Lazy<SavedData> DataSet =
-		new(() =>
-		{
-			using var fs = File.OpenRead(DataFilePath);
-			return Serializer.Deserialize<SavedData>(fs);
-		});
+	private static readonly Lazy<SavedData> DataSet = new(() =>
+	{
+		using var fs = File.OpenRead(DataFilePath);
+		return Serializer.Deserialize<SavedData>(fs);
+	});
 
 	public static void Create()
 	{
@@ -134,7 +133,7 @@ public static class VisitedRegionsDataSet
 	public enum CommandType
 	{
 		Add = 0,
-		Contains = 1
+		Contains = 1,
 	}
 
 	#endregion

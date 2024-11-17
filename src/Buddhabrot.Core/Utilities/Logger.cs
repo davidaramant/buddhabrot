@@ -23,7 +23,7 @@ public sealed class Logger : ILog
 				2 => ConsoleColor.Red,
 				3 => ConsoleColor.Magenta,
 				4 => ConsoleColor.Yellow,
-				_ => throw new Exception("WHAT")
+				_ => throw new Exception("WHAT"),
 			};
 
 		_color = PickColor();

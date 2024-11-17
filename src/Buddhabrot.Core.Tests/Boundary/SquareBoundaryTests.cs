@@ -26,7 +26,7 @@ public class SquareBoundaryTests
 		yield return new object[]
 		{
 			new Rectangle(new Point(0, 0), new Size(10, 10)),
-			new Rectangle(new Point(0, 0), new Size(2, 2))
+			new Rectangle(new Point(0, 0), new Size(2, 2)),
 		};
 	}
 
@@ -65,7 +65,7 @@ public class SquareBoundaryTests
 				Width: 10,
 				Height: 10,
 				ExpectedResult: new SquareBoundary(X: 3, Y: 3, Scale: 2)
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -75,7 +75,7 @@ public class SquareBoundaryTests
 				Width: 20,
 				Height: 20,
 				ExpectedResult: new SquareBoundary(X: 5, Y: 5, Scale: 2)
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -85,7 +85,7 @@ public class SquareBoundaryTests
 				Width: 20,
 				Height: 20,
 				ExpectedResult: new SquareBoundary(X: 11, Y: 5, Scale: 2)
-			)
+			),
 		};
 	}
 

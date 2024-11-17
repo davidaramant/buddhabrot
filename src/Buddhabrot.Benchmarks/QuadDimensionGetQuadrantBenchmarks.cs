@@ -40,7 +40,7 @@ public class QuadDimensionGetQuadrantBenchmarks
 				Quadrant.SE => q.SE,
 				Quadrant.NW => q.NW,
 				Quadrant.NE => q.NE,
-				_ => throw new Exception("Can't happen")
+				_ => throw new Exception("Can't happen"),
 			};
 	}
 

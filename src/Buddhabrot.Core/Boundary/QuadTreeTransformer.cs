@@ -79,7 +79,7 @@ public sealed class QuadTreeTransformer
 		{
 			VisitedRegionType.Border => LookupRegionType.EmptyToBorder,
 			VisitedRegionType.Filament => LookupRegionType.EmptyToFilament,
-			_ => LookupRegionType.Empty
+			_ => LookupRegionType.Empty,
 		};
 
 	public static LookupRegionType CondenseRegionType(RegionNode sw, RegionNode se, RegionNode nw, RegionNode ne) =>

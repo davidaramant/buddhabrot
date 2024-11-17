@@ -9,28 +9,28 @@ public class ComplexAreaTests
 		{
 			new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
 			new ComplexArea(new Interval(2, 3), new Interval(2, 3)),
-			false
+			false,
 		};
 		// Equal
 		yield return new object[]
 		{
 			new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
 			new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
-			true
+			true,
 		};
 		// Partially overlapping
 		yield return new object[]
 		{
 			new ComplexArea(new Interval(0, 2), new Interval(0, 2)),
 			new ComplexArea(new Interval(1, 3), new Interval(1, 3)),
-			true
+			true,
 		};
 		// Area 2 inside of area 1
 		yield return new object[]
 		{
 			new ComplexArea(new Interval(0, 10), new Interval(0, 10)),
 			new ComplexArea(new Interval(1, 3), new Interval(1, 3)),
-			true
+			true,
 		};
 	}
 
@@ -72,7 +72,7 @@ public class ComplexAreaTests
 				Area2: new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
 				Expected: new ComplexArea(new Interval(0, 1), new Interval(0, 1)),
 				Description: "Same area"
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -81,7 +81,7 @@ public class ComplexAreaTests
 				Area2: new ComplexArea(new Interval(2, 3), new Interval(2, 3)),
 				Expected: ComplexArea.Empty,
 				Description: "Distinct"
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -90,7 +90,7 @@ public class ComplexAreaTests
 				Area2: new ComplexArea(new Interval(2, 3), new Interval(2, 3)),
 				Expected: new ComplexArea(new Interval(2, 3), new Interval(2, 3)),
 				Description: "Subset"
-			)
+			),
 		};
 		yield return new object[]
 		{
@@ -99,7 +99,7 @@ public class ComplexAreaTests
 				Area2: new ComplexArea(new Interval(1, 3), new Interval(1, 3)),
 				Expected: new ComplexArea(new Interval(1, 2), new Interval(1, 2)),
 				Description: "Overlap"
-			)
+			),
 		};
 	}
 

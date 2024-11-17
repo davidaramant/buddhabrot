@@ -39,7 +39,7 @@ public class VisitNodeGetQuadrantBenchmarks
 				Quadrant.SE => node.SE,
 				Quadrant.NW => node.NW,
 				Quadrant.NE => node.NE,
-				_ => throw new Exception("Can't happen")
+				_ => throw new Exception("Can't happen"),
 			};
 	}
 

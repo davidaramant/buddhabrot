@@ -4,5 +4,5 @@ public enum PointClassification
 {
 	InSet,
 	OutsideSet,
-	InRange
+	InRange,
 }

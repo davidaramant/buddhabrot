@@ -1,0 +1,38 @@
+﻿<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="..\README.md" />
+    <File Path="..\TODO.md" />
+  </Folder>
+  <Project Path="BoundaryExplorer.Tests\BoundaryExplorer.Tests.csproj">
+    <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|x64" Project="Release|Any CPU" />
+  </Project>
+  <Project Path="BoundaryExplorer\BoundaryExplorer.csproj">
+    <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|x64" Project="Release|Any CPU" />
+  </Project>
+  <Project Path="BoundaryFinder\BoundaryFinder.csproj">
+    <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|x64" Project="Release|Any CPU" />
+  </Project>
+  <Project Path="Buddhabrot.Benchmarks\Buddhabrot.Benchmarks.csproj">
+    <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|x64" Project="Release|Any CPU" />
+  </Project>
+  <Project Path="Buddhabrot.Core.Tests\Buddhabrot.Core.Tests.csproj">
+    <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|x64" Project="Release|Any CPU" />
+  </Project>
+  <Project Path="Buddhabrot.Core\Buddhabrot.Core.csproj">
+    <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|x64" Project="Release|Any CPU" />
+  </Project>
+  <Project Path="Buddhabrot.ManualVisualizations\Buddhabrot.ManualVisualizations.csproj">
+    <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|x64" Project="Release|Any CPU" />
+  </Project>
+</Solution>

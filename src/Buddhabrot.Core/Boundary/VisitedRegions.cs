@@ -112,46 +112,46 @@ public sealed class VisitedRegions : IVisitedRegions
 		goto descendTree;
 	}
 
-	public IReadOnlyList<RegionId> GetBoundaryRegions()
-	{
-		var regions = new List<RegionId>();
+	public IEnumerable<RegionId> GetBorderRegions() => DescendNode(_root, _dimensions, type => type == VisitedRegionType.Border).Select(pair=>pair.Region);
+	public IEnumerable<(RegionId Region, VisitedRegionType Type)> GetVisitedRegions() => DescendNode(_root, _dimensions, type => type != VisitedRegionType.Unknown);
 
-		DescendNode(_root, _dimensions, regions);
-
-		return regions;
-	}
-
-	private void DescendNode(VisitNode node, QuadDimensions dimensions, List<RegionId> borderRegions)
+	private IEnumerable<(RegionId Region, VisitedRegionType Type)> DescendNode(VisitNode node, QuadDimensions dimensions, Func<VisitedRegionType,bool> matcher)
 	{
 		// All leaves are going to be empty; skip them
 		if (node.IsLeafQuad)
 		{
-			if (node.SW == VisitedRegionType.Border)
+			if (matcher(node.SW))
 			{
-				borderRegions.Add(dimensions.GetRegion(Quadrant.SW));
+				yield return (dimensions.GetRegion(Quadrant.SW), node.SW);
 			}
 
-			if (node.SE == VisitedRegionType.Border)
+			if (matcher(node.SE))
 			{
-				borderRegions.Add(dimensions.GetRegion(Quadrant.SE));
+				yield return (dimensions.GetRegion(Quadrant.SE), node.SE);
 			}
 
-			if (node.NW == VisitedRegionType.Border)
+			if (matcher(node.NW))
 			{
-				borderRegions.Add(dimensions.GetRegion(Quadrant.NW));
+				yield return (dimensions.GetRegion(Quadrant.NW), node.NW);
 			}
 
-			if (node.NE == VisitedRegionType.Border)
+			if (matcher(node.NE))
 			{
-				borderRegions.Add(dimensions.GetRegion(Quadrant.NE));
+				yield return (dimensions.GetRegion(Quadrant.NE), node.NE);
 			}
 		}
 		else if (node.IsBranch)
 		{
-			DescendNode(_nodes[node.GetChildIndex(Quadrant.SW)], dimensions.SW, borderRegions);
-			DescendNode(_nodes[node.GetChildIndex(Quadrant.SE)], dimensions.SE, borderRegions);
-			DescendNode(_nodes[node.GetChildIndex(Quadrant.NW)], dimensions.NW, borderRegions);
-			DescendNode(_nodes[node.GetChildIndex(Quadrant.NE)], dimensions.NE, borderRegions);
+			var branchNodes =
+				DescendNode(_nodes[node.GetChildIndex(Quadrant.SW)], dimensions.SW, matcher).Concat(
+					DescendNode(_nodes[node.GetChildIndex(Quadrant.SE)], dimensions.SE, matcher)).Concat(
+					DescendNode(_nodes[node.GetChildIndex(Quadrant.NW)], dimensions.NW, matcher)).Concat(
+					DescendNode(_nodes[node.GetChildIndex(Quadrant.NE)], dimensions.NE, matcher));
+
+			foreach (var region in branchNodes)
+			{
+				yield return region;
+			}
 		}
 	}
 }

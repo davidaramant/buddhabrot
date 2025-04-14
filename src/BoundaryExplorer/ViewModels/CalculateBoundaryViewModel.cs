@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -113,7 +114,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
 			AddToLog($"Visited boundary for {boundaryParameters} ({stopwatch.Elapsed.Humanize(2)})");
 			stopwatch.Restart();
 
-			var boundaryRegions = visitedRegions.GetBoundaryRegions();
+			var boundaryRegions = visitedRegions.GetBorderRegions().ToList();
 
 			AddToLog($"Found {boundaryRegions.Count:N0} boundary regions ({stopwatch.Elapsed.Humanize(2)})");
 			stopwatch.Restart();

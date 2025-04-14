@@ -54,7 +54,7 @@ public class VisitedRegionsTests
 			tree.Visit(new RegionId(i, i), (VisitedRegionType)(i % 4));
 		}
 
-		var boundary = tree.GetBoundaryRegions();
-		boundary.Should().BeEquivalentTo(new[] { new RegionId(1, 1), new RegionId(5, 5) });
+		var boundary = tree.GetBorderRegions();
+		boundary.Should().BeEquivalentTo([new RegionId(1, 1), new RegionId(5, 5)]);
 	}
 }

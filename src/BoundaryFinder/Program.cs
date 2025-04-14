@@ -65,7 +65,7 @@ class Program
 						CancellationToken.None
 					);
 
-					var boundaryRegions = visitedRegions.GetBoundaryRegions();
+					var boundaryRegions = visitedRegions.GetBorderRegions().ToList();
 
 					var transformer = new QuadTreeCompressor(visitedRegions);
 					var lookup = transformer.Transform();

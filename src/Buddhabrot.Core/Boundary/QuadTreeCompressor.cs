@@ -2,7 +2,7 @@ using Buddhabrot.Core.Boundary.QuadTrees;
 
 namespace Buddhabrot.Core.Boundary;
 
-public sealed class QuadTreeTransformer
+public sealed class QuadTreeCompressor
 {
 	private readonly VisitedRegions _visitedRegions;
 	private readonly IReadOnlyList<VisitNode> _oldTree;
@@ -14,7 +14,7 @@ public sealed class QuadTreeTransformer
 	public int Size => _cache.Count;
 	public int NumCachedValuesUsed { get; private set; }
 
-	public QuadTreeTransformer(VisitedRegions visitedRegions)
+	public QuadTreeCompressor(VisitedRegions visitedRegions)
 	{
 		_visitedRegions = visitedRegions;
 		_oldTree = visitedRegions.Nodes;
@@ -82,7 +82,7 @@ public sealed class QuadTreeTransformer
 			_ => LookupRegionType.Empty,
 		};
 
-	public static LookupRegionType CondenseRegionType(RegionNode sw, RegionNode se, RegionNode nw, RegionNode ne) =>
+	private static LookupRegionType CondenseRegionType(RegionNode sw, RegionNode se, RegionNode nw, RegionNode ne) =>
 		CondenseRegionType(sw.RegionType, se.RegionType, nw.RegionType, ne.RegionType);
 
 	public static LookupRegionType CondenseRegionType(

@@ -28,13 +28,13 @@ public class VisitedRegionsToRegionLookupTests
 		LookupRegionType expected
 	)
 	{
-		QuadTreeTransformer.CondenseRegionType(ll, lr, ul, ur).Should().Be(expected);
+		QuadTreeCompressor.CondenseRegionType(ll, lr, ul, ur).Should().Be(expected);
 	}
 
 	[Fact]
 	public void ShouldCondenseIdenticalLeaves()
 	{
-		var transformer = new QuadTreeTransformer(new VisitedRegions());
+		var transformer = new QuadTreeCompressor(new VisitedRegions());
 		var node = transformer.MakeQuad(RegionNode.Empty, RegionNode.Empty, RegionNode.Empty, RegionNode.Empty);
 
 		node.Should().Be(RegionNode.Empty);

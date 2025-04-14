@@ -118,7 +118,7 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
 			AddToLog($"Found {boundaryRegions.Count:N0} boundary regions ({stopwatch.Elapsed.Humanize(2)})");
 			stopwatch.Restart();
 
-			var transformer = new QuadTreeTransformer(visitedRegions);
+			var transformer = new QuadTreeCompressor(visitedRegions);
 			var lookup = await Task.Run(() => transformer.Transform(), cancelToken);
 
 			AddToLog(

@@ -67,7 +67,7 @@ class Program
 
 					var boundaryRegions = visitedRegions.GetBoundaryRegions();
 
-					var transformer = new QuadTreeTransformer(visitedRegions);
+					var transformer = new QuadTreeCompressor(visitedRegions);
 					var lookup = transformer.Transform();
 
 					var defaultDataSetPath = Path.Combine(

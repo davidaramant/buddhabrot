@@ -43,7 +43,7 @@ public static class RegionLookupUtil
 			vr.Visit(new RegionId(p.X, p.Y), VisitedRegionType.Border);
 		}
 
-		var transformer = new QuadTreeTransformer(vr);
+		var transformer = new QuadTreeCompressor(vr);
 		return transformer.Transform();
 	}
 }

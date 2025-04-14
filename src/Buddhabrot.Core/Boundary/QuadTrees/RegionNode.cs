@@ -1,6 +1,6 @@
 namespace Buddhabrot.Core.Boundary.QuadTrees;
 
-public readonly struct RegionNode(uint encoded)
+public readonly struct RegionNode(uint encoded) : IEquatable<RegionNode>
 {
 	public readonly uint Encoded = encoded;
 

@@ -20,3 +20,4 @@ Date,Time,Duration,Duration (seconds),OS,CPU,RAM,Vertical Power,Divisions,Limit,
 2023-12-07,23:39:24,"1 minute, 50 seconds",110,macOS (14.1.2),Apple M1 Max 10 Cores,32 GB,14,"16,384","1,000,000","194,545","2,233,721","651,557",29%,.NET 8
 2023-12-08,16:41:35,"16 hours, 58 minutes","61,097",macOS (14.1.2),Apple M1 Max 10 Cores,32 GB,19,"524,288","1,000,000","16,269,253","880,883,949","163,350,025",19%,.NET 8 Stress Test
 2024-11-17,17:01:59,"1 minute, 49 seconds",110,macOS (15.1),Apple M1 Max 10 Cores,32 GB,14,"16,384","1,000,000","194,545","2,233,721","651,557",29%,.NET 9
+2025-04-19,12:23:22,"13 seconds, 839 milliseconds",14,macOS (15.4),Apple M1 Max 10 Cores,32 GB,12,"4,096","5,000,000","33,428","228,537","95,049",42%,Before checking from both ends

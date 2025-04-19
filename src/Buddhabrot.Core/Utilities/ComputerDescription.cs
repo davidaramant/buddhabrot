@@ -27,7 +27,7 @@ public static class ComputerDescription
 
 	public static (string OS, string CPU, string RAM) GetInfo()
 	{
-		var hardwareInfo = new HardwareInfo(useAsteriskInWMI: false);
+		var hardwareInfo = new HardwareInfo();
 		hardwareInfo.RefreshOperatingSystem();
 		hardwareInfo.RefreshMemoryStatus();
 		hardwareInfo.RefreshCPUList(includePercentProcessorTime: false);

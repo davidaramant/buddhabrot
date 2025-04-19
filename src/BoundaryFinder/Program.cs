@@ -10,16 +10,6 @@ namespace BoundaryFinder;
 
 class Program
 {
-	private sealed record Metrics(
-		TimeSpan Duration,
-		int NumBorderRegions,
-		int NumVisitedRegionNodes,
-		int NumRegionLookupNodes
-	)
-	{
-		public double DeduplicatedSize => (double)NumRegionLookupNodes / NumVisitedRegionNodes;
-	}
-
 	/// <summary>
 	/// Computes boundary sets.
 	/// </summary>
@@ -27,7 +17,7 @@ class Program
 	/// <param name="limitMillions">Iteration limit in million</param>
 	/// <param name="note">A note for this run. Implies that the times will be saved to Times.csv</param>
 	/// <param name="classifier">Which classifier to use.</param>
-	public static int Main(
+	public static async Task<int> Main(
 		int power,
 		double limitMillions,
 		string note = "",
@@ -45,52 +35,24 @@ class Program
 		var metadata = classifier == ClassifierType.Default ? string.Empty : classifier.ToString();
 		var boundaryParameters = new BoundaryParameters(new AreaDivisions(power), limit, metadata);
 
-		Metrics? metrics = null;
+		var defaultDataSetPath = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+			"Buddhabrot",
+			"Mandelbrot Set Boundaries"
+		);
 
-		AnsiConsole
-			.Status()
-			.Spinner(Spinner.Known.SquareCorners)
-			.Start(
-				$"Finding boundary... (started {DateTime.Now:HH:mm:ss})",
-				_ =>
-				{
-					var timer = Stopwatch.StartNew();
-					var visitedRegions = new VisitedRegions(
-						capacity: boundaryParameters.Divisions.QuadrantDivisions * 2
-					);
+		var dataProvider = new DataProvider() { DataStoragePath = defaultDataSetPath };
 
-					BoundaryCalculator.VisitBoundary(
-						IRegionClassifier.Create(boundaryParameters, classifier),
-						visitedRegions,
-						CancellationToken.None
-					);
+		await Console.Out.WriteLineAsync($"Finding boundary... (started {DateTime.Now:HH:mm:ss})");
 
-					var boundaryRegions = visitedRegions.GetBorderRegions().ToList();
-
-					var transformer = new QuadTreeCompressor(visitedRegions);
-					var lookup = transformer.Transform();
-
-					var defaultDataSetPath = Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-						"Buddhabrot",
-						"Mandelbrot Set Boundaries"
-					);
-
-					var dataProvider = new DataProvider() { DataStoragePath = defaultDataSetPath };
-
-					dataProvider.SaveBoundaryRegions(boundaryParameters, boundaryRegions, lookup);
-
-					metrics = new Metrics(
-						Duration: timer.Elapsed,
-						NumBorderRegions: boundaryRegions.Count,
-						NumVisitedRegionNodes: visitedRegions.NodeCount,
-						NumRegionLookupNodes: lookup.NodeCount
-					);
-				}
-			);
-
-		if (metrics == null)
-			return -1;
+		Metrics metrics = await BoundaryCalculator.CalculateBoundaryAsync(
+			areaDivisions: new AreaDivisions(power),
+			maximumIterations: limit,
+			metadata: note,
+			selectedClassifier: classifier,
+			saveBorderData: dataProvider.SaveBoundaryRegions,
+			CancellationToken.None
+		);
 
 		var table = new Table();
 
@@ -115,7 +77,7 @@ class Program
 
 			var (os, cpu, ram) = ComputerDescription.GetInfo();
 
-			File.AppendAllText(
+			await File.AppendAllTextAsync(
 				csvPath,
 				Environment.NewLine
 					+ string.Join(

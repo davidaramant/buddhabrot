@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Buddhabrot.Core.Boundary.Classifiers;
 
 namespace Buddhabrot.Core.Boundary;
@@ -5,14 +6,12 @@ namespace Buddhabrot.Core.Boundary;
 public static class BoundaryCalculator
 {
 	public static void VisitBoundary(
+		Queue<RegionId> regionsToCheck,
 		IRegionClassifier classifier,
 		IVisitedRegions visitedRegions,
 		CancellationToken cancelToken = default
 	)
 	{
-		Queue<RegionId> regionsToCheck = new();
-		regionsToCheck.Enqueue(new RegionId(0, 0));
-
 		while (regionsToCheck.Count > 0 && !cancelToken.IsCancellationRequested)
 		{
 			var region = regionsToCheck.Dequeue();
@@ -45,5 +44,59 @@ public static class BoundaryCalculator
 				regionsToCheck.Enqueue(region);
 			}
 		}
+	}
+
+	public static async Task<Metrics> CalculateBoundaryAsync(
+		AreaDivisions areaDivisions,
+		int maximumIterations,
+		string metadata,
+		ClassifierType selectedClassifier,
+		Action<BoundaryParameters, IReadOnlyList<RegionId>, RegionLookup> saveBorderData,
+		CancellationToken cancelToken
+	)
+	{
+		var timer = Stopwatch.StartNew();
+		var boundaryParameters = new BoundaryParameters(areaDivisions, maximumIterations, metadata);
+
+		var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
+		var proxy = new ThreadSafeVisitedRegions(visitedRegions, cancelToken);
+
+		Queue<RegionId> leftRegionsToCheck = new([areaDivisions.LeftStart()]);
+		Queue<RegionId> rightRegionsToCheck = new([areaDivisions.RightStart()]);
+
+		var leftClassifier = IRegionClassifier.Create(boundaryParameters, selectedClassifier);
+		var rightClassifier = IRegionClassifier.Create(boundaryParameters, selectedClassifier);
+
+		await Task.WhenAll(
+			Task.Run(
+				() => BoundaryCalculator.VisitBoundary(leftRegionsToCheck, leftClassifier, proxy, proxy.Token),
+				cancelToken
+			),
+			Task.Run(
+				() => BoundaryCalculator.VisitBoundary(rightRegionsToCheck, rightClassifier, proxy, proxy.Token),
+				cancelToken
+			)
+		);
+
+		foreach (var region in rightRegionsToCheck)
+		{
+			leftRegionsToCheck.Enqueue(region);
+		}
+
+		BoundaryCalculator.VisitBoundary(leftRegionsToCheck, leftClassifier, visitedRegions, cancelToken);
+
+		var boundaryRegions = visitedRegions.GetBorderRegions().ToList();
+
+		var transformer = new QuadTreeCompressor(visitedRegions);
+		var lookup = transformer.Transform();
+
+		saveBorderData(boundaryParameters, boundaryRegions, lookup);
+
+		return new Metrics(
+			Duration: timer.Elapsed,
+			NumBorderRegions: boundaryRegions.Count,
+			NumVisitedRegionNodes: visitedRegions.NodeCount,
+			NumRegionLookupNodes: lookup.NodeCount
+		);
 	}
 }

@@ -90,46 +90,29 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
 	{
 		try
 		{
-			var stopwatch = Stopwatch.StartNew();
-
 			var metadata =
 				_selectedClassifier == ClassifierType.Default
 					? string.Empty
 					: _selectedClassifier.ToString().Humanize();
-			var boundaryParameters = new BoundaryParameters(AreaDivisions, MaximumIterations, metadata);
 
-			var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
-
-			await Task.Run(
+			var metrics = await Task.Run(
 				() =>
-					BoundaryCalculator.VisitBoundary(
-						IRegionClassifier.Create(boundaryParameters, _selectedClassifier),
-						visitedRegions,
+					BoundaryCalculator.CalculateBoundaryAsync(
+						AreaDivisions,
+						MaximumIterations,
+						metadata,
+						_selectedClassifier,
+						_dataProvider.SaveBorderData,
 						cancelToken
 					),
 				cancelToken
 			);
 
-			AddToLog(DateTime.Now.ToString("s"));
-			AddToLog($"Visited boundary for {boundaryParameters} ({stopwatch.Elapsed.Humanize(2)})");
-			stopwatch.Restart();
-
-			var boundaryRegions = visitedRegions.GetBorderRegions().ToList();
-
-			AddToLog($"Found {boundaryRegions.Count:N0} boundary regions ({stopwatch.Elapsed.Humanize(2)})");
-			stopwatch.Restart();
-
-			var transformer = new QuadTreeCompressor(visitedRegions);
-			var lookup = await Task.Run(() => transformer.Transform(), cancelToken);
-
-			AddToLog(
-				$"Transformed quad tree to Region Lookup ({stopwatch.Elapsed.Humanize(2)})\n"
-					+ $" - Went from {visitedRegions.NodeCount:N0} to {lookup.NodeCount:N0} nodes ({(double)lookup.NodeCount / visitedRegions.NodeCount:P})"
-			);
-
-			AddToLog(string.Empty);
-
-			_dataProvider.SaveBorderData(boundaryParameters, boundaryRegions, lookup);
+			AddToLog($"Took {metrics.Duration.Humanize(2)} overall.");
+			AddToLog($" - Border regions: {metrics.NumBorderRegions:N0}");
+			AddToLog($" - {nameof(VisitedRegions)} nodes: {metrics.NumVisitedRegionNodes:N0}");
+			AddToLog($" - {nameof(RegionLookup)} nodes: {metrics.NumRegionLookupNodes:N0}");
+			AddToLog($" - Deduplicated size: {metrics.DeduplicatedSize:P0}");
 		}
 		catch (OperationCanceledException)
 		{

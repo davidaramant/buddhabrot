@@ -19,11 +19,14 @@ public sealed class FixedSizeCache<TKey, TValue>
 		_values = new TValue[capacity];
 	}
 
-	public void Add(TKey key, TValue value)
+	public bool Add(TKey key, TValue value)
 	{
 		var index = _getIndex(key);
+		var oldKey = _keys[index];
 		_keys[index] = key;
 		_values[index] = value;
+
+		return !oldKey.Equals(key);
 	}
 
 	public bool TryGetValue(TKey key, out TValue value)

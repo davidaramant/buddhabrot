@@ -29,7 +29,7 @@ public sealed class VisitedRegions : IVisitedRegions
 	public void Visit(RegionId id, VisitedRegionType type)
 	{
 		// Do we have to expand the tree?
-		if (!_dimensions.Contains(id))
+		while (!_dimensions.Contains(id))
 		{
 			var index = _nodes.AddChildren(_root, VisitNode.Unknown, VisitNode.Unknown, VisitNode.Unknown);
 

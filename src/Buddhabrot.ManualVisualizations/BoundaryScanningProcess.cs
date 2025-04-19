@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
-using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;
 using Buddhabrot.Core.Tests.Boundary;
@@ -129,7 +128,10 @@ public class BoundaryScanningProcess : BaseVisualization
 		var steps = new List<Step>();
 		int maxX = 0;
 		int maxY = 0;
+		Queue<RegionId> regionsToCheck = new([new RegionId(0, 0)]);
+
 		BoundaryCalculator.VisitBoundary(
+			regionsToCheck,
 			IRegionClassifier.Create(parameters),
 			visitedRegions: new VisitedRegionProxy(
 				new HashSetListVisitedRegions(parameters.Divisions.QuadrantDivisions),

@@ -14,8 +14,8 @@ class Program
 	/// Computes boundary sets.
 	/// </summary>
 	/// <param name="power">Vertical power</param>
-	/// <param name="limitMillions">Iteration limit in million</param>
-	/// <param name="note">A note for this run. Implies that the times will be saved to Times.csv</param>
+	/// <param name="limitMillions">Iteration limit in millions</param>
+	/// <param name="note">A note for this run. Implies that the metrics will be saved to Times.csv</param>
 	/// <param name="classifier">Which classifier to use.</param>
 	public static async Task<int> Main(
 		int power,

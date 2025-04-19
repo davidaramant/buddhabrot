@@ -86,10 +86,10 @@ public static class VisitedRegionsDataSet
 
 		public VisitedRegionsProxy(int rows) => _visitedRegions = new VisitedRegions(rows);
 
-		public void Visit(RegionId id, VisitedRegionType type)
+		public bool Visit(RegionId id, VisitedRegionType type)
 		{
 			Commands.LogAdd(id, type);
-			_visitedRegions.Visit(id, type);
+			return _visitedRegions.Visit(id, type);
 		}
 
 		public bool HasVisited(RegionId id)

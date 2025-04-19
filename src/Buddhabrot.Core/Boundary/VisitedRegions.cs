@@ -26,8 +26,10 @@ public sealed class VisitedRegions : IVisitedRegions
 	public VisitedRegions(int capacity = 0) =>
 		_nodes = new(capacity) { VisitNode.Unknown, VisitNode.Unknown, VisitNode.Unknown, VisitNode.Unknown };
 
-	public void Visit(RegionId id, VisitedRegionType type)
+	public bool Visit(RegionId id, VisitedRegionType type)
 	{
+		bool addedNode = false;
+
 		// Do we have to expand the tree?
 		while (!_dimensions.Contains(id))
 		{
@@ -35,6 +37,8 @@ public sealed class VisitedRegions : IVisitedRegions
 
 			_dimensions = _dimensions.Expand();
 			_root = VisitNode.MakeBranch(index);
+
+			addedNode = true;
 		}
 
 		var nodeIndex = -1;
@@ -63,6 +67,8 @@ public sealed class VisitedRegions : IVisitedRegions
 			{
 				var index = _nodes.AddUnknownChildren();
 				_nodes[nodeIndex] = node = VisitNode.MakeBranch(index);
+
+				addedNode = true;
 			}
 
 			nodeIndex = node.GetChildIndex(quadrant);
@@ -74,8 +80,12 @@ public sealed class VisitedRegions : IVisitedRegions
 
 		quadrant = (Quadrant)(h + (v << 1));
 
+		addedNode |= node.GetQuadrant(quadrant) != type;
+
 		var updatedNode = node.WithQuadrant(quadrant, type);
 		_nodes[nodeIndex] = updatedNode;
+
+		return addedNode;
 	}
 
 	public bool HasVisited(RegionId id)
@@ -112,10 +122,17 @@ public sealed class VisitedRegions : IVisitedRegions
 		goto descendTree;
 	}
 
-	public IEnumerable<RegionId> GetBorderRegions() => DescendNode(_root, _dimensions, type => type == VisitedRegionType.Border).Select(pair=>pair.Region);
-	public IEnumerable<(RegionId Region, VisitedRegionType Type)> GetVisitedRegions() => DescendNode(_root, _dimensions, type => type != VisitedRegionType.Unknown);
+	public IEnumerable<RegionId> GetBorderRegions() =>
+		DescendNode(_root, _dimensions, type => type == VisitedRegionType.Border).Select(pair => pair.Region);
 
-	private IEnumerable<(RegionId Region, VisitedRegionType Type)> DescendNode(VisitNode node, QuadDimensions dimensions, Func<VisitedRegionType,bool> matcher)
+	public IEnumerable<(RegionId Region, VisitedRegionType Type)> GetVisitedRegions() =>
+		DescendNode(_root, _dimensions, type => type != VisitedRegionType.Unknown);
+
+	private IEnumerable<(RegionId Region, VisitedRegionType Type)> DescendNode(
+		VisitNode node,
+		QuadDimensions dimensions,
+		Func<VisitedRegionType, bool> matcher
+	)
 	{
 		// All leaves are going to be empty; skip them
 		if (node.IsLeafQuad)
@@ -142,11 +159,10 @@ public sealed class VisitedRegions : IVisitedRegions
 		}
 		else if (node.IsBranch)
 		{
-			var branchNodes =
-				DescendNode(_nodes[node.GetChildIndex(Quadrant.SW)], dimensions.SW, matcher).Concat(
-					DescendNode(_nodes[node.GetChildIndex(Quadrant.SE)], dimensions.SE, matcher)).Concat(
-					DescendNode(_nodes[node.GetChildIndex(Quadrant.NW)], dimensions.NW, matcher)).Concat(
-					DescendNode(_nodes[node.GetChildIndex(Quadrant.NE)], dimensions.NE, matcher));
+			var branchNodes = DescendNode(_nodes[node.GetChildIndex(Quadrant.SW)], dimensions.SW, matcher)
+				.Concat(DescendNode(_nodes[node.GetChildIndex(Quadrant.SE)], dimensions.SE, matcher))
+				.Concat(DescendNode(_nodes[node.GetChildIndex(Quadrant.NW)], dimensions.NW, matcher))
+				.Concat(DescendNode(_nodes[node.GetChildIndex(Quadrant.NE)], dimensions.NE, matcher));
 
 			foreach (var region in branchNodes)
 			{

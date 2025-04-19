@@ -31,18 +31,31 @@ public class VisitedRegionsTests
 		tree.HasVisited(new RegionId(1, 1)).ShouldBeFalse();
 	}
 
-	[Fact]
-	public void ShouldExpandTree()
+	[Theory]
+	[InlineData(4, 4)]
+	[InlineData(8, 5)]
+	public void ShouldExpandTree(int x, int expectedHeight)
 	{
 		var tree = new VisitedRegions();
 
 		tree.Height.ShouldBe(3);
 
-		tree.Visit(new RegionId(4, 0), VisitedRegionType.Border);
+		tree.Visit(new RegionId(x, 0), VisitedRegionType.Border);
 
-		tree.Height.ShouldBe(4);
+		tree.Height.ShouldBe(expectedHeight);
 
-		tree.HasVisited(new RegionId(4, 0)).ShouldBeTrue();
+		tree.HasVisited(new RegionId(x, 0)).ShouldBeTrue();
+	}
+
+	[Fact]
+	public void ShouldDetermineIfRegionHasAlreadyBeenVisited()
+	{
+		var tree = new VisitedRegions();
+		tree.Visit(new RegionId(8, 0), VisitedRegionType.Border).ShouldBeTrue();
+		tree.Visit(new RegionId(8, 0), VisitedRegionType.Border).ShouldBeFalse();
+
+		tree.Visit(new RegionId(9, 0), VisitedRegionType.Border).ShouldBeTrue();
+		tree.Visit(new RegionId(9, 0), VisitedRegionType.Border).ShouldBeFalse();
 	}
 
 	[Fact]

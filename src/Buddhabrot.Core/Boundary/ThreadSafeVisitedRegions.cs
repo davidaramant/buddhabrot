@@ -14,20 +14,18 @@ public sealed class ThreadSafeVisitedRegions : IVisitedRegions
 		_cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
 	}
 
-	public void Visit(RegionId id, VisitedRegionType type)
+	public bool Visit(RegionId id, VisitedRegionType type)
 	{
 		lock (_lock)
 		{
-			// TODO: Is it possible to make Visit return a bool to avoid traversing the tree twice?
-			if (_visitedRegions.HasVisited(id))
+			if (!_visitedRegions.Visit(id, type))
 			{
 				_cancelSource.Cancel();
-			}
-			else
-			{
-				_visitedRegions.Visit(id, type);
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 	public bool HasVisited(RegionId id)

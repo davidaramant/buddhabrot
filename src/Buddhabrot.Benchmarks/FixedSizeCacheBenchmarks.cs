@@ -16,8 +16,8 @@ public class FixedSizeCacheBenchmarks
 	// Varying this doesn't tell us anything because we are not simulating the consequences of something not being in the cache.
 	public const int CacheSize = 32;
 
-	private RegionId[] _keys = Array.Empty<RegionId>();
-	private RegionId[] _lookups = Array.Empty<RegionId>();
+	private RegionId[] _keys = [];
+	private RegionId[] _lookups = [];
 
 	[GlobalSetup]
 	public void FillArrays()

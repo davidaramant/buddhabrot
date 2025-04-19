@@ -22,22 +22,22 @@ public class RingBufferTests
 	{
 		var ring = new RingBuffer<int>(3) { 1 };
 
-		ring.ShouldBe(new[] { 1 });
+		ring.ShouldBe([1]);
 
 		ring.Add(2);
 
-		ring.ShouldBe(new[] { 1, 2 });
+		ring.ShouldBe([1, 2]);
 
 		ring.Add(3);
 
-		ring.ShouldBe(new[] { 1, 2, 3 });
+		ring.ShouldBe([1, 2, 3]);
 
 		ring.Add(4);
 
-		ring.ShouldBe(new[] { 2, 3, 4 });
+		ring.ShouldBe([2, 3, 4]);
 
 		ring.Add(5);
 
-		ring.ShouldBe(new[] { 3, 4, 5 });
+		ring.ShouldBe([3, 4, 5]);
 	}
 }

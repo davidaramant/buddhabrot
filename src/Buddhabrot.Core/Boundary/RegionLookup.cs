@@ -18,7 +18,7 @@ public sealed class RegionLookup
 
 	private RegionLookup()
 	{
-		Nodes = new[] { RegionNode.Empty };
+		Nodes = [RegionNode.Empty];
 		Height = 1;
 		_root = Nodes[^1];
 	}

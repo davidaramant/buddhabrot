@@ -76,8 +76,8 @@ public sealed class ViewPortTests
 
 	public static IEnumerable<object[]> GetOverlapData()
 	{
-		yield return new object[]
-		{
+		yield return
+		[
 			new ResolutionTestCase(
 				"Center of Square 1:1",
 				new Size(100, 100),
@@ -85,9 +85,9 @@ public sealed class ViewPortTests
 				1,
 				ExpectedArea: new ComplexArea(new Interval(0, 100), new Interval(-100, 0))
 			),
-		};
-		yield return new object[]
-		{
+		];
+		yield return
+		[
 			new ResolutionTestCase(
 				"Center of Square 1:0.1",
 				new Size(100, 100),
@@ -95,9 +95,9 @@ public sealed class ViewPortTests
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(0, 10), new Interval(-10, 0))
 			),
-		};
-		yield return new object[]
-		{
+		];
+		yield return
+		[
 			new ResolutionTestCase(
 				"Offset Right",
 				new Size(100, 100),
@@ -105,9 +105,9 @@ public sealed class ViewPortTests
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(-5, 5), new Interval(-10, 0))
 			),
-		};
-		yield return new object[]
-		{
+		];
+		yield return
+		[
 			new ResolutionTestCase(
 				"Offset Up Imag Axis",
 				new Size(100, 100),
@@ -115,7 +115,7 @@ public sealed class ViewPortTests
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(0, 10), new Interval(-5, 5))
 			),
-		};
+		];
 	}
 
 	[Theory]

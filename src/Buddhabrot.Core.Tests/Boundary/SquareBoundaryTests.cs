@@ -18,16 +18,12 @@ public class SquareBoundaryTests
 
 	public static IEnumerable<object[]> IntersectionData()
 	{
-		yield return new object[]
-		{
+		yield return
+		[
 			new Rectangle(new Point(10, 10), new Size(10, 10)),
 			new Rectangle(new Point(10, 10), new Size(-8, -8)),
-		};
-		yield return new object[]
-		{
-			new Rectangle(new Point(0, 0), new Size(10, 10)),
-			new Rectangle(new Point(0, 0), new Size(2, 2)),
-		};
+		];
+		yield return [new Rectangle(new Point(0, 0), new Size(10, 10)), new Rectangle(new Point(0, 0), new Size(2, 2))];
 	}
 
 	[Theory]
@@ -57,8 +53,8 @@ public class SquareBoundaryTests
 
 	public static IEnumerable<object[]> ZoomOutData()
 	{
-		yield return new object[]
-		{
+		yield return
+		[
 			new ZoomOutTestCase(
 				"Centered",
 				new SquareBoundary(X: 1, Y: 1, Scale: 3),
@@ -66,9 +62,9 @@ public class SquareBoundaryTests
 				Height: 10,
 				ExpectedResult: new SquareBoundary(X: 3, Y: 3, Scale: 2)
 			),
-		};
-		yield return new object[]
-		{
+		];
+		yield return
+		[
 			new ZoomOutTestCase(
 				"Offset - Top Left",
 				new SquareBoundary(X: 1, Y: 1, Scale: 3),
@@ -76,9 +72,9 @@ public class SquareBoundaryTests
 				Height: 20,
 				ExpectedResult: new SquareBoundary(X: 5, Y: 5, Scale: 2)
 			),
-		};
-		yield return new object[]
-		{
+		];
+		yield return
+		[
 			new ZoomOutTestCase(
 				"Offset - Top Right",
 				new SquareBoundary(X: 11, Y: 1, Scale: 3),
@@ -86,7 +82,7 @@ public class SquareBoundaryTests
 				Height: 20,
 				ExpectedResult: new SquareBoundary(X: 11, Y: 5, Scale: 2)
 			),
-		};
+		];
 	}
 
 	[Theory]

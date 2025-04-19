@@ -13,14 +13,13 @@ public interface IBoundaryPalette
 	SKColor this[LookupRegionType type] { get; }
 
 	public static IReadOnlyCollection<IBoundaryPalette> AllPalettes { get; } =
-		new[]
-		{
+		[
 			PastelPalette.Instance,
 			BluePalette.Instance,
 			HsvRainbowPalette.Instance,
 			LChuvRainbowPalette.Instance,
 			BlackAndWhitePalette.Instance,
-		};
+		];
 }
 
 public abstract class BasePalette
@@ -69,8 +68,7 @@ public sealed class PastelPalette : ComputedPalette, IBoundaryPalette
 
 	private PastelPalette()
 		: base(
-			new[]
-			{
+			[
 				SKColors.White, // Empty
 				new(0xFF011627), // EmptyToBorder
 				new(0xFFe71d36), // EmptyToFilament
@@ -79,7 +77,7 @@ public sealed class PastelPalette : ComputedPalette, IBoundaryPalette
 				SKColors.Gray, // FilamentToEmpty
 				SKColors.Aqua, // FilamentToBorder
 				SKColors.Red, // MixedDif
-			}
+			]
 		) { }
 
 	public SKColor Background { get; } = new(0xFFcaf1eb);
@@ -93,8 +91,7 @@ public sealed class BluePalette : ComputedPalette, IBoundaryPalette
 
 	private BluePalette()
 		: base(
-			new[]
-			{
+			[
 				SKColors.White, // Empty
 				new(0xFF212135), // EmptyToBorder
 				new(0xFF02c9e0), // EmptyToFilament
@@ -103,7 +100,7 @@ public sealed class BluePalette : ComputedPalette, IBoundaryPalette
 				SKColors.Red, // FilamentToEmpty
 				SKColors.MediumPurple, // FilamentToBorder
 				SKColors.Green, // MixedDif
-			}
+			]
 		) { }
 
 	public SKColor Background { get; } = new(0xFFFFFFFF);
@@ -116,8 +113,7 @@ public sealed class HsvRainbowPalette : ComputedPalette, IBoundaryPalette
 
 	private HsvRainbowPalette()
 		: base(
-			new[]
-			{
+			[
 				SKColors.White, // Empty
 				SKColor.FromHsv(0f / 7f * 360f, 100, 100), // EmptyToBorder
 				SKColor.FromHsv(1f / 7f * 360f, 100, 100), // EmptyToFilament
@@ -126,7 +122,7 @@ public sealed class HsvRainbowPalette : ComputedPalette, IBoundaryPalette
 				SKColor.FromHsv(4f / 7f * 360f, 100, 100), // FilamentToEmpty
 				SKColor.FromHsv(5f / 7f * 360f, 100, 100), // FilamentToBorder
 				SKColor.FromHsv(6f / 7f * 360f, 100, 100), // MixedDif
-			}
+			]
 		) { }
 
 	public SKColor Background { get; } = new(0xFFFFFFFF);

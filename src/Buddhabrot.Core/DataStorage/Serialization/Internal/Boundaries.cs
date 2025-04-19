@@ -22,7 +22,7 @@ public sealed class Boundaries
 	public int MaximumIterations { get; set; }
 
 	[ProtoMember(3)]
-	public RegionLocation[] Regions { get; set; } = Array.Empty<RegionLocation>();
+	public RegionLocation[] Regions { get; set; } = [];
 
 	public void Save(Stream stream) => Serializer.Serialize(stream, this);
 
@@ -36,7 +36,7 @@ public sealed class PersistedQuadTree
 	public int Height { get; set; }
 
 	[ProtoMember(2)]
-	public uint[] Nodes { get; set; } = Array.Empty<uint>();
+	public uint[] Nodes { get; set; } = [];
 
 	public void Save(Stream stream) => Serializer.Serialize(stream, this);
 

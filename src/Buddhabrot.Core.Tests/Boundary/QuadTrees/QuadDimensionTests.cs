@@ -62,6 +62,6 @@ public class QuadDimensionTests
 			height--;
 		}
 
-		quadrants.ShouldBe(new[] { Quadrant.SE, Quadrant.NW, Quadrant.NE }, ignoreOrder: true);
+		quadrants.ShouldBe([Quadrant.SE, Quadrant.NW, Quadrant.NE], ignoreOrder: true);
 	}
 }

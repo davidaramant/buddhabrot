@@ -6,7 +6,7 @@ namespace Buddhabrot.Benchmarks;
 public class CoordinateHashingBenchmarks
 {
 	public const int NumPoints = 100;
-	private RegionId[] _points = Array.Empty<RegionId>();
+	private RegionId[] _points = [];
 
 	[GlobalSetup]
 	public void FillArrays()

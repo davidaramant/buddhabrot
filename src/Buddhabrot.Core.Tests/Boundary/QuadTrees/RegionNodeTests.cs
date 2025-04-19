@@ -9,7 +9,7 @@ public class RegionNodeTests
 	{
 		foreach (var entry in Enum.GetValues<LookupRegionType>())
 		{
-			yield return new object[] { entry };
+			yield return [entry];
 		}
 	}
 

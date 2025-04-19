@@ -11,7 +11,7 @@ public sealed class DataProvider
 	{
 		if (!Directory.Exists(DataStoragePath))
 		{
-			return Array.Empty<BoundaryDataSet>();
+			return [];
 		}
 
 		return Directory

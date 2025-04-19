@@ -14,7 +14,7 @@ public class LookupRegionTypeListTests
 
 		for (int i = 0; i < 5; i++)
 		{
-			list.GetNextType().Should().Be(LookupRegionType.MixedDiff);
+			list.GetNextType().ShouldBe(LookupRegionType.MixedDiff);
 		}
 	}
 
@@ -27,11 +27,11 @@ public class LookupRegionTypeListTests
 
 		for (int i = 0; i < 2; i++)
 		{
-			list.GetNextType().Should().Be(LookupRegionType.MixedDiff);
+			list.GetNextType().ShouldBe(LookupRegionType.MixedDiff);
 		}
 		for (int i = 0; i < 3; i++)
 		{
-			list.GetNextType().Should().Be(LookupRegionType.EmptyToBorder);
+			list.GetNextType().ShouldBe(LookupRegionType.EmptyToBorder);
 		}
 	}
 }

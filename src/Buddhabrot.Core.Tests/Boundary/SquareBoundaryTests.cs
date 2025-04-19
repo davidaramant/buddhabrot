@@ -10,10 +10,10 @@ public class SquareBoundaryTests
 	{
 		var sq = new SquareBoundary(0, 0, 1);
 
-		sq.NW.Should().Be(new SquareBoundary(0, 0, 0));
-		sq.NE.Should().Be(new SquareBoundary(1, 0, 0));
-		sq.SE.Should().Be(new SquareBoundary(1, 1, 0));
-		sq.SW.Should().Be(new SquareBoundary(0, 1, 0));
+		sq.NW.ShouldBe(new SquareBoundary(0, 0, 0));
+		sq.NE.ShouldBe(new SquareBoundary(1, 0, 0));
+		sq.SE.ShouldBe(new SquareBoundary(1, 1, 0));
+		sq.SW.ShouldBe(new SquareBoundary(0, 1, 0));
 	}
 
 	public static IEnumerable<object[]> IntersectionData()
@@ -35,13 +35,13 @@ public class SquareBoundaryTests
 	public void ShouldIntersectWithRectangle(Rectangle rect, Rectangle expected)
 	{
 		var sq = new SquareBoundary(-2, -2, 2);
-		sq.IntersectWith(rect).Should().Be(expected);
+		sq.IntersectWith(rect).ShouldBe(expected);
 	}
 
 	[Fact]
 	public void ShouldCalculateCenteredSquareInArea()
 	{
-		SquareBoundary.GetLargestCenteredSquareInside(10, 12).Should().Be(new SquareBoundary(1, 2, 3));
+		SquareBoundary.GetLargestCenteredSquareInside(10, 12).ShouldBe(new SquareBoundary(1, 2, 3));
 	}
 
 	public sealed record ZoomOutTestCase(
@@ -92,5 +92,5 @@ public class SquareBoundaryTests
 	[Theory]
 	[MemberData(nameof(ZoomOutData))]
 	public void ShouldZoomOutCorrectly(ZoomOutTestCase testCase) =>
-		testCase.Boundary.ZoomOut(width: testCase.Width, height: testCase.Height).Should().Be(testCase.ExpectedResult);
+		testCase.Boundary.ZoomOut(width: testCase.Width, height: testCase.Height).ShouldBe(testCase.ExpectedResult);
 }

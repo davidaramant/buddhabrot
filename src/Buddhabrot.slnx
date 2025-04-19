@@ -6,6 +6,7 @@
   <Folder Name="/Solution Items/">
     <File Path="..\README.md" />
     <File Path="..\TODO.md" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="BoundaryExplorer.Tests\BoundaryExplorer.Tests.csproj">
     <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />

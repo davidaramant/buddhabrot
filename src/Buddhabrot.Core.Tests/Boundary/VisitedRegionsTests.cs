@@ -15,7 +15,7 @@ public class VisitedRegionsTests
 	{
 		var tree = new VisitedRegions();
 
-		tree.HasVisited(new RegionId(x, y)).Should().BeFalse();
+		tree.HasVisited(new RegionId(x, y)).ShouldBeFalse();
 	}
 
 	[Fact]
@@ -25,10 +25,10 @@ public class VisitedRegionsTests
 
 		tree.Visit(new RegionId(0, 0), VisitedRegionType.Border);
 
-		tree.HasVisited(new RegionId(0, 0)).Should().BeTrue();
-		tree.HasVisited(new RegionId(1, 0)).Should().BeFalse();
-		tree.HasVisited(new RegionId(0, 1)).Should().BeFalse();
-		tree.HasVisited(new RegionId(1, 1)).Should().BeFalse();
+		tree.HasVisited(new RegionId(0, 0)).ShouldBeTrue();
+		tree.HasVisited(new RegionId(1, 0)).ShouldBeFalse();
+		tree.HasVisited(new RegionId(0, 1)).ShouldBeFalse();
+		tree.HasVisited(new RegionId(1, 1)).ShouldBeFalse();
 	}
 
 	[Fact]
@@ -36,13 +36,13 @@ public class VisitedRegionsTests
 	{
 		var tree = new VisitedRegions();
 
-		tree.Height.Should().Be(3);
+		tree.Height.ShouldBe(3);
 
 		tree.Visit(new RegionId(4, 0), VisitedRegionType.Border);
 
-		tree.Height.Should().Be(4);
+		tree.Height.ShouldBe(4);
 
-		tree.HasVisited(new RegionId(4, 0)).Should().BeTrue();
+		tree.HasVisited(new RegionId(4, 0)).ShouldBeTrue();
 	}
 
 	[Fact]
@@ -55,6 +55,6 @@ public class VisitedRegionsTests
 		}
 
 		var boundary = tree.GetBorderRegions();
-		boundary.Should().BeEquivalentTo([new RegionId(1, 1), new RegionId(5, 5)]);
+		boundary.ShouldBe([new RegionId(1, 1), new RegionId(5, 5)], ignoreOrder: true);
 	}
 }

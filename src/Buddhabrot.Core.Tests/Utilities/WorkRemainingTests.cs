@@ -10,7 +10,7 @@ public sealed class WorkRemainingTests
 		const int size = 5;
 		using (var work = new WorkRemaining<int>(Enumerable.Repeat(size, size)))
 		{
-			work.Take(size).Should().HaveCount(size);
+			work.Take(size).Count().ShouldBe(size);
 		}
 	}
 
@@ -20,7 +20,7 @@ public sealed class WorkRemainingTests
 		const int size = 5;
 		using (var work = new WorkRemaining<int>(Enumerable.Repeat(size, size)))
 		{
-			work.Take(10 * size).Should().HaveCount(size);
+			work.Take(10 * size).Count().ShouldBe(size);
 		}
 	}
 
@@ -34,7 +34,7 @@ public sealed class WorkRemainingTests
 			var dataReturned = work.Take(8).ToArray();
 			var expected = Enumerable.Repeat(3, 3).Concat(Enumerable.Repeat(5, 5)).ToArray();
 
-			dataReturned.Should().BeEquivalentTo(expected);
+			dataReturned.ShouldBe(expected);
 		}
 	}
 
@@ -48,7 +48,7 @@ public sealed class WorkRemainingTests
 			var dataReturned = work.Take(4).ToArray();
 			var expected = Enumerable.Repeat(3, 3).Concat(Enumerable.Repeat(5, 1)).ToArray();
 
-			dataReturned.Should().BeEquivalentTo(expected);
+			dataReturned.ShouldBe(expected);
 		}
 	}
 
@@ -57,8 +57,8 @@ public sealed class WorkRemainingTests
 	{
 		using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))
 		{
-			work.Take(4).Should().HaveCount(4);
-			work.Take(4).Should().HaveCount(1);
+			work.Take(4).Count().ShouldBe(4);
+			work.Take(4).Count().ShouldBe(1);
 		}
 	}
 }

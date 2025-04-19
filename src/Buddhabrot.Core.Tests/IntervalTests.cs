@@ -13,8 +13,8 @@ public class IntervalTests
 	{
 		var range1 = new Interval(r1Min, r1Max);
 		var range2 = new Interval(r2Min, r2Max);
-		range1.OverlapsWith(range2).Should().Be(shouldIntersect);
-		range2.OverlapsWith(range1).Should().Be(shouldIntersect);
+		range1.OverlapsWith(range2).ShouldBe(shouldIntersect);
+		range2.OverlapsWith(range1).ShouldBe(shouldIntersect);
 	}
 
 	[Theory]
@@ -23,8 +23,8 @@ public class IntervalTests
 	public void ShouldGetFirstAndLastHalf(double min, double max, double midPoint)
 	{
 		var range = new Interval(min, max);
-		range.FirstHalf().Should().Be(new Interval(min, midPoint));
-		range.LastHalf().Should().Be(new Interval(midPoint, max));
+		range.FirstHalf().ShouldBe(new Interval(min, midPoint));
+		range.LastHalf().ShouldBe(new Interval(midPoint, max));
 	}
 
 	[Theory]
@@ -46,8 +46,8 @@ public class IntervalTests
 
 		var expectedIntersection = new Interval(expectedMin, expectedMax);
 
-		range1.Intersect(range2).Should().Be(expectedIntersection);
-		range2.Intersect(range1).Should().Be(expectedIntersection);
+		range1.Intersect(range2).ShouldBe(expectedIntersection);
+		range2.Intersect(range1).ShouldBe(expectedIntersection);
 	}
 
 	[Theory]
@@ -55,6 +55,6 @@ public class IntervalTests
 	public void ShouldZoom(double min, double max, double zoom, double newMin, double newMax)
 	{
 		var range = new Interval(min, max);
-		range.Scale(zoom).Should().Be(new Interval(newMin, newMax));
+		range.Scale(zoom).ShouldBe(new Interval(newMin, newMax));
 	}
 }

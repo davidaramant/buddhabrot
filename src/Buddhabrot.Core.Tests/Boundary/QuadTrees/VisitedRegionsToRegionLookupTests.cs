@@ -28,7 +28,7 @@ public class VisitedRegionsToRegionLookupTests
 		LookupRegionType expected
 	)
 	{
-		QuadTreeCompressor.CondenseRegionType(ll, lr, ul, ur).Should().Be(expected);
+		QuadTreeCompressor.CondenseRegionType(ll, lr, ul, ur).ShouldBe(expected);
 	}
 
 	[Fact]
@@ -37,6 +37,6 @@ public class VisitedRegionsToRegionLookupTests
 		var transformer = new QuadTreeCompressor(new VisitedRegions());
 		var node = transformer.MakeQuad(RegionNode.Empty, RegionNode.Empty, RegionNode.Empty, RegionNode.Empty);
 
-		node.Should().Be(RegionNode.Empty);
+		node.ShouldBe(RegionNode.Empty);
 	}
 }

@@ -12,7 +12,7 @@ public sealed class ViewPortTests
 
 		var middle = viewPort.GetPosition(new Complex());
 
-		middle.Should().Be(new Point(50, 50));
+		middle.ShouldBe(new Point(50, 50));
 	}
 
 	[Fact]
@@ -22,7 +22,7 @@ public sealed class ViewPortTests
 
 		var topLeft = viewPort.GetPosition(new Complex(-1, 1));
 
-		topLeft.Should().Be(new Point(0, 0));
+		topLeft.ShouldBe(new Point(0, 0));
 	}
 
 	[Fact]
@@ -33,7 +33,7 @@ public sealed class ViewPortTests
 		var c = new Complex(-1, 1);
 
 		var roundTripped = viewPort.GetComplex(viewPort.GetPosition(c));
-		roundTripped.Should().Be(c);
+		roundTripped.ShouldBe(c);
 	}
 
 	[Fact]
@@ -44,7 +44,7 @@ public sealed class ViewPortTests
 		var point = new Point(-1, 1);
 
 		var roundTripped = viewPort.GetPosition(viewPort.GetComplex(point));
-		roundTripped.Should().Be(point);
+		roundTripped.ShouldBe(point);
 	}
 
 	[Fact]
@@ -52,7 +52,7 @@ public sealed class ViewPortTests
 	{
 		var viewPort = ViewPort.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
 
-		viewPort.Resolution.Height.Should().Be(101);
+		viewPort.Resolution.Height.ShouldBe(101);
 	}
 
 	[Fact]
@@ -60,7 +60,7 @@ public sealed class ViewPortTests
 	{
 		var viewPort = ViewPort.FromResolution(new Size(100, 100), new Complex(0, 0), realMagnitude: 2);
 
-		viewPort.LogicalArea.Width.Should().Be(2);
+		viewPort.LogicalArea.Width.ShouldBe(2);
 	}
 
 	public sealed record ResolutionTestCase(
@@ -123,6 +123,6 @@ public sealed class ViewPortTests
 	public void ShouldConstructFromResolution(ResolutionTestCase testCase)
 	{
 		var viewPort = ViewPort.FromResolution(testCase.Resolution, testCase.OriginOffset, testCase.PixelSize);
-		viewPort.LogicalArea.Should().Be(testCase.ExpectedArea);
+		viewPort.LogicalArea.ShouldBe(testCase.ExpectedArea);
 	}
 }

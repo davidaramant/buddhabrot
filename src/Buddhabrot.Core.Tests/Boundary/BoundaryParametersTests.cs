@@ -11,15 +11,15 @@ public class BoundaryParametersTests
 	{
 		var bp = new BoundaryParameters(new AreaDivisions(10), iterations);
 		var roundTripped = BoundaryParameters.FromDescription(bp.Description);
-		roundTripped.MaxIterations.Should().Be(iterations);
+		roundTripped.MaxIterations.ShouldBe(iterations);
 	}
 
 	[Fact]
 	public void ShouldDeserializeFromOldFormat()
 	{
 		var bp = BoundaryParameters.FromDescription("v8_i1,000,000");
-		bp.Divisions.VerticalPower.Should().Be(8);
-		bp.MaxIterations.Should().Be(1_000_000);
+		bp.Divisions.VerticalPower.ShouldBe(8);
+		bp.MaxIterations.ShouldBe(1_000_000);
 	}
 
 	[Theory]
@@ -29,6 +29,6 @@ public class BoundaryParametersTests
 	{
 		var bp = new BoundaryParameters(new AreaDivisions(1), 10, metadata);
 		var roundTripped = BoundaryParameters.FromDescription(bp.Description);
-		roundTripped.Metadata.Should().Be(metadata);
+		roundTripped.Metadata.ShouldBe(metadata);
 	}
 }

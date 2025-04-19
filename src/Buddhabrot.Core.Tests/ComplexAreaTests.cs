@@ -38,8 +38,8 @@ public class ComplexAreaTests
 	[MemberData(nameof(GetOverlapData))]
 	public void ShouldDetermineIfAreasOverlap(ComplexArea area1, ComplexArea area2, bool shouldIntersect)
 	{
-		area1.OverlapsWith(area2).Should().Be(shouldIntersect);
-		area2.OverlapsWith(area1).Should().Be(shouldIntersect);
+		area1.OverlapsWith(area2).ShouldBe(shouldIntersect);
+		area2.OverlapsWith(area1).ShouldBe(shouldIntersect);
 	}
 
 	[Fact]
@@ -47,10 +47,10 @@ public class ComplexAreaTests
 	{
 		var area = new ComplexArea(new Interval(-1, 1), new Interval(-1, 1));
 
-		area.GetNWQuadrant().Should().Be(new ComplexArea(new Interval(-1, 0), new Interval(0, 1)));
-		area.GetNEQuadrant().Should().Be(new ComplexArea(new Interval(0, 1), new Interval(0, 1)));
-		area.GetSEQuadrant().Should().Be(new ComplexArea(new Interval(0, 1), new Interval(-1, 0)));
-		area.GetSWQuadrant().Should().Be(new ComplexArea(new Interval(-1, 0), new Interval(-1, 0)));
+		area.GetNWQuadrant().ShouldBe(new ComplexArea(new Interval(-1, 0), new Interval(0, 1)));
+		area.GetNEQuadrant().ShouldBe(new ComplexArea(new Interval(0, 1), new Interval(0, 1)));
+		area.GetSEQuadrant().ShouldBe(new ComplexArea(new Interval(0, 1), new Interval(-1, 0)));
+		area.GetSWQuadrant().ShouldBe(new ComplexArea(new Interval(-1, 0), new Interval(-1, 0)));
 	}
 
 	public sealed record IntersectionData(
@@ -107,7 +107,7 @@ public class ComplexAreaTests
 	[MemberData(nameof(GetIntersectionData))]
 	public void ShouldCalculateIntersection(IntersectionData data)
 	{
-		data.Area1.Intersect(data.Area2).Should().Be(data.Expected);
-		data.Area2.Intersect(data.Area1).Should().Be(data.Expected);
+		data.Area1.Intersect(data.Area2).ShouldBe(data.Expected);
+		data.Area2.Intersect(data.Area1).ShouldBe(data.Expected);
 	}
 }

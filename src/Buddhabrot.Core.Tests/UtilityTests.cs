@@ -10,6 +10,6 @@ public class UtilityTests
 	[InlineData(257, 8)]
 	public void ShouldCalculatePowerOfTwo(int max, int expectedPow)
 	{
-		Utility.GetLargestPowerOfTwoLessThan(max).Should().Be(expectedPow);
+		Utility.GetLargestPowerOfTwoLessThan(max).ShouldBe(expectedPow);
 	}
 }

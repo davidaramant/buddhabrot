@@ -21,7 +21,7 @@ public class BoundaryVisualizerTests
 		var actualBytes = actualPixels.ToArray();
 		var expectedBytes = expectedPixels.ToArray();
 
-		actualBytes.Should().BeEquivalentTo(expectedBytes);
+		actualBytes.ShouldBe(expectedBytes);
 	}
 
 	private static SKBitmap ReadEmbeddedImage(string fileName)

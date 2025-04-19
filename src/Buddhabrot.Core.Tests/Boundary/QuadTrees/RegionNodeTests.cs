@@ -19,8 +19,8 @@ public class RegionNodeTests
 	{
 		var node = RegionNode.MakeLeaf(type);
 
-		node.IsLeaf.Should().BeTrue();
-		node.RegionType.Should().Be(type);
+		node.IsLeaf.ShouldBeTrue();
+		node.RegionType.ShouldBe(type);
 	}
 
 	[Theory]
@@ -29,9 +29,9 @@ public class RegionNodeTests
 	{
 		var node = RegionNode.MakeBranch(type, 123_456);
 
-		node.IsLeaf.Should().BeFalse();
-		node.RegionType.Should().Be(type);
+		node.IsLeaf.ShouldBeFalse();
+		node.RegionType.ShouldBe(type);
 
-		node.ChildIndex.Should().Be(123_456);
+		node.ChildIndex.ShouldBe(123_456);
 	}
 }

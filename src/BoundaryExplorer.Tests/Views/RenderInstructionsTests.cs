@@ -11,11 +11,11 @@ public class RenderInstructionsTests
 	{
 		var inst = RenderInstructions.Everything(new PixelSize(100, 100));
 
-		inst.PasteFrontBuffer.Should().BeFalse();
+		inst.PasteFrontBuffer.ShouldBeFalse();
 
 		var rects = inst.GetDirtyRectangles().ToList();
-		rects.Should().HaveCount(1);
-		rects.Should().Contain(new Rectangle(0, 0, 100, 100));
+		rects.Count.ShouldBe(1);
+		rects.ShouldContain(new Rectangle(0, 0, 100, 100));
 	}
 
 	public sealed record ResizeTestCase(
@@ -74,9 +74,9 @@ public class RenderInstructionsTests
 	{
 		var inst = RenderInstructions.Resized(testCase.OldSize, testCase.NewSize);
 
-		inst.PasteFrontBuffer.Should().BeTrue();
+		inst.PasteFrontBuffer.ShouldBeTrue();
 
-		inst.GetDirtyRectangles().Should().BeEquivalentTo(testCase.DirtyRects);
+		inst.GetDirtyRectangles().ShouldBe(testCase.DirtyRects, ignoreOrder: true);
 	}
 
 	public sealed record MoveTestCase(
@@ -189,10 +189,10 @@ public class RenderInstructionsTests
 	{
 		var inst = RenderInstructions.Moved(testCase.PixelSize, testCase.Offset);
 
-		inst.PasteFrontBuffer.Should().BeTrue();
-		inst.SourceRect.Should().Be(testCase.SourceRect);
-		inst.DestRect.Should().Be(testCase.DestRect);
+		inst.PasteFrontBuffer.ShouldBeTrue();
+		inst.SourceRect.ShouldBe(testCase.SourceRect);
+		inst.DestRect.ShouldBe(testCase.DestRect);
 
-		inst.GetDirtyRectangles().Should().BeEquivalentTo(testCase.DirtyRects);
+		inst.GetDirtyRectangles().ShouldBe(testCase.DirtyRects, ignoreOrder: true);
 	}
 }

@@ -11,25 +11,25 @@ public class BoundaryDataSetTests
 		var iterations = 1_000_001;
 		var bds = BoundaryDataSet.FromBoundary(new BoundaryParameters(new AreaDivisions(1), iterations));
 		var roundTripped = BoundaryDataSet.FromDescription(bds.Description);
-		roundTripped.Parameters.MaxIterations.Should().Be(iterations);
+		roundTripped.Parameters.MaxIterations.ShouldBe(iterations);
 	}
 
 	[Fact]
 	public void ShouldDeserializeNormalBoundaryParameters()
 	{
 		var bds = BoundaryDataSet.FromDescription("v8_i1M");
-		bds.IsDiff.Should().BeFalse();
-		bds.Parameters.Divisions.VerticalPower.Should().Be(8);
-		bds.Parameters.MaxIterations.Should().Be(1_000_000);
+		bds.IsDiff.ShouldBeFalse();
+		bds.Parameters.Divisions.VerticalPower.ShouldBe(8);
+		bds.Parameters.MaxIterations.ShouldBe(1_000_000);
 	}
 
 	[Fact]
 	public void ShouldDeserializeDiff()
 	{
 		var bds = BoundaryDataSet.FromDescription("Diff - v9_i1M - v8_i100k");
-		bds.IsDiff.Should().BeTrue();
-		bds.Parameters.Divisions.VerticalPower.Should().Be(9);
-		bds.Parameters.MaxIterations.Should().Be(1_000_000);
+		bds.IsDiff.ShouldBeTrue();
+		bds.Parameters.Divisions.VerticalPower.ShouldBe(9);
+		bds.Parameters.MaxIterations.ShouldBe(1_000_000);
 	}
 
 	[Fact]
@@ -60,6 +60,6 @@ public class BoundaryDataSetTests
 
 		var ordered = sets.OrderBy(s => s).ToList();
 
-		ordered.Should().ContainInOrder(expectedOrder);
+		ordered.ShouldBe(expectedOrder);
 	}
 }

@@ -13,7 +13,7 @@ public class QuadDimensionTests
 	public void ShouldReturnCorrectSideLengthFromHeight(int height, int expectedSideLength)
 	{
 		var qd = new QuadDimensions(0, 0, height);
-		qd.SideLength.Should().Be(expectedSideLength);
+		qd.SideLength.ShouldBe(expectedSideLength);
 	}
 
 	[Theory]
@@ -26,7 +26,7 @@ public class QuadDimensionTests
 	public void ShouldDetermineIfRegionIsContainedByDimensions(int x, int y, bool shouldBeContained)
 	{
 		var qd = new QuadDimensions(0, 0, Height: 2);
-		qd.Contains(new RegionId(x, y)).Should().Be(shouldBeContained);
+		qd.Contains(new RegionId(x, y)).ShouldBe(shouldBeContained);
 	}
 
 	[Theory]
@@ -37,7 +37,7 @@ public class QuadDimensionTests
 	public void ShouldDetermineQuadrant(int x, int y, Quadrant expected)
 	{
 		var d = new QuadDimensions(0, 0, 2);
-		d.DetermineQuadrant(x, y).Should().Be(expected);
+		d.DetermineQuadrant(x, y).ShouldBe(expected);
 	}
 
 	[Fact]
@@ -62,6 +62,6 @@ public class QuadDimensionTests
 			height--;
 		}
 
-		quadrants.Should().BeEquivalentTo(new[] { Quadrant.SE, Quadrant.NW, Quadrant.NE });
+		quadrants.ShouldBe(new[] { Quadrant.SE, Quadrant.NW, Quadrant.NE }, ignoreOrder: true);
 	}
 }

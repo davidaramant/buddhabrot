@@ -9,7 +9,7 @@ public class FixedSizeCacheTests
 	[Fact]
 	public void ShouldHandleEntriesNotInCache()
 	{
-		_cache.TryGetValue(0, out _).Should().BeFalse();
+		_cache.TryGetValue(0, out _).ShouldBeFalse();
 	}
 
 	[Fact]
@@ -17,7 +17,7 @@ public class FixedSizeCacheTests
 	{
 		_cache.Add(1, 2);
 
-		_cache.TryGetValue(1, out var value).Should().BeTrue();
-		value.Should().Be(2);
+		_cache.TryGetValue(1, out var value).ShouldBeTrue();
+		value.ShouldBe(2);
 	}
 }

@@ -15,7 +15,7 @@ public class RegionLookupTests
 
 		lookup.GetVisibleAreas(new SquareBoundary(0, 0, 2), new[] { new Rectangle(0, 0, 8, 8) }, visibleAreas);
 
-		visibleAreas.Should().HaveCount(4);
+		visibleAreas.Count.ShouldBe(4);
 	}
 
 	[Fact]
@@ -40,6 +40,6 @@ public class RegionLookupTests
 
 		lookup.GetVisibleAreas(new SquareBoundary(0, 0, 2), new[] { new Rectangle(0, 0, 1, 1) }, visibleAreas);
 
-		visibleAreas.Should().HaveCount(1);
+		visibleAreas.Count.ShouldBe(1);
 	}
 }

@@ -19,7 +19,7 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 
 	public CornerFirstRegionClassifier(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
 
-	private bool IsCornerInSet(CornerId corner)
+	private int IsCornerInSet(CornerId corner)
 	{
 		var batchId = corner.ToBatchId();
 		if (!_cachedCorners.TryGetValue(batchId, out var batch))
@@ -35,18 +35,10 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 	{
 		int numCorners = 0;
 
-		void CheckCorner(CornerId corner)
-		{
-			if (IsCornerInSet(corner))
-			{
-				numCorners++;
-			}
-		}
-
-		CheckCorner(region.LowerLeftCorner());
-		CheckCorner(region.LowerRightCorner());
-		CheckCorner(region.UpperLeftCorner());
-		CheckCorner(region.UpperRightCorner());
+		numCorners += IsCornerInSet(region.LowerLeftCorner());
+		numCorners += IsCornerInSet(region.LowerRightCorner());
+		numCorners += IsCornerInSet(region.UpperLeftCorner());
+		numCorners += IsCornerInSet(region.UpperRightCorner());
 
 		return numCorners switch
 		{
@@ -60,18 +52,10 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 	{
 		int numCorners = 0;
 
-		void CheckCorner(CornerId corner)
-		{
-			if (IsCornerInSet(corner))
-			{
-				numCorners++;
-			}
-		}
-
-		CheckCorner(region.LowerLeftCorner());
-		CheckCorner(region.LowerRightCorner());
-		CheckCorner(region.UpperLeftCorner());
-		CheckCorner(region.UpperRightCorner());
+		numCorners += IsCornerInSet(region.LowerLeftCorner());
+		numCorners += IsCornerInSet(region.LowerRightCorner());
+		numCorners += IsCornerInSet(region.UpperLeftCorner());
+		numCorners += IsCornerInSet(region.UpperRightCorner());
 
 		return numCorners switch
 		{

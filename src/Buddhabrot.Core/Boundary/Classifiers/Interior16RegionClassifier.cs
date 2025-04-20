@@ -19,7 +19,7 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
 
 	public Interior16RegionClassifier(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
 
-	private bool IsCornerInSet(CornerId corner)
+	private int IsCornerInSet(CornerId corner)
 	{
 		var batchId = corner.ToBatchId();
 		if (!_cachedCorners.TryGetValue(batchId, out var batch))
@@ -76,18 +76,10 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
 	{
 		int cornersInSet = 0;
 
-		void CheckCorner(CornerId corner)
-		{
-			if (IsCornerInSet(corner))
-			{
-				cornersInSet++;
-			}
-		}
-
-		CheckCorner(region.LowerLeftCorner());
-		CheckCorner(region.LowerRightCorner());
-		CheckCorner(region.UpperLeftCorner());
-		CheckCorner(region.UpperRightCorner());
+		cornersInSet += IsCornerInSet(region.LowerLeftCorner());
+		cornersInSet += IsCornerInSet(region.LowerRightCorner());
+		cornersInSet += IsCornerInSet(region.UpperLeftCorner());
+		cornersInSet += IsCornerInSet(region.UpperRightCorner());
 
 		var (interiorInSet, interiorClose) = SampleRegionInterior(region);
 

@@ -67,13 +67,6 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 
 	private VisitedRegionType CheckRegionForFilaments(RegionId region)
 	{
-		var centers = ArrayPool<Complex>.Shared.Rent(4);
-
-		centers[0] = ToComplex(region.X + 0.25, region.Y + 0.25);
-		centers[1] = ToComplex(region.X + 0.75, region.Y + 0.25);
-		centers[2] = ToComplex(region.X + 0.25, region.Y + 0.75);
-		centers[3] = ToComplex(region.X + 0.75, region.Y + 0.75);
-
 		int numInSet = 0;
 		int numFilament = 0;
 
@@ -83,7 +76,7 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 			i =>
 			{
 				var (iterations, distance) = ScalarKernel.FindExteriorDistance(
-					centers[i],
+					ToComplex(region.X + 0.25 + (i % 2) * 0.5, region.Y + 0.25 + ((i >> 1) % 2) * 0.5),
 					_boundaryParams.MaxIterations
 				);
 
@@ -98,8 +91,6 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 			}
 		);
 
-		ArrayPool<Complex>.Shared.Return(centers);
-
 		return (numInSet, numFilament) switch
 		{
 			(0, 0) => VisitedRegionType.Rejected,
@@ -110,13 +101,6 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 
 	private (VisitedRegionType, string) DescribeCheckRegionForFilaments(RegionId region)
 	{
-		var centers = ArrayPool<Complex>.Shared.Rent(4);
-
-		centers[0] = ToComplex(region.X + 0.25, region.Y + 0.25);
-		centers[1] = ToComplex(region.X + 0.75, region.Y + 0.25);
-		centers[2] = ToComplex(region.X + 0.25, region.Y + 0.75);
-		centers[3] = ToComplex(region.X + 0.75, region.Y + 0.75);
-
 		int numInSet = 0;
 		int numClose = 0;
 
@@ -126,7 +110,7 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 			i =>
 			{
 				var (iterations, distance) = ScalarKernel.FindExteriorDistance(
-					centers[i],
+					ToComplex(region.X + 0.25 + (i % 2) * 0.5, region.Y + 0.25 + ((i >> 1) % 2) * 0.5),
 					_boundaryParams.MaxIterations
 				);
 
@@ -141,8 +125,6 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 			}
 		);
 
-		ArrayPool<Complex>.Shared.Return(centers);
-
 		return (numInSet, numClose) switch
 		{
 			(0, 0) => (VisitedRegionType.Rejected, "In Set: 0, Close: 0"),
@@ -153,24 +135,23 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 
 	private BoolVector16 ComputeCornerBatch(RegionBatchId id)
 	{
-		var corners = ArrayPool<Complex>.Shared.Rent(RegionBatchId.CornerArea);
 		var inSet = ArrayPool<bool>.Shared.Rent(RegionBatchId.CornerArea);
 
 		var bottomLeftCorner = id.GetBottomLeftCorner();
-		for (int y = 0; y < RegionBatchId.CornerWidth; y++)
-		{
-			for (int x = 0; x < RegionBatchId.CornerWidth; x++)
-			{
-				corners[y * RegionBatchId.CornerWidth + x] = ToComplex(bottomLeftCorner + new Offset(x, y));
-			}
-		}
 
 		Parallel.For(
 			0,
 			RegionBatchId.CornerArea,
 			i =>
 			{
-				inSet[i] = ScalarKernel.FindEscapeTime(corners[i], _boundaryParams.MaxIterations).IsInfinite;
+				inSet[i] = ScalarKernel
+					.FindEscapeTime(
+						ToComplex(
+							bottomLeftCorner + new Offset(i % RegionBatchId.CornerWidth, i / RegionBatchId.CornerWidth)
+						),
+						_boundaryParams.MaxIterations
+					)
+					.IsInfinite;
 			}
 		);
 
@@ -184,7 +165,6 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 			}
 		}
 
-		ArrayPool<Complex>.Shared.Return(corners);
 		ArrayPool<bool>.Shared.Return(inSet);
 
 		return batch;

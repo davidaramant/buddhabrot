@@ -12,4 +12,7 @@ public static class XYHash
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static int GetHashCode256(int x, int y) => ((y & 0b1111) << 4) | (x & 0b1111);
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static int GetHashCode1024(int x, int y) => ((y & 0b11111) << 5) | (x & 0b11111);
 }

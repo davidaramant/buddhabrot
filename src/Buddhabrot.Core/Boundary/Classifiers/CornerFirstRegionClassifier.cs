@@ -8,9 +8,9 @@ namespace Buddhabrot.Core.Boundary.Classifiers;
 public sealed class CornerFirstRegionClassifier : IRegionClassifier
 {
 	private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCorners = new(
-		64,
+		1024,
 		defaultKey: RegionBatchId.Invalid,
-		getIndex: cbi => cbi.GetHashCode64()
+		getIndex: cbi => cbi.GetHashCode1024()
 	);
 
 	private readonly BoundaryParameters _boundaryParams;

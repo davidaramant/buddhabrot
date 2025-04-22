@@ -20,4 +20,8 @@ public readonly record struct RegionBatchId(int X, int Y)
 	public int GetHashCode16() => XYHash.GetHashCode16(X, Y);
 
 	public int GetHashCode64() => XYHash.GetHashCode64(X, Y);
+
+	public int GetHashCode256() => XYHash.GetHashCode256(X, Y);
+
+	public int GetHashCode1024() => XYHash.GetHashCode1024(X, Y);
 }

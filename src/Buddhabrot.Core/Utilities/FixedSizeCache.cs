@@ -1,7 +1,7 @@
 namespace Buddhabrot.Core.Utilities;
 
 public sealed class FixedSizeCache<TKey, TValue>
-	where TKey : struct
+	where TKey : struct, IEquatable<TKey>
 	where TValue : struct
 {
 	private readonly TKey[] _keys;
@@ -9,14 +9,14 @@ public sealed class FixedSizeCache<TKey, TValue>
 	private readonly Func<TKey, int> _getIndex;
 
 	public FixedSizeCache(int capacity, TKey defaultKey)
-		: this(capacity, defaultKey, getIndex: key => (int)((uint)key.GetHashCode()) % capacity) { }
+		: this(capacity, defaultKey, getIndex: key => unchecked((int)((uint)key.GetHashCode() % (uint)capacity))) { }
 
 	public FixedSizeCache(int capacity, TKey defaultKey, Func<TKey, int> getIndex)
 	{
 		_getIndex = getIndex;
 		_keys = new TKey[capacity];
-		Array.Fill(_keys, defaultKey);
 		_values = new TValue[capacity];
+		_keys.AsSpan().Fill(defaultKey);
 	}
 
 	public bool Add(TKey key, TValue value)

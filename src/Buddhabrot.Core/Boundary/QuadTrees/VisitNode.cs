@@ -7,10 +7,8 @@ public enum VisitNodeType
 	LeafQuad,
 }
 
-public readonly struct VisitNode(uint encoded)
+public readonly record struct VisitNode(uint Encoded)
 {
-	public readonly uint Encoded = encoded;
-
 	public static readonly VisitNode Unknown = MakeLeaf(VisitedRegionType.Unknown);
 
 	public static VisitNode MakeLeaf(VisitedRegionType type) => new((uint)type << 2);
@@ -81,18 +79,4 @@ public readonly struct VisitNode(uint encoded)
 			VisitNodeType.LeafQuad => $" SW:{SW} SE:{SE} NW:{NW} NE:{NE}",
 			_ => "how could this have happened",
 		};
-
-	#region Equality
-
-	public override int GetHashCode() => (int)Encoded;
-
-	public override bool Equals(object? obj) => obj is VisitNode other && Equals(other);
-
-	public bool Equals(VisitNode other) => Encoded == other.Encoded;
-
-	public static bool operator ==(VisitNode left, VisitNode right) => left.Equals(right);
-
-	public static bool operator !=(VisitNode left, VisitNode right) => !left.Equals(right);
-
-	#endregion
 }

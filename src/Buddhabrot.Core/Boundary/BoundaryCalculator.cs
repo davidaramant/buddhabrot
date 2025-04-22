@@ -68,13 +68,17 @@ public static class BoundaryCalculator
 		var rightClassifier = IRegionClassifier.Create(boundaryParameters, selectedClassifier);
 
 		await Task.WhenAll(
-			Task.Run(
-				() => BoundaryCalculator.VisitBoundary(leftRegionsToCheck, leftClassifier, proxy, proxy.Token),
-				cancelToken
+			Task.Factory.StartNew(
+				() => VisitBoundary(leftRegionsToCheck, leftClassifier, proxy, proxy.Token),
+				cancelToken,
+				TaskCreationOptions.LongRunning,
+				TaskScheduler.Default
 			),
-			Task.Run(
-				() => BoundaryCalculator.VisitBoundary(rightRegionsToCheck, rightClassifier, proxy, proxy.Token),
-				cancelToken
+			Task.Factory.StartNew(
+				() => VisitBoundary(rightRegionsToCheck, rightClassifier, proxy, proxy.Token),
+				cancelToken,
+				TaskCreationOptions.LongRunning,
+				TaskScheduler.Default
 			)
 		);
 
@@ -83,7 +87,7 @@ public static class BoundaryCalculator
 			leftRegionsToCheck.Enqueue(region);
 		}
 
-		BoundaryCalculator.VisitBoundary(leftRegionsToCheck, leftClassifier, visitedRegions, cancelToken);
+		VisitBoundary(leftRegionsToCheck, leftClassifier, visitedRegions, cancelToken);
 
 		var boundaryRegions = visitedRegions.GetBorderRegions().ToList();
 

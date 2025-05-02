@@ -79,8 +79,8 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
 			})
 			.ToProperty(this, x => x.ImageSize, out _imageSize);
 
-		FindBoundary = ReactiveCommand.CreateFromObservable(
-			() => Observable.StartAsync(FindBoundaryAsync).TakeUntil(CancelFindingBoundary!)
+		FindBoundary = ReactiveCommand.CreateFromObservable(() =>
+			Observable.StartAsync(FindBoundaryAsync).TakeUntil(CancelFindingBoundary!)
 		);
 		FindBoundary.IsExecuting.ToProperty(this, x => x.IsFindingBoundary, out _isFindingBoundary);
 		CancelFindingBoundary = ReactiveCommand.Create(() => { }, FindBoundary.IsExecuting);

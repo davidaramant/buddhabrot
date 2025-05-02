@@ -42,12 +42,8 @@ public sealed class SettingsViewModel : ViewModelBase
 
 		SystemInformation = ComputerDescription.GetMultiline();
 
-		OpenFilePathCommand = ReactiveCommand.CreateFromTask(
-			() =>
-				Cli.Wrap(GetCommandToOpenDirectory())
-					.WithArguments(".")
-					.WithWorkingDirectory(DataSetPath)
-					.ExecuteAsync()
+		OpenFilePathCommand = ReactiveCommand.CreateFromTask(() =>
+			Cli.Wrap(GetCommandToOpenDirectory()).WithArguments(".").WithWorkingDirectory(DataSetPath).ExecuteAsync()
 		);
 	}
 

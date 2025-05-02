@@ -1,24 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" />
-    <PackageReference Include="CacheTable.Net" />
-    <PackageReference Include="Humanizer.Core" />
-    <PackageReference Include="Spectre.Console" />
-    <PackageReference Include="Tedd.MortonEncoding" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Buddhabrot.Core\Buddhabrot.Core.csproj" />
-    <ProjectReference Include="..\Buddhabrot.ManualVisualizations\Buddhabrot.ManualVisualizations.csproj" />
-  </ItemGroup>
-
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="BenchmarkDotNet" />
+		<PackageReference Include="CacheTable.Net" />
+		<PackageReference Include="Humanizer.Core" />
+		<PackageReference Include="Spectre.Console" />
+		<PackageReference Include="Tedd.MortonEncoding" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Buddhabrot.Core\Buddhabrot.Core.csproj" />
+		<ProjectReference Include="..\Buddhabrot.ManualVisualizations\Buddhabrot.ManualVisualizations.csproj" />
+	</ItemGroup>
 </Project>

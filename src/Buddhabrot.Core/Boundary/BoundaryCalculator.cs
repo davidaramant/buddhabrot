@@ -89,7 +89,7 @@ public static class BoundaryCalculator
 
 		VisitBoundary(leftRegionsToCheck, leftClassifier, visitedRegions, cancelToken);
 
-		var boundaryRegions = visitedRegions.GetBorderRegions().ToList();
+		var boundaryRegions = visitedRegions.GetBorderRegions();
 
 		var transformer = new QuadTreeCompressor(visitedRegions);
 		var lookup = transformer.Transform();

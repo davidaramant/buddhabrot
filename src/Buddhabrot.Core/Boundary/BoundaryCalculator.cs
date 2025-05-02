@@ -25,23 +25,29 @@ public static class BoundaryCalculator
 
 			if (regionType != VisitedRegionType.Rejected)
 			{
-				AddRegionToCheck(region.MoveUp());
-				AddRegionToCheck(region.MoveUpRight());
-				AddRegionToCheck(region.MoveRight());
-				AddRegionToCheck(region.MoveDownRight());
-				AddRegionToCheck(region.MoveDown());
-				AddRegionToCheck(region.MoveDownLeft());
-				AddRegionToCheck(region.MoveLeft());
-				AddRegionToCheck(region.MoveUpLeft());
-			}
-		}
+				// We don't need to check the upper bounds - the set doesn't reach out that far
+				// This means we can optimize the bound checks a bit
 
-		void AddRegionToCheck(RegionId region)
-		{
-			// We don't need to check the upper bounds - the set doesn't reach out that far
-			if (region is { X: >= 0, Y: >= 0 })
-			{
-				regionsToCheck.Enqueue(region);
+				regionsToCheck.Enqueue(region.MoveUp());
+				regionsToCheck.Enqueue(region.MoveUpRight());
+				regionsToCheck.Enqueue(region.MoveRight());
+
+				if (region.Y >= 1)
+				{
+					regionsToCheck.Enqueue(region.MoveDownRight());
+					regionsToCheck.Enqueue(region.MoveDown());
+				}
+
+				if (region is { X: >= 1, Y: >= 1 })
+				{
+					regionsToCheck.Enqueue(region.MoveDownLeft());
+				}
+
+				if (region.X >= 1)
+				{
+					regionsToCheck.Enqueue(region.MoveLeft());
+					regionsToCheck.Enqueue(region.MoveUpLeft());
+				}
 			}
 		}
 	}
@@ -58,7 +64,8 @@ public static class BoundaryCalculator
 		var timer = Stopwatch.StartNew();
 		var boundaryParameters = new BoundaryParameters(areaDivisions, maximumIterations, metadata);
 
-		var visitedRegions = new VisitedRegions(capacity: boundaryParameters.Divisions.QuadrantDivisions * 2);
+		var estimatedCapacity = boundaryParameters.Divisions.QuadrantDivisions * 4;
+		var visitedRegions = new VisitedRegions(capacity: estimatedCapacity);
 		var proxy = new ThreadSafeVisitedRegions(visitedRegions, cancelToken);
 
 		Queue<RegionId> leftRegionsToCheck = new([areaDivisions.LeftStart()]);

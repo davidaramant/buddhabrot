@@ -124,7 +124,7 @@ public sealed class VisitedRegions : IVisitedRegions
 
 	public IReadOnlyList<RegionId> GetBorderRegions()
 	{
-		var estimatedCapacity = NodeCount / 10;
+		var estimatedCapacity = NodeCount / 20;
 		var regions = new List<RegionId>(estimatedCapacity);
 		DescendNode(_root, _dimensions, regions);
 		return regions;

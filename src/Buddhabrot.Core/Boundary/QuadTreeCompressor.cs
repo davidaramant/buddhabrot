@@ -8,8 +8,11 @@ public sealed class QuadTreeCompressor
 	private readonly IReadOnlyList<VisitNode> _oldTree;
 	private readonly List<RegionNode> _newTree;
 
-	private readonly Dictionary<(RegionNode SW, RegionNode SE, RegionNode NW, RegionNode NE), RegionNode> _cache =
-		new();
+#pragma warning disable CS9113 // Parameter is unread.
+	private readonly record struct QuadKey(RegionNode SW, RegionNode SE, RegionNode NW, RegionNode NE);
+#pragma warning restore CS9113 // Parameter is unread.
+
+	private readonly Dictionary<QuadKey, RegionNode> _cache = new();
 
 	public int Size => _cache.Count;
 	public int NumCachedValuesUsed { get; private set; }
@@ -18,7 +21,8 @@ public sealed class QuadTreeCompressor
 	{
 		_visitedRegions = visitedRegions;
 		_oldTree = visitedRegions.Nodes;
-		_newTree = new List<RegionNode>(_visitedRegions.NodeCount / 2); // TODO: What should this capacity be?
+		var estimatedCapacity = visitedRegions.NodeCount / 2;
+		_newTree = new List<RegionNode>(estimatedCapacity);
 	}
 
 	public RegionLookup Transform()
@@ -56,7 +60,7 @@ public sealed class QuadTreeCompressor
 			return sw;
 		}
 
-		var key = (sw: sw, se: se, nw: nw, ne: ne);
+		QuadKey key = new(SW: sw, SE: se, NW: nw, NE: ne);
 		if (!_cache.TryGetValue(key, out var node))
 		{
 			var index = _newTree.AddChildren(sw, se, nw, ne);

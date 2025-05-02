@@ -1,24 +1,24 @@
-using System.Drawing;
+using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary.Visualization;
 
 public sealed class RenderInstructions : IEquatable<RenderInstructions>
 {
-	private readonly Rectangle? _firstDirtyRect;
-	private readonly Rectangle? _secondDirtyRect;
+	private readonly SKRectI? _firstDirtyRect;
+	private readonly SKRectI? _secondDirtyRect;
 
 	public bool PasteFrontBuffer { get; }
-	public Rectangle SourceRect { get; }
-	public Rectangle DestRect { get; }
-	public Size Size { get; }
+	public SKRectI SourceRect { get; }
+	public SKRectI DestRect { get; }
+	public SKSizeI Size { get; }
 
 	private RenderInstructions(
 		bool pasteFrontBuffer,
-		Rectangle sourceRect,
-		Rectangle destRect,
-		Rectangle? firstDirtyRect,
-		Rectangle? secondDirtyRect,
-		Size size
+		SKRectI sourceRect,
+		SKRectI destRect,
+		SKRectI? firstDirtyRect,
+		SKRectI? secondDirtyRect,
+		SKSizeI size
 	)
 	{
 		PasteFrontBuffer = pasteFrontBuffer;
@@ -29,22 +29,22 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		Size = size;
 	}
 
-	public static RenderInstructions Everything(Size newSize) =>
+	public static RenderInstructions Everything(SKSizeI newSize) =>
 		new(
 			pasteFrontBuffer: false,
-			sourceRect: Rectangle.Empty,
-			destRect: Rectangle.Empty,
-			firstDirtyRect: new Rectangle(new Point(0, 0), newSize),
+			sourceRect: SKRectI.Empty,
+			destRect: SKRectI.Empty,
+			firstDirtyRect: SKRectI.Create(0, 0, newSize.Width, newSize.Height),
 			secondDirtyRect: null,
 			size: newSize
 		);
 
-	public static RenderInstructions Resized(Size oldSize, Size newSize)
+	public static RenderInstructions Resized(SKSizeI oldSize, SKSizeI newSize)
 	{
-		Rectangle? horizontal = null;
+		SKRectI? horizontal = null;
 		if (newSize.Width > oldSize.Width)
 		{
-			horizontal = new Rectangle(
+			horizontal = SKRectI.Create(
 				x: oldSize.Width,
 				y: 0,
 				width: newSize.Width - oldSize.Width,
@@ -52,10 +52,10 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			);
 		}
 
-		Rectangle? vertical = null;
+		SKRectI? vertical = null;
 		if (newSize.Height > oldSize.Height)
 		{
-			vertical = new Rectangle(
+			vertical = SKRectI.Create(
 				x: 0,
 				y: oldSize.Height,
 				width: oldSize.Width,
@@ -63,7 +63,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			);
 		}
 
-		var pasteRect = new Rectangle(
+		var pasteRect = SKRectI.Create(
 			0,
 			0,
 			width: Math.Min(oldSize.Width, newSize.Width),
@@ -80,27 +80,23 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		);
 	}
 
-	public static RenderInstructions Moved(Size size, PositionOffset offset)
+	public static RenderInstructions Moved(SKSizeI size, PositionOffset offset)
 	{
-		Rectangle? horizontal = null;
+		SKRectI? horizontal = null;
 		if (offset.X != 0)
 		{
-			if (offset.X < 0)
-			{
-				horizontal = new Rectangle(size.Width + offset.X, 0, width: Math.Abs(offset.X), size.Height);
-			}
-			else
-			{
-				horizontal = new Rectangle(0, 0, width: offset.X, size.Height);
-			}
+			horizontal =
+				offset.X < 0
+					? SKRectI.Create(size.Width + offset.X, 0, width: Math.Abs(offset.X), size.Height)
+					: SKRectI.Create(0, 0, width: offset.X, size.Height);
 		}
 
-		Rectangle? vertical = null;
+		SKRectI? vertical = null;
 		if (offset.Y != 0)
 		{
 			if (offset.Y < 0) // Up
 			{
-				vertical = new Rectangle(
+				vertical = SKRectI.Create(
 					x: Math.Max(0, offset.X),
 					y: size.Height + offset.Y,
 					width: Math.Min(size.Width, size.Width - Math.Abs(offset.X)),
@@ -109,7 +105,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			}
 			else // Down
 			{
-				vertical = new Rectangle(
+				vertical = SKRectI.Create(
 					x: Math.Max(0, offset.X),
 					y: 0,
 					width: Math.Min(size.Width, size.Width - Math.Abs(offset.X)),
@@ -123,13 +119,13 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 
 		return new RenderInstructions(
 			pasteFrontBuffer: true,
-			sourceRect: new Rectangle(
+			sourceRect: SKRectI.Create(
 				x: ClampSource(offset.X),
 				y: ClampSource(offset.Y),
 				width: pasteWidth,
 				height: pasteHeight
 			),
-			destRect: new Rectangle(
+			destRect: SKRectI.Create(
 				x: ClampDest(offset.X),
 				y: ClampDest(offset.Y),
 				width: pasteWidth,
@@ -144,23 +140,13 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		static int ClampDest(int p) => Math.Max(0, p);
 	}
 
-	public IEnumerable<Rectangle> GetDirtyRectangles()
+	public IEnumerable<SKRectI> GetDirtyRectangles()
 	{
 		if (_firstDirtyRect.HasValue)
-			yield return new Rectangle(
-				_firstDirtyRect.Value.X,
-				_firstDirtyRect.Value.Y,
-				_firstDirtyRect.Value.Width,
-				_firstDirtyRect.Value.Height
-			);
+			yield return _firstDirtyRect.Value;
 
 		if (_secondDirtyRect.HasValue)
-			yield return new Rectangle(
-				_secondDirtyRect.Value.X,
-				_secondDirtyRect.Value.Y,
-				_secondDirtyRect.Value.Width,
-				_secondDirtyRect.Value.Height
-			);
+			yield return _secondDirtyRect.Value;
 	}
 
 	#region Equality (generated)
@@ -179,25 +165,15 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			&& Size.Equals(other.Size);
 	}
 
-	public override bool Equals(object? obj)
-	{
-		return ReferenceEquals(this, obj) || obj is RenderInstructions other && Equals(other);
-	}
+	public override bool Equals(object? obj) =>
+		ReferenceEquals(this, obj) || obj is RenderInstructions other && Equals(other);
 
-	public override int GetHashCode()
-	{
-		return HashCode.Combine(_firstDirtyRect, _secondDirtyRect, PasteFrontBuffer, SourceRect, DestRect, Size);
-	}
+	public override int GetHashCode() =>
+		HashCode.Combine(_firstDirtyRect, _secondDirtyRect, PasteFrontBuffer, SourceRect, DestRect, Size);
 
-	public static bool operator ==(RenderInstructions? left, RenderInstructions? right)
-	{
-		return Equals(left, right);
-	}
+	public static bool operator ==(RenderInstructions? left, RenderInstructions? right) => Equals(left, right);
 
-	public static bool operator !=(RenderInstructions? left, RenderInstructions? right)
-	{
-		return !Equals(left, right);
-	}
+	public static bool operator !=(RenderInstructions? left, RenderInstructions? right) => !Equals(left, right);
 
 	#endregion
 }

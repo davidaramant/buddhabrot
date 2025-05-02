@@ -1,8 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using Buddhabrot.Core.Boundary;
-
-namespace BoundaryExplorer.Views;
+﻿namespace Buddhabrot.Core.Boundary.Visualization;
 
 /// <summary>
 /// A run-length encoded list of region types.
@@ -10,7 +6,7 @@ namespace BoundaryExplorer.Views;
 /// <remarks>
 /// Very specialized. After it starts being consumed, it will not have more things added to it.
 /// </remarks>
-public sealed class LookupRegionTypeList
+public sealed class LookupRegionTypeList // TODO: Make this internal after drawing has been extracted
 {
 	private readonly List<LookupRegionType> _types = new();
 	private readonly List<int> _counts = new();

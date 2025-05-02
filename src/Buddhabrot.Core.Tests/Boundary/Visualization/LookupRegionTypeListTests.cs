@@ -1,7 +1,7 @@
-using BoundaryExplorer.Views;
-using Buddhabrot.Core.Boundary;
+﻿using Buddhabrot.Core.Boundary;
+using Buddhabrot.Core.Boundary.Visualization;
 
-namespace BoundaryExplorer.Tests.Views;
+namespace Buddhabrot.Core.Tests.Boundary.Visualization;
 
 public class LookupRegionTypeListTests
 {

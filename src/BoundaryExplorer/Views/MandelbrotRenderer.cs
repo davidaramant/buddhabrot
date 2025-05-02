@@ -48,7 +48,7 @@ public sealed class MandelbrotRenderer : Control
 	private RenderingArgs? _nextFrameArgs;
 	private CancellationTokenSource _cancelSource = new();
 	private Task _renderingTask = Task.CompletedTask;
-	private readonly List<(System.Drawing.Rectangle Rect, LookupRegionType Type)> _areasToDraw = new();
+	private readonly List<RegionArea> _areasToDraw = new();
 	private ViewPort? _viewPort = null;
 
 	private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));

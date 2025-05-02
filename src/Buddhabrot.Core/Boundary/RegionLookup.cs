@@ -33,7 +33,7 @@ public sealed class RegionLookup
 	public void GetVisibleAreas(
 		SquareBoundary bounds,
 		IEnumerable<Rectangle> searchAreas,
-		ICollection<(Rectangle, LookupRegionType)> visibleAreas
+		ICollection<RegionArea> visibleAreas
 	)
 	{
 		foreach (var searchArea in searchAreas)
@@ -53,7 +53,7 @@ public sealed class RegionLookup
 
 				if (currentQuad.IsLeaf || boundary.IsPoint)
 				{
-					visibleAreas.Add((intersection, currentQuad.RegionType));
+					visibleAreas.Add(new (intersection, currentQuad.RegionType));
 				}
 				else
 				{
@@ -80,7 +80,7 @@ public sealed class RegionLookup
 
 				if (currentQuad.IsLeaf || boundary.IsPoint)
 				{
-					visibleAreas.Add((intersection, currentQuad.RegionType));
+					visibleAreas.Add(new (intersection, currentQuad.RegionType));
 				}
 				else
 				{

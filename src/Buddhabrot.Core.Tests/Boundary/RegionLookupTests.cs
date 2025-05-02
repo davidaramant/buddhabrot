@@ -11,7 +11,7 @@ public class RegionLookupTests
 	public void ShouldReturnEveryAreaPlusMirrorsIfSearchAreaIsEqualToBounds()
 	{
 		var lookup = RegionLookupUtil.Make((0, 0), (4, 1));
-		var visibleAreas = new List<(Rectangle, LookupRegionType)>();
+		var visibleAreas = new List<RegionArea>();
 
 		lookup.GetVisibleAreas(new SquareBoundary(0, 0, 2), [new Rectangle(0, 0, 8, 8)], visibleAreas);
 
@@ -35,7 +35,7 @@ public class RegionLookupTests
 			],
 			2
 		);
-		var visibleAreas = new List<(Rectangle, LookupRegionType)>();
+		var visibleAreas = new List<RegionArea>();
 
 		lookup.GetVisibleAreas(new SquareBoundary(0, 0, 2), [new Rectangle(0, 0, 1, 1)], visibleAreas);
 

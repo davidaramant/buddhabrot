@@ -1,4 +1,8 @@
-﻿using SkiaSharp;
+﻿using System.Buffers;
+using System.Numerics;
+using Buddhabrot.Core.Calculations;
+using Buddhabrot.Core.ExtensionMethods.Drawing;
+using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary.Visualization;
 
@@ -14,6 +18,14 @@ public sealed record RenderingArgs(
 {
 	public int Width => Instructions.Size.Width;
 	public int Height => Instructions.Size.Height;
+
+	// TODO: This shouldn't be constructed here. It should be part of creating the RenderingArgs
+	public ViewPort ConstructViewPort() =>
+		ViewPort.FromResolution(
+			new System.Drawing.Size(Width, Height),
+			SetBoundary.Center,
+			2d / SetBoundary.QuadrantLength
+		);
 }
 
 public static class RegionRenderer
@@ -111,6 +123,68 @@ public static class RegionRenderer
 			paint.Color = palette[type];
 
 			canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
+		}
+	}
+
+	public static void DrawRegionInteriors(
+		SKCanvas canvas,
+		ViewPort viewPort,
+		IBoundaryPalette palette,
+		int maxIterations,
+		int minIterations,
+		List<RegionArea> areasToDraw
+	)
+	{
+		using var paint = new SKPaint();
+
+		var (positionsToRender, types) = GetPositionsAndTypes(areasToDraw);
+
+		var numPoints = positionsToRender.Count;
+		var points = ArrayPool<Complex>.Shared.Rent(numPoints);
+		var escapeTimes = ArrayPool<EscapeTime>.Shared.Rent(numPoints);
+
+		for (int i = 0; i < numPoints; i++)
+		{
+			points[i] = viewPort.GetComplex(positionsToRender[i]);
+		}
+
+		VectorKernel.FindEscapeTimes(points, escapeTimes, numPoints, maxIterations);
+
+		for (int i = 0; i < numPoints; i++)
+		{
+			var time = escapeTimes[i];
+			var classification = time switch
+			{
+				{ IsInfinite: true } => PointClassification.InSet,
+				var t when t.Iterations > minIterations => PointClassification.InRange,
+				_ => PointClassification.OutsideSet,
+			};
+			var type = types.GetNextType();
+
+			paint.Color = palette[type, classification];
+
+			canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
+		}
+
+		ArrayPool<Complex>.Shared.Return(points);
+		ArrayPool<EscapeTime>.Shared.Return(escapeTimes);
+
+		static (List<System.Drawing.Point> PositionsToRender, LookupRegionTypeList Types) GetPositionsAndTypes(
+			List<RegionArea> areasToDraw
+		)
+		{
+			areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
+
+			var positionsToRender = new List<System.Drawing.Point>();
+			var types = new LookupRegionTypeList();
+
+			foreach (var (area, type) in areasToDraw)
+			{
+				positionsToRender.AddRange(area.GetAllPositions());
+				types.Add(type, area.GetArea());
+			}
+
+			return (positionsToRender, types);
 		}
 	}
 }

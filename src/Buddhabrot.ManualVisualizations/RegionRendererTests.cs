@@ -1,4 +1,6 @@
 using System.Drawing;
+using System.Numerics;
+using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.Boundary.Visualization;
@@ -21,17 +23,12 @@ public class RegionRendererTests : BaseVisualization
 		var imageSize = new SKSizeI(1 << 10, 1 << 10);
 		var palette = BluePalette.Instance;
 
-		IReadOnlyList<RegionId> borders = null!;
 		RegionLookup lookup = null!;
 
 		await BoundaryCalculator.CalculateBoundaryAsync(
 			boundaryParameters,
 			ClassifierType.Default,
-			(_, b, l) =>
-			{
-				borders = b;
-				lookup = l;
-			},
+			(_, _, l) => lookup = l,
 			CancellationToken.None
 		);
 
@@ -49,5 +46,49 @@ public class RegionRendererTests : BaseVisualization
 		RegionRenderer.DrawRegions(canvas, palette, areasToDraw);
 
 		SaveImage(image, "Borders");
+	}
+
+	[Test]
+	public async Task RenderRegionInteriors()
+	{
+		var scale = 10;
+		var boundaryParameters = new BoundaryParameters(new AreaDivisions(VerticalPower: 10), MaxIterations: 100_000);
+		var imageSize = new SKSizeI(1 << 10, 1 << 10);
+		var palette = BluePalette.Instance;
+
+		RegionLookup lookup = null!;
+
+		await BoundaryCalculator.CalculateBoundaryAsync(
+			boundaryParameters,
+			ClassifierType.Default,
+			(_, _, l) => lookup = l,
+			CancellationToken.None
+		);
+
+		var areasToDraw = new List<RegionArea>();
+		lookup.GetVisibleAreas(
+			new SquareBoundary(0, 0, scale),
+			[new Rectangle(0, 0, imageSize.Width, imageSize.Height)],
+			areasToDraw
+		);
+
+		using var image = new RasterImage(imageSize.Width, imageSize.Height);
+
+		using var canvas = new SKCanvas(image.Raw);
+		canvas.Clear(SKColors.White);
+		RegionRenderer.DrawRegionInteriors(
+			canvas,
+			ViewPort.FromResolution(
+				new Size(imageSize.Width, imageSize.Height),
+				bottomLeft: new Complex(-2, -2),
+				realMagnitude: 4
+			),
+			palette,
+			maxIterations: boundaryParameters.MaxIterations,
+			minIterations: boundaryParameters.MaxIterations / 100,
+			areasToDraw
+		);
+
+		SaveImage(image, "Interiors");
 	}
 }

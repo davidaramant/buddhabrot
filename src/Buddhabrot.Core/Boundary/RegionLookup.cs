@@ -53,7 +53,7 @@ public sealed class RegionLookup
 
 				if (currentQuad.IsLeaf || boundary.IsPoint)
 				{
-					visibleAreas.Add(new (intersection, currentQuad.RegionType));
+					visibleAreas.Add(new(intersection, currentQuad.RegionType));
 				}
 				else
 				{
@@ -80,7 +80,7 @@ public sealed class RegionLookup
 
 				if (currentQuad.IsLeaf || boundary.IsPoint)
 				{
-					visibleAreas.Add(new (intersection, currentQuad.RegionType));
+					visibleAreas.Add(new(intersection, currentQuad.RegionType));
 				}
 				else
 				{

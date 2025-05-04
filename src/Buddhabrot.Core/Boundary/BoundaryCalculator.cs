@@ -53,23 +53,20 @@ public static class BoundaryCalculator
 	}
 
 	public static async Task<Metrics> CalculateBoundaryAsync(
-		AreaDivisions areaDivisions,
-		int maximumIterations,
-		string metadata,
+		BoundaryParameters boundaryParameters,
 		ClassifierType selectedClassifier,
 		Action<BoundaryParameters, IReadOnlyList<RegionId>, RegionLookup> saveBorderData,
 		CancellationToken cancelToken
 	)
 	{
 		var timer = Stopwatch.StartNew();
-		var boundaryParameters = new BoundaryParameters(areaDivisions, maximumIterations, metadata);
 
 		var estimatedCapacity = boundaryParameters.Divisions.QuadrantDivisions * 4;
 		var visitedRegions = new VisitedRegions(capacity: estimatedCapacity);
 		var proxy = new ThreadSafeVisitedRegions(visitedRegions, cancelToken);
 
-		Queue<RegionId> leftRegionsToCheck = new([areaDivisions.LeftStart()]);
-		Queue<RegionId> rightRegionsToCheck = new([areaDivisions.RightStart()]);
+		Queue<RegionId> leftRegionsToCheck = new([boundaryParameters.Divisions.LeftStart()]);
+		Queue<RegionId> rightRegionsToCheck = new([boundaryParameters.Divisions.RightStart()]);
 
 		var leftClassifier = IRegionClassifier.Create(boundaryParameters, selectedClassifier);
 		var rightClassifier = IRegionClassifier.Create(boundaryParameters, selectedClassifier);

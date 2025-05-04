@@ -95,12 +95,12 @@ public sealed class CalculateBoundaryViewModel : ViewModelBase
 					? string.Empty
 					: _selectedClassifier.ToString().Humanize();
 
+			var boundaryParameters = new BoundaryParameters(AreaDivisions, MaximumIterations, metadata);
+
 			var metrics = await Task.Run(
 				() =>
 					BoundaryCalculator.CalculateBoundaryAsync(
-						AreaDivisions,
-						MaximumIterations,
-						metadata,
+						boundaryParameters,
 						_selectedClassifier,
 						_dataProvider.SaveBorderData,
 						cancelToken

@@ -46,9 +46,7 @@ class Program
 		await Console.Out.WriteLineAsync($"Finding boundary... (started {DateTime.Now:HH:mm:ss})");
 
 		Metrics metrics = await BoundaryCalculator.CalculateBoundaryAsync(
-			areaDivisions: new AreaDivisions(power),
-			maximumIterations: limit,
-			metadata: note,
+			boundaryParameters,
 			selectedClassifier: classifier,
 			saveBorderData: dataProvider.SaveBoundaryRegions,
 			CancellationToken.None

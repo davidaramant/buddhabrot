@@ -16,7 +16,7 @@ public class RegionRendererTests : BaseVisualization
 	public void CreateDirectory() => SetUpOutputPath(nameof(RegionRendererTests));
 
 	[Test]
-	public async Task RenderRegions()
+	public async Task RenderRegionAreas()
 	{
 		var scale = 10;
 		var boundaryParameters = new BoundaryParameters(new AreaDivisions(VerticalPower: 10), MaxIterations: 100_000);
@@ -43,9 +43,9 @@ public class RegionRendererTests : BaseVisualization
 
 		using var canvas = new SKCanvas(image.Raw);
 		canvas.Clear(SKColors.White);
-		RegionRenderer.DrawRegions(canvas, palette, areasToDraw);
+		RegionRenderer.DrawRegionAreas(canvas, palette, areasToDraw);
 
-		SaveImage(image, "Borders");
+		SaveImage(image, "Region Areas");
 	}
 
 	[Test]
@@ -89,6 +89,6 @@ public class RegionRendererTests : BaseVisualization
 			areasToDraw
 		);
 
-		SaveImage(image, "Interiors");
+		SaveImage(image, "Region Interiors");
 	}
 }

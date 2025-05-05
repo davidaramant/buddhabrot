@@ -47,8 +47,7 @@ public static class RegionRenderer
 			canvas.DrawBitmap(previousFrame, source: args.Instructions.SourceRect, dest: args.Instructions.DestRect);
 		}
 
-		// TODO: RegionLookup needs to work on SKRectI
-		//args.Lookup.GetVisibleAreas(args.SetBoundary, args.Instructions.GetDirtyRectangles(), areasToDraw);
+		args.Lookup.GetVisibleAreas(args.SetBoundary, args.Instructions.GetDirtyRectangles(), areasToDraw);
 
 		using var paint = new SKPaint();
 

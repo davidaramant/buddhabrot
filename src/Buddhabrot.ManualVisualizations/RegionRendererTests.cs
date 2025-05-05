@@ -1,6 +1,4 @@
 using System.Drawing;
-using System.Numerics;
-using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.Boundary.Visualization;
@@ -51,10 +49,8 @@ public class RegionRendererTests : BaseVisualization
 	[Test]
 	public async Task RenderRegionInteriors()
 	{
-		var scale = 10;
 		var boundaryParameters = new BoundaryParameters(new AreaDivisions(VerticalPower: 10), MaxIterations: 100_000);
-		var imageSize = new SKSizeI(1 << 10, 1 << 10);
-		var palette = BluePalette.Instance;
+		var imageSize = new SKSizeI(1024, 1024);
 
 		RegionLookup lookup = null!;
 
@@ -65,12 +61,18 @@ public class RegionRendererTests : BaseVisualization
 			CancellationToken.None
 		);
 
-		var areasToDraw = new List<RegionArea>();
-		lookup.GetVisibleAreas(
-			new SquareBoundary(0, 0, scale),
-			[new Rectangle(0, 0, imageSize.Width, imageSize.Height)],
-			areasToDraw
+		var args = new RenderingArgs(
+			Instructions: RenderInstructions.Everything(imageSize),
+			SetBoundary: new SquareBoundary(-11_533, -11_061, 15),
+			Lookup: lookup,
+			Palette: BluePalette.Instance,
+			RenderInteriors: true,
+			MaxIterations: boundaryParameters.MaxIterations,
+			MinIterations: 0
 		);
+
+		var areasToDraw = new List<RegionArea>();
+		lookup.GetVisibleAreas(args.SetBoundary, [new Rectangle(0, 0, imageSize.Width, imageSize.Height)], areasToDraw);
 
 		using var image = new RasterImage(imageSize.Width, imageSize.Height);
 
@@ -78,17 +80,50 @@ public class RegionRendererTests : BaseVisualization
 		canvas.Clear(SKColors.White);
 		RegionRenderer.DrawRegionInteriors(
 			canvas,
-			ViewPort.FromResolution(
-				new Size(imageSize.Width, imageSize.Height),
-				bottomLeft: new Complex(-2, -2),
-				realMagnitude: 4
-			),
-			palette,
-			maxIterations: boundaryParameters.MaxIterations,
-			minIterations: boundaryParameters.MaxIterations / 100,
+			args.ConstructViewPort(),
+			args.Palette,
+			maxIterations: args.MaxIterations,
+			minIterations: args.MinIterations,
 			areasToDraw
 		);
 
 		SaveImage(image, "Region Interiors");
+	}
+
+	[Test]
+	public async Task RenderRegion()
+	{
+		var boundaryParameters = new BoundaryParameters(new AreaDivisions(VerticalPower: 10), MaxIterations: 100_000);
+		var imageSize = new SKSizeI(1024, 1024);
+
+		RegionLookup lookup = null!;
+
+		await BoundaryCalculator.CalculateBoundaryAsync(
+			boundaryParameters,
+			ClassifierType.Default,
+			(_, _, l) => lookup = l,
+			CancellationToken.None
+		);
+
+		var args = new RenderingArgs(
+			Instructions: RenderInstructions.Everything(imageSize),
+			SetBoundary: new SquareBoundary(-11_533, -11_061, 15),
+			Lookup: lookup,
+			Palette: BluePalette.Instance,
+			RenderInteriors: true,
+			MaxIterations: boundaryParameters.MaxIterations,
+			MinIterations: 0
+		);
+
+		var areasToDraw = new List<RegionArea>();
+		lookup.GetVisibleAreas(args.SetBoundary, [new Rectangle(0, 0, imageSize.Width, imageSize.Height)], areasToDraw);
+
+		using var image = new RasterImage(imageSize.Width, imageSize.Height);
+
+		using var canvas = new SKCanvas(image.Raw);
+		canvas.Clear(SKColors.White);
+		RegionRenderer.DrawRegions(args, canvas, image.Raw);
+
+		SaveImage(image, "Region");
 	}
 }

@@ -1,6 +1,7 @@
 using System.Drawing;
 using Buddhabrot.Core.Boundary.QuadTrees;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
+using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary;
 
@@ -30,9 +31,21 @@ public sealed class RegionLookup
 		_root = nodes[^1];
 	}
 
+	// TODO: Remove when rendering has been moved to Core
 	public void GetVisibleAreas(
 		SquareBoundary bounds,
 		IEnumerable<Rectangle> searchAreas,
+		ICollection<RegionArea> visibleAreas
+	) =>
+		GetVisibleAreas(
+			bounds,
+			searchAreas.Select(r => new SKRectI(left: r.Left, top: r.Top, right: r.Right, bottom: r.Bottom)),
+			visibleAreas
+		);
+
+	public void GetVisibleAreas(
+		SquareBoundary bounds,
+		IEnumerable<SKRectI> searchAreas,
 		ICollection<RegionArea> visibleAreas
 	)
 	{

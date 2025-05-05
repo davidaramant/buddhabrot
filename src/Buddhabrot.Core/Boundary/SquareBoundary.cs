@@ -1,6 +1,9 @@
 using System.Drawing;
+using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary;
+
+// TODO: This data structure is amazingly confusing - how do you get one of these from a Complex number?
 
 /// <summary>
 /// A square in screen coordinates (+Y is down)
@@ -32,6 +35,18 @@ public readonly record struct SquareBoundary(int X, int Y, int Scale)
 		int x2 = Math.Min(rect.X + rect.Width, X + length);
 		int y1 = Math.Max(rect.Y, Y);
 		int y2 = Math.Min(rect.Y + rect.Height, Y + length);
+
+		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+	}
+
+	public Rectangle IntersectWith(SKRectI rect)
+	{
+		int length = Length;
+
+		int x1 = Math.Max(rect.Left, X);
+		int x2 = Math.Min(rect.Right, X + length);
+		int y1 = Math.Max(rect.Top, Y);
+		int y2 = Math.Min(rect.Bottom, Y + length);
 
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
 	}

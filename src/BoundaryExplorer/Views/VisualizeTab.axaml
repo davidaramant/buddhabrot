@@ -78,7 +78,7 @@
                 Grid.Row="0"
                 Grid.Column="8"
                 Margin="4"
-                Content="{Binding #MandelbrotRenderer.SetBoundary.Scale, StringFormat=Scale: \{0\}x}" />
+                Content="{Binding #MandelbrotRenderer.QuadTreeViewport.Scale, StringFormat=Scale: \{0\}x}" />
             <Button
                 Grid.Row="0"
                 Grid.Column="9"

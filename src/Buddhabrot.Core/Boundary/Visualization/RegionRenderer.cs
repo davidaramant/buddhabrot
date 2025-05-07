@@ -8,7 +8,7 @@ namespace Buddhabrot.Core.Boundary.Visualization;
 
 public sealed record RenderingArgs(
 	RenderInstructions Instructions,
-	SquareBoundary SetBoundary,
+	QuadTreeViewport SetBoundary,
 	RegionLookup Lookup,
 	IBoundaryPalette Palette,
 	bool RenderInteriors,

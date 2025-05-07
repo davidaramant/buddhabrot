@@ -7,10 +7,10 @@ namespace Buddhabrot.Benchmarks;
 /// <summary>
 /// Different ways to compute the intersection of two square boundaries
 /// </summary>
-public class SquareBoundaryIntersectionBenchmarks
+public class QuadTreeViewportIntersectionBenchmarks
 {
 	private const int Size = 100;
-	private readonly SquareBoundary _boundary = new(X: 10, Y: 10, Scale: 4);
+	private readonly QuadTreeViewport _boundary = new(X: 10, Y: 10, Scale: 4);
 	private readonly Rectangle[] _rectangles = new Rectangle[Size];
 
 	[GlobalSetup]
@@ -39,7 +39,7 @@ public class SquareBoundaryIntersectionBenchmarks
 
 		return intersections;
 
-		static Rectangle IntersectWith(SquareBoundary boundary, Rectangle rect)
+		static Rectangle IntersectWith(QuadTreeViewport boundary, Rectangle rect)
 		{
 			int length = boundary.Length;
 
@@ -73,7 +73,7 @@ public class SquareBoundaryIntersectionBenchmarks
 
 		return intersections;
 
-		static Rectangle IntersectWith(SquareBoundary boundary, Rectangle rect)
+		static Rectangle IntersectWith(QuadTreeViewport boundary, Rectangle rect)
 		{
 			int length = boundary.Length;
 

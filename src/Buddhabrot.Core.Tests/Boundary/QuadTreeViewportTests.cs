@@ -3,17 +3,17 @@ using Buddhabrot.Core.Boundary;
 
 namespace Buddhabrot.Core.Tests.Boundary;
 
-public class SquareBoundaryTests
+public class QuadTreeViewportTests
 {
 	[Fact]
 	public void ShouldGetExpectedQuadrants()
 	{
-		var sq = new SquareBoundary(0, 0, 1);
+		var v = new QuadTreeViewport(0, 0, 1);
 
-		sq.NW.ShouldBe(new SquareBoundary(0, 0, 0));
-		sq.NE.ShouldBe(new SquareBoundary(1, 0, 0));
-		sq.SE.ShouldBe(new SquareBoundary(1, 1, 0));
-		sq.SW.ShouldBe(new SquareBoundary(0, 1, 0));
+		v.NW.ShouldBe(new QuadTreeViewport(0, 0, 0));
+		v.NE.ShouldBe(new QuadTreeViewport(1, 0, 0));
+		v.SE.ShouldBe(new QuadTreeViewport(1, 1, 0));
+		v.SW.ShouldBe(new QuadTreeViewport(0, 1, 0));
 	}
 
 	public static IEnumerable<object[]> IntersectionData()
@@ -30,22 +30,22 @@ public class SquareBoundaryTests
 	[MemberData(nameof(IntersectionData))]
 	public void ShouldIntersectWithRectangle(Rectangle rect, Rectangle expected)
 	{
-		var sq = new SquareBoundary(-2, -2, 2);
-		sq.IntersectWith(rect).ShouldBe(expected);
+		var v = new QuadTreeViewport(-2, -2, 2);
+		v.IntersectWith(rect).ShouldBe(expected);
 	}
 
 	[Fact]
 	public void ShouldCalculateCenteredSquareInArea()
 	{
-		SquareBoundary.GetLargestCenteredSquareInside(10, 12).ShouldBe(new SquareBoundary(1, 2, 3));
+		QuadTreeViewport.GetLargestCenteredSquareInside(10, 12).ShouldBe(new QuadTreeViewport(1, 2, 3));
 	}
 
 	public sealed record ZoomOutTestCase(
 		string Name,
-		SquareBoundary Boundary,
+		QuadTreeViewport Viewport,
 		int Width,
 		int Height,
-		SquareBoundary ExpectedResult
+		QuadTreeViewport ExpectedResult
 	)
 	{
 		public override string ToString() => Name;
@@ -57,30 +57,30 @@ public class SquareBoundaryTests
 		[
 			new ZoomOutTestCase(
 				"Centered",
-				new SquareBoundary(X: 1, Y: 1, Scale: 3),
+				new QuadTreeViewport(X: 1, Y: 1, Scale: 3),
 				Width: 10,
 				Height: 10,
-				ExpectedResult: new SquareBoundary(X: 3, Y: 3, Scale: 2)
+				ExpectedResult: new QuadTreeViewport(X: 3, Y: 3, Scale: 2)
 			),
 		];
 		yield return
 		[
 			new ZoomOutTestCase(
 				"Offset - Top Left",
-				new SquareBoundary(X: 1, Y: 1, Scale: 3),
+				new QuadTreeViewport(X: 1, Y: 1, Scale: 3),
 				Width: 20,
 				Height: 20,
-				ExpectedResult: new SquareBoundary(X: 5, Y: 5, Scale: 2)
+				ExpectedResult: new QuadTreeViewport(X: 5, Y: 5, Scale: 2)
 			),
 		];
 		yield return
 		[
 			new ZoomOutTestCase(
 				"Offset - Top Right",
-				new SquareBoundary(X: 11, Y: 1, Scale: 3),
+				new QuadTreeViewport(X: 11, Y: 1, Scale: 3),
 				Width: 20,
 				Height: 20,
-				ExpectedResult: new SquareBoundary(X: 11, Y: 5, Scale: 2)
+				ExpectedResult: new QuadTreeViewport(X: 11, Y: 5, Scale: 2)
 			),
 		];
 	}
@@ -88,5 +88,5 @@ public class SquareBoundaryTests
 	[Theory]
 	[MemberData(nameof(ZoomOutData))]
 	public void ShouldZoomOutCorrectly(ZoomOutTestCase testCase) =>
-		testCase.Boundary.ZoomOut(width: testCase.Width, height: testCase.Height).ShouldBe(testCase.ExpectedResult);
+		testCase.Viewport.ZoomOut(width: testCase.Width, height: testCase.Height).ShouldBe(testCase.ExpectedResult);
 }

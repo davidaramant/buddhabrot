@@ -8,7 +8,7 @@ namespace Buddhabrot.Core.Boundary;
 public sealed class RegionLookup
 {
 	// Instance is reused to give the poor GC a rest
-	private readonly Stack<(SquareBoundary, RegionNode)> _toCheck = new();
+	private readonly Stack<(QuadTreeViewport, RegionNode)> _toCheck = new();
 	public IReadOnlyList<RegionNode> Nodes { get; }
 	private readonly RegionNode _root;
 
@@ -33,7 +33,7 @@ public sealed class RegionLookup
 
 	// TODO: Remove when rendering has been moved to Core
 	public void GetVisibleAreas(
-		SquareBoundary bounds,
+		QuadTreeViewport bounds,
 		IEnumerable<Rectangle> searchAreas,
 		ICollection<RegionArea> visibleAreas
 	) =>
@@ -44,7 +44,7 @@ public sealed class RegionLookup
 		);
 
 	public void GetVisibleAreas(
-		SquareBoundary bounds,
+		QuadTreeViewport bounds,
 		IEnumerable<SKRectI> searchAreas,
 		ICollection<RegionArea> visibleAreas
 	)

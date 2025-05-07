@@ -3,12 +3,12 @@ using System.Numerics;
 
 namespace Buddhabrot.Core.Tests;
 
-public sealed class ViewPortTests
+public sealed class ComplexViewportTests
 {
 	[Fact]
 	public void ShouldFigureOutMiddleOfSquareArea()
 	{
-		var viewPort = ViewPort.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
+		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
 
 		var middle = viewPort.GetPosition(new Complex());
 
@@ -18,7 +18,7 @@ public sealed class ViewPortTests
 	[Fact]
 	public void ShouldUseTopLeftAsPositionOrigin()
 	{
-		var viewPort = ViewPort.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
+		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
 
 		var topLeft = viewPort.GetPosition(new Complex(-1, 1));
 
@@ -28,7 +28,7 @@ public sealed class ViewPortTests
 	[Fact]
 	public void ShouldRoundTripPositions()
 	{
-		var viewPort = ViewPort.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
+		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
 
 		var c = new Complex(-1, 1);
 
@@ -39,7 +39,7 @@ public sealed class ViewPortTests
 	[Fact]
 	public void ShouldRoundTripComplexNumbers()
 	{
-		var viewPort = ViewPort.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
+		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
 
 		var point = new Point(-1, 1);
 
@@ -50,7 +50,7 @@ public sealed class ViewPortTests
 	[Fact]
 	public void ShouldDetermineHeight()
 	{
-		var viewPort = ViewPort.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
+		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
 
 		viewPort.Resolution.Height.ShouldBe(101);
 	}
@@ -58,7 +58,7 @@ public sealed class ViewPortTests
 	[Fact]
 	public void ShouldDetermineImaginaryMagnitude()
 	{
-		var viewPort = ViewPort.FromResolution(new Size(100, 100), new Complex(0, 0), realMagnitude: 2);
+		var viewPort = ComplexViewport.FromResolution(new Size(100, 100), new Complex(0, 0), realMagnitude: 2);
 
 		viewPort.LogicalArea.Width.ShouldBe(2);
 	}
@@ -122,7 +122,7 @@ public sealed class ViewPortTests
 	[MemberData(nameof(GetOverlapData))]
 	public void ShouldConstructFromResolution(ResolutionTestCase testCase)
 	{
-		var viewPort = ViewPort.FromResolution(testCase.Resolution, testCase.OriginOffset, testCase.PixelSize);
+		var viewPort = ComplexViewport.FromResolution(testCase.Resolution, testCase.OriginOffset, testCase.PixelSize);
 		viewPort.LogicalArea.ShouldBe(testCase.ExpectedArea);
 	}
 }

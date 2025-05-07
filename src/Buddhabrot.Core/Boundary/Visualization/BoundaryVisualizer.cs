@@ -19,11 +19,11 @@ public static class BoundaryVisualizer
 		IterationRange iterationRange
 	)
 	{
-		var viewPort = ViewPort.FromRegionId(resolution, divisions, regionId);
+		var viewPort = ComplexViewport.FromRegionId(resolution, divisions, regionId);
 		return RenderBorderRegion(viewPort, iterationRange);
 	}
 
-	public static RasterImage RenderBorderRegion(ViewPort viewPort, IterationRange iterationRange)
+	public static RasterImage RenderBorderRegion(ComplexViewport viewPort, IterationRange iterationRange)
 	{
 		var img = new RasterImage(viewPort.Resolution.Width, viewPort.Resolution.Height);
 

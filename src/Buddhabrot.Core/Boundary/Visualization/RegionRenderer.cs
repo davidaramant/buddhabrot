@@ -21,8 +21,8 @@ public sealed record RenderingArgs(
 
 	// TODO: This shouldn't be constructed here. It should be part of creating the RenderingArgs
 	// TODO: Is the above even true?
-	public ViewPort ConstructViewPort() =>
-		ViewPort.FromResolution(
+	public ComplexViewport ConstructViewPort() =>
+		ComplexViewport.FromResolution(
 			new System.Drawing.Size(Width, Height),
 			SetBoundary.Center,
 			2d / SetBoundary.QuadrantLength
@@ -82,7 +82,7 @@ public static class RegionRenderer
 
 	public static void DrawRegionInteriors(
 		SKCanvas canvas,
-		ViewPort viewPort,
+		ComplexViewport viewPort,
 		IBoundaryPalette palette,
 		int maxIterations,
 		int minIterations,

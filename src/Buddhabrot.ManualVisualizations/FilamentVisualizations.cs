@@ -8,7 +8,7 @@ namespace Buddhabrot.ManualVisualizations;
 [Explicit]
 public class FilamentVisualizations : BaseVisualization
 {
-	readonly ViewPort _viewPort = ViewPort.FromLogicalArea(
+	readonly ComplexViewport _viewPort = ComplexViewport.FromLogicalArea(
 		new ComplexArea(new Interval(-2, 2), new Interval(0, 2)),
 		width: 1000
 	);
@@ -97,7 +97,7 @@ public class FilamentVisualizations : BaseVisualization
 		SaveImage(image, $"Boundary Traced Filaments {max / 1000}K - diagonals {(checkDiagonals ? "YES" : "NO")}");
 	}
 
-	private static void RenderEscapeTimeSet(ViewPort viewPort, int max, RasterImage image)
+	private static void RenderEscapeTimeSet(ComplexViewport viewPort, int max, RasterImage image)
 	{
 		Parallel.For(
 			0,
@@ -114,7 +114,7 @@ public class FilamentVisualizations : BaseVisualization
 		);
 	}
 
-	private static void RenderFilaments(ViewPort viewPort, int max, RasterImage image)
+	private static void RenderFilaments(ComplexViewport viewPort, int max, RasterImage image)
 	{
 		Parallel.For(
 			0,
@@ -131,7 +131,7 @@ public class FilamentVisualizations : BaseVisualization
 		);
 	}
 
-	private static Color PickColorFromDistance(ViewPort viewPort, double distance) =>
+	private static Color PickColorFromDistance(ComplexViewport viewPort, double distance) =>
 		distance switch
 		{
 			Double.MaxValue => Color.DarkBlue,

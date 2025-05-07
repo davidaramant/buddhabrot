@@ -4,12 +4,12 @@ using Buddhabrot.Core.Boundary;
 
 namespace Buddhabrot.Core;
 
-public sealed record ViewPort(ComplexArea LogicalArea, Size Resolution)
+public sealed record ComplexViewport(ComplexArea LogicalArea, Size Resolution)
 {
 	public double PixelWidth { get; } = LogicalArea.RealInterval.Magnitude / (Resolution.Width - 1);
 	public double HalfPixelWidth => PixelWidth / 2;
 
-	public static ViewPort FromLogicalArea(ComplexArea area, int width)
+	public static ComplexViewport FromLogicalArea(ComplexArea area, int width)
 	{
 		var aspectRatio = area.RealInterval.Magnitude / area.ImagInterval.Magnitude;
 		var height = (int)(width / aspectRatio);
@@ -17,7 +17,7 @@ public sealed record ViewPort(ComplexArea LogicalArea, Size Resolution)
 		return new(area, new Size(width, height));
 	}
 
-	public static ViewPort FromRegionId(Size resolution, AreaDivisions divisions, RegionId regionId)
+	public static ComplexViewport FromRegionId(Size resolution, AreaDivisions divisions, RegionId regionId)
 	{
 		var r = (divisions.RegionSideLength * regionId.X) - 2;
 		var i = divisions.RegionSideLength * regionId.Y;
@@ -25,7 +25,7 @@ public sealed record ViewPort(ComplexArea LogicalArea, Size Resolution)
 		return FromResolution(resolution, new Complex(r, i), divisions.RegionSideLength);
 	}
 
-	public static ViewPort FromResolution(Size resolution, Complex bottomLeft, double realMagnitude)
+	public static ComplexViewport FromResolution(Size resolution, Complex bottomLeft, double realMagnitude)
 	{
 		var aspectRatio = (double)resolution.Width / resolution.Height;
 		var imagMagnitude = realMagnitude / aspectRatio;
@@ -34,7 +34,7 @@ public sealed record ViewPort(ComplexArea LogicalArea, Size Resolution)
 		return new(new ComplexArea(realInterval, imagInterval), resolution);
 	}
 
-	public static ViewPort FromResolution(Size resolution, Point originOffset, double pixelSize)
+	public static ComplexViewport FromResolution(Size resolution, Point originOffset, double pixelSize)
 	{
 		var realMagnitude = resolution.Width * pixelSize;
 		var imagMagnitude = resolution.Height * pixelSize;

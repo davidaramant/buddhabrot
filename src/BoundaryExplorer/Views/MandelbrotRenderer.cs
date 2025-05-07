@@ -49,7 +49,7 @@ public sealed class MandelbrotRenderer : Control
 	private RenderingArgs? _nextFrameArgs;
 	private CancellationTokenSource _cancelSource = new();
 	private Task _renderingTask = Task.CompletedTask;
-	private ViewPort? _viewPort = null;
+	private ComplexViewport? _viewPort = null;
 
 	private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
 	private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
@@ -325,7 +325,7 @@ public sealed class MandelbrotRenderer : Control
 
 	public override void Render(DrawingContext context)
 	{
-		_viewPort = ViewPort.FromResolution(
+		_viewPort = ComplexViewport.FromResolution(
 			new System.Drawing.Size(PixelBounds.Width, PixelBounds.Height),
 			QuadTreeViewport.Center,
 			2d / QuadTreeViewport.QuadrantLength
@@ -401,7 +401,7 @@ public sealed class MandelbrotRenderer : Control
 
 		if (args.RenderInteriors)
 		{
-			var viewPort = ViewPort.FromResolution(
+			var viewPort = ComplexViewport.FromResolution(
 				new System.Drawing.Size(args.Width, args.Height),
 				args.SetBoundary.Center,
 				2d / args.SetBoundary.QuadrantLength

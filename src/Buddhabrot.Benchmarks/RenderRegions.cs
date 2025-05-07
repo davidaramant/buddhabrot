@@ -25,7 +25,7 @@ public static class RenderRegions
 			var divisions = new AreaDivisions(VerticalPower: vp);
 			var regionId = new RegionId(x, y);
 			var resolution = new Size(256, 256);
-			var viewPort = ViewPort.FromRegionId(resolution, divisions, regionId);
+			var viewPort = ComplexViewport.FromRegionId(resolution, divisions, regionId);
 
 			using var bitmap = new SKBitmap(viewPort.Resolution.Width, viewPort.Resolution.Height);
 
@@ -38,7 +38,7 @@ public static class RenderRegions
 		}
 	}
 
-	private static void DrawContents(SKBitmap bitmap, ViewPort viewPort)
+	private static void DrawContents(SKBitmap bitmap, ComplexViewport viewPort)
 	{
 		for (var y = 0; y < viewPort.Resolution.Height; y++)
 		{

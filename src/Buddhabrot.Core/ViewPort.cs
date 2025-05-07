@@ -4,21 +4,10 @@ using Buddhabrot.Core.Boundary;
 
 namespace Buddhabrot.Core;
 
-public sealed class ViewPort
+public sealed record ViewPort(ComplexArea LogicalArea, Size Resolution)
 {
-	public ComplexArea LogicalArea { get; }
-	public Size Resolution { get; }
-
-	public double PixelWidth { get; }
+	public double PixelWidth { get; } = LogicalArea.RealInterval.Magnitude / (Resolution.Width - 1);
 	public double HalfPixelWidth => PixelWidth / 2;
-
-	private ViewPort(ComplexArea logicalArea, Size resolution)
-	{
-		LogicalArea = logicalArea;
-		Resolution = resolution;
-
-		PixelWidth = logicalArea.RealInterval.Magnitude / (resolution.Width - 1);
-	}
 
 	public static ViewPort FromLogicalArea(ComplexArea area, int width)
 	{

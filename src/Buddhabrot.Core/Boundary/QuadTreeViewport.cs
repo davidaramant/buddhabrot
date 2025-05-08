@@ -21,7 +21,7 @@ public readonly record struct QuadTreeViewport(Point TopLeft, int Scale)
 		new(new Point(TopLeft.X + deltaX, TopLeft.Y + deltaY), Scale);
 
 	public QuadTreeViewport ZoomIn(int x, int y) =>
-		new(Scale: Scale + 1, TopLeft: new Point(x: TopLeft.X - (x - TopLeft.X), y: TopLeft.Y - (y - TopLeft.Y)));
+		new(Scale: Scale + 1, TopLeft: new Point(x: 2 * TopLeft.X - x, y: 2 * TopLeft.Y - y));
 
 	public QuadTreeViewport ZoomOut(int width, int height) =>
 		new(

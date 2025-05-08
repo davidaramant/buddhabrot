@@ -10,7 +10,7 @@ namespace Buddhabrot.Benchmarks;
 public class QuadTreeViewportIntersectionBenchmarks
 {
 	private const int Size = 100;
-	private readonly QuadTreeViewport _boundary = new(X: 10, Y: 10, Scale: 4);
+	private readonly QuadTreeViewport _boundary = new(new Point(x: 10, y: 10), Scale: 4);
 	private readonly Rectangle[] _rectangles = new Rectangle[Size];
 
 	[GlobalSetup]
@@ -43,10 +43,10 @@ public class QuadTreeViewportIntersectionBenchmarks
 		{
 			int length = boundary.Length;
 
-			int x1 = Math.Max(rect.X, boundary.X);
-			int x2 = Math.Min(rect.X + rect.Width, boundary.X + length);
-			int y1 = Math.Max(rect.Y, boundary.Y);
-			int y2 = Math.Min(rect.Y + rect.Height, boundary.Y + length);
+			int x1 = Math.Max(rect.X, boundary.TopLeft.X);
+			int x2 = Math.Min(rect.X + rect.Width, boundary.TopLeft.X + length);
+			int y1 = Math.Max(rect.Y, boundary.TopLeft.Y);
+			int y2 = Math.Min(rect.Y + rect.Height, boundary.TopLeft.Y + length);
 
 			if (x2 >= x1 && y2 >= y1)
 			{
@@ -77,10 +77,10 @@ public class QuadTreeViewportIntersectionBenchmarks
 		{
 			int length = boundary.Length;
 
-			int x1 = Math.Max(rect.X, boundary.X);
-			int x2 = Math.Min(rect.X + rect.Width, boundary.X + length);
-			int y1 = Math.Max(rect.Y, boundary.Y);
-			int y2 = Math.Min(rect.Y + rect.Height, boundary.Y + length);
+			int x1 = Math.Max(rect.X, boundary.TopLeft.X);
+			int x2 = Math.Min(rect.X + rect.Width, boundary.TopLeft.X + length);
+			int y1 = Math.Max(rect.Y, boundary.TopLeft.Y);
+			int y2 = Math.Min(rect.Y + rect.Height, boundary.TopLeft.Y + length);
 
 			return new Rectangle(x1, y1, x2 - x1, y2 - y1);
 		}

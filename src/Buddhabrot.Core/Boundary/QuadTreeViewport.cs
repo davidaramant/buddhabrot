@@ -4,35 +4,47 @@ using SkiaSharp;
 namespace Buddhabrot.Core.Boundary;
 
 /// <summary>
-/// A square in screen coordinates (+Y is down)
+/// A viewport into a quad tree. In screen coordinates (+Y is down)
 /// </summary>
-public readonly record struct QuadTreeViewport(int X, int Y, int Scale)
+/// <remarks>
+/// The top left corner is an offset from the logical top left corner of the quad tree, which is (0,0). These are
+/// screen coordinates but don't necessarily have the the same origin.
+/// </remarks>
+public readonly record struct QuadTreeViewport(Point TopLeft, int Scale)
 {
 	public bool IsPoint => Scale == 0;
 	public int Length => 1 << Scale;
 	public int QuadrantLength => 1 << (Scale - 1);
-	public Point Center => new(X + QuadrantLength, Y + QuadrantLength);
+	public Point Center => new(TopLeft.X + QuadrantLength, TopLeft.Y + QuadrantLength);
 
-	public QuadTreeViewport OffsetBy(int deltaX, int deltaY) => new(X + deltaX, Y + deltaY, Scale);
+	public QuadTreeViewport OffsetBy(int deltaX, int deltaY) =>
+		new(new Point(TopLeft.X + deltaX, TopLeft.Y + deltaY), Scale);
 
-	public QuadTreeViewport ZoomIn(int x, int y) => new(Scale: Scale + 1, X: X - (x - X), Y: Y - (y - Y));
+	public QuadTreeViewport ZoomIn(int x, int y) =>
+		new(Scale: Scale + 1, TopLeft: new Point(x: TopLeft.X - (x - TopLeft.X), y: TopLeft.Y - (y - TopLeft.Y)));
 
 	public QuadTreeViewport ZoomOut(int width, int height) =>
-		new(Scale: Scale - 1, X: X - (X - (width / 2)) / 2, Y: Y - (Y - (height / 2)) / 2);
+		new(
+			Scale: Scale - 1,
+			TopLeft: new Point(
+				x: TopLeft.X - (TopLeft.X - (width / 2)) / 2,
+				y: TopLeft.Y - (TopLeft.Y - (height / 2)) / 2
+			)
+		);
 
-	public QuadTreeViewport SW => new(X, Y + QuadrantLength, Scale - 1);
-	public QuadTreeViewport SE => new(X + QuadrantLength, Y + QuadrantLength, Scale - 1);
+	public QuadTreeViewport SW => new(new Point(TopLeft.X, TopLeft.Y + QuadrantLength), Scale - 1);
+	public QuadTreeViewport SE => new(new Point(TopLeft.X + QuadrantLength, TopLeft.Y + QuadrantLength), Scale - 1);
 	public QuadTreeViewport NW => this with { Scale = Scale - 1 };
-	public QuadTreeViewport NE => new(X + QuadrantLength, Y, Scale - 1);
+	public QuadTreeViewport NE => new(new Point(TopLeft.X + QuadrantLength, TopLeft.Y), Scale - 1);
 
 	public Rectangle IntersectWith(Rectangle rect)
 	{
 		int length = Length;
 
-		int x1 = Math.Max(rect.X, X);
-		int x2 = Math.Min(rect.X + rect.Width, X + length);
-		int y1 = Math.Max(rect.Y, Y);
-		int y2 = Math.Min(rect.Y + rect.Height, Y + length);
+		int x1 = Math.Max(rect.X, TopLeft.X);
+		int x2 = Math.Min(rect.X + rect.Width, TopLeft.X + length);
+		int y1 = Math.Max(rect.Y, TopLeft.Y);
+		int y2 = Math.Min(rect.Y + rect.Height, TopLeft.Y + length);
 
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
 	}
@@ -41,15 +53,15 @@ public readonly record struct QuadTreeViewport(int X, int Y, int Scale)
 	{
 		int length = Length;
 
-		int x1 = Math.Max(rect.Left, X);
-		int x2 = Math.Min(rect.Right, X + length);
-		int y1 = Math.Max(rect.Top, Y);
-		int y2 = Math.Min(rect.Bottom, Y + length);
+		int x1 = Math.Max(rect.Left, TopLeft.X);
+		int x2 = Math.Min(rect.Right, TopLeft.X + length);
+		int y1 = Math.Max(rect.Top, TopLeft.Y);
+		int y2 = Math.Min(rect.Bottom, TopLeft.Y + length);
 
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
 	}
 
-	public override string ToString() => $"({X}, {Y}), SideLength = {1 << Scale}";
+	public override string ToString() => $"({TopLeft}), SideLength = {1 << Scale}";
 
 	public static QuadTreeViewport GetLargestCenteredSquareInside(int width, int height)
 	{
@@ -59,6 +71,6 @@ public readonly record struct QuadTreeViewport(int X, int Y, int Scale)
 
 		var x = (width - length) / 2;
 		var y = (height - length) / 2;
-		return new(x, y, scale);
+		return new(new(x, y), scale);
 	}
 }

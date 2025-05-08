@@ -8,12 +8,12 @@ public class QuadTreeViewportTests
 	[Fact]
 	public void ShouldGetExpectedQuadrants()
 	{
-		var v = new QuadTreeViewport(0, 0, 1);
+		var v = new QuadTreeViewport(new Point(0, 0), 1);
 
-		v.NW.ShouldBe(new QuadTreeViewport(0, 0, 0));
-		v.NE.ShouldBe(new QuadTreeViewport(1, 0, 0));
-		v.SE.ShouldBe(new QuadTreeViewport(1, 1, 0));
-		v.SW.ShouldBe(new QuadTreeViewport(0, 1, 0));
+		v.NW.ShouldBe(new QuadTreeViewport(new Point(0, 0), 0));
+		v.NE.ShouldBe(new QuadTreeViewport(new Point(1, 0), 0));
+		v.SE.ShouldBe(new QuadTreeViewport(new Point(1, 1), 0));
+		v.SW.ShouldBe(new QuadTreeViewport(new Point(0, 1), 0));
 	}
 
 	public static IEnumerable<object[]> IntersectionData()
@@ -30,14 +30,14 @@ public class QuadTreeViewportTests
 	[MemberData(nameof(IntersectionData))]
 	public void ShouldIntersectWithRectangle(Rectangle rect, Rectangle expected)
 	{
-		var v = new QuadTreeViewport(-2, -2, 2);
+		var v = new QuadTreeViewport(new Point(-2, -2), 2);
 		v.IntersectWith(rect).ShouldBe(expected);
 	}
 
 	[Fact]
 	public void ShouldCalculateCenteredSquareInArea()
 	{
-		QuadTreeViewport.GetLargestCenteredSquareInside(10, 12).ShouldBe(new QuadTreeViewport(1, 2, 3));
+		QuadTreeViewport.GetLargestCenteredSquareInside(10, 12).ShouldBe(new QuadTreeViewport(new Point(1, 2), 3));
 	}
 
 	public sealed record ZoomOutTestCase(
@@ -57,30 +57,30 @@ public class QuadTreeViewportTests
 		[
 			new ZoomOutTestCase(
 				"Centered",
-				new QuadTreeViewport(X: 1, Y: 1, Scale: 3),
+				new QuadTreeViewport(new Point(1, 1), Scale: 3),
 				Width: 10,
 				Height: 10,
-				ExpectedResult: new QuadTreeViewport(X: 3, Y: 3, Scale: 2)
+				ExpectedResult: new QuadTreeViewport(new Point(3, 3), Scale: 2)
 			),
 		];
 		yield return
 		[
 			new ZoomOutTestCase(
 				"Offset - Top Left",
-				new QuadTreeViewport(X: 1, Y: 1, Scale: 3),
+				new QuadTreeViewport(new Point(1, 1), Scale: 3),
 				Width: 20,
 				Height: 20,
-				ExpectedResult: new QuadTreeViewport(X: 5, Y: 5, Scale: 2)
+				ExpectedResult: new QuadTreeViewport(new Point(5, 5), Scale: 2)
 			),
 		];
 		yield return
 		[
 			new ZoomOutTestCase(
 				"Offset - Top Right",
-				new QuadTreeViewport(X: 11, Y: 1, Scale: 3),
+				new QuadTreeViewport(new Point(x: 11, y: 1), Scale: 3),
 				Width: 20,
 				Height: 20,
-				ExpectedResult: new QuadTreeViewport(X: 11, Y: 5, Scale: 2)
+				ExpectedResult: new QuadTreeViewport(new Point(x: 11, y: 5), Scale: 2)
 			),
 		];
 	}

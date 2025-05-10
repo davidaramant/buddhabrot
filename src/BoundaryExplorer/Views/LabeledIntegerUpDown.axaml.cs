@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 
 namespace BoundaryExplorer.Views;

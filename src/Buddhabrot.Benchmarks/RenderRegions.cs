@@ -1,4 +1,3 @@
-using System.Drawing;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Calculations;

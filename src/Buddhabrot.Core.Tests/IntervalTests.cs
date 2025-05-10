@@ -1,5 +1,3 @@
-using Humanizer;
-
 namespace Buddhabrot.Core.Tests;
 
 public class IntervalTests

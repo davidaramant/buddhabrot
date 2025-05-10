@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.DataStorage;

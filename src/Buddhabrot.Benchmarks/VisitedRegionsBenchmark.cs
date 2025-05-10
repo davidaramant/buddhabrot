@@ -2,10 +2,6 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Tests.Boundary;
-using Buddhabrot.ManualVisualizations;
-using Humanizer;
-using ProtoBuf;
-using Spectre.Console;
 
 namespace Buddhabrot.Benchmarks;
 

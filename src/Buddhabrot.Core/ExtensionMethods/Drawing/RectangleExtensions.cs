@@ -1,4 +1,5 @@
 using System.Drawing;
+using SkiaSharp;
 
 namespace Buddhabrot.Core.ExtensionMethods.Drawing;
 
@@ -7,6 +8,8 @@ public static class RectangleExtensions
 	public static int GetArea(this Size size) => size.Width * size.Height;
 
 	public static int GetArea(this Rectangle rect) => rect.Width * rect.Height;
+
+	public static int GetArea(this SKSizeI size) => size.Width * size.Height;
 
 	public static IEnumerable<Point> GetAllPositions(this Rectangle rect)
 	{

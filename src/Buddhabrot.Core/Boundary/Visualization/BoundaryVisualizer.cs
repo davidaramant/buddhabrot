@@ -13,7 +13,7 @@ namespace Buddhabrot.Core.Boundary.Visualization;
 public static class BoundaryVisualizer
 {
 	public static RasterImage RenderBorderRegion(
-		Size resolution,
+		SKSizeI resolution,
 		AreaDivisions divisions,
 		RegionId regionId,
 		IterationRange iterationRange

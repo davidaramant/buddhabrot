@@ -17,6 +17,9 @@ public sealed class RasterImage : IDisposable
 	public RasterImage(System.Drawing.Size resolution, int scale = 1)
 		: this(resolution.Width, resolution.Height, scale) { }
 
+	public RasterImage(SKSizeI resolution, int scale = 1)
+		: this(resolution.Width, resolution.Height, scale) { }
+
 	public RasterImage(int width, int height, int scale = 1)
 	{
 		_scale = scale;
@@ -35,7 +38,11 @@ public sealed class RasterImage : IDisposable
 
 	public void SetPixel(System.Drawing.Point point, System.Drawing.Color color) => SetPixel(point.X, point.Y, color);
 
+	public void SetPixel(SKPointI point, System.Drawing.Color color) => SetPixel(point.X, point.Y, color);
+
 	public void SetPixel(int x, int y, System.Drawing.Color color) => SetPixel(x, y, color.ToSKColor());
+
+	public void SetPixel(SKPointI point, SKColor color) => SetPixel(point.X, point.Y, color);
 
 	public void SetPixel(int x, int y, SKColor color)
 	{

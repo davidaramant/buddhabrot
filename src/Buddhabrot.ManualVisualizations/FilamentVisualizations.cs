@@ -2,6 +2,7 @@ using System.Drawing;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Images;
+using SkiaSharp;
 
 namespace Buddhabrot.ManualVisualizations;
 
@@ -21,7 +22,7 @@ public class FilamentVisualizations : BaseVisualization
 	{
 		var escapeLimitsThousands = new[] { 1, 5, 10 };
 
-		using var image = new RasterImage(_viewPort.Resolution);
+		using var image = new RasterImage(new SKSizeI(_viewPort.Resolution.Width, _viewPort.Resolution.Height));
 
 		foreach (var maxK in escapeLimitsThousands)
 		{
@@ -40,13 +41,13 @@ public class FilamentVisualizations : BaseVisualization
 	{
 		var max = 10_000;
 
-		using var image = new RasterImage(_viewPort.Resolution);
+		using var image = new RasterImage(new SKSizeI(_viewPort.Resolution.Width, _viewPort.Resolution.Height));
 
 		image.Fill(Color.White);
 
-		var visitedPoints = new HashSet<Point>();
-		var toCheck = new Queue<Point>();
-		toCheck.Enqueue(new Point(0, _viewPort.Resolution.Height - 1));
+		var visitedPoints = new HashSet<SKPointI>();
+		var toCheck = new Queue<SKPointI>();
+		toCheck.Enqueue(new SKPointI(0, _viewPort.Resolution.Height - 1));
 
 		while (toCheck.Any())
 		{
@@ -80,7 +81,7 @@ public class FilamentVisualizations : BaseVisualization
 			}
 		}
 
-		void AddPointToCheck(Point p)
+		void AddPointToCheck(SKPointI p)
 		{
 			if (
 				p.X >= 0
@@ -108,7 +109,7 @@ public class FilamentVisualizations : BaseVisualization
 				{
 					var inSet = ScalarKernel.FindEscapeTime(viewPort.GetComplex(col, row), max).IsInfinite;
 
-					image.SetPixel(col, row, inSet ? Color.DarkBlue : Color.White);
+					image.SetPixel(new SKPointI(col, row), inSet ? Color.DarkBlue : Color.White);
 				}
 			}
 		);
@@ -125,7 +126,7 @@ public class FilamentVisualizations : BaseVisualization
 				{
 					var (_, distance) = ScalarKernel.FindExteriorDistance(viewPort.GetComplex(col, row), max);
 
-					image.SetPixel(col, row, PickColorFromDistance(viewPort, distance));
+					image.SetPixel(new SKPointI(col, row), PickColorFromDistance(viewPort, distance));
 				}
 			}
 		);

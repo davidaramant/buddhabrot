@@ -13,7 +13,7 @@ public sealed class ComplexViewportTests
 
 		var middle = viewPort.GetPosition(new Complex());
 
-		middle.ShouldBe(new(50, 50));
+		middle.ShouldBe(new SKPointI(50, 50));
 	}
 
 	[Fact]
@@ -23,7 +23,7 @@ public sealed class ComplexViewportTests
 
 		var topLeft = viewPort.GetPosition(new Complex(-1, 1));
 
-		topLeft.ShouldBe(new(0, 0));
+		topLeft.ShouldBe(new SKPointI(0, 0));
 	}
 
 	[Fact]
@@ -42,7 +42,7 @@ public sealed class ComplexViewportTests
 	{
 		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
 
-		var point = new Point(-1, 1);
+		var point = new SKPointI(-1, 1);
 
 		var roundTripped = viewPort.GetPosition(viewPort.GetComplex(point));
 		roundTripped.ShouldBe(point);
@@ -59,14 +59,14 @@ public sealed class ComplexViewportTests
 	[Fact]
 	public void ShouldDetermineImaginaryMagnitude()
 	{
-		var viewPort = ComplexViewport.FromResolution(new Size(100, 100), new Complex(0, 0), realMagnitude: 2);
+		var viewPort = ComplexViewport.FromResolution(new SKSizeI(100, 100), new Complex(0, 0), realMagnitude: 2);
 
 		viewPort.LogicalArea.Width.ShouldBe(2);
 	}
 
 	public sealed record ResolutionTestCase(
 		string Name,
-		Size Resolution,
+		SKSizeI Resolution,
 		SKPointI OriginOffset,
 		double PixelSize,
 		ComplexArea ExpectedArea
@@ -81,8 +81,8 @@ public sealed class ComplexViewportTests
 		[
 			new ResolutionTestCase(
 				"Center of Square 1:1",
-				new Size(100, 100),
-				new(0, 0),
+				new SKSizeI(100, 100),
+				new SKPointI(0, 0),
 				1,
 				ExpectedArea: new ComplexArea(new Interval(0, 100), new Interval(-100, 0))
 			),
@@ -91,8 +91,8 @@ public sealed class ComplexViewportTests
 		[
 			new ResolutionTestCase(
 				"Center of Square 1:0.1",
-				new Size(100, 100),
-				new(0, 0),
+				new SKSizeI(100, 100),
+				new SKPointI(0, 0),
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(0, 10), new Interval(-10, 0))
 			),
@@ -101,8 +101,8 @@ public sealed class ComplexViewportTests
 		[
 			new ResolutionTestCase(
 				"Offset Right",
-				new Size(100, 100),
-				new(50, 0),
+				new SKSizeI(100, 100),
+				new SKPointI(50, 0),
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(-5, 5), new Interval(-10, 0))
 			),
@@ -111,8 +111,8 @@ public sealed class ComplexViewportTests
 		[
 			new ResolutionTestCase(
 				"Offset Up Imag Axis",
-				new Size(100, 100),
-				new(0, 50),
+				new SKSizeI(100, 100),
+				new SKPointI(0, 50),
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(0, 10), new Interval(-5, 5))
 			),

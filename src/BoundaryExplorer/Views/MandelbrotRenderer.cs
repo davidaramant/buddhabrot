@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -200,7 +201,7 @@ public sealed class MandelbrotRenderer : Control
 			var v = _viewPort;
 			if (v != null)
 			{
-				var cursorPosition = v.GetComplex((int)point.X, (int)point.Y);
+				var cursorPosition = v.GetComplex(new SKPointI((int)point.X, (int)point.Y));
 				var r = cursorPosition.Real + 2;
 				var i = Math.Abs(cursorPosition.Imaginary);
 
@@ -329,7 +330,7 @@ public sealed class MandelbrotRenderer : Control
 	public override void Render(DrawingContext context)
 	{
 		_viewPort = ComplexViewport.FromResolution(
-			new System.Drawing.Size(PixelBounds.Width, PixelBounds.Height),
+			new SKSizeI(PixelBounds.Width, PixelBounds.Height),
 			QuadTreeViewport.Center,
 			2d / QuadTreeViewport.QuadrantLength
 		);
@@ -405,18 +406,18 @@ public sealed class MandelbrotRenderer : Control
 		if (args.RenderInteriors)
 		{
 			var viewPort = ComplexViewport.FromResolution(
-				new System.Drawing.Size(args.Width, args.Height),
+				new SKSizeI(args.Width, args.Height),
 				args.SetBoundary.Center,
 				2d / args.SetBoundary.QuadrantLength
 			);
 			areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
 
-			var positionsToRender = new List<System.Drawing.Point>();
+			var positionsToRender = new List<SKPointI>();
 			var types = new LookupRegionTypeList();
 
 			foreach (var (area, type) in areasToDraw)
 			{
-				positionsToRender.AddRange(area.GetAllPositions());
+				positionsToRender.AddRange(area.GetAllPositions().Select(p => new SKPointI(p.X, p.Y)));
 				types.Add(type, area.GetArea());
 			}
 

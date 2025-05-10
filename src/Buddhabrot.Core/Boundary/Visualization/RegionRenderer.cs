@@ -22,11 +22,7 @@ public sealed record RenderingArgs(
 	// TODO: This shouldn't be constructed here. It should be part of creating the RenderingArgs
 	// TODO: Is the above even true?
 	public ComplexViewport ConstructViewPort() =>
-		ComplexViewport.FromResolution(
-			new System.Drawing.Size(Width, Height),
-			SetBoundary.Center,
-			2d / SetBoundary.QuadrantLength
-		);
+		ComplexViewport.FromResolution(new SKSizeI(Width, Height), SetBoundary.Center, 2d / SetBoundary.QuadrantLength);
 }
 
 public static class RegionRenderer
@@ -123,18 +119,18 @@ public static class RegionRenderer
 		ArrayPool<Complex>.Shared.Return(points);
 		ArrayPool<EscapeTime>.Shared.Return(escapeTimes);
 
-		static (List<System.Drawing.Point> PositionsToRender, LookupRegionTypeList Types) GetPositionsAndTypes(
+		static (List<SKPointI> PositionsToRender, LookupRegionTypeList Types) GetPositionsAndTypes(
 			List<RegionArea> areasToDraw
 		)
 		{
 			areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
 
-			var positionsToRender = new List<System.Drawing.Point>();
+			var positionsToRender = new List<SKPointI>();
 			var types = new LookupRegionTypeList();
 
 			foreach (var (area, type) in areasToDraw)
 			{
-				positionsToRender.AddRange(area.GetAllPositions());
+				positionsToRender.AddRange(area.GetAllPositions().Select(p => new SKPointI(p.X, p.Y)));
 				types.Add(type, area.GetArea());
 			}
 

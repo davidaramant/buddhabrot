@@ -1,11 +1,10 @@
-using System.Drawing;
 using System.Numerics;
 using Buddhabrot.Core.Boundary;
 using SkiaSharp;
 
 namespace Buddhabrot.Core;
 
-public sealed record ComplexViewport(ComplexArea LogicalArea, Size Resolution)
+public sealed record ComplexViewport(ComplexArea LogicalArea, SKSizeI Resolution)
 {
 	public double PixelWidth { get; } = LogicalArea.RealInterval.Magnitude / (Resolution.Width - 1);
 	public double HalfPixelWidth => PixelWidth / 2;
@@ -15,10 +14,10 @@ public sealed record ComplexViewport(ComplexArea LogicalArea, Size Resolution)
 		var aspectRatio = area.RealInterval.Magnitude / area.ImagInterval.Magnitude;
 		var height = (int)(width / aspectRatio);
 
-		return new(area, new Size(width, height));
+		return new(area, new SKSizeI(width, height));
 	}
 
-	public static ComplexViewport FromRegionId(Size resolution, AreaDivisions divisions, RegionId regionId)
+	public static ComplexViewport FromRegionId(SKSizeI resolution, AreaDivisions divisions, RegionId regionId)
 	{
 		var r = (divisions.RegionSideLength * regionId.X) - 2;
 		var i = divisions.RegionSideLength * regionId.Y;
@@ -26,7 +25,7 @@ public sealed record ComplexViewport(ComplexArea LogicalArea, Size Resolution)
 		return FromResolution(resolution, new Complex(r, i), divisions.RegionSideLength);
 	}
 
-	public static ComplexViewport FromResolution(Size resolution, Complex bottomLeft, double realMagnitude)
+	public static ComplexViewport FromResolution(SKSizeI resolution, Complex bottomLeft, double realMagnitude)
 	{
 		var aspectRatio = (double)resolution.Width / resolution.Height;
 		var imagMagnitude = realMagnitude / aspectRatio;
@@ -35,7 +34,7 @@ public sealed record ComplexViewport(ComplexArea LogicalArea, Size Resolution)
 		return new(new ComplexArea(realInterval, imagInterval), resolution);
 	}
 
-	public static ComplexViewport FromResolution(Size resolution, SKPointI originOffset, double pixelSize)
+	public static ComplexViewport FromResolution(SKSizeI resolution, SKPointI originOffset, double pixelSize)
 	{
 		var realMagnitude = resolution.Width * pixelSize;
 		var imagMagnitude = resolution.Height * pixelSize;
@@ -54,18 +53,17 @@ public sealed record ComplexViewport(ComplexArea LogicalArea, Size Resolution)
 
 	public Complex GetComplex(int x, int y) => new(GetRealValue(x), GetImagValue(y));
 
-	public Complex GetComplex(Point position) => GetComplex(position.X, position.Y);
+	public Complex GetComplex(SKPointI position) => GetComplex(position.X, position.Y);
 
-	public Rectangle GetRectangle(ComplexArea area) =>
+	public SKRectI GetRectangle(ComplexArea area) =>
 		new(
-			GetPosition(area.TopLeftCorner),
-			new Size(
-				(int)Math.Ceiling(area.RealInterval.Magnitude / PixelWidth),
-				(int)Math.Ceiling(area.ImagInterval.Magnitude / PixelWidth)
-			)
+			GetPosition(area.TopLeftCorner).X,
+			GetPosition(area.TopLeftCorner).Y,
+			(int)Math.Ceiling(area.RealInterval.Magnitude / PixelWidth),
+			(int)Math.Ceiling(area.ImagInterval.Magnitude / PixelWidth)
 		);
 
-	public Point GetPosition(Complex c) =>
+	public SKPointI GetPosition(Complex c) =>
 		new(
 			(int)((c.Real - LogicalArea.RealInterval.InclusiveMin) / PixelWidth),
 			FlipY((int)((c.Imaginary - LogicalArea.ImagInterval.InclusiveMin) / PixelWidth))

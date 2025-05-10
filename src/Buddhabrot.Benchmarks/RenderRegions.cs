@@ -24,7 +24,7 @@ public static class RenderRegions
 		{
 			var divisions = new AreaDivisions(VerticalPower: vp);
 			var regionId = new RegionId(x, y);
-			var resolution = new Size(256, 256);
+			var resolution = new SKSizeI(256, 256);
 			var viewPort = ComplexViewport.FromRegionId(resolution, divisions, regionId);
 
 			using var bitmap = new SKBitmap(viewPort.Resolution.Width, viewPort.Resolution.Height);

@@ -54,7 +54,8 @@ public sealed class MandelbrotRenderer : Control
 	private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
 	private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
 
-	private PixelSize PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
+	private SKSizeI PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
+	private PixelSize PixelBoundsAvalonia => new PixelSize(PixelBounds.Width, PixelBounds.Height);
 
 	public static readonly StyledProperty<IBoundaryPalette> PaletteProperty = AvaloniaProperty.Register<
 		MandelbrotRenderer,
@@ -183,13 +184,15 @@ public sealed class MandelbrotRenderer : Control
 			}
 			else if (e.Property.Name == nameof(RenderInteriors))
 			{
-				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+				await RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
 			}
 		};
 
 		this.EffectiveViewportChanged += async (_, _) =>
 		{
-			await RequestRenderAsync(RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize, newSize: PixelBounds));
+			await RequestRenderAsync(
+				RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize, newSize: PixelBoundsAvalonia)
+			);
 		};
 		PointerMoved += (_, e) =>
 		{
@@ -230,14 +233,14 @@ public sealed class MandelbrotRenderer : Control
 					{
 						var pos = e.GetPosition(this);
 						QuadTreeViewport = QuadTreeViewport.ZoomIn((int)pos.X, (int)pos.Y);
-						await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+						await RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
 					}
 				}
 			}
 			else if (!_inspectMode && properties.IsRightButtonPressed && e.ClickCount == 2)
 			{
 				QuadTreeViewport = QuadTreeViewport.ZoomOut(PixelBounds.Width, PixelBounds.Height);
-				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+				await RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
 			}
 			else if (_inspectMode && properties.IsRightButtonPressed)
 			{
@@ -252,7 +255,7 @@ public sealed class MandelbrotRenderer : Control
 			{
 				_isPanning = false;
 				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
-				await RequestRenderAsync(RenderInstructions.Moved(PixelBounds, _panningOffset));
+				await RequestRenderAsync(RenderInstructions.Moved(PixelBoundsAvalonia, _panningOffset));
 			}
 		};
 		PointerCaptureLost += async (_, e) =>
@@ -262,7 +265,7 @@ public sealed class MandelbrotRenderer : Control
 				_isPanning = false;
 
 				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
-				await RequestRenderAsync(RenderInstructions.Moved(PixelBounds, _panningOffset));
+				await RequestRenderAsync(RenderInstructions.Moved(PixelBoundsAvalonia, _panningOffset));
 			}
 		};
 
@@ -270,7 +273,7 @@ public sealed class MandelbrotRenderer : Control
 		ZoomOutCommand = ReactiveCommand.CreateFromTask(() =>
 		{
 			QuadTreeViewport = QuadTreeViewport.ZoomOut(PixelBounds.Width, PixelBounds.Height);
-			return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+			return RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
 		});
 		ToggleInspectModeCommand = ReactiveCommand.Create(() =>
 		{
@@ -279,7 +282,7 @@ public sealed class MandelbrotRenderer : Control
 		this.WhenAnyValue(x => x.Palette)
 			.SelectMany(async _ =>
 			{
-				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+				await RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
 				return Unit.Default;
 			})
 			.Subscribe();
@@ -462,7 +465,7 @@ public sealed class MandelbrotRenderer : Control
 	private Task ResetLogicalAreaAsync()
 	{
 		QuadTreeViewport = QuadTreeViewport.GetLargestCenteredSquareInside(PixelBounds.Width, PixelBounds.Height);
-		return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+		return RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
 	}
 
 	protected override Size MeasureOverride(Size availableSize) => availableSize;

@@ -1,9 +1,7 @@
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
-using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;
 using Buddhabrot.Core.Tests.Boundary;
 using Buddhabrot.Core.Utilities;
@@ -54,14 +52,7 @@ public class BoundaryScanningProcess : BaseVisualization
 		using var image = new RasterImage(session.MaxX + 1, session.MaxY + 1, scale: 2);
 		image.Fill(SKColors.White);
 
-		var fire = new[]
-		{
-			Color.Brown.ToSKColor(),
-			Color.DarkRed.ToSKColor(),
-			Color.Red.ToSKColor(),
-			Color.OrangeRed.ToSKColor(),
-			Color.Orange.ToSKColor(),
-		};
+		var fire = new[] { SKColors.Brown, SKColors.DarkRed, SKColors.Red, SKColors.OrangeRed, SKColors.Orange };
 
 		var buffer = new RingBuffer<Step>(fire.Length * 2);
 

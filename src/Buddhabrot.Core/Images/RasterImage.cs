@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Buddhabrot.Core.ExtensionMethods.Drawing;
 using SkiaSharp;
 
 namespace Buddhabrot.Core.Images;
@@ -31,29 +30,12 @@ public sealed class RasterImage : IDisposable
 		canvas.Clear(color);
 	}
 
-	public void SetPixel(System.Drawing.Point point, System.Drawing.Color color) => SetPixel(point.X, point.Y, color);
-
-	public void SetPixel(SKPointI point, System.Drawing.Color color) => SetPixel(point.X, point.Y, color);
-
-	public void SetPixel(int x, int y, System.Drawing.Color color) => SetPixel(x, y, color.ToSKColor());
-
 	public void SetPixel(SKPointI point, SKColor color) => SetPixel(point.X, point.Y, color);
 
 	public void SetPixel(int x, int y, SKColor color)
 	{
 		_bitmap.SetPixel(x, y, color);
 	}
-
-	public void SetPixel(int pixelIndex, System.Drawing.Color color)
-	{
-		var x = pixelIndex % Width;
-		var y = pixelIndex / Width;
-
-		SetPixel(x, y, color);
-	}
-
-	public void FillRectangle(int x, int y, int width, int height, System.Drawing.Color color) =>
-		FillRectangle(x, y, width, height, color.ToSKColor());
 
 	public void FillRectangle(int x, int y, int width, int height, SKColor color)
 	{

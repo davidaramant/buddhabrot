@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Numerics;
+using SkiaSharp;
 
 namespace Buddhabrot.Core.Tests;
 
@@ -12,7 +13,7 @@ public sealed class ComplexViewportTests
 
 		var middle = viewPort.GetPosition(new Complex());
 
-		middle.ShouldBe(new Point(50, 50));
+		middle.ShouldBe(new(50, 50));
 	}
 
 	[Fact]
@@ -22,7 +23,7 @@ public sealed class ComplexViewportTests
 
 		var topLeft = viewPort.GetPosition(new Complex(-1, 1));
 
-		topLeft.ShouldBe(new Point(0, 0));
+		topLeft.ShouldBe(new(0, 0));
 	}
 
 	[Fact]
@@ -66,7 +67,7 @@ public sealed class ComplexViewportTests
 	public sealed record ResolutionTestCase(
 		string Name,
 		Size Resolution,
-		Point OriginOffset,
+		SKPointI OriginOffset,
 		double PixelSize,
 		ComplexArea ExpectedArea
 	)
@@ -81,7 +82,7 @@ public sealed class ComplexViewportTests
 			new ResolutionTestCase(
 				"Center of Square 1:1",
 				new Size(100, 100),
-				new Point(0, 0),
+				new(0, 0),
 				1,
 				ExpectedArea: new ComplexArea(new Interval(0, 100), new Interval(-100, 0))
 			),
@@ -91,7 +92,7 @@ public sealed class ComplexViewportTests
 			new ResolutionTestCase(
 				"Center of Square 1:0.1",
 				new Size(100, 100),
-				new Point(0, 0),
+				new(0, 0),
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(0, 10), new Interval(-10, 0))
 			),
@@ -101,7 +102,7 @@ public sealed class ComplexViewportTests
 			new ResolutionTestCase(
 				"Offset Right",
 				new Size(100, 100),
-				new Point(50, 0),
+				new(50, 0),
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(-5, 5), new Interval(-10, 0))
 			),
@@ -111,7 +112,7 @@ public sealed class ComplexViewportTests
 			new ResolutionTestCase(
 				"Offset Up Imag Axis",
 				new Size(100, 100),
-				new Point(0, 50),
+				new(0, 50),
 				0.1,
 				ExpectedArea: new ComplexArea(new Interval(0, 10), new Interval(-5, 5))
 			),

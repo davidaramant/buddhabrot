@@ -1,6 +1,7 @@
 using System.Drawing;
 using BenchmarkDotNet.Attributes;
 using Buddhabrot.Core.Boundary;
+using SkiaSharp;
 
 namespace Buddhabrot.Benchmarks;
 
@@ -10,7 +11,7 @@ namespace Buddhabrot.Benchmarks;
 public class QuadTreeViewportIntersectionBenchmarks
 {
 	private const int Size = 100;
-	private readonly QuadTreeViewport _boundary = new(new Point(x: 10, y: 10), Scale: 4);
+	private readonly QuadTreeViewport _boundary = new(new SKPointI(x: 10, y: 10), Scale: 4);
 	private readonly Rectangle[] _rectangles = new Rectangle[Size];
 
 	[GlobalSetup]

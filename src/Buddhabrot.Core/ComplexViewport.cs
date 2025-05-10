@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Numerics;
 using Buddhabrot.Core.Boundary;
+using SkiaSharp;
 
 namespace Buddhabrot.Core;
 
@@ -34,7 +35,7 @@ public sealed record ComplexViewport(ComplexArea LogicalArea, Size Resolution)
 		return new(new ComplexArea(realInterval, imagInterval), resolution);
 	}
 
-	public static ComplexViewport FromResolution(Size resolution, Point originOffset, double pixelSize)
+	public static ComplexViewport FromResolution(Size resolution, SKPointI originOffset, double pixelSize)
 	{
 		var realMagnitude = resolution.Width * pixelSize;
 		var imagMagnitude = resolution.Height * pixelSize;

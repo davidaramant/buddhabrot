@@ -10,32 +10,32 @@ namespace Buddhabrot.Core.Boundary;
 /// The top left corner is an offset from the logical top left corner of the quad tree, which is (0,0). These are
 /// screen coordinates but don't necessarily have the the same origin.
 /// </remarks>
-public readonly record struct QuadTreeViewport(Point TopLeft, int Scale)
+public readonly record struct QuadTreeViewport(SKPointI TopLeft, int Scale)
 {
 	public bool IsPoint => Scale == 0;
 	public int Length => 1 << Scale;
 	public int QuadrantLength => 1 << (Scale - 1);
-	public Point Center => new(TopLeft.X + QuadrantLength, TopLeft.Y + QuadrantLength);
+	public SKPointI Center => new(TopLeft.X + QuadrantLength, TopLeft.Y + QuadrantLength);
 
 	public QuadTreeViewport OffsetBy(int deltaX, int deltaY) =>
-		new(new Point(TopLeft.X + deltaX, TopLeft.Y + deltaY), Scale);
+		new(new SKPointI(TopLeft.X + deltaX, TopLeft.Y + deltaY), Scale);
 
 	public QuadTreeViewport ZoomIn(int x, int y) =>
-		new(Scale: Scale + 1, TopLeft: new Point(x: 2 * TopLeft.X - x, y: 2 * TopLeft.Y - y));
+		new(Scale: Scale + 1, TopLeft: new SKPointI(x: 2 * TopLeft.X - x, y: 2 * TopLeft.Y - y));
 
 	public QuadTreeViewport ZoomOut(int width, int height) =>
 		new(
 			Scale: Scale - 1,
-			TopLeft: new Point(
+			TopLeft: new SKPointI(
 				x: TopLeft.X - (TopLeft.X - (width / 2)) / 2,
 				y: TopLeft.Y - (TopLeft.Y - (height / 2)) / 2
 			)
 		);
 
-	public QuadTreeViewport SW => new(new Point(TopLeft.X, TopLeft.Y + QuadrantLength), Scale - 1);
-	public QuadTreeViewport SE => new(new Point(TopLeft.X + QuadrantLength, TopLeft.Y + QuadrantLength), Scale - 1);
+	public QuadTreeViewport SW => new(new SKPointI(TopLeft.X, TopLeft.Y + QuadrantLength), Scale - 1);
+	public QuadTreeViewport SE => new(new SKPointI(TopLeft.X + QuadrantLength, TopLeft.Y + QuadrantLength), Scale - 1);
 	public QuadTreeViewport NW => this with { Scale = Scale - 1 };
-	public QuadTreeViewport NE => new(new Point(TopLeft.X + QuadrantLength, TopLeft.Y), Scale - 1);
+	public QuadTreeViewport NE => new(new SKPointI(TopLeft.X + QuadrantLength, TopLeft.Y), Scale - 1);
 
 	public Rectangle IntersectWith(Rectangle rect)
 	{
@@ -71,6 +71,6 @@ public readonly record struct QuadTreeViewport(Point TopLeft, int Scale)
 
 		var x = (width - length) / 2;
 		var y = (height - length) / 2;
-		return new(new(x, y), scale);
+		return new(new SKPointI(x, y), scale);
 	}
 }

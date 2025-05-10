@@ -32,7 +32,7 @@ public class RegionRendererTests : BaseVisualization
 
 		var areasToDraw = new List<RegionArea>();
 		lookup.GetVisibleAreas(
-			new QuadTreeViewport(new Point(0, 0), scale),
+			new QuadTreeViewport(new SKPointI(0, 0), scale),
 			[new Rectangle(0, 0, imageSize.Width, imageSize.Height)],
 			areasToDraw
 		);
@@ -63,7 +63,7 @@ public class RegionRendererTests : BaseVisualization
 
 		var args = new RenderingArgs(
 			Instructions: RenderInstructions.Everything(imageSize),
-			SetBoundary: new QuadTreeViewport(new Point(-11_533, -11_061), 15),
+			SetBoundary: new QuadTreeViewport(new SKPointI(-11_533, -11_061), 15),
 			Lookup: lookup,
 			Palette: BluePalette.Instance,
 			RenderInteriors: true,
@@ -107,7 +107,7 @@ public class RegionRendererTests : BaseVisualization
 
 		var args = new RenderingArgs(
 			Instructions: RenderInstructions.Everything(imageSize),
-			SetBoundary: new QuadTreeViewport(new Point(-11_533, -11_061), 15),
+			SetBoundary: new QuadTreeViewport(new SKPointI(-11_533, -11_061), 15),
 			Lookup: lookup,
 			Palette: BluePalette.Instance,
 			RenderInteriors: true,

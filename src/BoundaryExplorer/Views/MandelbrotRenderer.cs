@@ -458,7 +458,7 @@ public sealed class MandelbrotRenderer : Control
 			{
 				paint.Color = args.Palette[type];
 
-				canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
+				canvas.DrawRect(area, paint);
 			}
 		}
 	}

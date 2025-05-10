@@ -1,4 +1,3 @@
-using System.Drawing;
 using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary;
@@ -37,19 +36,7 @@ public readonly record struct QuadTreeViewport(SKPointI TopLeft, int Scale)
 	public QuadTreeViewport NW => this with { Scale = Scale - 1 };
 	public QuadTreeViewport NE => new(new SKPointI(TopLeft.X + QuadrantLength, TopLeft.Y), Scale - 1);
 
-	public Rectangle IntersectWith(Rectangle rect)
-	{
-		int length = Length;
-
-		int x1 = Math.Max(rect.X, TopLeft.X);
-		int x2 = Math.Min(rect.X + rect.Width, TopLeft.X + length);
-		int y1 = Math.Max(rect.Y, TopLeft.Y);
-		int y2 = Math.Min(rect.Y + rect.Height, TopLeft.Y + length);
-
-		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
-	}
-
-	public Rectangle IntersectWith(SKRectI rect)
+	public SKRectI IntersectWith(SKRectI rect)
 	{
 		int length = Length;
 
@@ -58,7 +45,7 @@ public readonly record struct QuadTreeViewport(SKPointI TopLeft, int Scale)
 		int y1 = Math.Max(rect.Top, TopLeft.Y);
 		int y2 = Math.Min(rect.Bottom, TopLeft.Y + length);
 
-		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+		return new SKRectI(x1, y1, x2, y2);
 	}
 
 	public override string ToString() => $"({TopLeft}), SideLength = {1 << Scale}";

@@ -1,6 +1,6 @@
 using Avalonia;
 using BoundaryExplorer.Views;
-using Rectangle = System.Drawing.Rectangle;
+using SkiaSharp;
 
 namespace BoundaryExplorer.Tests.Views;
 
@@ -15,14 +15,14 @@ public class RenderInstructionsTests
 
 		var rects = inst.GetDirtyRectangles().ToList();
 		rects.Count.ShouldBe(1);
-		rects.ShouldContain(new Rectangle(0, 0, 100, 100));
+		rects.ShouldContain(SKRectI.Create(0, 0, 100, 100));
 	}
 
 	public sealed record ResizeTestCase(
 		string Description,
 		PixelSize OldSize,
 		PixelSize NewSize,
-		IEnumerable<Rectangle> DirtyRects
+		IEnumerable<SKRectI> DirtyRects
 	)
 	{
 		public override string ToString() => Description;
@@ -45,7 +45,7 @@ public class RenderInstructionsTests
 				"Wider",
 				OldSize: new PixelSize(100, 100),
 				NewSize: new PixelSize(150, 100),
-				DirtyRects: [new Rectangle(100, 0, 50, 100)]
+				DirtyRects: [SKRectI.Create(100, 0, 50, 100)]
 			),
 		];
 		yield return
@@ -54,7 +54,7 @@ public class RenderInstructionsTests
 				"Taller",
 				OldSize: new PixelSize(100, 100),
 				NewSize: new PixelSize(100, 150),
-				DirtyRects: [new Rectangle(0, 100, 100, 50)]
+				DirtyRects: [SKRectI.Create(0, 100, 100, 50)]
 			),
 		];
 		yield return
@@ -63,7 +63,7 @@ public class RenderInstructionsTests
 				"Bigger",
 				OldSize: new PixelSize(100, 100),
 				NewSize: new PixelSize(150, 150),
-				DirtyRects: [new Rectangle(100, 0, 50, 150), new Rectangle(0, 100, 100, 50)]
+				DirtyRects: [SKRectI.Create(100, 0, 50, 150), SKRectI.Create(0, 100, 100, 50)]
 			),
 		];
 	}
@@ -85,7 +85,7 @@ public class RenderInstructionsTests
 		PixelVector Offset,
 		Rect SourceRect,
 		Rect DestRect,
-		IEnumerable<Rectangle> DirtyRects
+		IEnumerable<SKRectI> DirtyRects
 	)
 	{
 		public override string ToString() => Description;
@@ -101,7 +101,7 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(-25, 0),
 				SourceRect: new Rect(25, 0, 75, 100),
 				DestRect: new Rect(0, 0, 75, 100),
-				DirtyRects: [new Rectangle(75, 0, 25, 100)]
+				DirtyRects: [SKRectI.Create(75, 0, 25, 100)]
 			),
 		];
 		yield return
@@ -112,7 +112,7 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(25, 0),
 				SourceRect: new Rect(0, 0, 75, 100),
 				DestRect: new Rect(25, 0, 75, 100),
-				DirtyRects: [new Rectangle(0, 0, 25, 100)]
+				DirtyRects: [SKRectI.Create(0, 0, 25, 100)]
 			),
 		];
 		yield return
@@ -123,7 +123,7 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(0, -25),
 				SourceRect: new Rect(0, 25, 100, 75),
 				DestRect: new Rect(0, 0, 100, 75),
-				DirtyRects: [new Rectangle(0, 75, 100, 25)]
+				DirtyRects: [SKRectI.Create(0, 75, 100, 25)]
 			),
 		];
 		yield return
@@ -134,7 +134,7 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(0, 25),
 				SourceRect: new Rect(0, 0, 100, 75),
 				DestRect: new Rect(0, 25, 100, 75),
-				DirtyRects: [new Rectangle(0, 0, 100, 25)]
+				DirtyRects: [SKRectI.Create(0, 0, 100, 25)]
 			),
 		];
 		yield return
@@ -145,7 +145,7 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(-25, -25),
 				SourceRect: new Rect(25, 25, 75, 75),
 				DestRect: new Rect(0, 0, 75, 75),
-				DirtyRects: [new Rectangle(75, 0, 25, 100), new Rectangle(0, 75, 75, 25)]
+				DirtyRects: [SKRectI.Create(75, 0, 25, 100), SKRectI.Create(0, 75, 75, 25)]
 			),
 		];
 		yield return
@@ -156,7 +156,7 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(25, -25),
 				SourceRect: new Rect(0, 25, 75, 75),
 				DestRect: new Rect(25, 0, 75, 75),
-				DirtyRects: [new Rectangle(0, 0, 25, 100), new Rectangle(25, 75, 75, 25)]
+				DirtyRects: [SKRectI.Create(0, 0, 25, 100), SKRectI.Create(25, 75, 75, 25)]
 			),
 		];
 		yield return
@@ -167,7 +167,7 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(-25, 25),
 				SourceRect: new Rect(25, 0, 75, 75),
 				DestRect: new Rect(0, 25, 75, 75),
-				DirtyRects: [new Rectangle(75, 0, 25, 100), new Rectangle(0, 0, 75, 25)]
+				DirtyRects: [SKRectI.Create(75, 0, 25, 100), SKRectI.Create(0, 0, 75, 25)]
 			),
 		];
 		yield return
@@ -178,7 +178,7 @@ public class RenderInstructionsTests
 				Offset: new PixelVector(25, 25),
 				SourceRect: new Rect(0, 0, 75, 75),
 				DestRect: new Rect(25, 25, 75, 75),
-				DirtyRects: [new Rectangle(0, 0, 25, 100), new Rectangle(25, 0, 75, 25)]
+				DirtyRects: [SKRectI.Create(0, 0, 25, 100), SKRectI.Create(25, 0, 75, 25)]
 			),
 		];
 	}

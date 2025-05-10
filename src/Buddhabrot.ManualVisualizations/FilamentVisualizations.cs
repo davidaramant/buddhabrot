@@ -1,4 +1,3 @@
-using System.Drawing;
 using Buddhabrot.Core;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Images;
@@ -43,7 +42,7 @@ public class FilamentVisualizations : BaseVisualization
 
 		using var image = new RasterImage(new SKSizeI(_viewPort.Resolution.Width, _viewPort.Resolution.Height));
 
-		image.Fill(Color.White);
+		image.Fill(SKColors.White);
 
 		var visitedPoints = new HashSet<SKPointI>();
 		var toCheck = new Queue<SKPointI>();
@@ -109,7 +108,7 @@ public class FilamentVisualizations : BaseVisualization
 				{
 					var inSet = ScalarKernel.FindEscapeTime(viewPort.GetComplex(col, row), max).IsInfinite;
 
-					image.SetPixel(new SKPointI(col, row), inSet ? Color.DarkBlue : Color.White);
+					image.SetPixel(new SKPointI(col, row), inSet ? SKColors.DarkBlue : SKColors.White);
 				}
 			}
 		);
@@ -132,11 +131,11 @@ public class FilamentVisualizations : BaseVisualization
 		);
 	}
 
-	private static Color PickColorFromDistance(ComplexViewport viewPort, double distance) =>
+	private static SKColor PickColorFromDistance(ComplexViewport viewPort, double distance) =>
 		distance switch
 		{
-			Double.MaxValue => Color.DarkBlue,
-			var d when d < viewPort.PixelWidth / 2 => Color.Red,
-			_ => Color.White,
+			Double.MaxValue => SKColors.DarkBlue,
+			var d when d < viewPort.PixelWidth / 2 => SKColors.Red,
+			_ => SKColors.White,
 		};
 }

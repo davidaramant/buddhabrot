@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Avalonia;
+using SkiaSharp;
 
 namespace BoundaryExplorer.Views;
 
@@ -141,10 +142,10 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		static int ClampDest(int p) => Math.Max(0, p);
 	}
 
-	public IEnumerable<System.Drawing.Rectangle> GetDirtyRectangles()
+	public IEnumerable<SKRectI> GetDirtyRectangles()
 	{
 		if (_firstDirtyRect.HasValue)
-			yield return new System.Drawing.Rectangle(
+			yield return SKRectI.Create(
 				_firstDirtyRect.Value.X,
 				_firstDirtyRect.Value.Y,
 				_firstDirtyRect.Value.Width,
@@ -152,7 +153,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			);
 
 		if (_secondDirtyRect.HasValue)
-			yield return new System.Drawing.Rectangle(
+			yield return SKRectI.Create(
 				_secondDirtyRect.Value.X,
 				_secondDirtyRect.Value.Y,
 				_secondDirtyRect.Value.Width,

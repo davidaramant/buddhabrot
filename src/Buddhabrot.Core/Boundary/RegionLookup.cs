@@ -1,4 +1,3 @@
-using System.Drawing;
 using Buddhabrot.Core.Boundary.QuadTrees;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using SkiaSharp;
@@ -30,18 +29,6 @@ public sealed class RegionLookup
 		Height = height;
 		_root = nodes[^1];
 	}
-
-	// TODO: Remove when rendering has been moved to Core
-	public void GetVisibleAreas(
-		QuadTreeViewport bounds,
-		IEnumerable<Rectangle> searchAreas,
-		ICollection<RegionArea> visibleAreas
-	) =>
-		GetVisibleAreas(
-			bounds,
-			searchAreas.Select(r => new SKRectI(left: r.Left, top: r.Top, right: r.Right, bottom: r.Bottom)),
-			visibleAreas
-		);
 
 	public void GetVisibleAreas(
 		QuadTreeViewport bounds,

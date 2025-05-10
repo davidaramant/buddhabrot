@@ -21,15 +21,19 @@ public class QuadTreeViewportTests
 	{
 		yield return
 		[
-			new Rectangle(new Point(10, 10), new Size(10, 10)),
-			new Rectangle(new Point(10, 10), new Size(-8, -8)),
+			SKRectI.Create(new SKPointI(10, 10), new SKSizeI(10, 10)),
+			SKRectI.Create(new SKPointI(10, 10), new SKSizeI(-8, -8)),
 		];
-		yield return [new Rectangle(new Point(0, 0), new Size(10, 10)), new Rectangle(new Point(0, 0), new Size(2, 2))];
+		yield return
+		[
+			SKRectI.Create(new SKPointI(0, 0), new SKSizeI(10, 10)),
+			SKRectI.Create(new SKPointI(0, 0), new SKSizeI(2, 2)),
+		];
 	}
 
 	[Theory]
 	[MemberData(nameof(IntersectionData))]
-	public void ShouldIntersectWithRectangle(Rectangle rect, Rectangle expected)
+	public void ShouldIntersectWithRectangle(SKRectI rect, SKRectI expected)
 	{
 		var v = new QuadTreeViewport(new SKPointI(-2, -2), 2);
 		v.IntersectWith(rect).ShouldBe(expected);

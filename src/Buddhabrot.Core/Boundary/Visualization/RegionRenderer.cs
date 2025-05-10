@@ -72,7 +72,7 @@ public static class RegionRenderer
 		{
 			paint.Color = palette[type];
 
-			canvas.DrawRect(area.X, area.Y, area.Width, area.Height, paint);
+			canvas.DrawRect(area, paint);
 		}
 	}
 

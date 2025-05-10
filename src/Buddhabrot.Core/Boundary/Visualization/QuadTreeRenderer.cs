@@ -1,5 +1,3 @@
-using System.Drawing;
-using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;
 using SkiaSharp;
 
@@ -20,8 +18,6 @@ public sealed class QuadTreeRenderer
 		_xOffset = xOffset;
 		_image = image;
 	}
-
-	public void DrawCell(int x, int y, int depth, Color c) => DrawCell(x, y, depth, c.ToSKColor());
 
 	public void DrawCell(int x, int y, int depth, SKColor c)
 	{

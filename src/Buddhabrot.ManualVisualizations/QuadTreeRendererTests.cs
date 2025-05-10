@@ -1,6 +1,6 @@
-using System.Drawing;
 using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.Images;
+using SkiaSharp;
 
 namespace Buddhabrot.ManualVisualizations;
 
@@ -17,9 +17,9 @@ public class QuadTreeRendererTests : BaseVisualization
 		using var image = new RasterImage(width, width);
 		foreach (var depth in Enumerable.Range(0, levels))
 		{
-			image.Fill(Color.Black);
+			image.Fill(SKColors.Black);
 			var r = new QuadTreeRenderer(image, levels);
-			r.DrawCell(0, 0, depth, Color.White);
+			r.DrawCell(0, 0, depth, SKColors.White);
 
 			SaveImage(image, $"Single Cell - l{levels} d{depth}");
 		}
@@ -32,14 +32,14 @@ public class QuadTreeRendererTests : BaseVisualization
 		using var image = new RasterImage(width, width);
 		foreach (var depth in Enumerable.Range(0, levels))
 		{
-			image.Fill(Color.Black);
+			image.Fill(SKColors.Black);
 			var r = new QuadTreeRenderer(image, levels);
 
 			for (int y = 0; y < (1 << depth); y++)
 			{
 				for (int x = 0; x < (1 << depth); x++)
 				{
-					r.DrawCell(x, y, depth, Color.White);
+					r.DrawCell(x, y, depth, SKColors.White);
 				}
 			}
 
@@ -53,12 +53,12 @@ public class QuadTreeRendererTests : BaseVisualization
 		const int levels = 3;
 		var width = QuadTreeRenderer.GetRequiredWidth(levels);
 		using var image = new RasterImage(width, width);
-		image.Fill(Color.Black);
+		image.Fill(SKColors.Black);
 		var r = new QuadTreeRenderer(image, levels);
 
 		foreach (var pos in Enumerable.Range(0, 1 << levels - 1))
 		{
-			r.DrawCell(pos, pos, 2, Color.White);
+			r.DrawCell(pos, pos, 2, SKColors.White);
 		}
 
 		SaveImage(image, "Diagonal");
@@ -76,9 +76,9 @@ public class QuadTreeRendererTests : BaseVisualization
 		{
 			for (int x = 0; x < 4; x++)
 			{
-				image.Fill(Color.Black);
+				image.Fill(SKColors.Black);
 				var r = new QuadTreeRenderer(image, levels);
-				r.DrawCell(x, y, 2, Color.White);
+				r.DrawCell(x, y, 2, SKColors.White);
 				SaveImage(image, $"Pos Y{y} X{x}");
 			}
 		}

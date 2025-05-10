@@ -14,9 +14,6 @@ public sealed class RasterImage : IDisposable
 	public int PixelCount => Width * Height;
 	public SKBitmap Raw => _bitmap;
 
-	public RasterImage(System.Drawing.Size resolution, int scale = 1)
-		: this(resolution.Width, resolution.Height, scale) { }
-
 	public RasterImage(SKSizeI resolution, int scale = 1)
 		: this(resolution.Width, resolution.Height, scale) { }
 
@@ -27,8 +24,6 @@ public sealed class RasterImage : IDisposable
 		Height = height;
 		_bitmap = new SKBitmap(width, height);
 	}
-
-	public void Fill(System.Drawing.Color color) => Fill(color.ToSKColor());
 
 	public void Fill(SKColor color)
 	{

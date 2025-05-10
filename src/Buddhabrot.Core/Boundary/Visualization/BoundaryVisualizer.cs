@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Diagnostics;
-using System.Drawing;
 using System.Numerics;
 using Buddhabrot.Core.Boundary.QuadTrees;
 using Buddhabrot.Core.Calculations;
@@ -50,9 +49,9 @@ public static class BoundaryVisualizer
 					y,
 					results[y * img.Width + x] switch
 					{
-						{ IsInfinite: true } => Color.MidnightBlue,
-						var et when et.Iterations >= iterationRange.Min => Color.Red,
-						_ => Color.White,
+						{ IsInfinite: true } => SKColors.MidnightBlue,
+						var et when et.Iterations >= iterationRange.Min => SKColors.Red,
+						_ => SKColors.White,
 					}
 				);
 			}

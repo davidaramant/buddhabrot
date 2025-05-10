@@ -33,7 +33,7 @@ public class RegionRendererTests : BaseVisualization
 		var areasToDraw = new List<RegionArea>();
 		lookup.GetVisibleAreas(
 			new QuadTreeViewport(new SKPointI(0, 0), scale),
-			[new Rectangle(0, 0, imageSize.Width, imageSize.Height)],
+			[SKRectI.Create(0, 0, imageSize.Width, imageSize.Height)],
 			areasToDraw
 		);
 
@@ -72,7 +72,11 @@ public class RegionRendererTests : BaseVisualization
 		);
 
 		var areasToDraw = new List<RegionArea>();
-		lookup.GetVisibleAreas(args.SetBoundary, [new Rectangle(0, 0, imageSize.Width, imageSize.Height)], areasToDraw);
+		lookup.GetVisibleAreas(
+			args.SetBoundary,
+			[SKRectI.Create(0, 0, imageSize.Width, imageSize.Height)],
+			areasToDraw
+		);
 
 		using var image = new RasterImage(imageSize.Width, imageSize.Height);
 
@@ -116,7 +120,11 @@ public class RegionRendererTests : BaseVisualization
 		);
 
 		var areasToDraw = new List<RegionArea>();
-		lookup.GetVisibleAreas(args.SetBoundary, [new Rectangle(0, 0, imageSize.Width, imageSize.Height)], areasToDraw);
+		lookup.GetVisibleAreas(
+			args.SetBoundary,
+			[SKRectI.Create(0, 0, imageSize.Width, imageSize.Height)],
+			areasToDraw
+		);
 
 		using var image = new RasterImage(imageSize.Width, imageSize.Height);
 

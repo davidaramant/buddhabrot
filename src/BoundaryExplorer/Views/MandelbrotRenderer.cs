@@ -56,7 +56,6 @@ public sealed class MandelbrotRenderer : Control
 	private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
 
 	private SKSizeI PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
-	private PixelSize PixelBoundsAvalonia => new PixelSize(PixelBounds.Width, PixelBounds.Height);
 
 	public static readonly StyledProperty<IBoundaryPalette> PaletteProperty = AvaloniaProperty.Register<
 		MandelbrotRenderer,
@@ -185,14 +184,14 @@ public sealed class MandelbrotRenderer : Control
 			}
 			else if (e.Property.Name == nameof(RenderInteriors))
 			{
-				await RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
+				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 			}
 		};
 
 		this.EffectiveViewportChanged += async (_, _) =>
 		{
 			await RequestRenderAsync(
-				RenderInstructions.Resized(oldSize: _frontBuffer.PixelSize, newSize: PixelBoundsAvalonia)
+				RenderInstructions.Resized(oldSize: ToSkia(_frontBuffer.PixelSize), newSize: PixelBounds)
 			);
 		};
 		PointerMoved += (_, e) =>
@@ -234,14 +233,14 @@ public sealed class MandelbrotRenderer : Control
 					{
 						var pos = e.GetPosition(this);
 						QuadTreeViewport = QuadTreeViewport.ZoomIn((int)pos.X, (int)pos.Y);
-						await RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
+						await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 					}
 				}
 			}
 			else if (!_inspectMode && properties.IsRightButtonPressed && e.ClickCount == 2)
 			{
 				QuadTreeViewport = QuadTreeViewport.ZoomOut(PixelBounds.Width, PixelBounds.Height);
-				await RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
+				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 			}
 			else if (_inspectMode && properties.IsRightButtonPressed)
 			{
@@ -256,7 +255,7 @@ public sealed class MandelbrotRenderer : Control
 			{
 				_isPanning = false;
 				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
-				await RequestRenderAsync(RenderInstructions.Moved(PixelBoundsAvalonia, _panningOffset));
+				await RequestRenderAsync(RenderInstructions.Moved(PixelBounds, Convert(_panningOffset)));
 			}
 		};
 		PointerCaptureLost += async (_, e) =>
@@ -266,7 +265,7 @@ public sealed class MandelbrotRenderer : Control
 				_isPanning = false;
 
 				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
-				await RequestRenderAsync(RenderInstructions.Moved(PixelBoundsAvalonia, _panningOffset));
+				await RequestRenderAsync(RenderInstructions.Moved(PixelBounds, Convert(_panningOffset)));
 			}
 		};
 
@@ -274,7 +273,7 @@ public sealed class MandelbrotRenderer : Control
 		ZoomOutCommand = ReactiveCommand.CreateFromTask(() =>
 		{
 			QuadTreeViewport = QuadTreeViewport.ZoomOut(PixelBounds.Width, PixelBounds.Height);
-			return RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
+			return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 		});
 		ToggleInspectModeCommand = ReactiveCommand.Create(() =>
 		{
@@ -283,7 +282,7 @@ public sealed class MandelbrotRenderer : Control
 		this.WhenAnyValue(x => x.Palette)
 			.SelectMany(async _ =>
 			{
-				await RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
+				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 				return Unit.Default;
 			})
 			.Subscribe();
@@ -394,8 +393,8 @@ public sealed class MandelbrotRenderer : Control
 			context.DrawBitmap(
 				_frontBuffer.PlatformImpl,
 				opacity: 1,
-				sourceRect: args.Instructions.SourceRect,
-				destRect: args.Instructions.DestRect
+				sourceRect: FromSkia(args.Instructions.SourceRect),
+				destRect: FromSkia(args.Instructions.DestRect)
 			);
 		}
 
@@ -466,7 +465,7 @@ public sealed class MandelbrotRenderer : Control
 	private Task ResetLogicalAreaAsync()
 	{
 		QuadTreeViewport = QuadTreeViewport.GetLargestCenteredSquareInside(PixelBounds.Width, PixelBounds.Height);
-		return RequestRenderAsync(RenderInstructions.Everything(PixelBoundsAvalonia));
+		return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 	}
 
 	protected override Size MeasureOverride(Size availableSize) => availableSize;
@@ -537,4 +536,10 @@ public sealed class MandelbrotRenderer : Control
 	}
 
 	#endregion
+
+	private static SKSizeI ToSkia(PixelSize size) => new(size.Width, size.Height);
+
+	private static Rect FromSkia(SKRectI rect) => new(rect.Left, rect.Top, rect.Width, rect.Height);
+
+	private static PositionOffset Convert(PixelVector vector) => new(vector.X, vector.Y);
 }

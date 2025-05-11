@@ -20,4 +20,9 @@ public static class RectangleExtensions
 	}
 
 	public static bool IsInvalid(this SKRectI rect) => rect.Width <= 0 || rect.Height <= 0;
+
+	public static SKRectI OffsetBy(this SKRectI rect, int x, int y) =>
+		SKRectI.Create(rect.Left + x, rect.Top + y, rect.Width, rect.Height);
+
+	public static SKSizeI Quarter(this SKSizeI size) => new(size.Width / 2, size.Height / 2);
 }

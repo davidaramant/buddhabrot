@@ -10,7 +10,10 @@ namespace Buddhabrot.Benchmarks;
 public class QuadTreeViewportIntersectionBenchmarks
 {
 	private const int Size = 100;
-	private readonly QuadTreeViewport _boundary = new(new SKPointI(x: 10, y: 10), Scale: 4);
+	private readonly QuadTreeViewport _boundary = new(
+		SKRectI.Create(new SKPointI(x: 10, y: 10), new SKSizeI(100, 100)),
+		Scale: 4
+	);
 	private readonly SKRectI[] _rectangles = new SKRectI[Size];
 
 	[GlobalSetup]
@@ -43,10 +46,10 @@ public class QuadTreeViewportIntersectionBenchmarks
 		{
 			int length = boundary.Length;
 
-			int x1 = Math.Max(rect.Left, boundary.TopLeft.X);
-			int x2 = Math.Min(rect.Left + rect.Width, boundary.TopLeft.X + length);
-			int y1 = Math.Max(rect.Top, boundary.TopLeft.Y);
-			int y2 = Math.Min(rect.Top + rect.Height, boundary.TopLeft.Y + length);
+			int x1 = Math.Max(rect.Left, boundary.Area.Left);
+			int x2 = Math.Min(rect.Left + rect.Width, boundary.Area.Left + length);
+			int y1 = Math.Max(rect.Top, boundary.Area.Top);
+			int y2 = Math.Min(rect.Top + rect.Height, boundary.Area.Top + length);
 
 			if (x2 >= x1 && y2 >= y1)
 			{
@@ -77,10 +80,10 @@ public class QuadTreeViewportIntersectionBenchmarks
 		{
 			int length = boundary.Length;
 
-			int x1 = Math.Max(rect.Left, boundary.TopLeft.X);
-			int x2 = Math.Min(rect.Left + rect.Width, boundary.TopLeft.X + length);
-			int y1 = Math.Max(rect.Top, boundary.TopLeft.Y);
-			int y2 = Math.Min(rect.Top + rect.Height, boundary.TopLeft.Y + length);
+			int x1 = Math.Max(rect.Left, boundary.Area.Left);
+			int x2 = Math.Min(rect.Left + rect.Width, boundary.Area.Left + length);
+			int y1 = Math.Max(rect.Top, boundary.Area.Top);
+			int y2 = Math.Min(rect.Top + rect.Height, boundary.Area.Top + length);
 
 			return new SKRectI(x1, y1, x2, y2);
 		}

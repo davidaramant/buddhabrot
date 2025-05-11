@@ -13,7 +13,11 @@ public class RegionLookupTests
 		var lookup = RegionLookupUtil.Make((0, 0), (4, 1));
 		var visibleAreas = new List<RegionArea>();
 
-		lookup.GetVisibleAreas(new QuadTreeViewport(new SKPointI(0, 0), 2), [SKRectI.Create(0, 0, 8, 8)], visibleAreas);
+		lookup.GetVisibleAreas(
+			new QuadTreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(100, 100)), 2),
+			[SKRectI.Create(0, 0, 8, 8)],
+			visibleAreas
+		);
 
 		visibleAreas.Count.ShouldBe(4);
 	}
@@ -37,7 +41,11 @@ public class RegionLookupTests
 		);
 		var visibleAreas = new List<RegionArea>();
 
-		lookup.GetVisibleAreas(new QuadTreeViewport(new SKPointI(0, 0), 2), [SKRectI.Create(0, 0, 1, 1)], visibleAreas);
+		lookup.GetVisibleAreas(
+			new QuadTreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(100, 100)), 2),
+			[SKRectI.Create(0, 0, 1, 1)],
+			visibleAreas
+		);
 
 		visibleAreas.Count.ShouldBe(1);
 	}

@@ -239,7 +239,7 @@ public sealed class MandelbrotRenderer : Control
 			}
 			else if (!_inspectMode && properties.IsRightButtonPressed && e.ClickCount == 2)
 			{
-				QuadTreeViewport = QuadTreeViewport.ZoomOut(PixelBounds.Width, PixelBounds.Height);
+				QuadTreeViewport = QuadTreeViewport.ZoomOut();
 				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 			}
 			else if (_inspectMode && properties.IsRightButtonPressed)
@@ -272,7 +272,7 @@ public sealed class MandelbrotRenderer : Control
 		ResetViewCommand = ReactiveCommand.CreateFromTask(ResetLogicalAreaAsync);
 		ZoomOutCommand = ReactiveCommand.CreateFromTask(() =>
 		{
-			QuadTreeViewport = QuadTreeViewport.ZoomOut(PixelBounds.Width, PixelBounds.Height);
+			QuadTreeViewport = QuadTreeViewport.ZoomOut();
 			return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 		});
 		ToggleInspectModeCommand = ReactiveCommand.Create(() =>
@@ -464,7 +464,7 @@ public sealed class MandelbrotRenderer : Control
 
 	private Task ResetLogicalAreaAsync()
 	{
-		QuadTreeViewport = QuadTreeViewport.GetLargestCenteredSquareInside(PixelBounds.Width, PixelBounds.Height);
+		QuadTreeViewport = QuadTreeViewport.GetLargestCenteredSquareInside(PixelBounds);
 		return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 	}
 

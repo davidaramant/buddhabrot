@@ -13,7 +13,7 @@ public class AreaDivisionsTests
 	{
 		var divisions = new AreaDivisions(verticalPower);
 
-		var region = divisions.RightStart();
+		var region = divisions.RightBorderStart();
 		region.X.ShouldBe(expectedX);
 		region.Y.ShouldBe(0);
 

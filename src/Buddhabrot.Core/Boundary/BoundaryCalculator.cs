@@ -65,8 +65,8 @@ public static class BoundaryCalculator
 		var visitedRegions = new VisitedRegions(capacity: estimatedCapacity);
 		var proxy = new ThreadSafeVisitedRegions(visitedRegions, cancelToken);
 
-		Queue<RegionId> leftRegionsToCheck = new([boundaryParameters.Divisions.LeftStart()]);
-		Queue<RegionId> rightRegionsToCheck = new([boundaryParameters.Divisions.RightStart()]);
+		Queue<RegionId> leftRegionsToCheck = new([boundaryParameters.Divisions.LeftBorderStart()]);
+		Queue<RegionId> rightRegionsToCheck = new([boundaryParameters.Divisions.RightBorderStart()]);
 
 		var leftClassifier = IRegionClassifier.Create(boundaryParameters, selectedClassifier);
 		var rightClassifier = IRegionClassifier.Create(boundaryParameters, selectedClassifier);

@@ -342,7 +342,7 @@ public sealed class MandelbrotRenderer : Control
 
 	sealed record RenderingArgs(
 		RenderInstructions Instructions,
-		QuadTreeViewport SetBoundary,
+		QuadTreeViewport Viewport,
 		RegionLookup Lookup,
 		IBoundaryPalette Palette,
 		bool RenderInteriors,
@@ -383,8 +383,8 @@ public sealed class MandelbrotRenderer : Control
 
 		canvas.DrawRect(0, 0, args.Width, args.Height, new SKPaint { Color = args.Palette.Background });
 
-		var center = args.SetBoundary.Center;
-		var radius = args.SetBoundary.QuadrantLength;
+		var center = args.Viewport.Center;
+		var radius = args.Viewport.QuadrantLength;
 
 		canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InsideCircle });
 
@@ -398,7 +398,7 @@ public sealed class MandelbrotRenderer : Control
 			);
 		}
 
-		args.Lookup.GetVisibleAreas(args.SetBoundary, args.Instructions.GetDirtyRectangles(), areasToDraw);
+		args.Lookup.GetVisibleAreas(args.Viewport, args.Instructions.GetDirtyRectangles(), areasToDraw);
 
 		using var paint = new SKPaint();
 
@@ -406,8 +406,8 @@ public sealed class MandelbrotRenderer : Control
 		{
 			var viewPort = ComplexViewport.FromResolution(
 				new SKSizeI(args.Width, args.Height),
-				args.SetBoundary.Center,
-				2d / args.SetBoundary.QuadrantLength
+				args.Viewport.Center,
+				2d / args.Viewport.QuadrantLength
 			);
 			areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
 

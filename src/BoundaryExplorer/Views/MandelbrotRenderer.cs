@@ -34,6 +34,7 @@ public sealed class MandelbrotRenderer : Control
 	private QuadTreeViewport _panningStart;
 	private PixelVector _panningOffset = new();
 	private bool _inspectMode = false;
+	private RenderInstructions _currentInstructions = RenderInstructions.Nothing;
 
 	private IRegionClassifier _regionClassifier = new CornerFirstRegionClassifier(
 		new BoundaryParameters(new AreaDivisions(1), 1)
@@ -190,9 +191,7 @@ public sealed class MandelbrotRenderer : Control
 
 		this.EffectiveViewportChanged += async (_, _) =>
 		{
-			await RequestRenderAsync(
-				RenderInstructions.Resized(oldSize: ToSkia(_frontBuffer.PixelSize), newSize: PixelBounds)
-			);
+			await RequestRenderAsync(_currentInstructions.Resize(PixelBounds));
 		};
 		PointerMoved += (_, e) =>
 		{
@@ -255,7 +254,7 @@ public sealed class MandelbrotRenderer : Control
 			{
 				_isPanning = false;
 				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
-				await RequestRenderAsync(RenderInstructions.Moved(PixelBounds, Convert(_panningOffset)));
+				await RequestRenderAsync(_currentInstructions.Move(Convert(_panningOffset)));
 			}
 		};
 		PointerCaptureLost += async (_, e) =>
@@ -265,7 +264,7 @@ public sealed class MandelbrotRenderer : Control
 				_isPanning = false;
 
 				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
-				await RequestRenderAsync(RenderInstructions.Moved(PixelBounds, Convert(_panningOffset)));
+				await RequestRenderAsync(_currentInstructions.Move(Convert(_panningOffset)));
 			}
 		};
 
@@ -474,6 +473,8 @@ public sealed class MandelbrotRenderer : Control
 
 	private async Task RequestRenderAsync(RenderInstructions instructions)
 	{
+		_currentInstructions = instructions;
+
 		var args = new RenderingArgs(
 			instructions,
 			QuadTreeViewport,

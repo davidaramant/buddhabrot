@@ -66,7 +66,7 @@ public class RenderInstructionsTests
 	[MemberData(nameof(ResizeTestCases))]
 	public void ShouldComputeInstructionsForResizing(ResizeTestCase testCase)
 	{
-		var inst = RenderInstructions.Resized(testCase.OldSize, testCase.NewSize);
+		var inst = RenderInstructions.Everything(testCase.OldSize).Resize(testCase.NewSize);
 
 		inst.PasteFrontBuffer.ShouldBeTrue();
 
@@ -181,7 +181,7 @@ public class RenderInstructionsTests
 	[MemberData(nameof(MoveTestCases))]
 	public void ShouldComputeInstructionsForMoving(MoveTestCase testCase)
 	{
-		var inst = RenderInstructions.Moved(testCase.Size, testCase.Offset);
+		var inst = RenderInstructions.Everything(testCase.Size).Move(testCase.Offset);
 
 		inst.PasteFrontBuffer.ShouldBeTrue();
 		inst.SourceRect.ShouldBe(testCase.SourceRect);

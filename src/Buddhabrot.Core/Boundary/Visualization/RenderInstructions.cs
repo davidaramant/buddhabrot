@@ -3,7 +3,7 @@ using SkiaSharp;
 namespace Buddhabrot.Core.Boundary.Visualization;
 
 // TODO: QuadTreeViewport belongs inside of this
-// TODO: Make a distinction between creating a new one and mutating an existing one
+// TODO: Use the new methods that create new instructions from existing ones
 public sealed class RenderInstructions : IEquatable<RenderInstructions>
 {
 	private readonly SKRectI? _firstDirtyRect;
@@ -38,8 +38,39 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			destRect: SKRectI.Empty,
 			firstDirtyRect: SKRectI.Create(0, 0, newSize.Width, newSize.Height),
 			secondDirtyRect: null,
+			size: QuadTreeViewport.GetLargestCenteredSquareInside(newSize).Area.Size
+		);
+
+	public RenderInstructions Resize(SKSizeI newSize)
+	{
+		SKRectI? horizontal = null;
+		if (newSize.Width > Size.Width)
+		{
+			horizontal = SKRectI.Create(x: Size.Width, y: 0, width: newSize.Width - Size.Width, height: newSize.Height);
+		}
+
+		SKRectI? vertical = null;
+		if (newSize.Height > Size.Height)
+		{
+			vertical = SKRectI.Create(x: 0, y: Size.Height, width: Size.Width, height: newSize.Height - Size.Height);
+		}
+
+		var pasteRect = SKRectI.Create(
+			0,
+			0,
+			width: Math.Min(Size.Width, newSize.Width),
+			height: Math.Min(Size.Height, newSize.Height)
+		);
+
+		return new RenderInstructions(
+			pasteFrontBuffer: true,
+			sourceRect: pasteRect,
+			destRect: pasteRect,
+			firstDirtyRect: horizontal,
+			secondDirtyRect: vertical,
 			size: newSize
 		);
+	}
 
 	public static RenderInstructions Resized(SKSizeI oldSize, SKSizeI newSize)
 	{
@@ -80,6 +111,66 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			secondDirtyRect: vertical,
 			size: newSize
 		);
+	}
+
+	public RenderInstructions Move(PositionOffset offset)
+	{
+		SKRectI? horizontal = null;
+		if (offset.X != 0)
+		{
+			horizontal =
+				offset.X < 0
+					? SKRectI.Create(Size.Width + offset.X, 0, width: Math.Abs(offset.X), Size.Height)
+					: SKRectI.Create(0, 0, width: offset.X, Size.Height);
+		}
+
+		SKRectI? vertical = null;
+		if (offset.Y != 0)
+		{
+			if (offset.Y < 0) // Up
+			{
+				vertical = SKRectI.Create(
+					x: Math.Max(0, offset.X),
+					y: Size.Height + offset.Y,
+					width: Math.Min(Size.Width, Size.Width - Math.Abs(offset.X)),
+					height: Math.Abs(offset.Y)
+				);
+			}
+			else // Down
+			{
+				vertical = SKRectI.Create(
+					x: Math.Max(0, offset.X),
+					y: 0,
+					width: Math.Min(Size.Width, Size.Width - Math.Abs(offset.X)),
+					height: offset.Y
+				);
+			}
+		}
+
+		var pasteWidth = Size.Width - Math.Abs(offset.X);
+		var pasteHeight = Size.Height - Math.Abs(offset.Y);
+
+		return new RenderInstructions(
+			pasteFrontBuffer: true,
+			sourceRect: SKRectI.Create(
+				x: ClampSource(offset.X),
+				y: ClampSource(offset.Y),
+				width: pasteWidth,
+				height: pasteHeight
+			),
+			destRect: SKRectI.Create(
+				x: ClampDest(offset.X),
+				y: ClampDest(offset.Y),
+				width: pasteWidth,
+				height: pasteHeight
+			),
+			firstDirtyRect: horizontal,
+			secondDirtyRect: vertical,
+			size: Size
+		);
+
+		static int ClampSource(int p) => -Math.Min(0, p);
+		static int ClampDest(int p) => Math.Max(0, p);
 	}
 
 	public static RenderInstructions Moved(SKSizeI size, PositionOffset offset)

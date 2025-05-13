@@ -2,6 +2,8 @@ using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary.Visualization;
 
+// TODO: QuadTreeViewport belongs inside of this
+// TODO: Make a distinction between creating a new one and mutating an existing one
 public sealed class RenderInstructions : IEquatable<RenderInstructions>
 {
 	private readonly SKRectI? _firstDirtyRect;

@@ -1,3 +1,3 @@
-﻿namespace Buddhabrot.Core.Boundary.Visualization;
+﻿namespace Buddhabrot.Core.Boundary;
 
 public readonly record struct PositionOffset(int X, int Y);

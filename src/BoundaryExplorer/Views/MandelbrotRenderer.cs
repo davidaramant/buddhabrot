@@ -32,7 +32,7 @@ public sealed class MandelbrotRenderer : Control
 	private bool _isPanning;
 	private Point _panningStartPoint;
 	private QuadTreeViewport _panningStart;
-	private PixelVector _panningOffset = new();
+	private PositionOffset _panningOffset = new();
 	private bool _inspectMode = false;
 	private RenderInstructions _currentInstructions = RenderInstructions.Nothing;
 
@@ -253,8 +253,8 @@ public sealed class MandelbrotRenderer : Control
 			if (_isPanning)
 			{
 				_isPanning = false;
-				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
-				await RequestRenderAsync(_currentInstructions.Move(Convert(_panningOffset)));
+				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset);
+				await RequestRenderAsync(_currentInstructions.Move(_panningOffset));
 			}
 		};
 		PointerCaptureLost += async (_, e) =>
@@ -264,7 +264,7 @@ public sealed class MandelbrotRenderer : Control
 				_isPanning = false;
 
 				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
-				await RequestRenderAsync(_currentInstructions.Move(Convert(_panningOffset)));
+				await RequestRenderAsync(_currentInstructions.Move(_panningOffset));
 			}
 		};
 
@@ -318,7 +318,7 @@ public sealed class MandelbrotRenderer : Control
 			var deltaX = (int)(currentPos.X - _panningStartPoint.X);
 			var deltaY = (int)(currentPos.Y - _panningStartPoint.Y);
 
-			_panningOffset = new PixelVector(deltaX, deltaY);
+			_panningOffset = new PositionOffset(deltaX, deltaY);
 			InvalidateVisual();
 		}
 
@@ -538,9 +538,5 @@ public sealed class MandelbrotRenderer : Control
 
 	#endregion
 
-	private static SKSizeI ToSkia(PixelSize size) => new(size.Width, size.Height);
-
 	private static Rect FromSkia(SKRectI rect) => new(rect.Left, rect.Top, rect.Width, rect.Height);
-
-	private static PositionOffset Convert(PixelVector vector) => new(vector.X, vector.Y);
 }

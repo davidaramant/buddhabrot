@@ -1,3 +1,4 @@
+using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using SkiaSharp;
 
@@ -12,12 +13,16 @@ namespace Buddhabrot.Core.Boundary;
 /// </remarks>
 public readonly record struct QuadTreeViewport(SKRectI Area, int Scale)
 {
+	public static readonly QuadTreeViewport Empty = new(SKRectI.Empty, 0);
+
 	public bool IsPoint => Scale == 0;
 	public int Length => 1 << Scale;
 	public int QuadrantLength => 1 << (Scale - 1);
 	public SKPointI Center => new(Area.Left + QuadrantLength, Area.Top + QuadrantLength);
 
-	public QuadTreeViewport OffsetBy(int deltaX, int deltaY) => new(Area.OffsetBy(deltaX, deltaY), Scale);
+	public QuadTreeViewport OffsetBy(PositionOffset offset) => this with { Area = Area.OffsetBy(offset.X, offset.Y) };
+
+	public QuadTreeViewport OffsetBy(int deltaX, int deltaY) => this with { Area = Area.OffsetBy(deltaX, deltaY) };
 
 	public QuadTreeViewport ZoomIn(int x, int y) =>
 		new(Scale: Scale + 1, Area: SKRectI.Create(new SKPointI(x: 2 * Area.Left - x, y: 2 * Area.Top - y), Area.Size));

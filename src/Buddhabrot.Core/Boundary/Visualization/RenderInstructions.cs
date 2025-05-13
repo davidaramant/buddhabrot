@@ -2,7 +2,6 @@ using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary.Visualization;
 
-// TODO: QuadTreeViewport belongs inside of this
 public sealed class RenderInstructions : IEquatable<RenderInstructions>
 {
 	private readonly SKRectI? _firstDirtyRect;
@@ -11,7 +10,8 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 	public bool PasteFrontBuffer { get; }
 	public SKRectI SourceRect { get; }
 	public SKRectI DestRect { get; }
-	public SKSizeI Size { get; }
+	public SKSizeI Size => Viewport.Area.Size;
+	public QuadTreeViewport Viewport { get; }
 
 	private RenderInstructions(
 		bool pasteFrontBuffer,
@@ -19,7 +19,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		SKRectI destRect,
 		SKRectI? firstDirtyRect,
 		SKRectI? secondDirtyRect,
-		SKSizeI size
+		QuadTreeViewport viewport
 	)
 	{
 		PasteFrontBuffer = pasteFrontBuffer;
@@ -27,7 +27,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		DestRect = destRect;
 		_firstDirtyRect = firstDirtyRect;
 		_secondDirtyRect = secondDirtyRect;
-		Size = size;
+		Viewport = viewport;
 	}
 
 	public static readonly RenderInstructions Nothing = new(
@@ -36,7 +36,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		SKRectI.Empty,
 		null,
 		null,
-		SKSizeI.Empty
+		QuadTreeViewport.Empty
 	);
 
 	public static RenderInstructions Everything(SKSizeI newSize) =>
@@ -46,7 +46,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			destRect: SKRectI.Empty,
 			firstDirtyRect: SKRectI.Create(0, 0, newSize.Width, newSize.Height),
 			secondDirtyRect: null,
-			size: QuadTreeViewport.GetLargestCenteredSquareInside(newSize).Area.Size
+			viewport: QuadTreeViewport.GetLargestCenteredSquareInside(newSize)
 		);
 
 	public RenderInstructions Resize(SKSizeI newSize)
@@ -76,7 +76,10 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			destRect: pasteRect,
 			firstDirtyRect: horizontal,
 			secondDirtyRect: vertical,
-			size: newSize
+			viewport: Viewport with
+			{
+				Area = SKRectI.Create(Viewport.Area.Location, newSize),
+			}
 		);
 	}
 
@@ -133,7 +136,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			),
 			firstDirtyRect: horizontal,
 			secondDirtyRect: vertical,
-			size: Size
+			viewport: Viewport.OffsetBy(offset)
 		);
 
 		static int ClampSource(int p) => -Math.Min(0, p);

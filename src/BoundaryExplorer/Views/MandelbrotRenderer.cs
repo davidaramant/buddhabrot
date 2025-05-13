@@ -31,10 +31,8 @@ public sealed class MandelbrotRenderer : Control
 {
 	private bool _isPanning;
 	private Point _panningStartPoint;
-	private QuadTreeViewport _panningStart;
 	private PositionOffset _panningOffset = new();
 	private bool _inspectMode = false;
-	private RenderInstructions _currentInstructions = RenderInstructions.Nothing;
 
 	private IRegionClassifier _regionClassifier = new CornerFirstRegionClassifier(
 		new BoundaryParameters(new AreaDivisions(1), 1)
@@ -57,6 +55,17 @@ public sealed class MandelbrotRenderer : Control
 	private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
 
 	private SKSizeI PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
+
+	public static readonly StyledProperty<RenderInstructions> InstructionsProperty = AvaloniaProperty.Register<
+		MandelbrotRenderer,
+		RenderInstructions
+	>(nameof(Instructions), defaultValue: RenderInstructions.Nothing);
+
+	public RenderInstructions Instructions
+	{
+		get => GetValue(InstructionsProperty);
+		set => SetValue(InstructionsProperty, value);
+	}
 
 	public static readonly StyledProperty<IBoundaryPalette> PaletteProperty = AvaloniaProperty.Register<
 		MandelbrotRenderer,
@@ -123,17 +132,6 @@ public sealed class MandelbrotRenderer : Control
 		set => SetValue(MinimumIterationsProperty, value);
 	}
 
-	public static readonly StyledProperty<QuadTreeViewport> QuadTreeViewportProperty = AvaloniaProperty.Register<
-		MandelbrotRenderer,
-		QuadTreeViewport
-	>(nameof(QuadTreeViewport));
-
-	public QuadTreeViewport QuadTreeViewport
-	{
-		get => GetValue(QuadTreeViewportProperty);
-		set => SetValue(QuadTreeViewportProperty, value);
-	}
-
 	public static readonly StyledProperty<RegionId> CursorRegionProperty = AvaloniaProperty.Register<
 		MandelbrotRenderer,
 		RegionId
@@ -191,7 +189,7 @@ public sealed class MandelbrotRenderer : Control
 
 		this.EffectiveViewportChanged += async (_, _) =>
 		{
-			await RequestRenderAsync(_currentInstructions.Resize(PixelBounds));
+			await RequestRenderAsync(Instructions.Resize(PixelBounds));
 		};
 		PointerMoved += (_, e) =>
 		{
@@ -223,23 +221,20 @@ public sealed class MandelbrotRenderer : Control
 				{
 					_isPanning = true;
 					_panningStartPoint = e.GetPosition(this);
-					_panningStart = QuadTreeViewport;
 				}
 				else if (e.ClickCount == 2)
 				{
 					_isPanning = false;
-					if (QuadTreeViewport.Scale < 31)
+					if (Instructions.Viewport.Scale < 31)
 					{
 						var pos = e.GetPosition(this);
-						QuadTreeViewport = QuadTreeViewport.ZoomIn((int)pos.X, (int)pos.Y);
-						await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+						await RequestRenderAsync(Instructions.ZoomIn((int)pos.X, (int)pos.Y));
 					}
 				}
 			}
 			else if (!_inspectMode && properties.IsRightButtonPressed && e.ClickCount == 2)
 			{
-				QuadTreeViewport = QuadTreeViewport.ZoomOut();
-				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+				await RequestRenderAsync(Instructions.ZoomOut());
 			}
 			else if (_inspectMode && properties.IsRightButtonPressed)
 			{
@@ -253,8 +248,7 @@ public sealed class MandelbrotRenderer : Control
 			if (_isPanning)
 			{
 				_isPanning = false;
-				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset);
-				await RequestRenderAsync(_currentInstructions.Move(_panningOffset));
+				await RequestRenderAsync(Instructions.Move(_panningOffset));
 			}
 		};
 		PointerCaptureLost += async (_, e) =>
@@ -263,16 +257,14 @@ public sealed class MandelbrotRenderer : Control
 			{
 				_isPanning = false;
 
-				QuadTreeViewport = _panningStart.OffsetBy(_panningOffset.X, _panningOffset.Y);
-				await RequestRenderAsync(_currentInstructions.Move(_panningOffset));
+				await RequestRenderAsync(Instructions.Move(_panningOffset));
 			}
 		};
 
 		ResetViewCommand = ReactiveCommand.CreateFromTask(ResetLogicalAreaAsync);
 		ZoomOutCommand = ReactiveCommand.CreateFromTask(() =>
 		{
-			QuadTreeViewport = QuadTreeViewport.ZoomOut();
-			return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+			return RequestRenderAsync(Instructions.ZoomOut());
 		});
 		ToggleInspectModeCommand = ReactiveCommand.Create(() =>
 		{
@@ -329,8 +321,8 @@ public sealed class MandelbrotRenderer : Control
 	{
 		_complexViewport = ComplexViewport.FromResolution(
 			new SKSizeI(PixelBounds.Width, PixelBounds.Height),
-			QuadTreeViewport.Center,
-			2d / QuadTreeViewport.QuadrantLength
+			Instructions.Viewport.Center,
+			2d / Instructions.Viewport.QuadrantLength
 		);
 
 		context.DrawImage(
@@ -341,7 +333,6 @@ public sealed class MandelbrotRenderer : Control
 
 	sealed record RenderingArgs(
 		RenderInstructions Instructions,
-		QuadTreeViewport Viewport,
 		RegionLookup Lookup,
 		IBoundaryPalette Palette,
 		bool RenderInteriors,
@@ -382,8 +373,8 @@ public sealed class MandelbrotRenderer : Control
 
 		canvas.DrawRect(0, 0, args.Width, args.Height, new SKPaint { Color = args.Palette.Background });
 
-		var center = args.Viewport.Center;
-		var radius = args.Viewport.QuadrantLength;
+		var center = args.Instructions.Viewport.Center;
+		var radius = args.Instructions.Viewport.QuadrantLength;
 
 		canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InsideCircle });
 
@@ -397,7 +388,7 @@ public sealed class MandelbrotRenderer : Control
 			);
 		}
 
-		args.Lookup.GetVisibleAreas(args.Viewport, args.Instructions.GetDirtyRectangles(), areasToDraw);
+		args.Lookup.GetVisibleAreas(args.Instructions.Viewport, args.Instructions.GetDirtyRectangles(), areasToDraw);
 
 		using var paint = new SKPaint();
 
@@ -405,8 +396,8 @@ public sealed class MandelbrotRenderer : Control
 		{
 			var viewPort = ComplexViewport.FromResolution(
 				new SKSizeI(args.Width, args.Height),
-				args.Viewport.Center,
-				2d / args.Viewport.QuadrantLength
+				args.Instructions.Viewport.Center,
+				2d / args.Instructions.Viewport.QuadrantLength
 			);
 			areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
 
@@ -461,11 +452,7 @@ public sealed class MandelbrotRenderer : Control
 		}
 	}
 
-	private Task ResetLogicalAreaAsync()
-	{
-		QuadTreeViewport = QuadTreeViewport.GetLargestCenteredSquareInside(PixelBounds);
-		return RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
-	}
+	private Task ResetLogicalAreaAsync() => RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
 
 	protected override Size MeasureOverride(Size availableSize) => availableSize;
 
@@ -473,11 +460,10 @@ public sealed class MandelbrotRenderer : Control
 
 	private async Task RequestRenderAsync(RenderInstructions instructions)
 	{
-		_currentInstructions = instructions;
+		Instructions = instructions;
 
 		var args = new RenderingArgs(
 			instructions,
-			QuadTreeViewport,
 			Lookup,
 			Palette,
 			RenderInteriors,

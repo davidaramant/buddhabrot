@@ -78,7 +78,7 @@
                 Grid.Row="0"
                 Grid.Column="8"
                 Margin="4"
-                Content="{Binding #MandelbrotRenderer.QuadTreeViewport.Scale, StringFormat=Scale: \{0\}x}" />
+                Content="{Binding #MandelbrotRenderer.Instructions.Viewport.Scale, StringFormat=Scale: \{0\}x}" />
             <Button
                 Grid.Row="0"
                 Grid.Column="9"
@@ -108,7 +108,7 @@
             Grid.Column="0"
             ColumnDefinitions="Auto,150,Auto,*,Auto,Auto,Auto">
             <ToggleButton Command="{Binding #MandelbrotRenderer.ToggleInspectModeCommand}">Inspect Mode</ToggleButton>
-            
+
             <ComboBox
                 Grid.Column="1"
                 Margin="4"
@@ -116,7 +116,7 @@
                 HorizontalAlignment="Stretch"
                 Items="{Binding #MandelbrotRenderer.ClassifierTypes}"
                 SelectedItem="{Binding #MandelbrotRenderer.SelectedClassifier}" />
-            
+
             <Label
                 Grid.Column="2"
                 Margin="4"

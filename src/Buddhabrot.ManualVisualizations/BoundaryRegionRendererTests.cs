@@ -59,9 +59,10 @@ public class BoundaryRegionRendererTests : BaseVisualization
 			(_, _, l) => lookup = l,
 			CancellationToken.None
 		);
-
 		var args = new RenderingArgs(
-			Instructions: RenderInstructions.Everything(imageSize),
+			Instructions: RenderInstructions.FromViewport(
+				new QuadtreeViewport(SKRectI.Create(new SKPointI(-11_533, -11_061), imageSize), 15)
+			),
 			Lookup: lookup,
 			Palette: BluePalette.Instance,
 			RenderInteriors: true,
@@ -108,7 +109,9 @@ public class BoundaryRegionRendererTests : BaseVisualization
 		);
 
 		var args = new RenderingArgs(
-			Instructions: RenderInstructions.Everything(imageSize),
+			Instructions: RenderInstructions.FromViewport(
+				new QuadtreeViewport(SKRectI.Create(new SKPointI(-11_533, -11_061), imageSize), 15)
+			),
 			Lookup: lookup,
 			Palette: BluePalette.Instance,
 			RenderInteriors: true,

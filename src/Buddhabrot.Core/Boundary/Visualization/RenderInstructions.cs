@@ -56,6 +56,16 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			quadtreeViewport: QuadtreeViewport.GetLargestCenteredSquareInside(newSize)
 		);
 
+	public static RenderInstructions FromViewport(QuadtreeViewport viewport) =>
+		new(
+			pasteFrontBuffer: false,
+			sourceRect: SKRectI.Empty,
+			destRect: SKRectI.Empty,
+			firstDirtyRect: SKRectI.Create(0, 0, viewport.Area.Width, viewport.Area.Height),
+			secondDirtyRect: null,
+			quadtreeViewport: viewport
+		);
+
 	public RenderInstructions ZoomIn(int x, int y) =>
 		new(
 			pasteFrontBuffer: false,

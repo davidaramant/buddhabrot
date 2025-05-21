@@ -1,4 +1,4 @@
-using Buddhabrot.Core.Boundary.QuadTrees;
+using Buddhabrot.Core.Boundary.Quadtrees;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using SkiaSharp;
 
@@ -7,7 +7,7 @@ namespace Buddhabrot.Core.Boundary;
 public sealed class RegionLookup
 {
 	// Instance is reused to give the poor GC a rest
-	private readonly Stack<(QuadTreeViewport, RegionNode)> _toCheck = new();
+	private readonly Stack<(QuadtreeViewport, RegionNode)> _toCheck = new();
 	public IReadOnlyList<RegionNode> Nodes { get; }
 	private readonly RegionNode _root;
 
@@ -31,7 +31,7 @@ public sealed class RegionLookup
 	}
 
 	public void GetVisibleAreas(
-		QuadTreeViewport bounds,
+		QuadtreeViewport bounds,
 		IEnumerable<SKRectI> searchAreas,
 		ICollection<RegionArea> visibleAreas
 	)

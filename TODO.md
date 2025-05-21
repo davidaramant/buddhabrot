@@ -42,7 +42,7 @@
   - [ ] Benchmark boundary calculation process
 - [x] Investigating putting an index into the `VisitedRegions` - EDIT: complete dud
 - [x] Support diffing arbitrary quad trees
-  - [x] ~~Do I need a more generic quad tree internal data structure?~~ - Split into two types of trees 
+  - [x] ~~Do I need a more generic quad tree internal data structure?~~ - Split into two types of trees
   - [x] Expand RegionType to 3 bits
   - [x] Separate RegionType for VisitedRegions and RegionLookup
   - [x] Generate quad tree diffs
@@ -58,7 +58,7 @@
   - [x] Break out new heuristic to different class
   - [x] 2x2 heuristic
   - [x] Command line argument for BoundaryFinder for heuristic
-  - [x] GUI for heuristic for completeness when generating boundaries 
+  - [x] GUI for heuristic for completeness when generating boundaries
   - [x] ~~Benchmarks for heuristics~~ - No. Just benchmark the entire operation. I'm going with Internal4
 
 ## BoundaryExplorer
@@ -68,7 +68,7 @@
 - [ ] Real-Time Visualizations
   - [x] Working Canvas
   - [x] Switch to power-of-two divisions
-  - [x] QuadTree for regions
+  - [x] Quadtree for regions
   - [x] Render regions
   - [x] Zooming & panning
     - [x] Zoom where the cursor was clicked
@@ -102,11 +102,11 @@
     - [x] Backend for picking palettes
     - [x] Faster palette lookup for RegionType (dictionary)
     - [x] Show a palette legend in the UI
-  - [x] More palettes to choose 
+  - [x] More palettes to choose
   - [x] Black & White palette for max contrast
   - [x] Deep zooms on enormous trees are slow (optimize RegionLookup) - Minor optimizations
 - [x] Update colors for the new region types
-  - [x] Associate a type with every pixel rendered 
+  - [x] Associate a type with every pixel rendered
   - [x] Compute the colors for InSet/Outside/InRange
 - [x] UI to create diff between two `RegionLookup`s
   - [x] New tab

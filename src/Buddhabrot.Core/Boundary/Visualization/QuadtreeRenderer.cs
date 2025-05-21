@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace Buddhabrot.Core.Boundary.Visualization;
 
-public sealed class QuadTreeRenderer
+public sealed class QuadtreeRenderer
 {
 	private const int CellWidth = 3;
 	private readonly int _levels;
@@ -12,7 +12,7 @@ public sealed class QuadTreeRenderer
 
 	public static int GetRequiredWidth(int levels) => 2 + (1 << (levels - 1)) * CellWidth + (1 << (levels - 1)) - 1;
 
-	public QuadTreeRenderer(RasterImage image, int levels, int xOffset = 0)
+	public QuadtreeRenderer(RasterImage image, int levels, int xOffset = 0)
 	{
 		_levels = levels;
 		_xOffset = xOffset;

@@ -1,6 +1,6 @@
 using Buddhabrot.Core.Boundary;
 
-namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
+namespace Buddhabrot.Core.Tests.Boundary.Quadtrees;
 
 public static class RegionLookupUtil
 {
@@ -43,7 +43,7 @@ public static class RegionLookupUtil
 			vr.Visit(new RegionId(p.X, p.Y), VisitedRegionType.Border);
 		}
 
-		var transformer = new QuadTreeCompressor(vr);
+		var transformer = new QuadtreeCompressor(vr);
 		return transformer.Transform();
 	}
 }

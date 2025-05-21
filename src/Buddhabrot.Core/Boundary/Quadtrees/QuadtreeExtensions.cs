@@ -1,6 +1,6 @@
-namespace Buddhabrot.Core.Boundary.QuadTrees;
+namespace Buddhabrot.Core.Boundary.Quadtrees;
 
-public static class QuadTreeExtensions
+public static class QuadtreeExtensions
 {
 	public static int AddChildren<TNode>(this List<TNode> tree, TNode sw, TNode se, TNode nw, TNode ne)
 	{

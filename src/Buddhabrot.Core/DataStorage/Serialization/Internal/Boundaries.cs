@@ -30,7 +30,7 @@ public sealed class Boundaries
 }
 
 [ProtoContract]
-public sealed class PersistedQuadTree
+public sealed class PersistedQuadtree
 {
 	[ProtoMember(1)]
 	public int Height { get; init; }
@@ -40,5 +40,5 @@ public sealed class PersistedQuadTree
 
 	public void Save(Stream stream) => Serializer.Serialize(stream, this);
 
-	public static PersistedQuadTree Load(Stream stream) => Serializer.Deserialize<PersistedQuadTree>(stream);
+	public static PersistedQuadtree Load(Stream stream) => Serializer.Deserialize<PersistedQuadtree>(stream);
 }

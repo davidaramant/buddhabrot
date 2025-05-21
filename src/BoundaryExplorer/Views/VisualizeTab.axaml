@@ -78,7 +78,7 @@
                 Grid.Row="0"
                 Grid.Column="8"
                 Margin="4"
-                Content="{Binding #MandelbrotRenderer.Instructions.Viewport.Scale, StringFormat=Scale: \{0\}x}" />
+                Content="{Binding #MandelbrotRenderer.Instructions.QuadtreeViewport.Scale, StringFormat=Scale: \{0\}x}" />
             <Button
                 Grid.Row="0"
                 Grid.Column="9"
@@ -154,7 +154,7 @@
                 Grid.Column="6"
                 Margin="4"
                 Content="Save Quad Tree Image"
-                Command="{Binding SaveQuadTreeRenderingCommand}" />
+                Command="{Binding SaveQuadtreeRenderingCommand}" />
         </Grid>
     </Grid>
 </UserControl>

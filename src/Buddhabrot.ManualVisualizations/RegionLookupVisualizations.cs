@@ -1,5 +1,5 @@
 using Buddhabrot.Core.Boundary.Visualization;
-using Buddhabrot.Core.Tests.Boundary.QuadTrees;
+using Buddhabrot.Core.Tests.Boundary.Quadtrees;
 
 namespace Buddhabrot.ManualVisualizations;
 
@@ -10,7 +10,7 @@ public class RegionLookupVisualizations : BaseVisualization
 	public void SetOutputPath() => base.SetUpOutputPath(nameof(RegionLookupVisualizations));
 
 	[Test]
-	public void ShouldConstructPower2QuadTreeCorrectly()
+	public void ShouldConstructPower2QuadtreeCorrectly()
 	{
 		var lookup = RegionLookupUtil.Power2Lookup;
 
@@ -19,7 +19,7 @@ public class RegionLookupVisualizations : BaseVisualization
 	}
 
 	[Test]
-	public void ShouldConstructPower3QuadTreeCorrectly()
+	public void ShouldConstructPower3QuadtreeCorrectly()
 	{
 		var lookup = RegionLookupUtil.Power3Lookup;
 
@@ -36,7 +36,7 @@ public class RegionLookupVisualizations : BaseVisualization
 	[TestCase(2, 1)]
 	[TestCase(3, 1)]
 	[TestCase(3, 0)]
-	public void ShouldRenderSimpleQuadTreeWithBorder(int x, int y)
+	public void ShouldRenderSimpleQuadtreeWithBorder(int x, int y)
 	{
 		var lookup = RegionLookupUtil.Make((x, y));
 		using var image = BoundaryVisualizer.RenderRegionLookup(lookup);

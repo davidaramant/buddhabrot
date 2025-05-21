@@ -3,17 +3,17 @@ using SkiaSharp;
 
 namespace Buddhabrot.Core.Tests.Boundary;
 
-public class QuadTreeViewportTests
+public class QuadtreeViewportTests
 {
 	[Fact]
 	public void ShouldGetExpectedQuadrants()
 	{
-		var v = new QuadTreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(20, 20)), 1);
+		var v = new QuadtreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(20, 20)), 1);
 
-		v.NW.ShouldBe(new QuadTreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(10, 10)), 0));
-		v.NE.ShouldBe(new QuadTreeViewport(SKRectI.Create(new SKPointI(1, 0), new SKSizeI(10, 10)), 0));
-		v.SE.ShouldBe(new QuadTreeViewport(SKRectI.Create(new SKPointI(1, 1), new SKSizeI(10, 10)), 0));
-		v.SW.ShouldBe(new QuadTreeViewport(SKRectI.Create(new SKPointI(0, 1), new SKSizeI(10, 10)), 0));
+		v.NW.ShouldBe(new QuadtreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(10, 10)), 0));
+		v.NE.ShouldBe(new QuadtreeViewport(SKRectI.Create(new SKPointI(1, 0), new SKSizeI(10, 10)), 0));
+		v.SE.ShouldBe(new QuadtreeViewport(SKRectI.Create(new SKPointI(1, 1), new SKSizeI(10, 10)), 0));
+		v.SW.ShouldBe(new QuadtreeViewport(SKRectI.Create(new SKPointI(0, 1), new SKSizeI(10, 10)), 0));
 	}
 
 	public static IEnumerable<object[]> IntersectionData()
@@ -34,19 +34,19 @@ public class QuadTreeViewportTests
 	[MemberData(nameof(IntersectionData))]
 	public void ShouldIntersectWithRectangle(SKRectI rect, SKRectI expected)
 	{
-		var v = new QuadTreeViewport(SKRectI.Create(new SKPointI(-2, -2), new SKSizeI(20, 20)), 2);
+		var v = new QuadtreeViewport(SKRectI.Create(new SKPointI(-2, -2), new SKSizeI(20, 20)), 2);
 		v.IntersectWith(rect).ShouldBe(expected);
 	}
 
 	[Fact]
 	public void ShouldCalculateCenteredSquareInArea()
 	{
-		QuadTreeViewport
+		QuadtreeViewport
 			.GetLargestCenteredSquareInside(new(10, 12))
-			.ShouldBe(new QuadTreeViewport(SKRectI.Create(new SKPointI(1, 2), new(10, 12)), 3));
+			.ShouldBe(new QuadtreeViewport(SKRectI.Create(new SKPointI(1, 2), new(10, 12)), 3));
 	}
 
-	public sealed record ZoomOutTestCase(string Name, QuadTreeViewport Viewport, QuadTreeViewport ExpectedResult)
+	public sealed record ZoomOutTestCase(string Name, QuadtreeViewport Viewport, QuadtreeViewport ExpectedResult)
 	{
 		public override string ToString() => Name;
 	}
@@ -57,24 +57,24 @@ public class QuadTreeViewportTests
 		[
 			new ZoomOutTestCase(
 				"Centered",
-				new QuadTreeViewport(SKRectI.Create(new SKPointI(1, 1), new SKSizeI(10, 10)), Scale: 3),
-				ExpectedResult: new QuadTreeViewport(SKRectI.Create(new SKPointI(3, 3), new SKSizeI(10, 10)), Scale: 2)
+				new QuadtreeViewport(SKRectI.Create(new SKPointI(1, 1), new SKSizeI(10, 10)), Scale: 3),
+				ExpectedResult: new QuadtreeViewport(SKRectI.Create(new SKPointI(3, 3), new SKSizeI(10, 10)), Scale: 2)
 			),
 		];
 		yield return
 		[
 			new ZoomOutTestCase(
 				"Offset - Top Left",
-				new QuadTreeViewport(SKRectI.Create(new SKPointI(1, 1), new SKSizeI(20, 20)), Scale: 3),
-				ExpectedResult: new QuadTreeViewport(SKRectI.Create(new SKPointI(5, 5), new SKSizeI(20, 20)), Scale: 2)
+				new QuadtreeViewport(SKRectI.Create(new SKPointI(1, 1), new SKSizeI(20, 20)), Scale: 3),
+				ExpectedResult: new QuadtreeViewport(SKRectI.Create(new SKPointI(5, 5), new SKSizeI(20, 20)), Scale: 2)
 			),
 		];
 		yield return
 		[
 			new ZoomOutTestCase(
 				"Offset - Top Right",
-				new QuadTreeViewport(SKRectI.Create(new SKPointI(x: 11, y: 1), new SKSizeI(20, 20)), Scale: 3),
-				ExpectedResult: new QuadTreeViewport(
+				new QuadtreeViewport(SKRectI.Create(new SKPointI(x: 11, y: 1), new SKSizeI(20, 20)), Scale: 3),
+				ExpectedResult: new QuadtreeViewport(
 					SKRectI.Create(new SKPointI(x: 11, y: 5), new SKSizeI(20, 20)),
 					Scale: 2
 				)

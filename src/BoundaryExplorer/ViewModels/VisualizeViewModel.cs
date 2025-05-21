@@ -59,7 +59,7 @@ public sealed class VisualizeViewModel : ViewModelBase
 
 	public IReadOnlyCollection<LegendColorViewModel> LegendColors { get; }
 
-	public ReactiveCommand<Unit, Unit> SaveQuadTreeRenderingCommand { get; }
+	public ReactiveCommand<Unit, Unit> SaveQuadtreeRenderingCommand { get; }
 
 	public VisualizeViewModel(BorderDataProvider dataProvider, Action<string> addToSystemLog)
 	{
@@ -79,12 +79,12 @@ public sealed class VisualizeViewModel : ViewModelBase
 			.Select(x => x.Value!)
 			.InvokeCommand(loadLookupCommand);
 
-		SaveQuadTreeRenderingCommand = ReactiveCommand.Create(SaveQuadTreeRendering);
+		SaveQuadtreeRenderingCommand = ReactiveCommand.Create(SaveQuadtreeRendering);
 
 		LegendColors = Enum.GetValues<LookupRegionType>().Select(t => new LegendColorViewModel(this, t)).ToList();
 	}
 
-	private void SaveQuadTreeRendering()
+	private void SaveQuadtreeRendering()
 	{
 		try
 		{

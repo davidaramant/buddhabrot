@@ -17,7 +17,7 @@ public readonly record struct AreaDivisions(int VerticalPower)
 	public Complex ToComplex(CornerId corner) =>
 		new(real: corner.X * RegionSideLength - 2, imaginary: corner.Y * RegionSideLength);
 
-	public QuadTreeViewport GetQuadTreeViewport(RegionId region)
+	public QuadtreeViewport GetQuadtreeViewport(RegionId region)
 	{
 		throw new NotImplementedException("Viewport calculation is not implemented yet.");
 	}

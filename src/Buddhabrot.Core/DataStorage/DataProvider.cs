@@ -23,8 +23,8 @@ public sealed class DataProvider
 
 	public RegionLookup GetLookup(BoundaryDataSet parameters)
 	{
-		using var stream = File.OpenRead(Path.Combine(DataStoragePath, ToQuadTreeFileName(parameters)));
-		return BoundarySerializer.LoadQuadTree(stream);
+		using var stream = File.OpenRead(Path.Combine(DataStoragePath, ToQuadtreeFileName(parameters)));
+		return BoundarySerializer.LoadQuadtree(stream);
 	}
 
 	public IReadOnlyList<RegionId> GetBoundaryRegions(BoundaryParameters parameters)
@@ -45,7 +45,7 @@ public sealed class DataProvider
 			BoundarySerializer.Save(parameters, regions, stream);
 		}
 
-		using (var stream = File.Open(Path.Combine(DataStoragePath, ToQuadTreeFileName(parameters)), FileMode.Create))
+		using (var stream = File.Open(Path.Combine(DataStoragePath, ToQuadtreeFileName(parameters)), FileMode.Create))
 		{
 			BoundarySerializer.Save(lookup, stream);
 		}
@@ -56,7 +56,7 @@ public sealed class DataProvider
 		// Don't bother checking directory, it must exist if we're generating a diff
 
 		using var stream = File.Open(
-			Path.Combine(DataStoragePath, ToQuadTreeFileName(BoundaryDataSet.FromDiff(left, right))),
+			Path.Combine(DataStoragePath, ToQuadtreeFileName(BoundaryDataSet.FromDiff(left, right))),
 			FileMode.Create
 		);
 		BoundarySerializer.Save(lookup, stream);
@@ -64,7 +64,7 @@ public sealed class DataProvider
 
 	private static string ToBoundaryFileName(BoundaryParameters parameters) => parameters.Description + ".boundaries";
 
-	private static string ToQuadTreeFileName(BoundaryParameters parameters) => parameters.Description + ".quadtree";
+	private static string ToQuadtreeFileName(BoundaryParameters parameters) => parameters.Description + ".quadtree";
 
-	private static string ToQuadTreeFileName(BoundaryDataSet parameters) => parameters.Description + ".quadtree";
+	private static string ToQuadtreeFileName(BoundaryDataSet parameters) => parameters.Description + ".quadtree";
 }

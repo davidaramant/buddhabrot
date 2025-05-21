@@ -1,7 +1,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Numerics;
-using Buddhabrot.Core.Boundary.QuadTrees;
+using Buddhabrot.Core.Boundary.Quadtrees;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using Buddhabrot.Core.Images;
@@ -72,8 +72,8 @@ public static class BoundaryVisualizer
 	{
 		palette ??= PastelPalette.Instance;
 
-		var widthOfTopLevelQuadrant = QuadTreeRenderer.GetRequiredWidth(lookup.Height - 1);
-		var imageWidth = QuadTreeRenderer.GetRequiredWidth(lookup.Height);
+		var widthOfTopLevelQuadrant = QuadtreeRenderer.GetRequiredWidth(lookup.Height - 1);
+		var imageWidth = QuadtreeRenderer.GetRequiredWidth(lookup.Height);
 		var image = new RasterImage(imageWidth, widthOfTopLevelQuadrant, scale);
 		image.Fill(backgroundColor ?? SKColors.Black);
 
@@ -90,7 +90,7 @@ public static class BoundaryVisualizer
 			);
 		}
 
-		void DrawQuad(QuadTreeRenderer r, RegionNode quad, int depth, int x, int y)
+		void DrawQuad(QuadtreeRenderer r, RegionNode quad, int depth, int x, int y)
 		{
 			if (quad.IsLeaf)
 			{
@@ -109,9 +109,9 @@ public static class BoundaryVisualizer
 		}
 
 		var (_, _, topW, topE) = GetChildren(nodes.Last());
-		DrawQuad(new QuadTreeRenderer(image, lookup.Height - 1), topW, depth: 0, 0, 0);
+		DrawQuad(new QuadtreeRenderer(image, lookup.Height - 1), topW, depth: 0, 0, 0);
 		DrawQuad(
-			new QuadTreeRenderer(image, lookup.Height - 1, xOffset: widthOfTopLevelQuadrant - 1),
+			new QuadtreeRenderer(image, lookup.Height - 1, xOffset: widthOfTopLevelQuadrant - 1),
 			topE,
 			depth: 0,
 			0,

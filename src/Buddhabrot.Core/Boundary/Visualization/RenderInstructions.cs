@@ -10,8 +10,8 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 	public bool PasteFrontBuffer { get; }
 	public SKRectI SourceRect { get; }
 	public SKRectI DestRect { get; }
-	public SKSizeI Size => Viewport.Area.Size;
-	public QuadTreeViewport Viewport { get; }
+	public SKSizeI Size => QuadtreeViewport.Area.Size;
+	public QuadtreeViewport QuadtreeViewport { get; }
 	public ComplexViewport ComplexViewport { get; }
 
 	private RenderInstructions(
@@ -20,7 +20,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		SKRectI destRect,
 		SKRectI? firstDirtyRect,
 		SKRectI? secondDirtyRect,
-		QuadTreeViewport viewport
+		QuadtreeViewport quadtreeViewport
 	)
 	{
 		PasteFrontBuffer = pasteFrontBuffer;
@@ -28,12 +28,12 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		DestRect = destRect;
 		_firstDirtyRect = firstDirtyRect;
 		_secondDirtyRect = secondDirtyRect;
-		Viewport = viewport;
+		QuadtreeViewport = quadtreeViewport;
 
 		ComplexViewport = ComplexViewport.FromResolution(
-			Viewport.Area.Size,
-			Viewport.Center,
-			2d / Viewport.QuadrantLength
+			QuadtreeViewport.Area.Size,
+			QuadtreeViewport.Center,
+			2d / QuadtreeViewport.QuadrantLength
 		);
 	}
 
@@ -43,7 +43,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		SKRectI.Empty,
 		null,
 		null,
-		QuadTreeViewport.Empty
+		QuadtreeViewport.Empty
 	);
 
 	public static RenderInstructions Everything(SKSizeI newSize) =>
@@ -53,7 +53,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			destRect: SKRectI.Empty,
 			firstDirtyRect: SKRectI.Create(0, 0, newSize.Width, newSize.Height),
 			secondDirtyRect: null,
-			viewport: QuadTreeViewport.GetLargestCenteredSquareInside(newSize)
+			quadtreeViewport: QuadtreeViewport.GetLargestCenteredSquareInside(newSize)
 		);
 
 	public RenderInstructions ZoomIn(int x, int y) =>
@@ -61,9 +61,9 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			pasteFrontBuffer: false,
 			sourceRect: SKRectI.Empty,
 			destRect: SKRectI.Empty,
-			firstDirtyRect: SKRectI.Create(SKPointI.Empty, Viewport.Area.Size),
+			firstDirtyRect: SKRectI.Create(SKPointI.Empty, QuadtreeViewport.Area.Size),
 			secondDirtyRect: null,
-			viewport: Viewport.ZoomIn(x, y)
+			quadtreeViewport: QuadtreeViewport.ZoomIn(x, y)
 		);
 
 	public RenderInstructions ZoomOut() =>
@@ -71,9 +71,9 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			pasteFrontBuffer: false,
 			sourceRect: SKRectI.Empty,
 			destRect: SKRectI.Empty,
-			firstDirtyRect: SKRectI.Create(SKPointI.Empty, Viewport.Area.Size),
+			firstDirtyRect: SKRectI.Create(SKPointI.Empty, QuadtreeViewport.Area.Size),
 			secondDirtyRect: null,
-			viewport: Viewport.ZoomOut()
+			quadtreeViewport: QuadtreeViewport.ZoomOut()
 		);
 
 	public RenderInstructions Resize(SKSizeI newSize)
@@ -103,9 +103,9 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			destRect: pasteRect,
 			firstDirtyRect: horizontal,
 			secondDirtyRect: vertical,
-			viewport: Viewport with
+			quadtreeViewport: QuadtreeViewport with
 			{
-				Area = SKRectI.Create(Viewport.Area.Location, newSize),
+				Area = SKRectI.Create(QuadtreeViewport.Area.Location, newSize),
 			}
 		);
 	}
@@ -163,7 +163,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 			),
 			firstDirtyRect: horizontal,
 			secondDirtyRect: vertical,
-			viewport: Viewport.OffsetBy(offset)
+			quadtreeViewport: QuadtreeViewport.OffsetBy(offset)
 		);
 
 		static int ClampSource(int p) => -Math.Min(0, p);

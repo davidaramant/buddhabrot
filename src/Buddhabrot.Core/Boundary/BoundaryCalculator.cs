@@ -95,7 +95,7 @@ public static class BoundaryCalculator
 
 		var boundaryRegions = visitedRegions.GetBorderRegions();
 
-		var transformer = new QuadTreeCompressor(visitedRegions);
+		var transformer = new QuadtreeCompressor(visitedRegions);
 		var lookup = transformer.Transform();
 
 		saveBorderData(boundaryParameters, boundaryRegions, lookup);

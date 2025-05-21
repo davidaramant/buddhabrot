@@ -7,10 +7,10 @@ using SkiaSharp;
 namespace Buddhabrot.ManualVisualizations;
 
 [Explicit]
-public class RegionRendererTests : BaseVisualization
+public class BoundaryRegionRendererTests : BaseVisualization
 {
 	[OneTimeSetUp]
-	public void CreateDirectory() => SetUpOutputPath(nameof(RegionRendererTests));
+	public void CreateDirectory() => SetUpOutputPath(nameof(BoundaryRegionRendererTests));
 
 	[Test]
 	public async Task RenderRegionAreas()
@@ -31,7 +31,7 @@ public class RegionRendererTests : BaseVisualization
 
 		var areasToDraw = new List<RegionArea>();
 		lookup.GetVisibleAreas(
-			new QuadTreeViewport(SKRectI.Create(new SKPointI(0, 0), imageSize), scale),
+			new QuadtreeViewport(SKRectI.Create(new SKPointI(0, 0), imageSize), scale),
 			[SKRectI.Create(0, 0, imageSize.Width, imageSize.Height)],
 			areasToDraw
 		);
@@ -40,7 +40,7 @@ public class RegionRendererTests : BaseVisualization
 
 		using var canvas = new SKCanvas(image.Raw);
 		canvas.Clear(SKColors.White);
-		RegionRenderer.DrawRegionAreas(canvas, palette, areasToDraw);
+		BoundaryRegionRenderer.DrawRegionAreas(canvas, palette, areasToDraw);
 
 		SaveImage(image, "Region Areas");
 	}
@@ -62,7 +62,6 @@ public class RegionRendererTests : BaseVisualization
 
 		var args = new RenderingArgs(
 			Instructions: RenderInstructions.Everything(imageSize),
-			SetBoundary: new QuadTreeViewport(SKRectI.Create(new SKPointI(-11_533, -11_061), imageSize), 15),
 			Lookup: lookup,
 			Palette: BluePalette.Instance,
 			RenderInteriors: true,
@@ -72,7 +71,7 @@ public class RegionRendererTests : BaseVisualization
 
 		var areasToDraw = new List<RegionArea>();
 		lookup.GetVisibleAreas(
-			args.SetBoundary,
+			args.Instructions.QuadtreeViewport,
 			[SKRectI.Create(0, 0, imageSize.Width, imageSize.Height)],
 			areasToDraw
 		);
@@ -81,9 +80,9 @@ public class RegionRendererTests : BaseVisualization
 
 		using var canvas = new SKCanvas(image.Raw);
 		canvas.Clear(SKColors.White);
-		RegionRenderer.DrawRegionInteriors(
+		BoundaryRegionRenderer.DrawRegionInteriors(
 			canvas,
-			args.ConstructViewPort(),
+			args.Instructions.ComplexViewport,
 			args.Palette,
 			maxIterations: args.MaxIterations,
 			minIterations: args.MinIterations,
@@ -110,7 +109,6 @@ public class RegionRendererTests : BaseVisualization
 
 		var args = new RenderingArgs(
 			Instructions: RenderInstructions.Everything(imageSize),
-			SetBoundary: new QuadTreeViewport(SKRectI.Create(new SKPointI(-11_533, -11_061), imageSize), 15),
 			Lookup: lookup,
 			Palette: BluePalette.Instance,
 			RenderInteriors: true,
@@ -120,7 +118,7 @@ public class RegionRendererTests : BaseVisualization
 
 		var areasToDraw = new List<RegionArea>();
 		lookup.GetVisibleAreas(
-			args.SetBoundary,
+			args.Instructions.QuadtreeViewport,
 			[SKRectI.Create(0, 0, imageSize.Width, imageSize.Height)],
 			areasToDraw
 		);
@@ -129,7 +127,7 @@ public class RegionRendererTests : BaseVisualization
 
 		using var canvas = new SKCanvas(image.Raw);
 		canvas.Clear(SKColors.White);
-		RegionRenderer.DrawRegions(args, canvas, image.Raw);
+		BoundaryRegionRenderer.DrawRegions(args, canvas, image.Raw);
 
 		SaveImage(image, "Region");
 	}

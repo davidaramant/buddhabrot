@@ -8,7 +8,6 @@ namespace Buddhabrot.Core.Boundary.Visualization;
 
 public sealed record RenderingArgs(
 	RenderInstructions Instructions,
-	QuadTreeViewport SetBoundary,
 	RegionLookup Lookup,
 	IBoundaryPalette Palette,
 	bool RenderInteriors,
@@ -18,14 +17,9 @@ public sealed record RenderingArgs(
 {
 	public int Width => Instructions.Size.Width;
 	public int Height => Instructions.Size.Height;
-
-	// TODO: This shouldn't be constructed here. It should be part of creating the RenderingArgs
-	// TODO: Is the above even true?
-	public ComplexViewport ConstructViewPort() =>
-		ComplexViewport.FromResolution(new SKSizeI(Width, Height), SetBoundary.Center, 2d / SetBoundary.QuadrantLength);
 }
 
-public static class RegionRenderer
+public static class BoundaryRegionRenderer
 {
 	public static void DrawRegions(RenderingArgs args, SKCanvas canvas, SKBitmap previousFrame)
 	{
@@ -33,8 +27,8 @@ public static class RegionRenderer
 
 		canvas.DrawRect(0, 0, args.Width, args.Height, new SKPaint { Color = args.Palette.Background });
 
-		var center = args.SetBoundary.Center;
-		var radius = args.SetBoundary.QuadrantLength;
+		var center = args.Instructions.QuadtreeViewport.Center;
+		var radius = args.Instructions.QuadtreeViewport.QuadrantLength;
 
 		canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InsideCircle });
 
@@ -43,7 +37,11 @@ public static class RegionRenderer
 			canvas.DrawBitmap(previousFrame, source: args.Instructions.SourceRect, dest: args.Instructions.DestRect);
 		}
 
-		args.Lookup.GetVisibleAreas(args.SetBoundary, args.Instructions.GetDirtyRectangles(), areasToDraw);
+		args.Lookup.GetVisibleAreas(
+			args.Instructions.QuadtreeViewport,
+			args.Instructions.GetDirtyRectangles(),
+			areasToDraw
+		);
 
 		using var paint = new SKPaint();
 
@@ -51,7 +49,7 @@ public static class RegionRenderer
 		{
 			DrawRegionInteriors(
 				canvas,
-				args.ConstructViewPort(),
+				args.Instructions.ComplexViewport,
 				args.Palette,
 				args.MaxIterations,
 				args.MinIterations,

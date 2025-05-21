@@ -1,6 +1,6 @@
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.QuadTrees;
-using Buddhabrot.Core.Tests.Boundary.QuadTrees;
+using Buddhabrot.Core.Boundary.Quadtrees;
+using Buddhabrot.Core.Tests.Boundary.Quadtrees;
 using SkiaSharp;
 
 namespace Buddhabrot.Core.Tests.Boundary;
@@ -14,7 +14,7 @@ public class RegionLookupTests
 		var visibleAreas = new List<RegionArea>();
 
 		lookup.GetVisibleAreas(
-			new QuadTreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(100, 100)), 2),
+			new QuadtreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(100, 100)), 2),
 			[SKRectI.Create(0, 0, 8, 8)],
 			visibleAreas
 		);
@@ -42,7 +42,7 @@ public class RegionLookupTests
 		var visibleAreas = new List<RegionArea>();
 
 		lookup.GetVisibleAreas(
-			new QuadTreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(100, 100)), 2),
+			new QuadtreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(100, 100)), 2),
 			[SKRectI.Create(0, 0, 1, 1)],
 			visibleAreas
 		);

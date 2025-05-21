@@ -7,10 +7,10 @@ namespace Buddhabrot.Benchmarks;
 /// <summary>
 /// Different ways to compute the intersection of two square boundaries
 /// </summary>
-public class QuadTreeViewportIntersectionBenchmarks
+public class QuadtreeViewportIntersectionBenchmarks
 {
 	private const int Size = 100;
-	private readonly QuadTreeViewport _boundary = new(
+	private readonly QuadtreeViewport _boundary = new(
 		SKRectI.Create(new SKPointI(x: 10, y: 10), new SKSizeI(100, 100)),
 		Scale: 4
 	);
@@ -42,7 +42,7 @@ public class QuadTreeViewportIntersectionBenchmarks
 
 		return intersections;
 
-		static SKRectI IntersectWith(QuadTreeViewport boundary, SKRectI rect)
+		static SKRectI IntersectWith(QuadtreeViewport boundary, SKRectI rect)
 		{
 			int length = boundary.Length;
 
@@ -76,7 +76,7 @@ public class QuadTreeViewportIntersectionBenchmarks
 
 		return intersections;
 
-		static SKRectI IntersectWith(QuadTreeViewport boundary, SKRectI rect)
+		static SKRectI IntersectWith(QuadtreeViewport boundary, SKRectI rect)
 		{
 			int length = boundary.Length;
 

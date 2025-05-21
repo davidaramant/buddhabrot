@@ -11,23 +11,23 @@ namespace Buddhabrot.Core.Boundary;
 /// The top left corner is an offset from the logical top left corner of the quad tree, which is (0,0). These are
 /// screen coordinates but don't necessarily have the same origin.
 /// </remarks>
-public readonly record struct QuadTreeViewport(SKRectI Area, int Scale)
+public readonly record struct QuadtreeViewport(SKRectI Area, int Scale)
 {
-	public static readonly QuadTreeViewport Empty = new(SKRectI.Empty, 0);
+	public static readonly QuadtreeViewport Empty = new(SKRectI.Empty, 0);
 
 	public bool IsPoint => Scale == 0;
 	public int Length => 1 << Scale;
 	public int QuadrantLength => 1 << (Scale - 1);
 	public SKPointI Center => new(Area.Left + QuadrantLength, Area.Top + QuadrantLength);
 
-	public QuadTreeViewport OffsetBy(PositionOffset offset) => this with { Area = Area.OffsetBy(offset.X, offset.Y) };
+	public QuadtreeViewport OffsetBy(PositionOffset offset) => this with { Area = Area.OffsetBy(offset.X, offset.Y) };
 
-	public QuadTreeViewport OffsetBy(int deltaX, int deltaY) => this with { Area = Area.OffsetBy(deltaX, deltaY) };
+	public QuadtreeViewport OffsetBy(int deltaX, int deltaY) => this with { Area = Area.OffsetBy(deltaX, deltaY) };
 
-	public QuadTreeViewport ZoomIn(int x, int y) =>
+	public QuadtreeViewport ZoomIn(int x, int y) =>
 		new(Scale: Scale + 1, Area: SKRectI.Create(new SKPointI(x: 2 * Area.Left - x, y: 2 * Area.Top - y), Area.Size));
 
-	public QuadTreeViewport ZoomOut() =>
+	public QuadtreeViewport ZoomOut() =>
 		new(
 			Scale: Scale - 1,
 			Area: SKRectI.Create(
@@ -39,15 +39,15 @@ public readonly record struct QuadTreeViewport(SKRectI Area, int Scale)
 			)
 		);
 
-	public QuadTreeViewport SW =>
+	public QuadtreeViewport SW =>
 		new(SKRectI.Create(new SKPointI(Area.Left, Area.Top + QuadrantLength), Area.Size.Quarter()), Scale - 1);
-	public QuadTreeViewport SE =>
+	public QuadtreeViewport SE =>
 		new(
 			SKRectI.Create(new SKPointI(Area.Left + QuadrantLength, Area.Top + QuadrantLength), Area.Size.Quarter()),
 			Scale - 1
 		);
-	public QuadTreeViewport NW => new(SKRectI.Create(Area.Location, Area.Size.Quarter()), Scale - 1);
-	public QuadTreeViewport NE =>
+	public QuadtreeViewport NW => new(SKRectI.Create(Area.Location, Area.Size.Quarter()), Scale - 1);
+	public QuadtreeViewport NE =>
 		new(SKRectI.Create(new SKPointI(Area.Left + QuadrantLength, Area.Top), Area.Size.Quarter()), Scale - 1);
 
 	public SKRectI IntersectWith(SKRectI rect)
@@ -64,7 +64,7 @@ public readonly record struct QuadTreeViewport(SKRectI Area, int Scale)
 
 	public override string ToString() => $"({Area}), SideLength = {1 << Scale}";
 
-	public static QuadTreeViewport GetLargestCenteredSquareInside(SKSizeI size)
+	public static QuadtreeViewport GetLargestCenteredSquareInside(SKSizeI size)
 	{
 		var scale = Utility.GetLargestPowerOfTwoLessThan(Math.Min(size.Width, size.Height));
 

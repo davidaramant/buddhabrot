@@ -5,20 +5,20 @@ using SkiaSharp;
 namespace Buddhabrot.ManualVisualizations;
 
 [Explicit]
-public class QuadTreeRendererTests : BaseVisualization
+public class QuadtreeRendererTests : BaseVisualization
 {
 	[OneTimeSetUp]
-	public void CreateDirectory() => SetUpOutputPath(nameof(QuadTreeRendererTests));
+	public void CreateDirectory() => SetUpOutputPath(nameof(QuadtreeRendererTests));
 
 	[Test]
 	public void ShouldRenderSingleCellAtDifferentDepths([Range(1, 4)] int levels)
 	{
-		var width = QuadTreeRenderer.GetRequiredWidth(levels);
+		var width = QuadtreeRenderer.GetRequiredWidth(levels);
 		using var image = new RasterImage(width, width);
 		foreach (var depth in Enumerable.Range(0, levels))
 		{
 			image.Fill(SKColors.Black);
-			var r = new QuadTreeRenderer(image, levels);
+			var r = new QuadtreeRenderer(image, levels);
 			r.DrawCell(0, 0, depth, SKColors.White);
 
 			SaveImage(image, $"Single Cell - l{levels} d{depth}");
@@ -28,12 +28,12 @@ public class QuadTreeRendererTests : BaseVisualization
 	[Test]
 	public void ShouldRenderAllCellsAtDifferentDepths([Range(1, 4)] int levels)
 	{
-		var width = QuadTreeRenderer.GetRequiredWidth(levels);
+		var width = QuadtreeRenderer.GetRequiredWidth(levels);
 		using var image = new RasterImage(width, width);
 		foreach (var depth in Enumerable.Range(0, levels))
 		{
 			image.Fill(SKColors.Black);
-			var r = new QuadTreeRenderer(image, levels);
+			var r = new QuadtreeRenderer(image, levels);
 
 			for (int y = 0; y < (1 << depth); y++)
 			{
@@ -51,10 +51,10 @@ public class QuadTreeRendererTests : BaseVisualization
 	public void ShouldRenderDiagonalLineOfCells()
 	{
 		const int levels = 3;
-		var width = QuadTreeRenderer.GetRequiredWidth(levels);
+		var width = QuadtreeRenderer.GetRequiredWidth(levels);
 		using var image = new RasterImage(width, width);
 		image.Fill(SKColors.Black);
-		var r = new QuadTreeRenderer(image, levels);
+		var r = new QuadtreeRenderer(image, levels);
 
 		foreach (var pos in Enumerable.Range(0, 1 << levels - 1))
 		{
@@ -69,7 +69,7 @@ public class QuadTreeRendererTests : BaseVisualization
 	{
 		const int levels = 3;
 
-		var width = QuadTreeRenderer.GetRequiredWidth(levels);
+		var width = QuadtreeRenderer.GetRequiredWidth(levels);
 		using var image = new RasterImage(width, width);
 
 		for (int y = 0; y < 4; y++)
@@ -77,7 +77,7 @@ public class QuadTreeRendererTests : BaseVisualization
 			for (int x = 0; x < 4; x++)
 			{
 				image.Fill(SKColors.Black);
-				var r = new QuadTreeRenderer(image, levels);
+				var r = new QuadtreeRenderer(image, levels);
 				r.DrawCell(x, y, 2, SKColors.White);
 				SaveImage(image, $"Pos Y{y} X{x}");
 			}

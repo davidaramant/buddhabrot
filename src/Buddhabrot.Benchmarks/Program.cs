@@ -10,7 +10,7 @@ var toRun = new[]
 	// Benchmark.VisitNode_WithQuadrant,
 	// Benchmark.FixedSizeCache,
 	// Benchmark.CoordinateHashing,
-	// Benchmark.QuadTreeViewportIntersections
+	// Benchmark.QuadtreeViewportIntersections
 	Benchmark.RenderRegion,
 };
 
@@ -40,8 +40,8 @@ foreach (var benchmark in toRun)
 			BenchmarkRunner.Run<CoordinateHashingBenchmarks>();
 			break;
 
-		case Benchmark.QuadTreeViewportIntersections:
-			BenchmarkRunner.Run<QuadTreeViewportIntersectionBenchmarks>();
+		case Benchmark.QuadtreeViewportIntersections:
+			BenchmarkRunner.Run<QuadtreeViewportIntersectionBenchmarks>();
 			break;
 
 		case Benchmark.RenderRegion:
@@ -57,6 +57,6 @@ enum Benchmark
 	VisitNode_GetQuadrant,
 	FixedSizeCache,
 	CoordinateHashing,
-	QuadTreeViewportIntersections,
+	QuadtreeViewportIntersections,
 	RenderRegion,
 }

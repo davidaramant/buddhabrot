@@ -224,7 +224,7 @@ public sealed class MandelbrotRenderer : Control
 				else if (e.ClickCount == 2)
 				{
 					_isPanning = false;
-					if (Instructions.Viewport.Scale < 31)
+					if (Instructions.QuadtreeViewport.Scale < 31)
 					{
 						var pos = e.GetPosition(this);
 						await RequestRenderAsync(Instructions.ZoomIn((int)pos.X, (int)pos.Y));
@@ -324,19 +324,6 @@ public sealed class MandelbrotRenderer : Control
 		);
 	}
 
-	sealed record RenderingArgs(
-		RenderInstructions Instructions,
-		RegionLookup Lookup,
-		IBoundaryPalette Palette,
-		bool RenderInteriors,
-		int MinIterations,
-		int MaxIterations
-	)
-	{
-		public int Width => Instructions.Size.Width;
-		public int Height => Instructions.Size.Height;
-	}
-
 	private Task RenderToBufferAsync(RenderingArgs args, CancellationToken cancelToken)
 	{
 		if (_backBuffer.PixelSize.Width != args.Width || _backBuffer.PixelSize.Height != args.Height)
@@ -366,8 +353,8 @@ public sealed class MandelbrotRenderer : Control
 
 		canvas.DrawRect(0, 0, args.Width, args.Height, new SKPaint { Color = args.Palette.Background });
 
-		var center = args.Instructions.Viewport.Center;
-		var radius = args.Instructions.Viewport.QuadrantLength;
+		var center = args.Instructions.QuadtreeViewport.Center;
+		var radius = args.Instructions.QuadtreeViewport.QuadrantLength;
 
 		canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InsideCircle });
 
@@ -381,7 +368,11 @@ public sealed class MandelbrotRenderer : Control
 			);
 		}
 
-		args.Lookup.GetVisibleAreas(args.Instructions.Viewport, args.Instructions.GetDirtyRectangles(), areasToDraw);
+		args.Lookup.GetVisibleAreas(
+			args.Instructions.QuadtreeViewport,
+			args.Instructions.GetDirtyRectangles(),
+			areasToDraw
+		);
 
 		using var paint = new SKPaint();
 
@@ -389,8 +380,8 @@ public sealed class MandelbrotRenderer : Control
 		{
 			var viewPort = ComplexViewport.FromResolution(
 				new SKSizeI(args.Width, args.Height),
-				args.Instructions.Viewport.Center,
-				2d / args.Instructions.Viewport.QuadrantLength
+				args.Instructions.QuadtreeViewport.Center,
+				2d / args.Instructions.QuadtreeViewport.QuadrantLength
 			);
 			areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
 

@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.QuadTrees;
+using Buddhabrot.Core.Boundary.Quadtrees;
 using Buddhabrot.Core.DataStorage.Serialization.Internal;
 
 namespace Buddhabrot.Core.DataStorage.Serialization;
@@ -20,7 +20,7 @@ public static class BoundarySerializer
 
 	public static void Save(RegionLookup lookup, Stream stream)
 	{
-		var quadTree = new PersistedQuadTree
+		var quadTree = new PersistedQuadtree
 		{
 			Height = lookup.Height,
 			Nodes = lookup.Nodes.Select(qn => qn.Encoded).ToArray(),
@@ -37,9 +37,9 @@ public static class BoundarySerializer
 		);
 	}
 
-	public static RegionLookup LoadQuadTree(Stream stream)
+	public static RegionLookup LoadQuadtree(Stream stream)
 	{
-		var quadTree = PersistedQuadTree.Load(stream);
+		var quadTree = PersistedQuadtree.Load(stream);
 		return new RegionLookup(Unsafe.As<IReadOnlyList<RegionNode>>(quadTree.Nodes), quadTree.Height);
 	}
 }

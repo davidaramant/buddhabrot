@@ -1,8 +1,8 @@
-using Buddhabrot.Core.Boundary.QuadTrees;
+using Buddhabrot.Core.Boundary.Quadtrees;
 
 namespace Buddhabrot.Core.Boundary;
 
-public sealed class QuadTreeCompressor
+public sealed class QuadtreeCompressor
 {
 	private readonly VisitedRegions _visitedRegions;
 	private readonly IReadOnlyList<VisitNode> _oldTree;
@@ -17,7 +17,7 @@ public sealed class QuadTreeCompressor
 	public int Size => _cache.Count;
 	public int NumCachedValuesUsed { get; private set; }
 
-	public QuadTreeCompressor(VisitedRegions visitedRegions)
+	public QuadtreeCompressor(VisitedRegions visitedRegions)
 	{
 		_visitedRegions = visitedRegions;
 		_oldTree = visitedRegions.Nodes;

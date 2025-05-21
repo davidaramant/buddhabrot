@@ -1,7 +1,7 @@
 using Buddhabrot.Core.Boundary;
-using Buddhabrot.Core.Boundary.QuadTrees;
+using Buddhabrot.Core.Boundary.Quadtrees;
 
-namespace Buddhabrot.Core.Tests.Boundary.QuadTrees;
+namespace Buddhabrot.Core.Tests.Boundary.Quadtrees;
 
 public class RegionNodeTests
 {

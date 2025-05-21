@@ -49,7 +49,6 @@ public sealed class MandelbrotRenderer : Control
 	private RenderingArgs? _nextFrameArgs;
 	private CancellationTokenSource _cancelSource = new();
 	private Task _renderingTask = Task.CompletedTask;
-	private ComplexViewport? _complexViewport = null;
 
 	private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
 	private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
@@ -194,7 +193,7 @@ public sealed class MandelbrotRenderer : Control
 		PointerMoved += (_, e) =>
 		{
 			var point = e.GetPosition(this);
-			var v = _complexViewport;
+			var v = _currentFrameArgs?.Instructions.ComplexViewport;
 			if (v != null)
 			{
 				var cursorPosition = v.GetComplex(new SKPointI((int)point.X, (int)point.Y));
@@ -319,12 +318,6 @@ public sealed class MandelbrotRenderer : Control
 
 	public override void Render(DrawingContext context)
 	{
-		_complexViewport = ComplexViewport.FromResolution(
-			new SKSizeI(PixelBounds.Width, PixelBounds.Height),
-			Instructions.Viewport.Center,
-			2d / Instructions.Viewport.QuadrantLength
-		);
-
 		context.DrawImage(
 			_frontBuffer,
 			new Rect(_panningOffset.X, _panningOffset.Y, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height)

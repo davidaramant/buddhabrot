@@ -12,6 +12,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 	public SKRectI DestRect { get; }
 	public SKSizeI Size => Viewport.Area.Size;
 	public QuadTreeViewport Viewport { get; }
+	public ComplexViewport ComplexViewport { get; }
 
 	private RenderInstructions(
 		bool pasteFrontBuffer,
@@ -28,6 +29,12 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		_firstDirtyRect = firstDirtyRect;
 		_secondDirtyRect = secondDirtyRect;
 		Viewport = viewport;
+
+		ComplexViewport = ComplexViewport.FromResolution(
+			Viewport.Area.Size,
+			Viewport.Center,
+			2d / Viewport.QuadrantLength
+		);
 	}
 
 	public static readonly RenderInstructions Nothing = new(

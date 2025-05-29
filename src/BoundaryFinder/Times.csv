@@ -30,3 +30,4 @@ Date,Time,Duration,Duration (seconds),OS,CPU,RAM,Vertical Power,Divisions,Limit,
 2025-04-22,14:44:56,"5 seconds, 992 milliseconds",6,Microsoft Windows 11 Enterprise (10.0.26100),AMD Ryzen 7 PRO 5850U with Radeon Graphics 1.90 GHz 8 Cores,27.83 GB,12,"4,096","5,000,000","33,428","228,537","95,049",42%,Same test on Windows
 2025-05-13,21:46:07,"4 seconds, 747 milliseconds",5,Microsoft Windows 11 Pro (10.0.26100),Intel(R) Core(TM) Ultra 7 155H 1.40 GHz 16 Cores,63.51 GB,12,"4,096","5,000,000","33,428","228,537","95,049",42%,New work machine
 2025-05-13,21:48:08,"24 seconds, 213 milliseconds",24,Microsoft Windows 11 Pro (10.0.26100),Intel(R) Core(TM) Ultra 7 155H 1.40 GHz 16 Cores,63.51 GB,14,"16,384","1,000,000","194,545","2,233,721","651,557",29%,New work machine
+2025-05-28,20:43:38,"7 minutes, 11 seconds",431,macOS (15.5),"Apple M1 Max 8 Cores,Apple M1 Max 2 Cores",32 GB,16,"65,536","1,000,000","1,141,537","23,480,913","5,470,357",23%,Last M1 benchmark

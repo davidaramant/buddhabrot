@@ -6,15 +6,16 @@ namespace Buddhabrot.Core.Boundary;
 public static class BoundaryCalculator
 {
 	public static void VisitBoundary(
-		Queue<RegionId> regionsToCheck,
+		IRegionsToCheck regionsToCheck,
 		IRegionClassifier classifier,
 		IVisitedRegions visitedRegions,
 		CancellationToken cancelToken = default
 	)
 	{
-		while (regionsToCheck.Count > 0 && !cancelToken.IsCancellationRequested)
+		foreach (var region in regionsToCheck)
 		{
-			var region = regionsToCheck.Dequeue();
+			if (cancelToken.IsCancellationRequested)
+				return;
 
 			if (visitedRegions.HasVisited(region))
 				continue;
@@ -28,25 +29,25 @@ public static class BoundaryCalculator
 				// We don't need to check the upper bounds - the set doesn't reach out that far
 				// This means we can optimize the bound checks a bit
 
-				regionsToCheck.Enqueue(region.MoveUp());
-				regionsToCheck.Enqueue(region.MoveUpRight());
-				regionsToCheck.Enqueue(region.MoveRight());
+				regionsToCheck.Add(region.MoveUp());
+				regionsToCheck.Add(region.MoveUpRight());
+				regionsToCheck.Add(region.MoveRight());
 
 				if (region.Y >= 1)
 				{
-					regionsToCheck.Enqueue(region.MoveDownRight());
-					regionsToCheck.Enqueue(region.MoveDown());
+					regionsToCheck.Add(region.MoveDownRight());
+					regionsToCheck.Add(region.MoveDown());
 				}
 
 				if (region is { X: >= 1, Y: >= 1 })
 				{
-					regionsToCheck.Enqueue(region.MoveDownLeft());
+					regionsToCheck.Add(region.MoveDownLeft());
 				}
 
 				if (region.X >= 1)
 				{
-					regionsToCheck.Enqueue(region.MoveLeft());
-					regionsToCheck.Enqueue(region.MoveUpLeft());
+					regionsToCheck.Add(region.MoveLeft());
+					regionsToCheck.Add(region.MoveUpLeft());
 				}
 			}
 		}
@@ -65,8 +66,8 @@ public static class BoundaryCalculator
 		var visitedRegions = new VisitedRegions(capacity: estimatedCapacity);
 		var proxy = new ThreadSafeVisitedRegions(visitedRegions, cancelToken);
 
-		Queue<RegionId> leftRegionsToCheck = new([boundaryParameters.Divisions.LeftBorderStart()]);
-		Queue<RegionId> rightRegionsToCheck = new([boundaryParameters.Divisions.RightBorderStart()]);
+		RegionsToCheck leftRegionsToCheck = [boundaryParameters.Divisions.LeftBorderStart()];
+		RegionsToCheck rightRegionsToCheck = [boundaryParameters.Divisions.RightBorderStart()];
 
 		var leftClassifier = IRegionClassifier.Create(boundaryParameters, selectedClassifier);
 		var rightClassifier = IRegionClassifier.Create(boundaryParameters, selectedClassifier);
@@ -88,7 +89,7 @@ public static class BoundaryCalculator
 
 		foreach (var region in rightRegionsToCheck)
 		{
-			leftRegionsToCheck.Enqueue(region);
+			leftRegionsToCheck.Add(region);
 		}
 
 		VisitBoundary(leftRegionsToCheck, leftClassifier, visitedRegions, cancelToken);

@@ -37,7 +37,7 @@ public static class VisitedRegionsDataSet
 					var bp = new BoundaryParameters(Size, 1_000_000);
 
 					var proxy = new VisitedRegionsProxy(bp.Divisions.QuadrantDivisions);
-					Queue<RegionId> regionsToCheck = new([new RegionId(0, 0)]);
+					RegionsToCheck regionsToCheck = [new RegionId(0, 0)];
 
 					BoundaryCalculator.VisitBoundary(
 						regionsToCheck,

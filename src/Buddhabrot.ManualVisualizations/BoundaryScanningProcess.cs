@@ -119,7 +119,7 @@ public class BoundaryScanningProcess : BaseVisualization
 		var steps = new List<Step>();
 		int maxX = 0;
 		int maxY = 0;
-		Queue<RegionId> regionsToCheck = new([new RegionId(0, 0)]);
+		RegionsToCheck regionsToCheck = [new RegionId(0, 0)];
 
 		BoundaryCalculator.VisitBoundary(
 			regionsToCheck,

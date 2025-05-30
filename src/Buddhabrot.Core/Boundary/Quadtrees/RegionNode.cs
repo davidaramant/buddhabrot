@@ -1,5 +1,11 @@
 namespace Buddhabrot.Core.Boundary.Quadtrees;
 
+/// <summary>
+/// A node in the <see cref="RegionLookup"/> quad tree
+/// </summary>
+/// <remarks>
+/// See NodeLayouts.html for an overview of the node format.
+/// </remarks>
 public readonly record struct RegionNode(uint Encoded)
 {
 	public static readonly RegionNode Empty = MakeLeaf(LookupRegionType.Empty);

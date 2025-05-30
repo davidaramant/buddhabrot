@@ -7,6 +7,12 @@ public enum VisitNodeType
 	LeafQuad,
 }
 
+/// <summary>
+/// A node in the <see cref="VisitedRegions"/> quad tree
+/// </summary>
+/// <remarks>
+/// See NodeLayouts.html for an overview of the node format.
+/// </remarks>
 public readonly record struct VisitNode(uint Encoded)
 {
 	public static readonly VisitNode Unknown = MakeLeaf(VisitedRegionType.Unknown);

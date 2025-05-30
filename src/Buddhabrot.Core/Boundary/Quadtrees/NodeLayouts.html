@@ -2,353 +2,352 @@
 <html lang="en-us">
 
 <head>
-    <meta charset="utf-8"/>
-    <title>Quadtree Nodes</title>
-    <style>
-        table,
-        th,
-        td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 6px;
-        }
+	<meta charset="utf-8"/>
+	<title>Quadtree Nodes</title>
+	<style>
+		table,
+		th,
+		td {
+			border: 1px solid black;
+			border-collapse: collapse;
+			padding: 6px;
+		}
 
-        td {
-            text-align: center;
-        }
+		td {
+			text-align: center;
+		}
 
-        .bit {
-            width: 24px
-        }
+		.bit {
+			width: 24px
+		}
 
-        body {
-            background-color: white;
-            color: black;
-        }
+		body {
+			background-color: white;
+			color: black;
+		}
 
-        .unused {
-            background-color: lightgray
-        }
-    </style>
+		.unused {
+			background-color: lightgray
+		}
+	</style>
 </head>
 
 <body>
 <h1>Definitions</h1>
-<h2>Region Types</h2>
-<h3>Visited Region Types</h3>
 <table>
-    <tr>
-        <th>Value</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td>0</td>
-        <td>Empty</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>Border</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>Filament</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td>Rejected</td>
-    </tr>
-</table>
-<h3>Lookup Region Types</h3>
-<table>
-    <tr>
-        <th>Value</th>
-        <th>Left Type</th>
-        <th>Right Type</th>
-    </tr>
-    <tr>
-        <td>0</td>
-        <td colspan="2">Empty</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>Empty</td>
-        <td>Border</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>Empty</td>
-        <td>Filament</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td>Border</td>
-        <td>Empty</td>
-    </tr>
-    <tr>
-        <td>4</td>
-        <td>Border</td>
-        <td>Filament</td>
-    </tr>
-    <tr>
-        <td>5</td>
-        <td>Filament</td>
-        <td>Empty</td>
-    </tr>
-    <tr>
-        <td>6</td>
-        <td>Filament</td>
-        <td>Border</td>
-    </tr>
-    <tr>
-        <td>7</td>
-        <td colspan="2">Mixed</td>
-    </tr>
-</table>
-<h2>Terms</h2>
-<table>
-    <tr>
-        <td>NW</td>
-        <td>NE</td>
-    </tr>
-    <tr>
-        <td>SW</td>
-        <td>SE</td>
-    </tr>
+	<tr>
+		<td>NW</td>
+		<td>NE</td>
+	</tr>
+	<tr>
+		<td>SW</td>
+		<td>SE</td>
+	</tr>
 </table>
 
 <h1>Notes</h1>
 <p>VisitedRegions and RegionLookup use similar but distinct node formats. The two types of tree have some similarities
-    and differences:</p>
+	and differences:</p>
 <ul>
-    <li>VisitedRegions is mutable, RegionLookup is immutable.</li>
-    <li>Since RegionLookup is intended for display purposes (including zooming), every node has a region type.</li>
-    <li>RegionLookup is deduplicated (subtrees can be referenced multiple times).</li>
-    <li>RegionLookup does not bother with the Leaf Quad node type. Since the tree is deduplicated, the space savings are
-        minimal.
-    </li>
-    <li>RegionLookup does not care about Rejected regions. They are replaced with Empty.</li>
-    <li>Every RegionLookup is essentially a diff - either from nothing (IE, all Empty) to something, or two existing
-        RegionLookups. The UI prevents you from creating a diff of two diffs since that would be useless (but
-        technically supported).
-    </li>
+	<li>VisitedRegions is mutable, RegionLookup is immutable.</li>
+	<li>Since RegionLookup is intended for display purposes (including zooming), every node has a region type.</li>
+	<li>RegionLookup is deduplicated (subtrees can be referenced multiple times).</li>
+	<li>RegionLookup does not bother with the Leaf Quad node type. Since the tree is deduplicated, the space savings are
+		minimal.
+	</li>
+	<li>RegionLookup does not care about Rejected regions. They are replaced with Empty.</li>
+	<li>Every RegionLookup is essentially a diff - either from nothing (IE, all Empty) to something, or two existing
+		RegionLookups. The UI prevents you from creating a diff of two diffs since that would be useless (but
+		technically supported).
+	</li>
 </ul>
 
-<h1>VisitedRegions Node Types</h1>
-<h2>Leaf</h2>
+<h1>VisitedRegions Nodes</h1>
+<h2>Visited Region Types</h2>
 <table>
-    <tr>
-        <th class="bit">31</th>
-        <th class="bit">30</th>
-        <th class="bit">29</th>
-        <th class="bit">28</th>
-        <th class="bit">27</th>
-        <th class="bit">26</th>
-        <th class="bit">25</th>
-        <th class="bit">24</th>
-        <th class="bit">23</th>
-        <th class="bit">22</th>
-        <th class="bit">21</th>
-        <th class="bit">20</th>
-        <th class="bit">19</th>
-        <th class="bit">18</th>
-        <th class="bit">17</th>
-        <th class="bit">16</th>
-        <th class="bit">15</th>
-        <th class="bit">14</th>
-        <th class="bit">13</th>
-        <th class="bit">12</th>
-        <th class="bit">11</th>
-        <th class="bit">10</th>
-        <th class="bit">9</th>
-        <th class="bit">8</th>
-        <th class="bit">7</th>
-        <th class="bit">6</th>
-        <th class="bit">5</th>
-        <th class="bit">4</th>
-        <th class="bit">3</th>
-        <th class="bit">2</th>
-        <th class="bit">1</th>
-        <th class="bit">0</th>
-    </tr>
-    <tr>
-        <td colspan="28" class="unused">Unused</td>
-        <td colspan="2">Type</td>
-        <td>0</td>
-        <td>0</td>
-    </tr>
+	<tr>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>0</td>
+		<td>Empty</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>Border</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>Filament</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>Rejected</td>
+	</tr>
 </table>
-<h2>Leaf Quad</h2>
+<h2>Leaf Node</h2>
 <table>
-    <tr>
-        <th class="bit">31</th>
-        <th class="bit">30</th>
-        <th class="bit">29</th>
-        <th class="bit">28</th>
-        <th class="bit">27</th>
-        <th class="bit">26</th>
-        <th class="bit">25</th>
-        <th class="bit">24</th>
-        <th class="bit">23</th>
-        <th class="bit">22</th>
-        <th class="bit">21</th>
-        <th class="bit">20</th>
-        <th class="bit">19</th>
-        <th class="bit">18</th>
-        <th class="bit">17</th>
-        <th class="bit">16</th>
-        <th class="bit">15</th>
-        <th class="bit">14</th>
-        <th class="bit">13</th>
-        <th class="bit">12</th>
-        <th class="bit">11</th>
-        <th class="bit">10</th>
-        <th class="bit">9</th>
-        <th class="bit">8</th>
-        <th class="bit">7</th>
-        <th class="bit">6</th>
-        <th class="bit">5</th>
-        <th class="bit">4</th>
-        <th class="bit">3</th>
-        <th class="bit">2</th>
-        <th class="bit">1</th>
-        <th class="bit">0</th>
-    </tr>
-    <tr>
-        <td colspan="22" class="unused">Unused</td>
-        <td colspan="2">SW</td>
-        <td colspan="2">SE</td>
-        <td colspan="2">NW</td>
-        <td colspan="2">NE</td>
-        <td>1</td>
-        <td>0</td>
-    </tr>
+	<tr>
+		<th class="bit">31</th>
+		<th class="bit">30</th>
+		<th class="bit">29</th>
+		<th class="bit">28</th>
+		<th class="bit">27</th>
+		<th class="bit">26</th>
+		<th class="bit">25</th>
+		<th class="bit">24</th>
+		<th class="bit">23</th>
+		<th class="bit">22</th>
+		<th class="bit">21</th>
+		<th class="bit">20</th>
+		<th class="bit">19</th>
+		<th class="bit">18</th>
+		<th class="bit">17</th>
+		<th class="bit">16</th>
+		<th class="bit">15</th>
+		<th class="bit">14</th>
+		<th class="bit">13</th>
+		<th class="bit">12</th>
+		<th class="bit">11</th>
+		<th class="bit">10</th>
+		<th class="bit">9</th>
+		<th class="bit">8</th>
+		<th class="bit">7</th>
+		<th class="bit">6</th>
+		<th class="bit">5</th>
+		<th class="bit">4</th>
+		<th class="bit">3</th>
+		<th class="bit">2</th>
+		<th class="bit">1</th>
+		<th class="bit">0</th>
+	</tr>
+	<tr>
+		<td colspan="28" class="unused">Unused</td>
+		<td colspan="2">Type</td>
+		<td>0</td>
+		<td>0</td>
+	</tr>
 </table>
-<h2>Branch</h2>
+<h2>Leaf Quad Node</h2>
 <table>
-    <tr>
-        <th class="bit">31</th>
-        <th class="bit">30</th>
-        <th class="bit">29</th>
-        <th class="bit">28</th>
-        <th class="bit">27</th>
-        <th class="bit">26</th>
-        <th class="bit">25</th>
-        <th class="bit">24</th>
-        <th class="bit">23</th>
-        <th class="bit">22</th>
-        <th class="bit">21</th>
-        <th class="bit">20</th>
-        <th class="bit">19</th>
-        <th class="bit">18</th>
-        <th class="bit">17</th>
-        <th class="bit">16</th>
-        <th class="bit">15</th>
-        <th class="bit">14</th>
-        <th class="bit">13</th>
-        <th class="bit">12</th>
-        <th class="bit">11</th>
-        <th class="bit">10</th>
-        <th class="bit">9</th>
-        <th class="bit">8</th>
-        <th class="bit">7</th>
-        <th class="bit">6</th>
-        <th class="bit">5</th>
-        <th class="bit">4</th>
-        <th class="bit">3</th>
-        <th class="bit">2</th>
-        <th class="bit">1</th>
-        <th class="bit">0</th>
-    </tr>
-    <tr>
-        <td colspan="31">Index to children</td>
-        <td colspan="1">1</td>
-    </tr>
+	<tr>
+		<th class="bit">31</th>
+		<th class="bit">30</th>
+		<th class="bit">29</th>
+		<th class="bit">28</th>
+		<th class="bit">27</th>
+		<th class="bit">26</th>
+		<th class="bit">25</th>
+		<th class="bit">24</th>
+		<th class="bit">23</th>
+		<th class="bit">22</th>
+		<th class="bit">21</th>
+		<th class="bit">20</th>
+		<th class="bit">19</th>
+		<th class="bit">18</th>
+		<th class="bit">17</th>
+		<th class="bit">16</th>
+		<th class="bit">15</th>
+		<th class="bit">14</th>
+		<th class="bit">13</th>
+		<th class="bit">12</th>
+		<th class="bit">11</th>
+		<th class="bit">10</th>
+		<th class="bit">9</th>
+		<th class="bit">8</th>
+		<th class="bit">7</th>
+		<th class="bit">6</th>
+		<th class="bit">5</th>
+		<th class="bit">4</th>
+		<th class="bit">3</th>
+		<th class="bit">2</th>
+		<th class="bit">1</th>
+		<th class="bit">0</th>
+	</tr>
+	<tr>
+		<td colspan="22" class="unused">Unused</td>
+		<td colspan="2">SW</td>
+		<td colspan="2">SE</td>
+		<td colspan="2">NW</td>
+		<td colspan="2">NE</td>
+		<td>1</td>
+		<td>0</td>
+	</tr>
+</table>
+<h2>Branch Node</h2>
+<table>
+	<tr>
+		<th class="bit">31</th>
+		<th class="bit">30</th>
+		<th class="bit">29</th>
+		<th class="bit">28</th>
+		<th class="bit">27</th>
+		<th class="bit">26</th>
+		<th class="bit">25</th>
+		<th class="bit">24</th>
+		<th class="bit">23</th>
+		<th class="bit">22</th>
+		<th class="bit">21</th>
+		<th class="bit">20</th>
+		<th class="bit">19</th>
+		<th class="bit">18</th>
+		<th class="bit">17</th>
+		<th class="bit">16</th>
+		<th class="bit">15</th>
+		<th class="bit">14</th>
+		<th class="bit">13</th>
+		<th class="bit">12</th>
+		<th class="bit">11</th>
+		<th class="bit">10</th>
+		<th class="bit">9</th>
+		<th class="bit">8</th>
+		<th class="bit">7</th>
+		<th class="bit">6</th>
+		<th class="bit">5</th>
+		<th class="bit">4</th>
+		<th class="bit">3</th>
+		<th class="bit">2</th>
+		<th class="bit">1</th>
+		<th class="bit">0</th>
+	</tr>
+	<tr>
+		<td colspan="31">Index to children</td>
+		<td colspan="1">1</td>
+	</tr>
 </table>
 
 <h1>RegionLookup Node Types</h1>
-<h2>Leaf</h2>
+<h2>Lookup Region Types</h2>
 <table>
-    <tr>
-        <th class="bit">31</th>
-        <th class="bit">30</th>
-        <th class="bit">29</th>
-        <th class="bit">28</th>
-        <th class="bit">27</th>
-        <th class="bit">26</th>
-        <th class="bit">25</th>
-        <th class="bit">24</th>
-        <th class="bit">23</th>
-        <th class="bit">22</th>
-        <th class="bit">21</th>
-        <th class="bit">20</th>
-        <th class="bit">19</th>
-        <th class="bit">18</th>
-        <th class="bit">17</th>
-        <th class="bit">16</th>
-        <th class="bit">15</th>
-        <th class="bit">14</th>
-        <th class="bit">13</th>
-        <th class="bit">12</th>
-        <th class="bit">11</th>
-        <th class="bit">10</th>
-        <th class="bit">9</th>
-        <th class="bit">8</th>
-        <th class="bit">7</th>
-        <th class="bit">6</th>
-        <th class="bit">5</th>
-        <th class="bit">4</th>
-        <th class="bit">3</th>
-        <th class="bit">2</th>
-        <th class="bit">1</th>
-        <th class="bit">0</th>
-    </tr>
-    <tr>
-        <td colspan="28" class="unused">Unused</td>
-        <td colspan="3">Region Type</td>
-        <td>0</td>
-    </tr>
+	<tr>
+		<th>Value</th>
+		<th>Left Type</th>
+		<th>Right Type</th>
+	</tr>
+	<tr>
+		<td>0</td>
+		<td colspan="2">Empty</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>Empty</td>
+		<td>Border</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>Empty</td>
+		<td>Filament</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>Border</td>
+		<td>Empty</td>
+	</tr>
+	<tr>
+		<td>4</td>
+		<td>Border</td>
+		<td>Filament</td>
+	</tr>
+	<tr>
+		<td>5</td>
+		<td>Filament</td>
+		<td>Empty</td>
+	</tr>
+	<tr>
+		<td>6</td>
+		<td>Filament</td>
+		<td>Border</td>
+	</tr>
+	<tr>
+		<td>7</td>
+		<td colspan="2">Mixed</td>
+	</tr>
 </table>
-<h2>Branch</h2>
+
+<h2>Leaf Node</h2>
 <table>
-    <tr>
-        <th class="bit">31</th>
-        <th class="bit">30</th>
-        <th class="bit">29</th>
-        <th class="bit">28</th>
-        <th class="bit">27</th>
-        <th class="bit">26</th>
-        <th class="bit">25</th>
-        <th class="bit">24</th>
-        <th class="bit">23</th>
-        <th class="bit">22</th>
-        <th class="bit">21</th>
-        <th class="bit">20</th>
-        <th class="bit">19</th>
-        <th class="bit">18</th>
-        <th class="bit">17</th>
-        <th class="bit">16</th>
-        <th class="bit">15</th>
-        <th class="bit">14</th>
-        <th class="bit">13</th>
-        <th class="bit">12</th>
-        <th class="bit">11</th>
-        <th class="bit">10</th>
-        <th class="bit">9</th>
-        <th class="bit">8</th>
-        <th class="bit">7</th>
-        <th class="bit">6</th>
-        <th class="bit">5</th>
-        <th class="bit">4</th>
-        <th class="bit">3</th>
-        <th class="bit">2</th>
-        <th class="bit">1</th>
-        <th class="bit">0</th>
-    </tr>
-    <tr>
-        <td colspan="28">Index to children</td>
-        <td colspan="3">Region Type</td>
-        <td>1</td>
-    </tr>
+	<tr>
+		<th class="bit">31</th>
+		<th class="bit">30</th>
+		<th class="bit">29</th>
+		<th class="bit">28</th>
+		<th class="bit">27</th>
+		<th class="bit">26</th>
+		<th class="bit">25</th>
+		<th class="bit">24</th>
+		<th class="bit">23</th>
+		<th class="bit">22</th>
+		<th class="bit">21</th>
+		<th class="bit">20</th>
+		<th class="bit">19</th>
+		<th class="bit">18</th>
+		<th class="bit">17</th>
+		<th class="bit">16</th>
+		<th class="bit">15</th>
+		<th class="bit">14</th>
+		<th class="bit">13</th>
+		<th class="bit">12</th>
+		<th class="bit">11</th>
+		<th class="bit">10</th>
+		<th class="bit">9</th>
+		<th class="bit">8</th>
+		<th class="bit">7</th>
+		<th class="bit">6</th>
+		<th class="bit">5</th>
+		<th class="bit">4</th>
+		<th class="bit">3</th>
+		<th class="bit">2</th>
+		<th class="bit">1</th>
+		<th class="bit">0</th>
+	</tr>
+	<tr>
+		<td colspan="28" class="unused">Unused</td>
+		<td colspan="3">Region Type</td>
+		<td>0</td>
+	</tr>
+</table>
+<h2>Branch Node</h2>
+<table>
+	<tr>
+		<th class="bit">31</th>
+		<th class="bit">30</th>
+		<th class="bit">29</th>
+		<th class="bit">28</th>
+		<th class="bit">27</th>
+		<th class="bit">26</th>
+		<th class="bit">25</th>
+		<th class="bit">24</th>
+		<th class="bit">23</th>
+		<th class="bit">22</th>
+		<th class="bit">21</th>
+		<th class="bit">20</th>
+		<th class="bit">19</th>
+		<th class="bit">18</th>
+		<th class="bit">17</th>
+		<th class="bit">16</th>
+		<th class="bit">15</th>
+		<th class="bit">14</th>
+		<th class="bit">13</th>
+		<th class="bit">12</th>
+		<th class="bit">11</th>
+		<th class="bit">10</th>
+		<th class="bit">9</th>
+		<th class="bit">8</th>
+		<th class="bit">7</th>
+		<th class="bit">6</th>
+		<th class="bit">5</th>
+		<th class="bit">4</th>
+		<th class="bit">3</th>
+		<th class="bit">2</th>
+		<th class="bit">1</th>
+		<th class="bit">0</th>
+	</tr>
+	<tr>
+		<td colspan="28">Index to children</td>
+		<td colspan="3">Region Type</td>
+		<td>1</td>
+	</tr>
 </table>
 
 </body>

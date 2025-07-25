@@ -9,7 +9,7 @@ public partial class LabeledIntegerUpDown : UserControl
 	public static readonly DirectProperty<LabeledIntegerUpDown, string?> TextProperty =
 		TextBlock.TextProperty.AddOwner<LabeledIntegerUpDown>(o => o.Text, (o, v) => o.Text = v);
 
-	private string? _text = null;
+	private string? _text;
 
 	public string? Text
 	{
@@ -29,7 +29,7 @@ public partial class LabeledIntegerUpDown : UserControl
 	public static readonly DirectProperty<LabeledIntegerUpDown, double> ValueProperty =
 		NumericUpDown.ValueProperty.AddOwner<LabeledIntegerUpDown>(o => o.Value, (o, v) => o.Value = v);
 
-	private double _value = 0;
+	private double _value;
 
 	public double Value
 	{

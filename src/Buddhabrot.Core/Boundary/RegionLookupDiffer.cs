@@ -123,7 +123,7 @@ public static class RegionLookupDiffer
 			return sw;
 		}
 
-		var key = (sw: sw, se: se, nw: nw, ne: ne);
+		var key = (sw, se, nw, ne);
 		if (!cache.TryGetValue(key, out var node))
 		{
 			var index = diffTree.AddChildren(sw, se, nw, ne);

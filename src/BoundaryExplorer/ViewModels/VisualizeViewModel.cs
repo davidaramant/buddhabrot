@@ -19,7 +19,7 @@ public sealed class VisualizeViewModel : ViewModelBase
 	private readonly BorderDataProvider _dataProvider;
 	private readonly Action<string> _addToSystemLog;
 	private BoundaryDataSet _selectedParameters = BoundaryDataSet.Empty;
-	private int _minIterations = 0;
+	private int _minIterations;
 	private int _maxIterations = 100_000;
 	private RegionLookup _lookup = RegionLookup.Empty;
 	private IBoundaryPalette _palette = BluePalette.Instance;

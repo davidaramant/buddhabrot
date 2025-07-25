@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Buddhabrot.Core.Utilities;
 
+// ReSharper disable once InconsistentNaming
 public static class XYHash
 {
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -84,6 +84,7 @@ public class BoundaryScanningProcess : BaseVisualization
 			image.SetPixel(step.X, (session.MaxY - step.Y), color);
 		}
 
+		// ReSharper disable once RedundantAssignment
 		SaveImage(image, $"frame{frame++:00000}");
 
 		await Cli.Wrap("ffmpeg")

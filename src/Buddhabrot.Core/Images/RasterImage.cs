@@ -67,7 +67,9 @@ public sealed class RasterImage : IDisposable
 					AlphaType = SKAlphaType.Premul,
 				}
 			);
-			using var paint = new SKPaint { IsAntialias = false, FilterQuality = SKFilterQuality.None };
+			using var paint = new SKPaint();
+			paint.IsAntialias = false;
+			paint.FilterQuality = SKFilterQuality.None;
 
 			using var img = SKImage.FromBitmap(_bitmap);
 

@@ -45,11 +45,11 @@ public sealed class VisitedRegions : IVisitedRegions
 		var node = _root;
 		var height = _dimensions.Height;
 		var halfWidth = _dimensions.QuadrantLength;
-		Quadrant quadrant = default;
+		Quadrant quadrant;
 		var x = id.X;
 		var y = id.Y;
-		int h = 0;
-		int v = 0;
+		int h;
+		int v;
 
 		while (height > 2)
 		{

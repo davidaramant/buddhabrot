@@ -31,8 +31,8 @@ public sealed class MandelbrotRenderer : Control
 {
 	private bool _isPanning;
 	private Point _panningStartPoint;
-	private PositionOffset _panningOffset = new();
-	private bool _inspectMode = false;
+	private PositionOffset _panningOffset;
+	private bool _inspectMode;
 
 	private IRegionClassifier _regionClassifier = new CornerFirstRegionClassifier(
 		new BoundaryParameters(new AreaDivisions(1), 1)
@@ -174,9 +174,9 @@ public sealed class MandelbrotRenderer : Control
 	{
 		ClipToBounds = true;
 		// HACK: I'm sure there is some fancy Reactive way to do this
-		this.PropertyChanged += async (s, e) =>
+		PropertyChanged += async (_, e) =>
 		{
-			if (e.Property.Name == nameof(Lookup) && Lookup?.NodeCount > 1)
+			if (e.Property.Name == nameof(Lookup) && Lookup.NodeCount > 1)
 			{
 				await ResetLogicalAreaAsync();
 			}
@@ -186,7 +186,7 @@ public sealed class MandelbrotRenderer : Control
 			}
 		};
 
-		this.EffectiveViewportChanged += async (_, _) =>
+		EffectiveViewportChanged += async (_, _) =>
 		{
 			await RequestRenderAsync(Instructions.Resize(PixelBounds));
 		};
@@ -242,7 +242,7 @@ public sealed class MandelbrotRenderer : Control
 				InspectionResults = $"({CursorRegion.X:N0}, {CursorRegion.Y:N0}) = " + description + $"=> {type}";
 			}
 		};
-		PointerReleased += async (_, e) =>
+		PointerReleased += async (_, _) =>
 		{
 			if (_isPanning)
 			{
@@ -250,7 +250,7 @@ public sealed class MandelbrotRenderer : Control
 				await RequestRenderAsync(Instructions.Move(_panningOffset));
 			}
 		};
-		PointerCaptureLost += async (_, e) =>
+		PointerCaptureLost += async (_, _) =>
 		{
 			if (_isPanning)
 			{
@@ -324,7 +324,7 @@ public sealed class MandelbrotRenderer : Control
 		);
 	}
 
-	private Task RenderToBufferAsync(RenderingArgs args, CancellationToken cancelToken)
+	private Task RenderToBufferAsync(RenderingArgs args, CancellationToken _)
 	{
 		if (_backBuffer.PixelSize.Width != args.Width || _backBuffer.PixelSize.Height != args.Height)
 		{
@@ -501,7 +501,7 @@ public sealed class MandelbrotRenderer : Control
 
 	private async Task CancelRenderingAsync()
 	{
-		_cancelSource.Cancel();
+		await _cancelSource.CancelAsync();
 		await _renderingTask;
 		_cancelSource = new();
 	}

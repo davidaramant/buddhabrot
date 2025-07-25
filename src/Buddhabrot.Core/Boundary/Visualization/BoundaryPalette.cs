@@ -47,7 +47,7 @@ public abstract class ComputedPalette : BasePalette
 					// InSet
 					variants[0] = c;
 
-					c.ToHsv(out var h, out var s, out var v);
+					c.ToHsv(out var h, out _, out _);
 
 					// OutsideSet
 					variants[1] = SKColor.FromHsv(h, 20, 100);

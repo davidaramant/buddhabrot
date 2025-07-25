@@ -19,8 +19,8 @@ public sealed class DiffViewModel : ViewModelBase
 {
 	private readonly BorderDataProvider _dataProvider;
 	private readonly Action<string> _addToSystemLog;
-	private BoundaryDataSet? _selectedLeft = null;
-	private BoundaryDataSet? _selectedRight = null;
+	private BoundaryDataSet? _selectedLeft;
+	private BoundaryDataSet? _selectedRight;
 	private readonly ReadOnlyObservableCollection<BoundaryDataSet> _leftDataSets;
 	private readonly ReadOnlyObservableCollection<BoundaryDataSet> _rightDataSets;
 	private string _log = string.Empty;
@@ -114,7 +114,7 @@ public sealed class DiffViewModel : ViewModelBase
 		{
 			var timer = Stopwatch.StartNew();
 			var item = generate();
-			AddToLog(makeMsg(timer.Elapsed.Humanize(1), item));
+			AddToLog(makeMsg(timer.Elapsed.Humanize(), item));
 			return item;
 		}
 	}

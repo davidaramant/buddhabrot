@@ -1,4 +1,3 @@
-using Buddhabrot.Core.Boundary.Visualization;
 using Buddhabrot.Core.ExtensionMethods.Drawing;
 using SkiaSharp;
 

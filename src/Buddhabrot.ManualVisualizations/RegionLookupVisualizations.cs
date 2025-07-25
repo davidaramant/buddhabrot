@@ -7,7 +7,7 @@ namespace Buddhabrot.ManualVisualizations;
 public class RegionLookupVisualizations : BaseVisualization
 {
 	[OneTimeSetUp]
-	public void SetOutputPath() => base.SetUpOutputPath(nameof(RegionLookupVisualizations));
+	public void SetOutputPath() => SetUpOutputPath(nameof(RegionLookupVisualizations));
 
 	[Test]
 	public void ShouldConstructPower2QuadtreeCorrectly()

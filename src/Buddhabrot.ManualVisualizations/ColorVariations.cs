@@ -24,7 +24,7 @@ public class ColorVariations : BaseVisualization
 			{
 				var c = palette[types[i]];
 
-				c.ToHsv(out var h, out var s, out var v);
+				c.ToHsv(out var h, out _, out _);
 
 				// InsideSet
 				image.SetPixel(0, i, c);

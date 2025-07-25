@@ -3,7 +3,7 @@ namespace Buddhabrot.Core.Utilities;
 // TODO: Investigate if this should be replaced with a real logger. Brought over from the legacy code
 public sealed class Logger : ILog
 {
-	private static int _count = 0;
+	private static int _count;
 	private readonly ConsoleColor _color;
 	private readonly string _context;
 

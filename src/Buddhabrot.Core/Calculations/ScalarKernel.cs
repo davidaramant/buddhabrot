@@ -112,6 +112,7 @@ public static class ScalarKernel
 			if ((z2Real + z2Imag) > 4)
 			{
 				var magZ = Hypot(zReal, zImag);
+				// ReSharper disable once InconsistentNaming
 				var magDZ = Hypot(dZReal, dZImag);
 				return (new EscapeTime(i), Math.Log(magZ * magZ) * magZ / magDZ);
 			}

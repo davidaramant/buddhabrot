@@ -3,8 +3,8 @@ namespace Buddhabrot.Core.Utilities;
 public sealed class RingBuffer<T> : IReadOnlyCollection<T>
 {
 	private readonly T[] _buffer;
-	private int _head = 0;
-	private int _tail = 0;
+	private int _head;
+	private int _tail;
 	public int Capacity => _buffer.Length;
 	public int Count { get; private set; }
 	public T this[int index] => _buffer[(index + _head) % Capacity];

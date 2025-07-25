@@ -1,20 +1,22 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:views="clr-namespace:BoundaryExplorer.Views"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="BoundaryExplorer.Views.LabeledIntegerUpDown"
-             x:Name="Self">
-    <StackPanel Orientation="Vertical">
-        <TextBlock 
-            Text="{Binding $parent[views:LabeledIntegerUpDown].Text}"/>
-        <NumericUpDown
-            Minimum="1"
-            ParsingNumberStyle="Integer"
-            FormatString="N0"
-            HorizontalContentAlignment="Right"
-            Increment="{Binding $parent[views:LabeledIntegerUpDown].Increment}"
-            Value="{Binding $parent[views:LabeledIntegerUpDown].Value}"/>
-    </StackPanel>
+﻿<UserControl
+	x:Class="BoundaryExplorer.Views.LabeledIntegerUpDown"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:views="clr-namespace:BoundaryExplorer.Views"
+	x:Name="Self"
+	d:DesignHeight="450"
+	d:DesignWidth="800"
+	mc:Ignorable="d">
+	<StackPanel Orientation="Vertical">
+		<TextBlock Text="{Binding $parent[views:LabeledIntegerUpDown].Text}" />
+		<NumericUpDown
+			HorizontalContentAlignment="Right"
+			FormatString="N0"
+			Increment="{Binding $parent[views:LabeledIntegerUpDown].Increment}"
+			Minimum="1"
+			ParsingNumberStyle="Integer"
+			Value="{Binding $parent[views:LabeledIntegerUpDown].Value}" />
+	</StackPanel>
 </UserControl>

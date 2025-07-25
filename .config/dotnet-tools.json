@@ -8,6 +8,13 @@
         "csharpier"
       ],
       "rollForward": false
+    },
+    "xamlstyler.console": {
+      "version": "3.2501.8",
+      "commands": [
+        "xstyler"
+      ],
+      "rollForward": false
     }
   }
 }

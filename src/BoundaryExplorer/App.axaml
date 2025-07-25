@@ -1,23 +1,24 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:BoundaryExplorer"
-             x:Class="BoundaryExplorer.App">
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
+﻿<Application
+	x:Class="BoundaryExplorer.App"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="using:BoundaryExplorer">
+	<Application.DataTemplates>
+		<local:ViewLocator />
+	</Application.DataTemplates>
 
-    <Application.Styles>
-        <FluentTheme Mode="Light"/>
-        <Style Selector="Label">
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style Selector="NumericUpDown.integerInput">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Width" Value="300" />
-            <Setter Property="Increment" Value="1" />
-            <Setter Property="ParsingNumberStyle" Value="Integer" />
-            <Setter Property="FormatString" Value="N0" />
-            <Setter Property="HorizontalContentAlignment" Value="Right" />
-        </Style>
-    </Application.Styles>
+	<Application.Styles>
+		<FluentTheme Mode="Light" />
+		<Style Selector="Label">
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+		<Style Selector="NumericUpDown.integerInput">
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="Width" Value="300" />
+			<Setter Property="Increment" Value="1" />
+			<Setter Property="ParsingNumberStyle" Value="Integer" />
+			<Setter Property="FormatString" Value="N0" />
+			<Setter Property="HorizontalContentAlignment" Value="Right" />
+		</Style>
+	</Application.Styles>
 </Application>

@@ -1,71 +1,63 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:views="clr-namespace:BoundaryExplorer.Views"
-             xmlns:vm="using:BoundaryExplorer.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="BoundaryExplorer.Views.CalculateBoundaryTab"
-             x:CompileBindings="True"
-             x:DataType="vm:CalculateBoundaryViewModel">
-    <Grid RowDefinitions="Auto,Auto,*" MaxWidth="800">
-        <StackPanel Orientation="Vertical" Spacing="8">
-            <views:LabeledIntegerUpDown
-                Text="Iteration Maximum:"
-                Increment="1000000"
-                Value="{Binding MaximumIterations}" />
+﻿<UserControl
+	x:Class="BoundaryExplorer.Views.CalculateBoundaryTab"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:views="clr-namespace:BoundaryExplorer.Views"
+	xmlns:vm="using:BoundaryExplorer.ViewModels"
+	d:DesignHeight="450"
+	d:DesignWidth="800"
+	x:CompileBindings="True"
+	x:DataType="vm:CalculateBoundaryViewModel"
+	mc:Ignorable="d">
+	<Grid MaxWidth="800" RowDefinitions="Auto,Auto,*">
+		<StackPanel Orientation="Vertical" Spacing="8">
+			<views:LabeledIntegerUpDown
+				Increment="1000000"
+				Text="Iteration Maximum:"
+				Value="{Binding MaximumIterations}" />
 
-            <Label Content="Vertical Division 2^n Power:" />
-            <Slider
-                Minimum="1"
-                Maximum="30"
-                TickFrequency="1"
-                TickPlacement="Outside"
-                IsSnapToTickEnabled="True"
-                Value="{Binding VerticalDivisionPower}" />
-            
-            <Label Content="Region Classifier:"/>
-            <ComboBox
-                HorizontalAlignment="Stretch"
-                Items="{Binding ClassifierTypes}"
-                SelectedItem="{Binding SelectedClassifier}" />
-            
-            <TextBlock
-                Text="{Binding VerticalDivisionPower, StringFormat=Power: \{0:N0\}, Mode=OneWay}" />
+			<Label Content="Vertical Division 2^n Power:" />
+			<Slider
+				IsSnapToTickEnabled="True"
+				Maximum="30"
+				Minimum="1"
+				TickFrequency="1"
+				TickPlacement="Outside"
+				Value="{Binding VerticalDivisionPower}" />
 
-            <TextBlock
-                Text="{Binding AreaDivisions.QuadrantDivisions, StringFormat=Quadrant Divisions: \{0:N0\}, Mode=OneWay}" />
+			<Label Content="Region Classifier:" />
+			<ComboBox
+				HorizontalAlignment="Stretch"
+				Items="{Binding ClassifierTypes}"
+				SelectedItem="{Binding SelectedClassifier}" />
 
-            <TextBlock
-                Text="{Binding ImageSize, StringFormat=4x4 Image Size: \{0\}, Mode=OneWay}" />
+			<TextBlock Text="{Binding VerticalDivisionPower, StringFormat=Power: \{0:N0\}, Mode=OneWay}" />
 
-            <TextBlock
-                Text="{Binding AreaDivisions.RegionSideLength, StringFormat=Region Side Length: \{0\}, Mode=OneWay}" />
+			<TextBlock Text="{Binding AreaDivisions.QuadrantDivisions, StringFormat=Quadrant Divisions: \{0:N0\}, Mode=OneWay}" />
 
-            <TextBlock
-                Text="{Binding AreaDivisions.RegionArea, StringFormat=Region Area: \{0\}, Mode=OneWay}" />
+			<TextBlock Text="{Binding ImageSize, StringFormat=4x4 Image Size: \{0\}, Mode=OneWay}" />
 
-            <Button
-                Content="Find Boundary"
-                Command="{Binding FindBoundary}" />
-            <Button
-                Content="Cancel"
-                Command="{Binding CancelFindingBoundary}" />
+			<TextBlock Text="{Binding AreaDivisions.RegionSideLength, StringFormat=Region Side Length: \{0\}, Mode=OneWay}" />
 
-            <ProgressBar
-                IsIndeterminate="{Binding IsFindingBoundary}" />
+			<TextBlock Text="{Binding AreaDivisions.RegionArea, StringFormat=Region Area: \{0\}, Mode=OneWay}" />
 
-        </StackPanel>
-        <Label
-            Grid.Row="1">
-            Log:
-        </Label>
-        <TextBox
-            Grid.Row="2"
-            Margin="4"
-            IsReadOnly="True"
-            TextWrapping="Wrap"
-            VerticalContentAlignment="Top"
-            Text="{Binding LogOutput, Mode=OneWay}" />
-    </Grid>
+			<Button Command="{Binding FindBoundary}" Content="Find Boundary" />
+			<Button Command="{Binding CancelFindingBoundary}" Content="Cancel" />
+
+			<ProgressBar IsIndeterminate="{Binding IsFindingBoundary}" />
+
+		</StackPanel>
+		<Label Grid.Row="1">
+			Log:
+		</Label>
+		<TextBox
+			Grid.Row="2"
+			Margin="4"
+			VerticalContentAlignment="Top"
+			IsReadOnly="True"
+			Text="{Binding LogOutput, Mode=OneWay}"
+			TextWrapping="Wrap" />
+	</Grid>
 </UserControl>

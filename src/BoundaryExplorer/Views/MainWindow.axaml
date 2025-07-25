@@ -1,34 +1,37 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:BoundaryExplorer.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:BoundaryExplorer.Views"
-        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
-        x:Class="BoundaryExplorer.Views.MainWindow"
-        x:CompileBindings="True"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="Mandelbrot Set Boundary Explorer"
-        WindowState="Maximized"
-        x:DataType="vm:MainWindowViewModel">
-    <Design.DataContext>
-        <vm:MainWindowViewModel />
-    </Design.DataContext>
-    <TabControl>
-        <TabItem Header="Visualize">
-            <views:VisualizeTab DataContext="{Binding Visualize}" />
-        </TabItem>
+﻿<Window
+	x:Class="BoundaryExplorer.Views.MainWindow"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:views="clr-namespace:BoundaryExplorer.Views"
+	xmlns:vm="using:BoundaryExplorer.ViewModels"
+	Title="Mandelbrot Set Boundary Explorer"
+	d:DesignHeight="450"
+	d:DesignWidth="1000"
+	x:CompileBindings="True"
+	x:DataType="vm:MainWindowViewModel"
+	Icon="/Assets/avalonia-logo.ico"
+	WindowState="Maximized"
+	mc:Ignorable="d">
+	<Design.DataContext>
+		<vm:MainWindowViewModel />
+	</Design.DataContext>
+	<TabControl>
+		<TabItem Header="Visualize">
+			<views:VisualizeTab DataContext="{Binding Visualize}" />
+		</TabItem>
 
-        <TabItem Header="Calculate Boundary">
-            <views:CalculateBoundaryTab DataContext="{Binding CalculateBoundary}" />
-        </TabItem>
+		<TabItem Header="Calculate Boundary">
+			<views:CalculateBoundaryTab DataContext="{Binding CalculateBoundary}" />
+		</TabItem>
 
-        <TabItem Header="Calculate Diff">
-            <views:DiffTab DataContext="{Binding Diff}" />
-        </TabItem>
+		<TabItem Header="Calculate Diff">
+			<views:DiffTab DataContext="{Binding Diff}" />
+		</TabItem>
 
-        <TabItem Header="Settings">
-            <views:SettingsTab DataContext="{Binding Settings}" />
-        </TabItem>
-    </TabControl>
+		<TabItem Header="Settings">
+			<views:SettingsTab DataContext="{Binding Settings}" />
+		</TabItem>
+	</TabControl>
 </Window>

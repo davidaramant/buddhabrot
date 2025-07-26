@@ -7,6 +7,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Colourful" />
+		<PackageReference Include="CommunityToolkit.HighPerformance" />
 		<PackageReference Include="Hardware.Info" />
 		<PackageReference Include="Humanizer.Core" />
 		<PackageReference Include="protobuf-net" />

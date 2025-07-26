@@ -14,6 +14,7 @@
 		<PackageVersion Include="CacheTable.Net" Version="0.1.43" />
 		<PackageVersion Include="CliWrap" Version="3.9.0" />
 		<PackageVersion Include="Colourful" Version="3.2.0" />
+		<PackageVersion Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
 		<PackageVersion Include="coverlet.collector" Version="6.0.4">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

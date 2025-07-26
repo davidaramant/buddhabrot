@@ -359,18 +359,17 @@ public sealed class MandelbrotRenderer : Control
 		switch (_state)
 		{
 			case RenderState.Idle:
+				_state = RenderState.Rendering;
 				_currentFrameArgs = args;
 				await StartRenderingAsync(args);
-				_state = RenderState.Rendering;
 				IsBusy = true;
 				break;
 
 			case RenderState.Rendering:
-				if (args != _currentFrameArgs && args != _nextFrameArgs)
+				if (args != _currentFrameArgs)
 				{
 					_nextFrameArgs = args;
 				}
-
 				break;
 		}
 	}

@@ -4,9 +4,21 @@ namespace Buddhabrot.Core.Boundary.Visualization;
 
 public sealed class RenderInstructions : IEquatable<RenderInstructions>
 {
+	public enum Type
+	{
+		Nothing,
+		Everything,
+		FromViewport,
+		ZoomIn,
+		ZoomOut,
+		Resize,
+		Move,
+	}
+
 	private readonly SKRectI? _firstDirtyRect;
 	private readonly SKRectI? _secondDirtyRect;
 
+	public Type Operation { get; }
 	public bool PasteFrontBuffer { get; }
 	public SKRectI SourceRect { get; }
 	public SKRectI DestRect { get; }
@@ -15,6 +27,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 	public ComplexViewport ComplexViewport { get; }
 
 	private RenderInstructions(
+		Type operation,
 		bool pasteFrontBuffer,
 		SKRectI sourceRect,
 		SKRectI destRect,
@@ -23,6 +36,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		QuadtreeViewport quadtreeViewport
 	)
 	{
+		Operation = operation;
 		PasteFrontBuffer = pasteFrontBuffer;
 		SourceRect = sourceRect;
 		DestRect = destRect;
@@ -38,6 +52,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 	}
 
 	public static readonly RenderInstructions Nothing = new(
+		Type.Nothing,
 		false,
 		SKRectI.Empty,
 		SKRectI.Empty,
@@ -48,6 +63,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 
 	public static RenderInstructions Everything(SKSizeI newSize) =>
 		new(
+			operation: Type.Everything,
 			pasteFrontBuffer: false,
 			sourceRect: SKRectI.Empty,
 			destRect: SKRectI.Empty,
@@ -58,6 +74,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 
 	public static RenderInstructions FromViewport(QuadtreeViewport viewport) =>
 		new(
+			operation: Type.FromViewport,
 			pasteFrontBuffer: false,
 			sourceRect: SKRectI.Empty,
 			destRect: SKRectI.Empty,
@@ -68,6 +85,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 
 	public RenderInstructions ZoomIn(int x, int y) =>
 		new(
+			operation: Type.ZoomIn,
 			pasteFrontBuffer: false,
 			sourceRect: SKRectI.Empty,
 			destRect: SKRectI.Empty,
@@ -78,6 +96,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 
 	public RenderInstructions ZoomOut() =>
 		new(
+			operation: Type.ZoomOut,
 			pasteFrontBuffer: false,
 			sourceRect: SKRectI.Empty,
 			destRect: SKRectI.Empty,
@@ -108,6 +127,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		);
 
 		return new RenderInstructions(
+			operation: Type.Resize,
 			pasteFrontBuffer: true,
 			sourceRect: pasteRect,
 			destRect: pasteRect,
@@ -158,6 +178,7 @@ public sealed class RenderInstructions : IEquatable<RenderInstructions>
 		var pasteHeight = Size.Height - Math.Abs(offset.Y);
 
 		return new RenderInstructions(
+			operation: Type.Move,
 			pasteFrontBuffer: true,
 			sourceRect: SKRectI.Create(
 				x: ClampSource(offset.X),

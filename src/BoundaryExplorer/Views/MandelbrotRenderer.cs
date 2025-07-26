@@ -15,6 +15,8 @@ using Avalonia.Threading;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.Boundary.Visualization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -22,6 +24,7 @@ namespace BoundaryExplorer.Views;
 
 public sealed class MandelbrotRenderer : Control
 {
+	private ILogger _log;
 	private bool _isPanning;
 	private Point _panningStartPoint;
 	private PositionOffset _panningOffset;
@@ -165,6 +168,8 @@ public sealed class MandelbrotRenderer : Control
 
 	public MandelbrotRenderer()
 	{
+		_log = Program.ServiceProvider.GetRequiredService<ILogger<MandelbrotRenderer>>();
+
 		foreach (var buffer in new[] { _frontBuffer, _backBuffer })
 		{
 			using var canvas = new SKCanvas(buffer);
@@ -394,6 +399,8 @@ public sealed class MandelbrotRenderer : Control
 
 	private async Task RequestRenderAsync(RenderInstructions instructions)
 	{
+		_log.LogInformation("Render instructions: {Instructions}", instructions.Operation);
+
 		Instructions = instructions;
 
 		var args = new RenderingArgs(

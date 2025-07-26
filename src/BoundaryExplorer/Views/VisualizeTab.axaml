@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
 	x:Class="BoundaryExplorer.Views.VisualizeTab"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -21,7 +21,7 @@
 				Margin="0,4"
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Center"
-				Items="{Binding SavedBoundaries}"
+				ItemsSource="{Binding SavedBoundaries}"
 				SelectedItem="{Binding SelectedParameters}" />
 
 			<Label
@@ -115,7 +115,7 @@
 				Margin="4"
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Center"
-				Items="{Binding #MandelbrotRenderer.ClassifierTypes}"
+				ItemsSource="{Binding #MandelbrotRenderer.ClassifierTypes}"
 				SelectedItem="{Binding #MandelbrotRenderer.SelectedClassifier}" />
 
 			<Label
@@ -132,7 +132,7 @@
 				Content="Palette:">
 				<Button.Flyout>
 					<Flyout>
-						<ItemsRepeater Items="{Binding LegendColors}">
+						<ItemsRepeater ItemsSource="{Binding LegendColors}">
 							<ItemsRepeater.ItemTemplate>
 								<DataTemplate DataType="vm:LegendColorViewModel">
 									<StackPanel Orientation="Horizontal">
@@ -156,7 +156,7 @@
 			<ComboBox
 				Grid.Column="5"
 				Margin="4"
-				Items="{x:Static viz:IBoundaryPalette.AllPalettes}"
+				ItemsSource="{x:Static viz:IBoundaryPalette.AllPalettes}"
 				SelectedItem="{Binding Palette}" />
 			<Button
 				Grid.Column="6"

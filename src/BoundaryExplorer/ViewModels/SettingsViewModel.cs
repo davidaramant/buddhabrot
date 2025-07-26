@@ -42,6 +42,7 @@ public sealed class SettingsViewModel : ViewModelBase
 
 		SystemInformation = ComputerDescription.GetMultiline();
 
+		// Why does this cause problems?
 		OpenFilePathCommand = ReactiveCommand.CreateFromTask(() =>
 			Cli.Wrap(GetCommandToOpenDirectory()).WithArguments(".").WithWorkingDirectory(DataSetPath).ExecuteAsync()
 		);

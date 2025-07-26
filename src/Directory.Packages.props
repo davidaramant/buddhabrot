@@ -4,10 +4,10 @@
 		<CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageVersion Include="Avalonia" Version="0.10.22" />
-		<PackageVersion Include="Avalonia.Desktop" Version="0.10.22" />
-		<PackageVersion Include="Avalonia.Diagnostics" Version="0.10.18" />
-		<PackageVersion Include="Avalonia.ReactiveUI" Version="0.10.22" />
+		<PackageVersion Include="Avalonia" Version="11.3.2" />
+		<PackageVersion Include="Avalonia.Desktop" Version="11.3.2" />
+		<PackageVersion Include="Avalonia.Diagnostics" Version="11.3.2" />
+		<PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.2" />
 		<PackageVersion Include="BenchmarkDotNet" Version="0.15.2" />
 		<PackageVersion Include="CacheTable.Net" Version="0.1.43" />
 		<PackageVersion Include="CliWrap" Version="3.9.0" />
@@ -27,9 +27,9 @@
 		<PackageVersion Include="NUnit3TestAdapter" Version="5.0.0" />
 		<PackageVersion Include="protobuf-net" Version="3.2.52" />
 		<PackageVersion Include="Shouldly" Version="4.3.0" />
-		<PackageVersion Include="SkiaSharp" Version="2.88.9" />
+		<PackageVersion Include="SkiaSharp" Version="3.119.0" />
 		<PackageVersion Include="Spectre.Console" Version="0.50.0" />
-		<PackageVersion Include="System.CommandLine.DragonFruit" Version="0.4.0-alpha.22272.1" />
+		<PackageVersion Include="System.CommandLine.DragonFruit" Version="0.4.0-alpha.25306.1" />
 		<PackageVersion Include="Tedd.MortonEncoding" Version="1.0.1" />
 		<PackageVersion Include="XamlNameReferenceGenerator" Version="1.6.1" />
 		<PackageVersion Include="xunit" Version="2.9.3" />

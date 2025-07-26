@@ -9,9 +9,4 @@ public partial class DiffTab : UserControl
 	{
 		InitializeComponent();
 	}
-
-	private void InitializeComponent()
-	{
-		AvaloniaXamlLoader.Load(this);
-	}
 }

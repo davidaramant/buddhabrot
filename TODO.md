@@ -130,3 +130,10 @@
   - [ ] UI should just be concerned with drawing the `SKImage` on the `RenderingTargetBitmap`
   - [ ] PoC for handling image buffers
   - [ ] Research into how to parallelize rendering of pixels
+
+### Avalonia 11 Upgrade
+
+- [ ] `NumericUpDown` has changed from `double` to `decimal`
+- [ ] What is going on with UI control properties?
+- [ ] `VisualizeTab`: `ItemsRepeater` is gone?
+- [ ] `MandelbrotRenderer` - What's the fastest way to draw now?

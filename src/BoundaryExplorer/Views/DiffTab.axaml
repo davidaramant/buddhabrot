@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
 	x:Class="BoundaryExplorer.Views.DiffTab"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -24,7 +24,7 @@
 			HorizontalAlignment="Stretch"
 			BorderBrush="Black"
 			BorderThickness="1">
-			<ListBox Items="{Binding LeftDataSets}" SelectedItem="{Binding SelectedLeft}" />
+			<ListBox ItemsSource="{Binding LeftDataSets}" SelectedItem="{Binding SelectedLeft}" />
 		</Border>
 
 		<Border
@@ -34,7 +34,7 @@
 			HorizontalAlignment="Stretch"
 			BorderBrush="Black"
 			BorderThickness="1">
-			<ListBox Items="{Binding RightDataSets}" SelectedItem="{Binding SelectedRight}" />
+			<ListBox ItemsSource="{Binding RightDataSets}" SelectedItem="{Binding SelectedRight}" />
 		</Border>
 
 		<Button

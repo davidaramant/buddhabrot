@@ -21,7 +21,12 @@ public sealed record RenderingArgs(
 
 public static class BoundaryRegionRenderer
 {
-	public static void DrawRegions(RenderingArgs args, SKCanvas canvas, SKBitmap previousFrame)
+	public static void DrawRegions(
+		RenderingArgs args,
+		SKCanvas canvas,
+		SKBitmap previousFrame,
+		CancellationToken cancelToken = default
+	)
 	{
 		var areasToDraw = new List<RegionArea>();
 
@@ -53,21 +58,30 @@ public static class BoundaryRegionRenderer
 				args.Palette,
 				args.MaxIterations,
 				args.MinIterations,
-				areasToDraw
+				areasToDraw,
+				cancelToken
 			);
 		}
 		else
 		{
-			DrawRegionAreas(canvas, args.Palette, areasToDraw);
+			DrawRegionAreas(canvas, args.Palette, areasToDraw, cancelToken);
 		}
 	}
 
-	public static void DrawRegionAreas(SKCanvas canvas, IBoundaryPalette palette, IEnumerable<RegionArea> areasToDraw)
+	public static void DrawRegionAreas(
+		SKCanvas canvas,
+		IBoundaryPalette palette,
+		IEnumerable<RegionArea> areasToDraw,
+		CancellationToken cancelToken = default
+	)
 	{
 		using var paint = new SKPaint();
 
 		foreach (var (area, type) in areasToDraw)
 		{
+			if (cancelToken.IsCancellationRequested)
+				break;
+
 			paint.Color = palette[type];
 
 			canvas.DrawRect(area, paint);
@@ -80,7 +94,8 @@ public static class BoundaryRegionRenderer
 		IBoundaryPalette palette,
 		int maxIterations,
 		int minIterations,
-		List<RegionArea> areasToDraw
+		List<RegionArea> areasToDraw,
+		CancellationToken cancelToken = default
 	)
 	{
 		using var paint = new SKPaint();
@@ -91,31 +106,38 @@ public static class BoundaryRegionRenderer
 		var points = ArrayPool<Complex>.Shared.Rent(numPoints);
 		var escapeTimes = ArrayPool<EscapeTime>.Shared.Rent(numPoints);
 
-		for (int i = 0; i < numPoints; i++)
+		try
 		{
-			points[i] = viewPort.GetComplex(positionsToRender[i]);
-		}
-
-		VectorKernel.FindEscapeTimes(points, escapeTimes, numPoints, maxIterations);
-
-		for (int i = 0; i < numPoints; i++)
-		{
-			var time = escapeTimes[i];
-			var classification = time switch
+			for (int i = 0; i < numPoints; i++)
 			{
-				{ IsInfinite: true } => PointClassification.InSet,
-				var t when t.Iterations > minIterations => PointClassification.InRange,
-				_ => PointClassification.OutsideSet,
-			};
-			var type = types.GetNextType();
+				points[i] = viewPort.GetComplex(positionsToRender[i]);
+			}
 
-			paint.Color = palette[type, classification];
+			VectorKernel.FindEscapeTimes(points, escapeTimes, numPoints, maxIterations, cancelToken);
 
-			canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
+			for (int i = 0; i < numPoints; i++)
+			{
+				var time = escapeTimes[i];
+				var classification = time switch
+				{
+					{ IsInfinite: true } => PointClassification.InSet,
+					var t when t.Iterations > minIterations => PointClassification.InRange,
+					_ => PointClassification.OutsideSet,
+				};
+				var type = types.GetNextType();
+
+				paint.Color = palette[type, classification];
+
+				canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
+			}
+		}
+		finally
+		{
+			ArrayPool<Complex>.Shared.Return(points);
+			ArrayPool<EscapeTime>.Shared.Return(escapeTimes);
 		}
 
-		ArrayPool<Complex>.Shared.Return(points);
-		ArrayPool<EscapeTime>.Shared.Return(escapeTimes);
+		return;
 
 		static (List<SKPointI> PositionsToRender, LookupRegionTypeList Types) GetPositionsAndTypes(
 			List<RegionArea> areasToDraw

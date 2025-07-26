@@ -342,7 +342,7 @@ public sealed class MandelbrotRenderer : Control
 		}
 	}
 
-	private Task RenderToBufferAsync(RenderingArgs args, CancellationToken _)
+	private Task RenderToBufferAsync(RenderingArgs args, CancellationToken cancelToken)
 	{
 		if (_backBuffer.Width != args.Width || _backBuffer.Height != args.Height)
 		{
@@ -350,10 +350,14 @@ public sealed class MandelbrotRenderer : Control
 			_backBuffer = new SKBitmap(new SKImageInfo(args.Width, args.Height));
 		}
 
-		// TODO: Check for cancellation
 		using (var canvas = new SKCanvas(_backBuffer))
 		{
-			BoundaryRegionRenderer.DrawRegions(args, canvas: canvas, previousFrame: _frontBuffer);
+			BoundaryRegionRenderer.DrawRegions(
+				args,
+				canvas: canvas,
+				previousFrame: _frontBuffer,
+				cancelToken: cancelToken
+			);
 		}
 
 		(_backBuffer, _frontBuffer) = (_frontBuffer, _backBuffer);

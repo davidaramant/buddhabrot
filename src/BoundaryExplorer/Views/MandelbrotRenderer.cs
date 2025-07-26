@@ -9,6 +9,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Rendering.SceneGraph;
+using Avalonia.Skia;
 using Avalonia.Threading;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
@@ -41,9 +43,8 @@ public sealed class MandelbrotRenderer : Control
 	private CancellationTokenSource _cancelSource = new();
 	private Task _renderingTask = Task.CompletedTask;
 
-	private readonly RenderTargetBitmap _displayBitmap = new(new PixelSize(1, 1), new Vector(96, 96));
-	private SKBitmap _frontBuffer = new(new SKImageInfo(1, 1));
-	private SKBitmap _backBuffer = new(new SKImageInfo(1, 1));
+	private SKBitmap _frontBuffer = new(new SKImageInfo(10, 10));
+	private SKBitmap _backBuffer = new(new SKImageInfo(10, 10));
 
 	private SKSizeI PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
 
@@ -164,6 +165,12 @@ public sealed class MandelbrotRenderer : Control
 
 	public MandelbrotRenderer()
 	{
+		foreach (var buffer in new[] { _frontBuffer, _backBuffer })
+		{
+			using var canvas = new SKCanvas(buffer);
+			canvas.Clear(SKColors.White);
+		}
+
 		ClipToBounds = true;
 		// HACK: I'm sure there is some fancy Reactive way to do this
 		PropertyChanged += async (_, e) =>
@@ -315,6 +322,48 @@ public sealed class MandelbrotRenderer : Control
 		// 	_frontBuffer,
 		// 	new Rect(_panningOffset.X, _panningOffset.Y, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height)
 		// );
+		context.Custom(
+			new CustomDrawOp(
+				_frontBuffer,
+				SKRect.Create(
+					x: _panningOffset.X,
+					y: _panningOffset.Y,
+					width: _frontBuffer.Width,
+					height: _frontBuffer.Height
+				)
+			)
+		);
+	}
+
+	sealed class CustomDrawOp : ICustomDrawOperation
+	{
+		private readonly SKBitmap _bitmap;
+		private readonly SKRect _bounds;
+
+		public Rect Bounds { get; }
+
+		public CustomDrawOp(SKBitmap bitmap, SKRect bounds)
+		{
+			_bitmap = bitmap;
+			_bounds = bounds;
+			Bounds = new Rect(x: bounds.Left, y: bounds.Top, width: bounds.Width, height: bounds.Height);
+		}
+
+		public void Dispose() { }
+
+		public bool HitTest(Avalonia.Point p) => false;
+
+		public bool Equals(ICustomDrawOperation? other) => false;
+
+		public void Render(ImmediateDrawingContext context)
+		{
+			// if (context.TryGetFeature(typeof(ISkiaSharpApiLeaseFeature)) is ISkiaSharpApiLeaseFeature leaseFeature)
+			// {
+			// 	using var lease = leaseFeature.Lease();
+			// 	using var canvas = lease.SkCanvas;
+			// 	canvas.DrawBitmap(_bitmap, _bounds);
+			// }
+		}
 	}
 
 	private Task RenderToBufferAsync(RenderingArgs args, CancellationToken _)

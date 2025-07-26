@@ -1,8 +1,5 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -12,18 +9,12 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using Avalonia.Skia;
 using Avalonia.Threading;
-using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.Boundary.Visualization;
-using Buddhabrot.Core.Calculations;
-using Buddhabrot.Core.ExtensionMethods.Drawing;
 using ReactiveUI;
 using SkiaSharp;
-using Vector = Avalonia.Vector;
 
 namespace BoundaryExplorer.Views;
 
@@ -50,8 +41,9 @@ public sealed class MandelbrotRenderer : Control
 	private CancellationTokenSource _cancelSource = new();
 	private Task _renderingTask = Task.CompletedTask;
 
-	private RenderTargetBitmap _frontBuffer = new(new PixelSize(1, 1));
-	private RenderTargetBitmap _backBuffer = new(new PixelSize(1, 1));
+	private readonly RenderTargetBitmap _displayBitmap = new(new PixelSize(1, 1), new Vector(96, 96));
+	private SKBitmap _frontBuffer = new(new SKImageInfo(1, 1));
+	private SKBitmap _backBuffer = new(new SKImageInfo(1, 1));
 
 	private SKSizeI PixelBounds => new(Math.Max(1, (int)Bounds.Width), Math.Max(1, (int)Bounds.Height));
 
@@ -318,122 +310,31 @@ public sealed class MandelbrotRenderer : Control
 
 	public override void Render(DrawingContext context)
 	{
-		context.DrawImage(
-			_frontBuffer,
-			new Rect(_panningOffset.X, _panningOffset.Y, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height)
-		);
+		// TODO - does this need a RenderTargetBitmap?
+		// context.DrawImage(
+		// 	_frontBuffer,
+		// 	new Rect(_panningOffset.X, _panningOffset.Y, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height)
+		// );
 	}
 
 	private Task RenderToBufferAsync(RenderingArgs args, CancellationToken _)
 	{
-		if (_backBuffer.PixelSize.Width != args.Width || _backBuffer.PixelSize.Height != args.Height)
+		if (_backBuffer.Width != args.Width || _backBuffer.Height != args.Height)
 		{
 			_backBuffer.Dispose();
-			_backBuffer = new RenderTargetBitmap(new PixelSize(args.Width, args.Height), new Vector(96, 96));
+			_backBuffer = new SKBitmap(new SKImageInfo(args.Width, args.Height));
 		}
 
 		// TODO: Check for cancellation
-		using (var context = _backBuffer.CreateDrawingContext(null))
+		using (var canvas = new SKCanvas(_backBuffer))
 		{
-			var skiaContext = (ISkiaDrawingContextImpl)context;
-			var canvas = skiaContext.SkCanvas;
-
-			DrawRegions(args, canvas, context);
+			BoundaryRegionRenderer.DrawRegions(args, canvas: canvas, previousFrame: _frontBuffer);
 		}
 
 		(_backBuffer, _frontBuffer) = (_frontBuffer, _backBuffer);
 		_panningOffset = new();
 
 		return DoneRenderingAsync();
-	}
-
-	private void DrawRegions(RenderingArgs args, SKCanvas canvas, IDrawingContextImpl context)
-	{
-		var areasToDraw = new List<RegionArea>();
-
-		canvas.DrawRect(0, 0, args.Width, args.Height, new SKPaint { Color = args.Palette.Background });
-
-		var center = args.Instructions.QuadtreeViewport.Center;
-		var radius = args.Instructions.QuadtreeViewport.QuadrantLength;
-
-		canvas.DrawCircle(center.X, center.Y, radius, new SKPaint { Color = args.Palette.InsideCircle });
-
-		if (args.Instructions.PasteFrontBuffer)
-		{
-			context.DrawBitmap(
-				_frontBuffer.PlatformImpl,
-				opacity: 1,
-				sourceRect: FromSkia(args.Instructions.SourceRect),
-				destRect: FromSkia(args.Instructions.DestRect)
-			);
-		}
-
-		args.Lookup.GetVisibleAreas(
-			args.Instructions.QuadtreeViewport,
-			args.Instructions.GetDirtyRectangles(),
-			areasToDraw
-		);
-
-		using var paint = new SKPaint();
-
-		if (args.RenderInteriors)
-		{
-			var viewPort = ComplexViewport.FromResolution(
-				new SKSizeI(args.Width, args.Height),
-				args.Instructions.QuadtreeViewport.Center,
-				2d / args.Instructions.QuadtreeViewport.QuadrantLength
-			);
-			areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
-
-			var positionsToRender = new List<SKPointI>();
-			var types = new LookupRegionTypeList();
-
-			foreach (var (area, type) in areasToDraw)
-			{
-				positionsToRender.AddRange(area.GetAllPositions().Select(p => new SKPointI(p.X, p.Y)));
-				types.Add(type, area.GetArea());
-			}
-
-			var numPoints = positionsToRender.Count;
-			var points = ArrayPool<Complex>.Shared.Rent(numPoints);
-			var escapeTimes = ArrayPool<EscapeTime>.Shared.Rent(numPoints);
-
-			for (int i = 0; i < numPoints; i++)
-			{
-				points[i] = viewPort.GetComplex(positionsToRender[i]);
-			}
-
-			// TODO: Why does this lock up the UI? It's already in a different Task, should this part be in a Task as well?
-			VectorKernel.FindEscapeTimes(points, escapeTimes, numPoints, args.MaxIterations);
-
-			for (int i = 0; i < numPoints; i++)
-			{
-				var time = escapeTimes[i];
-				var classification = time switch
-				{
-					{ IsInfinite: true } => PointClassification.InSet,
-					var t when t.Iterations > args.MinIterations => PointClassification.InRange,
-					_ => PointClassification.OutsideSet,
-				};
-				var type = types.GetNextType();
-
-				paint.Color = args.Palette[type, classification];
-
-				canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
-			}
-
-			ArrayPool<Complex>.Shared.Return(points);
-			ArrayPool<EscapeTime>.Shared.Return(escapeTimes);
-		}
-		else
-		{
-			foreach (var (area, type) in areasToDraw)
-			{
-				paint.Color = args.Palette[type];
-
-				canvas.DrawRect(area, paint);
-			}
-		}
 	}
 
 	private Task ResetLogicalAreaAsync() => RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
@@ -507,6 +408,4 @@ public sealed class MandelbrotRenderer : Control
 	}
 
 	#endregion
-
-	private static Rect FromSkia(SKRectI rect) => new(rect.Left, rect.Top, rect.Width, rect.Height);
 }

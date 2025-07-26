@@ -97,9 +97,9 @@ public sealed class MandelbrotRenderer : Control
 	public static readonly StyledProperty<bool> RenderInteriorsProperty = AvaloniaProperty.Register<
 		MandelbrotRenderer,
 		bool
-	>(nameof(RenderInteriors));
+	>(nameof(ShouldRenderInteriors));
 
-	public bool RenderInteriors
+	public bool ShouldRenderInteriors
 	{
 		get => GetValue(RenderInteriorsProperty);
 		set => SetValue(RenderInteriorsProperty, value);
@@ -407,7 +407,7 @@ public sealed class MandelbrotRenderer : Control
 			instructions,
 			Lookup,
 			Palette,
-			RenderInteriors,
+			ShouldRenderInteriors,
 			MinimumIterations,
 			MaximumIterations
 		);

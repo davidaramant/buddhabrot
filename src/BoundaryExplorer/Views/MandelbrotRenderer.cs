@@ -41,6 +41,7 @@ public sealed class MandelbrotRenderer : Control
 	}
 
 	private RenderState _state = RenderState.Idle;
+	private Lock _stateLock = new();
 	private RenderingArgs? _currentFrameArgs;
 	private RenderingArgs? _nextFrameArgs;
 	private CancellationTokenSource _cancelSource = new();
@@ -178,22 +179,19 @@ public sealed class MandelbrotRenderer : Control
 
 		ClipToBounds = true;
 		// HACK: I'm sure there is some fancy Reactive way to do this
-		PropertyChanged += async (_, e) =>
+		PropertyChanged += (_, e) =>
 		{
 			if (e.Property.Name == nameof(Lookup) && Lookup.NodeCount > 1)
 			{
-				await ResetLogicalAreaAsync();
+				ResetLogicalArea();
 			}
-			else if (e.Property.Name == nameof(RenderInteriors))
+			else if (e.Property.Name == nameof(ShouldRenderInteriors))
 			{
-				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+				RequestRender(RenderInstructions.Everything(PixelBounds));
 			}
 		};
 
-		EffectiveViewportChanged += async (_, _) =>
-		{
-			await RequestRenderAsync(Instructions.Resize(PixelBounds));
-		};
+		EffectiveViewportChanged += (_, _) => RequestRender(Instructions.Resize(PixelBounds));
 		PointerMoved += (_, e) =>
 		{
 			var point = e.GetPosition(this);
@@ -214,7 +212,7 @@ public sealed class MandelbrotRenderer : Control
 				}
 			}
 		};
-		PointerPressed += async (_, e) =>
+		PointerPressed += (_, e) =>
 		{
 			var properties = e.GetCurrentPoint(this).Properties;
 
@@ -231,13 +229,13 @@ public sealed class MandelbrotRenderer : Control
 					if (Instructions.QuadtreeViewport.Scale < 31)
 					{
 						var pos = e.GetPosition(this);
-						await RequestRenderAsync(Instructions.ZoomIn((int)pos.X, (int)pos.Y));
+						RequestRender(Instructions.ZoomIn((int)pos.X, (int)pos.Y));
 					}
 				}
 			}
 			else if (!_inspectMode && properties.IsRightButtonPressed && e.ClickCount == 2)
 			{
-				await RequestRenderAsync(Instructions.ZoomOut());
+				RequestRender(Instructions.ZoomOut());
 			}
 			else if (_inspectMode && properties.IsRightButtonPressed)
 			{
@@ -246,37 +244,34 @@ public sealed class MandelbrotRenderer : Control
 				InspectionResults = $"({CursorRegion.X:N0}, {CursorRegion.Y:N0}) = " + description + $"=> {type}";
 			}
 		};
-		PointerReleased += async (_, _) =>
+		PointerReleased += (_, _) =>
 		{
 			if (_isPanning)
 			{
 				_isPanning = false;
-				await RequestRenderAsync(Instructions.Move(_panningOffset));
+				RequestRender(Instructions.Move(_panningOffset));
 			}
 		};
-		PointerCaptureLost += async (_, _) =>
+		PointerCaptureLost += (_, _) =>
 		{
 			if (_isPanning)
 			{
 				_isPanning = false;
 
-				await RequestRenderAsync(Instructions.Move(_panningOffset));
+				RequestRender(Instructions.Move(_panningOffset));
 			}
 		};
 
-		ResetViewCommand = ReactiveCommand.CreateFromTask(ResetLogicalAreaAsync);
-		ZoomOutCommand = ReactiveCommand.CreateFromTask(() =>
-		{
-			return RequestRenderAsync(Instructions.ZoomOut());
-		});
+		ResetViewCommand = ReactiveCommand.Create(ResetLogicalArea);
+		ZoomOutCommand = ReactiveCommand.Create(() => RequestRender(Instructions.ZoomOut()));
 		ToggleInspectModeCommand = ReactiveCommand.Create(() =>
 		{
 			_inspectMode = !_inspectMode;
 		});
 		this.WhenAnyValue(x => x.Palette)
-			.SelectMany(async _ =>
+			.Select(_ =>
 			{
-				await RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+				RequestRender(RenderInstructions.Everything(PixelBounds));
 				return Unit.Default;
 			})
 			.Subscribe();
@@ -391,13 +386,13 @@ public sealed class MandelbrotRenderer : Control
 		return DoneRenderingAsync();
 	}
 
-	private Task ResetLogicalAreaAsync() => RequestRenderAsync(RenderInstructions.Everything(PixelBounds));
+	private void ResetLogicalArea() => RequestRender(RenderInstructions.Everything(PixelBounds));
 
 	protected override Size MeasureOverride(Size availableSize) => availableSize;
 
 	#region State Machine
 
-	private async Task RequestRenderAsync(RenderInstructions instructions)
+	private void RequestRender(RenderInstructions instructions)
 	{
 		_log.LogInformation("Render instructions: {Instructions}", instructions.Operation);
 
@@ -412,12 +407,21 @@ public sealed class MandelbrotRenderer : Control
 			MaximumIterations
 		);
 
-		switch (_state)
+		RenderState state;
+		lock (_stateLock)
+		{
+			state = _state;
+		}
+
+		switch (state)
 		{
 			case RenderState.Idle:
-				_state = RenderState.Rendering;
+				lock (_stateLock)
+				{
+					_state = RenderState.Rendering;
+				}
 				_currentFrameArgs = args;
-				await StartRenderingAsync(args);
+				StartRendering(args);
 				IsBusy = true;
 				break;
 
@@ -438,21 +442,28 @@ public sealed class MandelbrotRenderer : Control
 		if (_nextFrameArgs != null)
 		{
 			_currentFrameArgs = _nextFrameArgs;
-			await StartRenderingAsync(_nextFrameArgs);
+			StartRendering(_nextFrameArgs);
 			_nextFrameArgs = null;
-			_state = RenderState.Rendering;
+			lock (_stateLock)
+			{
+				_state = RenderState.Rendering;
+			}
 		}
 		else
 		{
-			_state = RenderState.Idle;
+			lock (_stateLock)
+			{
+				_state = RenderState.Rendering;
+			}
+
 			await Dispatcher.UIThread.InvokeAsync(() => IsBusy = false);
+			_log.LogInformation("Back to Idle rendering state");
 		}
 	}
 
-	private Task StartRenderingAsync(RenderingArgs args)
+	private void StartRendering(RenderingArgs args)
 	{
 		_renderingTask = Task.Run(() => RenderToBufferAsync(args, _cancelSource.Token));
-		return Task.CompletedTask;
 	}
 
 	private async Task CancelRenderingAsync()

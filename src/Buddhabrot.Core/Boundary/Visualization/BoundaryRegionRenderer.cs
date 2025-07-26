@@ -10,7 +10,7 @@ public sealed record RenderingArgs(
 	RenderInstructions Instructions,
 	RegionLookup Lookup,
 	IBoundaryPalette Palette,
-	bool RenderInteriors,
+	RegionRenderStyle RegionRenderStyle,
 	int MinIterations,
 	int MaxIterations
 )
@@ -50,25 +50,37 @@ public static class BoundaryRegionRenderer
 
 		using var paint = new SKPaint();
 
-		if (args.RenderInteriors)
+		switch (args.RegionRenderStyle)
 		{
-			DrawRegionInteriors(
-				canvas,
-				args.Instructions.ComplexViewport,
-				args.Palette,
-				args.MaxIterations,
-				args.MinIterations,
-				areasToDraw,
-				cancelToken
-			);
-		}
-		else
-		{
-			DrawRegionAreas(canvas, args.Palette, areasToDraw, cancelToken);
+			case RegionRenderStyle.Empty:
+				DrawEmptyRegions(canvas, args.Palette, areasToDraw, cancelToken);
+				break;
+			case RegionRenderStyle.ExactSet:
+				DrawExactSetInRegions(
+					canvas,
+					args.Instructions.ComplexViewport,
+					args.Palette,
+					args.MaxIterations,
+					args.MinIterations,
+					areasToDraw,
+					cancelToken
+				);
+				break;
+			case RegionRenderStyle.CloseToSet:
+				DrawCloseSetInRegions(
+					canvas,
+					args.Instructions.ComplexViewport,
+					args.Palette,
+					args.MaxIterations,
+					args.MinIterations,
+					areasToDraw,
+					cancelToken
+				);
+				break;
 		}
 	}
 
-	public static void DrawRegionAreas(
+	public static void DrawEmptyRegions(
 		SKCanvas canvas,
 		IBoundaryPalette palette,
 		IEnumerable<RegionArea> areasToDraw,
@@ -88,7 +100,59 @@ public static class BoundaryRegionRenderer
 		}
 	}
 
-	public static void DrawRegionInteriors(
+	public static void DrawExactSetInRegions(
+		SKCanvas canvas,
+		ComplexViewport viewPort,
+		IBoundaryPalette palette,
+		int maxIterations,
+		int minIterations,
+		List<RegionArea> areasToDraw,
+		CancellationToken cancelToken = default
+	)
+	{
+		using var paint = new SKPaint();
+
+		var (positionsToRender, types) = GetPositionsAndTypes(areasToDraw);
+
+		var numPoints = positionsToRender.Count;
+		var points = ArrayPool<Complex>.Shared.Rent(numPoints);
+		var escapeTimes = ArrayPool<EscapeTime>.Shared.Rent(numPoints);
+
+		try
+		{
+			for (int i = 0; i < numPoints; i++)
+			{
+				points[i] = viewPort.GetComplex(positionsToRender[i]);
+			}
+
+			VectorKernel.FindEscapeTimes(points, escapeTimes, numPoints, maxIterations, cancelToken);
+
+			double threshold = viewPort.HalfPixelWidth / 2;
+
+			for (int i = 0; i < numPoints; i++)
+			{
+				var time = escapeTimes[i];
+				var classification = time switch
+				{
+					{ IsInfinite: true } => PointClassification.InSet,
+					var t when t.Iterations > minIterations => PointClassification.InRange,
+					_ => PointClassification.OutsideSet,
+				};
+				var type = types.GetNextType();
+
+				paint.Color = palette[type, classification];
+
+				canvas.DrawPoint(positionsToRender[i].X, positionsToRender[i].Y, paint);
+			}
+		}
+		finally
+		{
+			ArrayPool<Complex>.Shared.Return(points);
+			ArrayPool<EscapeTime>.Shared.Return(escapeTimes);
+		}
+	}
+
+	public static void DrawCloseSetInRegions(
 		SKCanvas canvas,
 		ComplexViewport viewPort,
 		IBoundaryPalette palette,
@@ -142,27 +206,25 @@ public static class BoundaryRegionRenderer
 			ArrayPool<EscapeTime>.Shared.Return(escapeTimes);
 			ArrayPool<double>.Shared.Return(distances);
 		}
+	}
 
-		return;
+	private static (List<SKPointI> PositionsToRender, LookupRegionTypeList Types) GetPositionsAndTypes(
+		List<RegionArea> areasToDraw
+	)
+	{
+		areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
 
-		static (List<SKPointI> PositionsToRender, LookupRegionTypeList Types) GetPositionsAndTypes(
-			List<RegionArea> areasToDraw
-		)
+		var totalNumPoints = areasToDraw.Sum(tuple => tuple.Area.GetArea());
+
+		var positionsToRender = new List<SKPointI>(totalNumPoints);
+		var types = new LookupRegionTypeList();
+
+		foreach (var (area, type) in areasToDraw)
 		{
-			areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
-
-			var totalNumPoints = areasToDraw.Sum(tuple => tuple.Area.GetArea());
-
-			var positionsToRender = new List<SKPointI>(totalNumPoints);
-			var types = new LookupRegionTypeList();
-
-			foreach (var (area, type) in areasToDraw)
-			{
-				positionsToRender.AddRange(area.GetAllPositions().Select(p => new SKPointI(p.X, p.Y)));
-				types.Add(type, area.GetArea());
-			}
-
-			return (positionsToRender, types);
+			positionsToRender.AddRange(area.GetAllPositions().Select(p => new SKPointI(p.X, p.Y)));
+			types.Add(type, area.GetArea());
 		}
+
+		return (positionsToRender, types);
 	}
 }

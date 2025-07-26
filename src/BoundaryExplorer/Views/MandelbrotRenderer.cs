@@ -94,16 +94,19 @@ public sealed class MandelbrotRenderer : Control
 		set => SetValue(IsBusyProperty, value);
 	}
 
-	public static readonly StyledProperty<bool> RenderInteriorsProperty = AvaloniaProperty.Register<
+	public static readonly StyledProperty<RegionRenderStyle> RegionRenderStyleProperty = AvaloniaProperty.Register<
 		MandelbrotRenderer,
-		bool
-	>(nameof(ShouldRenderInteriors));
+		RegionRenderStyle
+	>(nameof(RegionRenderStyle), defaultValue: RegionRenderStyle.Empty);
 
-	public bool ShouldRenderInteriors
+	public RegionRenderStyle RegionRenderStyle
 	{
-		get => GetValue(RenderInteriorsProperty);
-		set => SetValue(RenderInteriorsProperty, value);
+		get => GetValue(RegionRenderStyleProperty);
+		set => SetValue(RegionRenderStyleProperty, value);
 	}
+
+	public IReadOnlyCollection<RegionRenderStyle> RegionRenderStyles { get; } =
+		[RegionRenderStyle.Empty, RegionRenderStyle.ExactSet, RegionRenderStyle.CloseToSet];
 
 	public static readonly StyledProperty<int> MaximumIterationsProperty = AvaloniaProperty.Register<
 		MandelbrotRenderer,
@@ -180,7 +183,7 @@ public sealed class MandelbrotRenderer : Control
 
 		this.WhenAnyValue(x => x.Lookup).Where(lookup => lookup.NodeCount > 1).Subscribe(_ => ResetLogicalArea());
 
-		this.WhenAnyValue(x => x.ShouldRenderInteriors)
+		this.WhenAnyValue(x => x.RegionRenderStyle)
 			.Skip(1) // Skip initial value
 			.Subscribe(_ => HandleRenderRequest(Instructions.Everything(PixelBounds)));
 
@@ -390,7 +393,7 @@ public sealed class MandelbrotRenderer : Control
 				inst,
 				Lookup,
 				Palette,
-				ShouldRenderInteriors,
+				RegionRenderStyle,
 				MinimumIterations,
 				MaximumIterations
 			);

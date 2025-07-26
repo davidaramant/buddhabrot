@@ -40,7 +40,7 @@ public class BoundaryRegionRendererTests : BaseVisualization
 
 		using var canvas = new SKCanvas(image.Raw);
 		canvas.Clear(SKColors.White);
-		BoundaryRegionRenderer.DrawRegionAreas(canvas, palette, areasToDraw);
+		BoundaryRegionRenderer.DrawEmptyRegions(canvas, palette, areasToDraw);
 
 		SaveImage(image, "Region Areas");
 	}
@@ -65,7 +65,7 @@ public class BoundaryRegionRendererTests : BaseVisualization
 			),
 			Lookup: lookup,
 			Palette: BluePalette.Instance,
-			RenderInteriors: true,
+			RegionRenderStyle: RegionRenderStyle.ExactSet,
 			MaxIterations: boundaryParameters.MaxIterations,
 			MinIterations: 0
 		);
@@ -81,7 +81,7 @@ public class BoundaryRegionRendererTests : BaseVisualization
 
 		using var canvas = new SKCanvas(image.Raw);
 		canvas.Clear(SKColors.White);
-		BoundaryRegionRenderer.DrawRegionInteriors(
+		BoundaryRegionRenderer.DrawCloseSetInRegions(
 			canvas,
 			args.Instructions.ComplexViewport,
 			args.Palette,
@@ -114,7 +114,7 @@ public class BoundaryRegionRendererTests : BaseVisualization
 			),
 			Lookup: lookup,
 			Palette: BluePalette.Instance,
-			RenderInteriors: true,
+			RegionRenderStyle: RegionRenderStyle.ExactSet,
 			MaxIterations: boundaryParameters.MaxIterations,
 			MinIterations: 0
 		);

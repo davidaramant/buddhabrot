@@ -61,12 +61,12 @@
 				Grid.Column="5"
 				Margin="4"
 				HorizontalAlignment="Right"
-				Content="Render Interiors:" />
-			<ToggleSwitch
-				Grid.Row="0"
-				Grid.Column="6"
-				Margin="4"
-				IsChecked="{Binding #MandelbrotRenderer.ShouldRenderInteriors}" />
+				Content="Region Render Style:" />
+			<ComboBox Grid.Row="0"
+			          Grid.Column="6"
+			          Margin="4"
+			          SelectedItem="{Binding #MandelbrotRenderer.RegionRenderStyle}"
+			          ItemsSource="{Binding #MandelbrotRenderer.RegionRenderStyles}"/>
 
 			<ProgressBar
 				Grid.Row="0"

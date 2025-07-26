@@ -177,18 +177,12 @@ public sealed class MandelbrotRenderer : Control
 		}
 
 		ClipToBounds = true;
-		// HACK: I'm sure there is some fancy Reactive way to do this
-		PropertyChanged += (_, e) =>
-		{
-			if (e.Property.Name == nameof(Lookup) && Lookup.NodeCount > 1)
-			{
-				ResetLogicalArea();
-			}
-			else if (e.Property.Name == nameof(ShouldRenderInteriors))
-			{
-				HandleRenderRequest(RenderInstructions.Everything(PixelBounds));
-			}
-		};
+
+		this.WhenAnyValue(x => x.Lookup).Where(lookup => lookup.NodeCount > 1).Subscribe(_ => ResetLogicalArea());
+
+		this.WhenAnyValue(x => x.ShouldRenderInteriors)
+			.Skip(1) // Skip initial value
+			.Subscribe(_ => HandleRenderRequest(RenderInstructions.Everything(PixelBounds)));
 
 		EffectiveViewportChanged += (_, _) => HandleRenderRequest(Instructions.Resize(PixelBounds));
 		PointerMoved += (_, e) =>
@@ -459,13 +453,8 @@ public sealed class MandelbrotRenderer : Control
 		}
 	}
 
-	private void StartBackgroundRendering(RenderingArgs args)
-	{
-		_renderingTask = Task.Factory.StartNew(
-			() => RenderToBufferAsync(args, _cancelSource.Token),
-			TaskCreationOptions.LongRunning
-		);
-	}
+	private void StartBackgroundRendering(RenderingArgs args) =>
+		_renderingTask = Task.Run(() => RenderToBufferAsync(args, _cancelSource.Token));
 
 	// TODO: At some point it might make sense to be able to cancel long running renders (especially with interiors)
 	private async Task CancelRenderingAsync()

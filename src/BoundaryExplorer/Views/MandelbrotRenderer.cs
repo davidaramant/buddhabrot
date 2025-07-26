@@ -187,11 +187,11 @@ public sealed class MandelbrotRenderer : Control
 			}
 			else if (e.Property.Name == nameof(ShouldRenderInteriors))
 			{
-				RequestRender(RenderInstructions.Everything(PixelBounds));
+				HandleRenderRequest(RenderInstructions.Everything(PixelBounds));
 			}
 		};
 
-		EffectiveViewportChanged += (_, _) => RequestRender(Instructions.Resize(PixelBounds));
+		EffectiveViewportChanged += (_, _) => HandleRenderRequest(Instructions.Resize(PixelBounds));
 		PointerMoved += (_, e) =>
 		{
 			var point = e.GetPosition(this);
@@ -229,13 +229,13 @@ public sealed class MandelbrotRenderer : Control
 					if (Instructions.QuadtreeViewport.Scale < 31)
 					{
 						var pos = e.GetPosition(this);
-						RequestRender(Instructions.ZoomIn((int)pos.X, (int)pos.Y));
+						HandleRenderRequest(Instructions.ZoomIn((int)pos.X, (int)pos.Y));
 					}
 				}
 			}
 			else if (!_inspectMode && properties.IsRightButtonPressed && e.ClickCount == 2)
 			{
-				RequestRender(Instructions.ZoomOut());
+				HandleRenderRequest(Instructions.ZoomOut());
 			}
 			else if (_inspectMode && properties.IsRightButtonPressed)
 			{
@@ -249,7 +249,7 @@ public sealed class MandelbrotRenderer : Control
 			if (_isPanning)
 			{
 				_isPanning = false;
-				RequestRender(Instructions.Move(_panningOffset));
+				HandleRenderRequest(Instructions.Move(_panningOffset));
 			}
 		};
 		PointerCaptureLost += (_, _) =>
@@ -258,12 +258,12 @@ public sealed class MandelbrotRenderer : Control
 			{
 				_isPanning = false;
 
-				RequestRender(Instructions.Move(_panningOffset));
+				HandleRenderRequest(Instructions.Move(_panningOffset));
 			}
 		};
 
 		ResetViewCommand = ReactiveCommand.Create(ResetLogicalArea);
-		ZoomOutCommand = ReactiveCommand.Create(() => RequestRender(Instructions.ZoomOut()));
+		ZoomOutCommand = ReactiveCommand.Create(() => HandleRenderRequest(Instructions.ZoomOut()));
 		ToggleInspectModeCommand = ReactiveCommand.Create(() =>
 		{
 			_inspectMode = !_inspectMode;
@@ -271,7 +271,7 @@ public sealed class MandelbrotRenderer : Control
 		this.WhenAnyValue(x => x.Palette)
 			.Select(_ =>
 			{
-				RequestRender(RenderInstructions.Everything(PixelBounds));
+				HandleRenderRequest(RenderInstructions.Everything(PixelBounds));
 				return Unit.Default;
 			})
 			.Subscribe();
@@ -386,84 +386,104 @@ public sealed class MandelbrotRenderer : Control
 		return DoneRenderingAsync();
 	}
 
-	private void ResetLogicalArea() => RequestRender(RenderInstructions.Everything(PixelBounds));
+	private void ResetLogicalArea() => HandleRenderRequest(RenderInstructions.Everything(PixelBounds));
 
 	protected override Size MeasureOverride(Size availableSize) => availableSize;
 
 	#region State Machine
 
-	private void RequestRender(RenderInstructions instructions)
+	private readonly Queue<RenderInstructions> _renderRequests = new();
+
+	private void HandleRenderRequest(RenderInstructions instructions)
 	{
-		_log.LogInformation("Render instructions: {Instructions}", instructions.Operation);
+		_renderRequests.Enqueue(instructions);
+		if (_renderRequests.Count != 1)
+			return;
 
-		Instructions = instructions;
-
-		var args = new RenderingArgs(
-			instructions,
-			Lookup,
-			Palette,
-			ShouldRenderInteriors,
-			MinimumIterations,
-			MaximumIterations
-		);
-
-		RenderState state;
-		lock (_stateLock)
+		while (_renderRequests.Count > 0)
 		{
-			state = _state;
-		}
+			var inst = _renderRequests.Dequeue();
 
-		switch (state)
-		{
-			case RenderState.Idle:
-				lock (_stateLock)
-				{
-					_state = RenderState.Rendering;
-				}
-				_currentFrameArgs = args;
-				StartRendering(args);
-				IsBusy = true;
-				break;
+			_log.LogInformation("Render instructions: {Instructions}", instructions.Operation);
 
-			case RenderState.Rendering:
-				if (args != _currentFrameArgs)
+			Instructions = inst;
+
+			var args = new RenderingArgs(
+				inst,
+				Lookup,
+				Palette,
+				ShouldRenderInteriors,
+				MinimumIterations,
+				MaximumIterations
+			);
+
+			if (args == _currentFrameArgs)
+			{
+				_log.LogInformation("No change; skipping early");
+				continue;
+			}
+
+			lock (_stateLock)
+			{
+				switch (_state)
 				{
-					_nextFrameArgs = args;
+					case RenderState.Idle:
+						_state = RenderState.Rendering;
+						_log.LogInformation("Enter Rendering state in RequestRender");
+						_currentFrameArgs = args;
+						StartRendering(args);
+						IsBusy = true;
+
+						break;
+
+					case RenderState.Rendering:
+						if (args != _currentFrameArgs)
+						{
+							_log.LogInformation("Setting nextFrameArgs");
+							_nextFrameArgs = args;
+						}
+						break;
 				}
-				break;
+			}
 		}
 	}
 
 	private async Task DoneRenderingAsync()
 	{
 		InvalidateVisual();
-		_currentFrameArgs = null;
-
-		if (_nextFrameArgs != null)
+		bool turnOffBusy = false;
+		lock (_stateLock)
 		{
-			_currentFrameArgs = _nextFrameArgs;
-			StartRendering(_nextFrameArgs);
-			_nextFrameArgs = null;
-			lock (_stateLock)
+			_currentFrameArgs = null;
+
+			if (_nextFrameArgs != null)
 			{
-				_state = RenderState.Rendering;
+				_log.LogInformation("Next frame args are set, continuing rendering");
+				_currentFrameArgs = _nextFrameArgs;
+				StartRendering(_nextFrameArgs);
+				_nextFrameArgs = null;
 			}
-		}
-		else
-		{
-			lock (_stateLock)
+			else
 			{
-				_state = RenderState.Rendering;
+				_state = RenderState.Idle;
+				turnOffBusy = true;
 			}
 
-			await Dispatcher.UIThread.InvokeAsync(() => IsBusy = false);
 			_log.LogInformation("Back to Idle rendering state");
+		}
+
+		if (turnOffBusy)
+		{
+			await Dispatcher.UIThread.InvokeAsync(() => IsBusy = false);
 		}
 	}
 
 	private void StartRendering(RenderingArgs args)
 	{
-		_renderingTask = Task.Run(() => RenderToBufferAsync(args, _cancelSource.Token));
+		_renderingTask = Task.Factory.StartNew(
+			() => RenderToBufferAsync(args, _cancelSource.Token),
+			TaskCreationOptions.LongRunning
+		);
 	}
 
 	private async Task CancelRenderingAsync()

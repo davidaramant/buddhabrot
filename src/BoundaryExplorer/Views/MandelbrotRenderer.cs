@@ -423,15 +423,17 @@ public sealed class MandelbrotRenderer : Control
 				continue;
 			}
 
+			_log.LogInformation(nameof(HandleRenderRequest) + ": Grabbing state lock");
 			lock (_stateLock)
 			{
+				_log.LogInformation(nameof(HandleRenderRequest) + ": Grabbed state lock");
 				switch (_state)
 				{
 					case RenderState.Idle:
 						_state = RenderState.Rendering;
 						_log.LogInformation("Enter Rendering state in RequestRender");
 						_currentFrameArgs = args;
-						StartRendering(args);
+						StartBackgroundRendering(args);
 						IsBusy = true;
 
 						break;
@@ -445,22 +447,28 @@ public sealed class MandelbrotRenderer : Control
 						break;
 				}
 			}
+			_log.LogInformation(nameof(HandleRenderRequest) + ": Exited state lock");
 		}
 	}
 
 	private async Task DoneRenderingAsync()
 	{
-		InvalidateVisual();
+		_log.LogInformation(nameof(DoneRenderingAsync));
+
+		await Dispatcher.UIThread.InvokeAsync(InvalidateVisual);
 		bool turnOffBusy = false;
+		bool renderNextFrame = false;
+		_log.LogInformation(nameof(DoneRenderingAsync) + ": Grabbing state lock");
 		lock (_stateLock)
 		{
+			_log.LogInformation(nameof(DoneRenderingAsync) + ": Grabbed state lock");
 			_currentFrameArgs = null;
 
 			if (_nextFrameArgs != null)
 			{
 				_log.LogInformation("Next frame args are set, continuing rendering");
 				_currentFrameArgs = _nextFrameArgs;
-				StartRendering(_nextFrameArgs);
+				renderNextFrame = true;
 				_nextFrameArgs = null;
 			}
 			else
@@ -471,6 +479,12 @@ public sealed class MandelbrotRenderer : Control
 
 			_log.LogInformation("Back to Idle rendering state");
 		}
+		_log.LogInformation(nameof(DoneRenderingAsync) + ": Exited state lock");
+
+		if (renderNextFrame)
+		{
+			await RenderToBufferAsync(_currentFrameArgs!, _cancelSource.Token);
+		}
 
 		if (turnOffBusy)
 		{
@@ -478,7 +492,7 @@ public sealed class MandelbrotRenderer : Control
 		}
 	}
 
-	private void StartRendering(RenderingArgs args)
+	private void StartBackgroundRendering(RenderingArgs args)
 	{
 		_renderingTask = Task.Factory.StartNew(
 			() => RenderToBufferAsync(args, _cancelSource.Token),

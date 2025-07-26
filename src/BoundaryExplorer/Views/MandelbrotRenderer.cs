@@ -182,7 +182,7 @@ public sealed class MandelbrotRenderer : Control
 
 		this.WhenAnyValue(x => x.ShouldRenderInteriors)
 			.Skip(1) // Skip initial value
-			.Subscribe(_ => HandleRenderRequest(RenderInstructions.Everything(PixelBounds)));
+			.Subscribe(_ => HandleRenderRequest(Instructions.Everything(PixelBounds)));
 
 		EffectiveViewportChanged += (_, _) => HandleRenderRequest(Instructions.Resize(PixelBounds));
 		PointerMoved += (_, e) =>
@@ -264,7 +264,7 @@ public sealed class MandelbrotRenderer : Control
 		this.WhenAnyValue(x => x.Palette)
 			.Select(_ =>
 			{
-				HandleRenderRequest(RenderInstructions.Everything(PixelBounds));
+				HandleRenderRequest(RenderInstructions.Reset(PixelBounds));
 				return Unit.Default;
 			})
 			.Subscribe();
@@ -366,7 +366,7 @@ public sealed class MandelbrotRenderer : Control
 		return DoneRenderingAsync();
 	}
 
-	private void ResetLogicalArea() => HandleRenderRequest(RenderInstructions.Everything(PixelBounds));
+	private void ResetLogicalArea() => HandleRenderRequest(RenderInstructions.Reset(PixelBounds));
 
 	protected override Size MeasureOverride(Size availableSize) => availableSize;
 

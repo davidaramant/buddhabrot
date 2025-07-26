@@ -9,7 +9,7 @@ public class RenderInstructionsTests
 	[Fact]
 	public void ShouldIncludeEntireAreaIfInvalidatingEverything()
 	{
-		var inst = RenderInstructions.Everything(new SKSizeI(100, 100));
+		var inst = RenderInstructions.Reset(new SKSizeI(100, 100));
 
 		inst.PasteFrontBuffer.ShouldBeFalse();
 
@@ -67,7 +67,7 @@ public class RenderInstructionsTests
 	[MemberData(nameof(ResizeTestCases))]
 	public void ShouldComputeInstructionsForResizing(ResizeTestCase testCase)
 	{
-		var inst = RenderInstructions.Everything(testCase.OldSize).Resize(testCase.NewSize);
+		var inst = RenderInstructions.Reset(testCase.OldSize).Resize(testCase.NewSize);
 
 		inst.PasteFrontBuffer.ShouldBeTrue();
 
@@ -182,7 +182,7 @@ public class RenderInstructionsTests
 	[MemberData(nameof(MoveTestCases))]
 	public void ShouldComputeInstructionsForMoving(MoveTestCase testCase)
 	{
-		var inst = RenderInstructions.Everything(testCase.Size).Move(testCase.Offset);
+		var inst = RenderInstructions.Reset(testCase.Size).Move(testCase.Offset);
 
 		inst.PasteFrontBuffer.ShouldBeTrue();
 		inst.SourceRect.ShouldBe(testCase.SourceRect);

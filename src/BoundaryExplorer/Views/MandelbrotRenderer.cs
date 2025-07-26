@@ -8,7 +8,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
 using Avalonia.Threading;
@@ -41,7 +40,7 @@ public sealed class MandelbrotRenderer : Control
 	}
 
 	private RenderState _state = RenderState.Idle;
-	private Lock _stateLock = new();
+	private readonly Lock _stateLock = new();
 	private RenderingArgs? _currentFrameArgs;
 	private RenderingArgs? _nextFrameArgs;
 	private CancellationTokenSource _cancelSource = new();
@@ -315,15 +314,9 @@ public sealed class MandelbrotRenderer : Control
 		base.OnPointerMoved(e);
 	}
 
-	public override void Render(DrawingContext context)
-	{
-		// TODO - does this need a RenderTargetBitmap?
-		// context.DrawImage(
-		// 	_frontBuffer,
-		// 	new Rect(_panningOffset.X, _panningOffset.Y, _frontBuffer.PixelSize.Width, _frontBuffer.PixelSize.Height)
-		// );
+	public override void Render(DrawingContext context) =>
 		context.Custom(
-			new CustomDrawOp(
+			new DrawSkBitmapOperation(
 				_frontBuffer,
 				SKRect.Create(
 					x: _panningOffset.X,
@@ -333,25 +326,14 @@ public sealed class MandelbrotRenderer : Control
 				)
 			)
 		);
-	}
 
-	sealed class CustomDrawOp : ICustomDrawOperation
+	sealed class DrawSkBitmapOperation(SKBitmap bitmap, SKRect bounds) : ICustomDrawOperation
 	{
-		private readonly SKBitmap _bitmap;
-		private readonly SKRect _bounds;
-
-		public Rect Bounds { get; }
-
-		public CustomDrawOp(SKBitmap bitmap, SKRect bounds)
-		{
-			_bitmap = bitmap;
-			_bounds = bounds;
-			Bounds = new Rect(x: bounds.Left, y: bounds.Top, width: bounds.Width, height: bounds.Height);
-		}
+		public Rect Bounds { get; } = new(x: bounds.Left, y: bounds.Top, width: bounds.Width, height: bounds.Height);
 
 		public void Dispose() { }
 
-		public bool HitTest(Avalonia.Point p) => true;
+		public bool HitTest(Point p) => true;
 
 		public bool Equals(ICustomDrawOperation? other) => false;
 
@@ -361,7 +343,7 @@ public sealed class MandelbrotRenderer : Control
 			{
 				using var lease = leaseFeature.Lease();
 				var canvas = lease.SkCanvas;
-				canvas.DrawBitmap(_bitmap, _bounds);
+				canvas.DrawBitmap(bitmap, bounds);
 			}
 		}
 	}
@@ -404,8 +386,6 @@ public sealed class MandelbrotRenderer : Control
 		{
 			var inst = _renderRequests.Dequeue();
 
-			_log.LogInformation("Render instructions: {Instructions}", instructions.Operation);
-
 			Instructions = inst;
 
 			var args = new RenderingArgs(
@@ -417,21 +397,18 @@ public sealed class MandelbrotRenderer : Control
 				MaximumIterations
 			);
 
+			// Skip stuff that's the same
 			if (args == _currentFrameArgs)
 			{
-				_log.LogInformation("No change; skipping early");
 				continue;
 			}
 
-			_log.LogInformation(nameof(HandleRenderRequest) + ": Grabbing state lock");
 			lock (_stateLock)
 			{
-				_log.LogInformation(nameof(HandleRenderRequest) + ": Grabbed state lock");
 				switch (_state)
 				{
 					case RenderState.Idle:
 						_state = RenderState.Rendering;
-						_log.LogInformation("Enter Rendering state in RequestRender");
 						_currentFrameArgs = args;
 						StartBackgroundRendering(args);
 						IsBusy = true;
@@ -441,32 +418,25 @@ public sealed class MandelbrotRenderer : Control
 					case RenderState.Rendering:
 						if (args != _currentFrameArgs)
 						{
-							_log.LogInformation("Setting nextFrameArgs");
 							_nextFrameArgs = args;
 						}
 						break;
 				}
 			}
-			_log.LogInformation(nameof(HandleRenderRequest) + ": Exited state lock");
 		}
 	}
 
 	private async Task DoneRenderingAsync()
 	{
-		_log.LogInformation(nameof(DoneRenderingAsync));
-
 		await Dispatcher.UIThread.InvokeAsync(InvalidateVisual);
 		bool turnOffBusy = false;
 		bool renderNextFrame = false;
-		_log.LogInformation(nameof(DoneRenderingAsync) + ": Grabbing state lock");
 		lock (_stateLock)
 		{
-			_log.LogInformation(nameof(DoneRenderingAsync) + ": Grabbed state lock");
 			_currentFrameArgs = null;
 
 			if (_nextFrameArgs != null)
 			{
-				_log.LogInformation("Next frame args are set, continuing rendering");
 				_currentFrameArgs = _nextFrameArgs;
 				renderNextFrame = true;
 				_nextFrameArgs = null;
@@ -476,10 +446,7 @@ public sealed class MandelbrotRenderer : Control
 				_state = RenderState.Idle;
 				turnOffBusy = true;
 			}
-
-			_log.LogInformation("Back to Idle rendering state");
 		}
-		_log.LogInformation(nameof(DoneRenderingAsync) + ": Exited state lock");
 
 		if (renderNextFrame)
 		{
@@ -500,6 +467,7 @@ public sealed class MandelbrotRenderer : Control
 		);
 	}
 
+	// TODO: At some point it might make sense to be able to cancel long running renders (especially with interiors)
 	private async Task CancelRenderingAsync()
 	{
 		await _cancelSource.CancelAsync();

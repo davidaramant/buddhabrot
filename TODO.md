@@ -133,7 +133,7 @@
 
 ### Avalonia 11 Upgrade
 
-- [ ] `NumericUpDown` has changed from `double` to `decimal`
-- [ ] What is going on with UI control properties?
-- [ ] `VisualizeTab`: `ItemsRepeater` is gone?
-- [ ] `MandelbrotRenderer` - What's the fastest way to draw now?
+- [x] `NumericUpDown` has changed from `double` to `decimal`
+- [x] What is going on with UI control properties?
+- [x] `VisualizeTab`: `ItemsRepeater` is gone?
+- [x] Fix `MandelbrotRenderer`

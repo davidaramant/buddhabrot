@@ -105,6 +105,7 @@ public static class BoundaryRegionRenderer
 		var numPoints = positionsToRender.Count;
 		var points = ArrayPool<Complex>.Shared.Rent(numPoints);
 		var escapeTimes = ArrayPool<EscapeTime>.Shared.Rent(numPoints);
+		var distances = ArrayPool<double>.Shared.Rent(numPoints);
 
 		try
 		{
@@ -113,15 +114,17 @@ public static class BoundaryRegionRenderer
 				points[i] = viewPort.GetComplex(positionsToRender[i]);
 			}
 
-			VectorKernel.FindEscapeTimes(points, escapeTimes, numPoints, maxIterations, cancelToken);
+			VectorKernel.FindDistances(points, escapeTimes, distances, numPoints, maxIterations, cancelToken);
 
 			for (int i = 0; i < numPoints; i++)
 			{
 				var time = escapeTimes[i];
-				var classification = time switch
+				var distance = distances[i];
+				var classification = (time, distance) switch
 				{
-					{ IsInfinite: true } => PointClassification.InSet,
-					var t when t.Iterations > minIterations => PointClassification.InRange,
+					({ IsInfinite: true }, _) => PointClassification.InSet,
+					var (_, d) when d < viewPort.HalfPixelWidth => PointClassification.InSet,
+					var (t, _) when t.Iterations > minIterations => PointClassification.InRange,
 					_ => PointClassification.OutsideSet,
 				};
 				var type = types.GetNextType();
@@ -135,6 +138,7 @@ public static class BoundaryRegionRenderer
 		{
 			ArrayPool<Complex>.Shared.Return(points);
 			ArrayPool<EscapeTime>.Shared.Return(escapeTimes);
+			ArrayPool<double>.Shared.Return(distances);
 		}
 
 		return;

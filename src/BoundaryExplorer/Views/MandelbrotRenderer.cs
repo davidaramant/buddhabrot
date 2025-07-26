@@ -351,18 +351,18 @@ public sealed class MandelbrotRenderer : Control
 
 		public void Dispose() { }
 
-		public bool HitTest(Avalonia.Point p) => false;
+		public bool HitTest(Avalonia.Point p) => true;
 
 		public bool Equals(ICustomDrawOperation? other) => false;
 
 		public void Render(ImmediateDrawingContext context)
 		{
-			// if (context.TryGetFeature(typeof(ISkiaSharpApiLeaseFeature)) is ISkiaSharpApiLeaseFeature leaseFeature)
-			// {
-			// 	using var lease = leaseFeature.Lease();
-			// 	using var canvas = lease.SkCanvas;
-			// 	canvas.DrawBitmap(_bitmap, _bounds);
-			// }
+			if (context.TryGetFeature(typeof(ISkiaSharpApiLeaseFeature)) is ISkiaSharpApiLeaseFeature leaseFeature)
+			{
+				using var lease = leaseFeature.Lease();
+				var canvas = lease.SkCanvas;
+				canvas.DrawBitmap(_bitmap, _bounds);
+			}
 		}
 	}
 

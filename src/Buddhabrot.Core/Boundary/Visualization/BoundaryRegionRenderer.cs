@@ -116,6 +116,8 @@ public static class BoundaryRegionRenderer
 
 			VectorKernel.FindDistances(points, escapeTimes, distances, numPoints, maxIterations, cancelToken);
 
+			double threshold = viewPort.HalfPixelWidth / 2;
+
 			for (int i = 0; i < numPoints; i++)
 			{
 				var time = escapeTimes[i];
@@ -123,7 +125,7 @@ public static class BoundaryRegionRenderer
 				var classification = (time, distance) switch
 				{
 					({ IsInfinite: true }, _) => PointClassification.InSet,
-					var (_, d) when d < viewPort.HalfPixelWidth => PointClassification.InSet,
+					var (_, d) when d < threshold => PointClassification.InSet,
 					var (t, _) when t.Iterations > minIterations => PointClassification.InRange,
 					_ => PointClassification.OutsideSet,
 				};
@@ -149,7 +151,9 @@ public static class BoundaryRegionRenderer
 		{
 			areasToDraw.Sort((t1, t2) => t1.Type.CompareTo(t2.Type));
 
-			var positionsToRender = new List<SKPointI>();
+			var totalNumPoints = areasToDraw.Sum(tuple => tuple.Area.GetArea());
+
+			var positionsToRender = new List<SKPointI>(totalNumPoints);
 			var types = new LookupRegionTypeList();
 
 			foreach (var (area, type) in areasToDraw)

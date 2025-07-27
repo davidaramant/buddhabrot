@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Utilities;
 using CommunityToolkit.HighPerformance.Helpers;
@@ -15,10 +16,16 @@ public sealed class CornerFirstOneInternalRegionClassifier : IRegionClassifier
 
 	private readonly BoundaryParameters _boundaryParams;
 
-	private const int FalseSharingPadding = 128;
-	private const int BoolFalseSharingPadding = FalseSharingPadding / sizeof(bool);
+	[StructLayout(LayoutKind.Explicit, Size = 64)]
+	public readonly struct PaddedBool(bool value)
+	{
+		[FieldOffset(0)]
+		public readonly bool Value = value;
 
-	private readonly bool[] _inSet = new bool[RegionBatchId.CornerArea * BoolFalseSharingPadding];
+		// Remaining 63 bytes are automatically padded
+	}
+
+	private readonly PaddedBool[] _inSet = new PaddedBool[RegionBatchId.CornerArea];
 
 	private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
 
@@ -111,14 +118,15 @@ public sealed class CornerFirstOneInternalRegionClassifier : IRegionClassifier
 				bottomLeftCorner: bottomLeftCorner,
 				inSet: _inSet,
 				maxIterations: _boundaryParams.MaxIterations
-			)
+			),
+			minimumActionsPerThread: 1
 		);
 
 		var batch = BoolVector16.Empty;
 
 		for (int i = 0; i < RegionBatchId.CornerArea; i++)
 		{
-			if (_inSet[i * BoolFalseSharingPadding])
+			if (_inSet[i].Value)
 			{
 				batch = batch.WithBit(i);
 			}
@@ -127,19 +135,25 @@ public sealed class CornerFirstOneInternalRegionClassifier : IRegionClassifier
 		return batch;
 	}
 
-	private readonly struct InSetAction(double regionWidth, CornerId bottomLeftCorner, bool[] inSet, int maxIterations)
-		: IAction
+	private readonly struct InSetAction(
+		double regionWidth,
+		CornerId bottomLeftCorner,
+		PaddedBool[] inSet,
+		int maxIterations
+	) : IAction
 	{
 		public void Invoke(int i)
 		{
-			inSet[i * BoolFalseSharingPadding] = ScalarKernel
-				.FindEscapeTime(
-					ToComplex(
-						bottomLeftCorner + new Offset(i % RegionBatchId.CornerWidth, i / RegionBatchId.CornerWidth)
-					),
-					maxIterations
-				)
-				.IsInfinite;
+			inSet[i] = new(
+				ScalarKernel
+					.FindEscapeTime(
+						ToComplex(
+							bottomLeftCorner + new Offset(i % RegionBatchId.CornerWidth, i / RegionBatchId.CornerWidth)
+						),
+						maxIterations
+					)
+					.IsInfinite
+			);
 		}
 
 		private Complex ToComplex(CornerId id) => ToComplex(id.X, id.Y);

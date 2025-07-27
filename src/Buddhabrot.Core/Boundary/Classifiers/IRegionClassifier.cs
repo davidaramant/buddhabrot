@@ -2,10 +2,11 @@ namespace Buddhabrot.Core.Boundary.Classifiers;
 
 public enum ClassifierType
 {
-	CornerFirst,
+	CornerFirstFourInternal,
+	CornerFirstOneInternal,
 	Internal4,
 	Internal16,
-	Default = CornerFirst,
+	Default = CornerFirstFourInternal,
 }
 
 public interface IRegionClassifier
@@ -16,7 +17,8 @@ public interface IRegionClassifier
 	public static IRegionClassifier Create(BoundaryParameters bp, ClassifierType type = ClassifierType.Default) =>
 		type switch
 		{
-			ClassifierType.CornerFirst => new CornerFirstRegionClassifier(bp),
+			ClassifierType.CornerFirstFourInternal => new CornerFirstFourInternalRegionClassifier(bp),
+			ClassifierType.CornerFirstOneInternal => new CornerFirstOneInternalRegionClassifier(bp),
 			ClassifierType.Internal4 => new Interior4RegionClassifier(bp),
 			ClassifierType.Internal16 => new Interior16RegionClassifier(bp),
 			_ => throw new ArgumentException("Unknown classifier type: " + type),

@@ -29,7 +29,7 @@ public sealed class MandelbrotRenderer : Control
 	private PositionOffset _panningOffset;
 	private bool _inspectMode;
 
-	private IRegionClassifier _regionClassifier = new CornerFirstRegionClassifier(
+	private IRegionClassifier _regionClassifier = new CornerFirstFourInternalRegionClassifier(
 		new BoundaryParameters(new AreaDivisions(1), 1)
 	);
 
@@ -161,7 +161,7 @@ public sealed class MandelbrotRenderer : Control
 	public static readonly StyledProperty<ClassifierType> SelectedClassifierProperty = AvaloniaProperty.Register<
 		MandelbrotRenderer,
 		ClassifierType
-	>(nameof(SelectedClassifier), defaultValue: ClassifierType.CornerFirst);
+	>(nameof(SelectedClassifier), defaultValue: ClassifierType.CornerFirstFourInternal);
 
 	public ClassifierType SelectedClassifier
 	{

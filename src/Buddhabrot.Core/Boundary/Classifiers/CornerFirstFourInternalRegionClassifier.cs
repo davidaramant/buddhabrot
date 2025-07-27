@@ -5,7 +5,7 @@ using CommunityToolkit.HighPerformance.Helpers;
 
 namespace Buddhabrot.Core.Boundary.Classifiers;
 
-public sealed class CornerFirstRegionClassifier : IRegionClassifier
+public sealed class CornerFirstFourInternalRegionClassifier : IRegionClassifier
 {
 	private readonly FixedSizeCache<RegionBatchId, BoolVector16> _cachedCorners = new(
 		1024,
@@ -25,7 +25,8 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 
 	private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
 
-	public CornerFirstRegionClassifier(BoundaryParameters boundaryParams) => _boundaryParams = boundaryParams;
+	public CornerFirstFourInternalRegionClassifier(BoundaryParameters boundaryParams) =>
+		_boundaryParams = boundaryParams;
 
 	private int IsCornerInSet(CornerId corner)
 	{

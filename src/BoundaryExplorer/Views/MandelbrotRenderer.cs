@@ -181,12 +181,6 @@ public sealed class MandelbrotRenderer : Control
 
 		ClipToBounds = true;
 
-		this.WhenAnyValue(x => x.Lookup).Where(lookup => lookup.NodeCount > 1).Subscribe(_ => ResetLogicalArea());
-
-		this.WhenAnyValue(x => x.RegionRenderStyle)
-			.Skip(1) // Skip initial value
-			.Subscribe(_ => HandleRenderRequest(Instructions.Everything(PixelBounds)));
-
 		EffectiveViewportChanged += (_, _) => HandleRenderRequest(Instructions.Resize(PixelBounds));
 		PointerMoved += (_, e) =>
 		{
@@ -264,13 +258,16 @@ public sealed class MandelbrotRenderer : Control
 		{
 			_inspectMode = !_inspectMode;
 		});
+
+		this.WhenAnyValue(x => x.Lookup).Where(lookup => lookup.NodeCount > 1).Subscribe(_ => ResetLogicalArea());
+
+		this.WhenAnyValue(x => x.RegionRenderStyle)
+			.Skip(1) // Skip initial value
+			.Subscribe(_ => HandleRenderRequest(Instructions.Everything(PixelBounds)));
+
 		this.WhenAnyValue(x => x.Palette)
-			.Select(_ =>
-			{
-				HandleRenderRequest(RenderInstructions.Reset(PixelBounds));
-				return Unit.Default;
-			})
-			.Subscribe();
+			.Skip(1) // Skip initial value
+			.Subscribe(_ => HandleRenderRequest(Instructions.Everything(PixelBounds)));
 		// HACK: MaxIterations is set after Lookup
 		this.WhenAnyValue(x => x.MaximumIterations)
 			.Select(_ =>

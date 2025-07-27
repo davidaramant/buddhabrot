@@ -12,7 +12,7 @@ public static class BulbChecker
 	/// <summary>
 	/// Does a fast check to see if a complex number lies within one of the larger bulbs of the Mandelbrot set.
 	/// </summary>
-	public static bool IsInsideBulbs(Complex number) => IsInMainCardioid(number) || IsInPositiveCircularBulbs(number);
+	public static bool IsInsideBulbs(Complex number) => IsInMainCardioid(number) || IsInCircle(number);
 
 	static bool IsInMainCardioid(Complex number)
 	{
@@ -23,16 +23,10 @@ public static class BulbChecker
 		return (q * (q + realMinusFourth)) < (0.25 * imagSquared);
 	}
 
-	static bool IsInPositiveCircularBulbs(Complex number) =>
-		IsInsideCircle(new Complex(-1, 0), 0.25, number)
-		|| IsInsideCircle(new Complex(-0.125, 0.744), 0.092, number)
-		|| IsInsideCircle(new Complex(-0.125, -0.744), 0.092, number)
-		|| IsInsideCircle(new Complex(-1.308, 0), 0.058, number);
-
-	static bool IsInsideCircle(Complex center, double radius, Complex number)
+	static bool IsInCircle(Complex number)
 	{
-		var translated = number - center;
+		var translated = number - new Complex(-1, 0);
 
-		return translated.MagnitudeSquared() <= (radius * radius);
+		return translated.MagnitudeSquared() <= (0.25 * 0.25);
 	}
 }

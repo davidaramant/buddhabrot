@@ -14,8 +14,14 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 	);
 
 	private readonly BoundaryParameters _boundaryParams;
-	private const int BoolFalseSharingPadding = 128 / sizeof(bool);
+
+	private const int FalseSharingPadding = 128;
+	private const int BoolFalseSharingPadding = FalseSharingPadding / sizeof(bool);
+	private const int IntFalseSharingPadding = FalseSharingPadding / sizeof(int);
+
 	private readonly bool[] _inSet = new bool[RegionBatchId.CornerArea * BoolFalseSharingPadding];
+	private readonly int[] _interiorsInSet = new int[4 * IntFalseSharingPadding];
+	private readonly int[] _interiorsClose = new int[4 * IntFalseSharingPadding];
 
 	private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
 
@@ -69,29 +75,32 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 
 	private VisitedRegionType CheckRegionForFilaments(RegionId region)
 	{
+		for (int i = 0; i < 4 * IntFalseSharingPadding; i += IntFalseSharingPadding)
+		{
+			_interiorsInSet[i] = 0;
+			_interiorsClose[i] = 0;
+		}
+
+		ParallelHelper.For(
+			0,
+			4,
+			new FilamentCheckAction(
+				region,
+				RegionWidth,
+				_interiorsInSet,
+				_interiorsClose,
+				_boundaryParams.MaxIterations
+			)
+		);
+
 		int numInSet = 0;
 		int numFilament = 0;
 
-		Parallel.For(
-			0,
-			4,
-			i =>
-			{
-				var (iterations, distance) = ScalarKernel.FindExteriorDistance(
-					ToComplex(region.X + 0.25 + (i % 2) * 0.5, region.Y + 0.25 + ((i >> 1) % 2) * 0.5),
-					_boundaryParams.MaxIterations
-				);
-
-				if (iterations.IsInfinite)
-				{
-					Interlocked.Increment(ref numInSet);
-				}
-				else if (distance <= (RegionWidth / 4))
-				{
-					Interlocked.Increment(ref numFilament);
-				}
-			}
-		);
+		for (int i = 0; i < 4 * IntFalseSharingPadding; i += IntFalseSharingPadding)
+		{
+			numInSet += _interiorsInSet[i];
+			numFilament += _interiorsClose[i];
+		}
 
 		return (numInSet, numFilament) switch
 		{
@@ -99,6 +108,34 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 			(4, _) => VisitedRegionType.Border,
 			(_, _) => VisitedRegionType.Filament,
 		};
+	}
+
+	private readonly struct FilamentCheckAction(
+		RegionId region,
+		double regionWidth,
+		int[] inSet,
+		int[] close,
+		int maxIterations
+	) : IAction
+	{
+		public void Invoke(int i)
+		{
+			var (iterations, distance) = ScalarKernel.FindExteriorDistance(
+				ToComplex(region.X + 0.25 + (i % 2) * 0.5, region.Y + 0.25 + ((i >> 1) % 2) * 0.5),
+				maxIterations
+			);
+
+			if (iterations.IsInfinite)
+			{
+				inSet[i * IntFalseSharingPadding] = 1;
+			}
+			else if (distance <= (regionWidth / 4))
+			{
+				close[i * IntFalseSharingPadding] = 1;
+			}
+		}
+
+		private Complex ToComplex(double x, double y) => new(real: x * regionWidth - 2, imaginary: y * regionWidth);
 	}
 
 	private (VisitedRegionType, string) DescribeCheckRegionForFilaments(RegionId region)

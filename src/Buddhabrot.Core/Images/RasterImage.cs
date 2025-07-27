@@ -69,7 +69,6 @@ public sealed class RasterImage : IDisposable
 			);
 			using var paint = new SKPaint();
 			paint.IsAntialias = false;
-			paint.FilterQuality = SKFilterQuality.None;
 
 			using var img = SKImage.FromBitmap(_bitmap);
 

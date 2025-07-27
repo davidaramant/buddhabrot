@@ -1,7 +1,7 @@
-using System.Buffers;
 using System.Numerics;
 using Buddhabrot.Core.Calculations;
 using Buddhabrot.Core.Utilities;
+using CommunityToolkit.HighPerformance.Helpers;
 
 namespace Buddhabrot.Core.Boundary.Classifiers;
 
@@ -14,6 +14,8 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 	);
 
 	private readonly BoundaryParameters _boundaryParams;
+	private const int BoolFalseSharingPadding = 128 / sizeof(bool);
+	private readonly bool[] _inSet = new bool[RegionBatchId.CornerArea * BoolFalseSharingPadding];
 
 	private double RegionWidth => _boundaryParams.Divisions.RegionSideLength;
 
@@ -135,42 +137,51 @@ public sealed class CornerFirstRegionClassifier : IRegionClassifier
 
 	private BoolVector16 ComputeCornerBatch(RegionBatchId id)
 	{
-		var inSet = ArrayPool<bool>.Shared.Rent(RegionBatchId.CornerArea);
-
 		var bottomLeftCorner = id.GetBottomLeftCorner();
 
-		Parallel.For(
+		ParallelHelper.For(
 			0,
 			RegionBatchId.CornerArea,
-			i =>
-			{
-				inSet[i] = ScalarKernel
-					.FindEscapeTime(
-						ToComplex(
-							bottomLeftCorner + new Offset(i % RegionBatchId.CornerWidth, i / RegionBatchId.CornerWidth)
-						),
-						_boundaryParams.MaxIterations
-					)
-					.IsInfinite;
-			}
+			new InSetAction(
+				regionWidth: RegionWidth,
+				bottomLeftCorner: bottomLeftCorner,
+				inSet: _inSet,
+				maxIterations: _boundaryParams.MaxIterations
+			)
 		);
 
 		var batch = BoolVector16.Empty;
 
 		for (int i = 0; i < RegionBatchId.CornerArea; i++)
 		{
-			if (inSet[i])
+			if (_inSet[i * BoolFalseSharingPadding])
 			{
 				batch = batch.WithBit(i);
 			}
 		}
 
-		ArrayPool<bool>.Shared.Return(inSet);
-
 		return batch;
 	}
 
-	private Complex ToComplex(CornerId id) => ToComplex(id.X, id.Y);
+	private readonly struct InSetAction(double regionWidth, CornerId bottomLeftCorner, bool[] inSet, int maxIterations)
+		: IAction
+	{
+		public void Invoke(int i)
+		{
+			inSet[i * BoolFalseSharingPadding] = ScalarKernel
+				.FindEscapeTime(
+					ToComplex(
+						bottomLeftCorner + new Offset(i % RegionBatchId.CornerWidth, i / RegionBatchId.CornerWidth)
+					),
+					maxIterations
+				)
+				.IsInfinite;
+		}
+
+		private Complex ToComplex(CornerId id) => ToComplex(id.X, id.Y);
+
+		private Complex ToComplex(double x, double y) => new(real: x * regionWidth - 2, imaginary: y * regionWidth);
+	}
 
 	private Complex ToComplex(double x, double y) => new(real: x * RegionWidth - 2, imaginary: y * RegionWidth);
 }

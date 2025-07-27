@@ -1,4 +1,5 @@
 using Buddhabrot.Core.Boundary.Quadtrees;
+using CommunityToolkit.HighPerformance;
 
 namespace Buddhabrot.Core.Boundary;
 
@@ -93,33 +94,33 @@ public sealed class VisitedRegions : IVisitedRegions
 		if (!_dimensions.Contains(id))
 			return false;
 
+		var nodesSpan = _nodes.AsSpan();
 		var node = _root;
 		var halfWidth = _dimensions.QuadrantLength;
 		var x = id.X;
 		var y = id.Y;
 
-		descendTree:
+		while (true)
+		{
+			var h = x / halfWidth;
+			var v = y / halfWidth;
 
-		var h = x / halfWidth;
-		var v = y / halfWidth;
+			var quadrant = (Quadrant)(h + (v << 1));
+			x -= h * halfWidth;
+			y -= v * halfWidth;
+			halfWidth /= 2;
 
-		var quadrant = (Quadrant)(h + (v << 1));
-		x -= h * halfWidth;
-		y -= v * halfWidth;
-		halfWidth /= 2;
+			// We only insert Unknown leaves
+			if (node.IsLeaf)
+				return false;
 
-		// We only insert Unknown leaves
-		if (node.IsLeaf)
-			return false;
+			if (node.IsLeafQuad)
+				return node.GetQuadrant(quadrant) != VisitedRegionType.Unknown;
 
-		if (node.IsLeafQuad)
-			return node.GetQuadrant(quadrant) != VisitedRegionType.Unknown;
-
-		// Branch
-		var index = node.GetChildIndex(quadrant);
-		node = _nodes[index];
-
-		goto descendTree;
+			// Branch - continue descending
+			var index = node.GetChildIndex(quadrant);
+			node = nodesSpan[index];
+		}
 	}
 
 	public IReadOnlyList<RegionId> GetBorderRegions()

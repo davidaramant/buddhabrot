@@ -17,7 +17,7 @@ public sealed class CornerFirstOneInternalRegionClassifier : IRegionClassifier
 	private readonly BoundaryParameters _boundaryParams;
 
 	[StructLayout(LayoutKind.Explicit, Size = 64)]
-	public readonly struct PaddedBool(bool value)
+	private readonly struct PaddedBool(bool value)
 	{
 		[FieldOffset(0)]
 		public readonly bool Value = value;

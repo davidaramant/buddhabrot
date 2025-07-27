@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Buddhabrot.Core.Boundary.Quadtrees;
 
 public enum VisitNodeType
@@ -17,8 +19,10 @@ public readonly record struct VisitNode(uint Encoded)
 {
 	public static readonly VisitNode Unknown = MakeLeaf(VisitedRegionType.Unknown);
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static VisitNode MakeLeaf(VisitedRegionType type) => new((uint)type << 2);
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static VisitNode MakeLeaf(
 		VisitedRegionType sw,
 		VisitedRegionType se,
@@ -26,6 +30,7 @@ public readonly record struct VisitNode(uint Encoded)
 		VisitedRegionType ne
 	) => new((uint)sw << 8 | (uint)se << 6 | (uint)nw << 4 | (uint)ne << 2 | 0b10);
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static VisitNode MakeBranch(int childIndex) => new((uint)childIndex << 1 | 1);
 
 	public bool IsBranch => (Encoded & 1) == 1;
@@ -47,6 +52,7 @@ public readonly record struct VisitNode(uint Encoded)
 
 	public int ChildIndex => (int)(Encoded >> 1);
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public int GetChildIndex(Quadrant quadrant) => ChildIndex + (int)quadrant;
 
 	public VisitedRegionType SW => (VisitedRegionType)(Encoded >> 8 & 0b11);
@@ -54,26 +60,33 @@ public readonly record struct VisitNode(uint Encoded)
 	public VisitedRegionType NW => (VisitedRegionType)(Encoded >> 4 & 0b11);
 	public VisitedRegionType NE => (VisitedRegionType)(Encoded >> 2 & 0b11);
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public VisitedRegionType GetQuadrant(Quadrant quadrant)
 	{
 		var offset = QuadrantOffset(quadrant);
 		return (VisitedRegionType)(Encoded >> offset & 0b11);
 	}
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public VisitNode WithSW(VisitedRegionType sw) => new(Encoded | ((uint)sw << 8) | 0b10);
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public VisitNode WithSE(VisitedRegionType se) => new(Encoded | ((uint)se << 6) | 0b10);
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public VisitNode WithNW(VisitedRegionType nw) => new(Encoded | ((uint)nw << 4) | 0b10);
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public VisitNode WithNE(VisitedRegionType ne) => new(Encoded | ((uint)ne << 2) | 0b10);
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public VisitNode WithQuadrant(Quadrant quadrant, VisitedRegionType type)
 	{
 		var offset = QuadrantOffset(quadrant);
 		return new(Encoded | ((uint)type << offset) | 0b10);
 	}
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private static int QuadrantOffset(Quadrant quadrant) => 8 - 2 * (int)quadrant;
 
 	public override string ToString() =>

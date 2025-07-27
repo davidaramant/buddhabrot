@@ -127,8 +127,6 @@ public static class BoundaryRegionRenderer
 
 			VectorKernel.FindEscapeTimes(points, escapeTimes, numPoints, maxIterations, cancelToken);
 
-			double threshold = viewPort.HalfPixelWidth / 2;
-
 			for (int i = 0; i < numPoints; i++)
 			{
 				var time = escapeTimes[i];
@@ -180,7 +178,7 @@ public static class BoundaryRegionRenderer
 
 			VectorKernel.FindDistances(points, escapeTimes, distances, numPoints, maxIterations, cancelToken);
 
-			double threshold = viewPort.HalfPixelWidth / 2;
+			double threshold = viewPort.PixelWidth / 2.0;
 
 			for (int i = 0; i < numPoints; i++)
 			{

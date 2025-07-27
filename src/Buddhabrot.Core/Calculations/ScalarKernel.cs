@@ -73,6 +73,10 @@ public static class ScalarKernel
 		if (BulbChecker.IsInsideBulbs(c))
 			return (EscapeTime.Infinite, 0);
 
+		// Supposedly using a larger R "helps out" - something with the gradient perhaps?
+		const double R = 10;
+		const double R2 = R * R;
+
 		var zReal = 0.0;
 		var zImag = 0.0;
 
@@ -109,12 +113,15 @@ public static class ScalarKernel
 			z2Real = zReal * zReal;
 			z2Imag = zImag * zImag;
 
-			if ((z2Real + z2Imag) > 4)
+			if ((z2Real + z2Imag) > R2)
 			{
 				var magZ = Hypot(zReal, zImag);
 				// ReSharper disable once InconsistentNaming
 				var magDZ = Hypot(dZReal, dZImag);
-				return (new EscapeTime(i), Math.Log(magZ * magZ) * magZ / magDZ);
+
+				// I've looked around and I believe this is the correct DE formula.
+				// There is apparently more than one method for DE, however
+				return (new EscapeTime(i), magZ * Math.Log(magZ) / magDZ);
 			}
 
 			if (stepsTaken == stepLimit)

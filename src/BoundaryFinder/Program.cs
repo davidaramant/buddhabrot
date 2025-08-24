@@ -7,7 +7,7 @@ using Spectre.Console;
 
 namespace BoundaryFinder;
 
-class Program
+static class Program
 {
 	/// <summary>
 	/// Computes boundary sets.
@@ -63,6 +63,15 @@ class Program
 		table.AddRow("Duration", metrics.Duration.Humanize(2));
 		table.AddRow("Border regions", metrics.NumBorderRegions.ToString("N0"));
 		table.AddRow($"{nameof(VisitedRegions)} nodes", metrics.NumVisitedRegionNodes.ToString("N0"));
+		table.AddRow($"{nameof(VisitedRegions)} Leaf nodes %", metrics.PercentVisitedRegionLeafNodes.ToString("P1"));
+		table.AddRow(
+			$"{nameof(VisitedRegions)} LeadQuad nodes %",
+			metrics.PercentVisitedRegionLeafQuadNodes.ToString("P1")
+		);
+		table.AddRow(
+			$"{nameof(VisitedRegions)} Branch nodes %",
+			metrics.PercentVisitedRegionBranchNodes.ToString("P1")
+		);
 		table.AddRow($"{nameof(RegionLookup)} nodes", metrics.NumRegionLookupNodes.ToString("N0"));
 		table.AddRow("Deduplicated size", metrics.DeduplicatedSize.ToString("P0"));
 
@@ -93,6 +102,9 @@ class Program
 							boundaryParameters.MaxIterations.ToString("N0"),
 							metrics.NumBorderRegions.ToString("N0"),
 							metrics.NumVisitedRegionNodes.ToString("N0"),
+							metrics.PercentVisitedRegionLeafNodes.ToString("P1"),
+							metrics.PercentVisitedRegionLeafQuadNodes.ToString("P1"),
+							metrics.PercentVisitedRegionBranchNodes.ToString("P1"),
 							metrics.NumRegionLookupNodes.ToString("N0"),
 							metrics.DeduplicatedSize.ToString("P0"),
 							note,

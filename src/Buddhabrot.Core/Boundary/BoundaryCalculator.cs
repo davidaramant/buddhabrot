@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Buddhabrot.Core.Boundary.Classifiers;
+using Buddhabrot.Core.Boundary.Quadtrees;
 
 namespace Buddhabrot.Core.Boundary;
 
@@ -101,10 +102,25 @@ public static class BoundaryCalculator
 
 		saveBorderData(boundaryParameters, boundaryRegions, lookup);
 
+		var (leafs, leafQuads, branches) = visitedRegions.Nodes.Aggregate(
+			(leafs: 0, leafQuads: 0, branches: 0),
+			(counts, node) =>
+				node.NodeType switch
+				{
+					VisitNodeType.Leaf => (counts.leafs + 1, counts.leafQuads, counts.branches),
+					VisitNodeType.LeafQuad => (counts.leafs, counts.leafQuads + 1, counts.branches),
+					VisitNodeType.Branch => (counts.leafs, counts.leafQuads, counts.branches + 1),
+					_ => throw new ArgumentOutOfRangeException(),
+				}
+		);
+
 		return new Metrics(
 			Duration: timer.Elapsed,
 			NumBorderRegions: boundaryRegions.Count,
 			NumVisitedRegionNodes: visitedRegions.NodeCount,
+			PercentVisitedRegionLeafNodes: ((double)leafs / visitedRegions.NodeCount),
+			PercentVisitedRegionLeafQuadNodes: ((double)leafQuads / visitedRegions.NodeCount),
+			PercentVisitedRegionBranchNodes: ((double)branches / visitedRegions.NodeCount),
 			NumRegionLookupNodes: lookup.NodeCount
 		);
 	}

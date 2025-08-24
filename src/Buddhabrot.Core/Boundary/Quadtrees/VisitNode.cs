@@ -23,7 +23,7 @@ public readonly record struct VisitNode(uint Encoded)
 	public static VisitNode MakeLeaf(VisitedRegionType type) => new((uint)type << 2);
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static VisitNode MakeLeaf(
+	public static VisitNode MakeLeafQuad(
 		VisitedRegionType sw,
 		VisitedRegionType se,
 		VisitedRegionType nw,

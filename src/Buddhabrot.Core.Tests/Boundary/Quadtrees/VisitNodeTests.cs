@@ -21,7 +21,7 @@ public class VisitNodeTests
 	[Fact]
 	public void ShouldConstructLeafQuadCorrectly()
 	{
-		var node = VisitNode.MakeLeaf(
+		var node = VisitNode.MakeLeafQuad(
 			VisitedRegionType.Filament,
 			VisitedRegionType.Border,
 			VisitedRegionType.Rejected,
@@ -98,7 +98,7 @@ public class VisitNodeTests
 		VisitNode
 			.Unknown.WithQuadrant(Quadrant.SW, VisitedRegionType.Border)
 			.ShouldBe(
-				VisitNode.MakeLeaf(
+				VisitNode.MakeLeafQuad(
 					VisitedRegionType.Border,
 					VisitedRegionType.Unknown,
 					VisitedRegionType.Unknown,
@@ -108,7 +108,7 @@ public class VisitNodeTests
 		VisitNode
 			.Unknown.WithQuadrant(Quadrant.SE, VisitedRegionType.Border)
 			.ShouldBe(
-				VisitNode.MakeLeaf(
+				VisitNode.MakeLeafQuad(
 					VisitedRegionType.Unknown,
 					VisitedRegionType.Border,
 					VisitedRegionType.Unknown,
@@ -118,7 +118,7 @@ public class VisitNodeTests
 		VisitNode
 			.Unknown.WithQuadrant(Quadrant.NW, VisitedRegionType.Border)
 			.ShouldBe(
-				VisitNode.MakeLeaf(
+				VisitNode.MakeLeafQuad(
 					VisitedRegionType.Unknown,
 					VisitedRegionType.Unknown,
 					VisitedRegionType.Border,
@@ -128,7 +128,7 @@ public class VisitNodeTests
 		VisitNode
 			.Unknown.WithQuadrant(Quadrant.NE, VisitedRegionType.Border)
 			.ShouldBe(
-				VisitNode.MakeLeaf(
+				VisitNode.MakeLeafQuad(
 					VisitedRegionType.Unknown,
 					VisitedRegionType.Unknown,
 					VisitedRegionType.Unknown,

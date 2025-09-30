@@ -6,7 +6,7 @@ public enum ClassifierType
 	CornerFirstOneInternal,
 	Internal4,
 	Internal16,
-	Default = CornerFirstFourInternal,
+	Default = CornerFirstOneInternal,
 }
 
 public interface IRegionClassifier

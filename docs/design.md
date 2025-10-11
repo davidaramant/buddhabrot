@@ -30,10 +30,26 @@ This document defines the requirements for a distributed system that finds and s
 	- A complex value represented by two `double` values `(real, imaginary)`.
 	- An `escape time` represented by a 32-bit signed integer.
 - The system shall accept uploads of points in batches.
+- The system shall transmit points in a binary format for uploads and downloads to prevent precision loss.
+- The system shall store points server-side in Azure Blob Storage.
+	- Points shall be partitioned into 10 escape-time buckets and stored in separate containers or prefixes per bucket.
+	- Buckets shall cover escape times from `100,000` to `10,000,000`, using logarithmic (approximately exponential) ranges to reflect that higher-escape-time points are increasingly rare.
+	- The 10 buckets shall use approximately log-uniform boundaries (values rounded):
+		- Bucket 0: [100,000, 158,489)
+		- Bucket 1: [158,489, 251,189)
+		- Bucket 2: [251,189, 398,107)
+		- Bucket 3: [398,107, 630,957)
+		- Bucket 4: [630,957, 1,000,000)
+		- Bucket 5: [1,000,000, 1,584,893)
+		- Bucket 6: [1,584,893, 2,511,886)
+		- Bucket 7: [2,511,886, 3,981,071)
+		- Bucket 8: [3,981,071, 6,309,573)
+		- Bucket 9: [6,309,573, 10,000,000]
 - The system shall support downloading points with the following capabilities:
 	- The system shall provide a way to download all points.
-	- The system shall provide a filter to return only points whose `escape time` is greater than a provided minimum.
+	- The system shall provide a way to download only the points in a single escape-time bucket.
 	- The system shall include both the complex value and the `escape time` in download results.
+- There shall be no requirement on the order in which points are stored or retrieved.
 - The system shall support storage at scales from thousands up to millions of points.
 
 ##### Batch Metadata
@@ -54,6 +70,7 @@ This document defines the requirements for a distributed system that finds and s
 	- Downloads the boundary file to local storage.
 	- Performs computationally intensive exploration work.
 	- Uploads interesting points and batch metadata to the cloud backend.
+- The worker shall be runnable either on a local developer machine or on a cloud machine managed by Azure Batch.
 - The system shall support running many worker instances in parallel on different machines without coordination.
 
 ##### Batch Processing
@@ -84,7 +101,7 @@ This document defines the requirements for a distributed system that finds and s
 - The system shall expose endpoints or equivalents for:
 	- Downloading the `boundary file`.
 	- Uploading a batch of points (bulk insert) and its associated batch metadata.
-	- Downloading points with optional `minEscapeTime` filtering.
+	- Downloading all points or only the points in a single escape-time bucket.
 	- Retrieving all batch metadata records.
 
 ### Data Model (Logical)

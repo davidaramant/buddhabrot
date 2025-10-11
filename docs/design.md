@@ -1,72 +1,120 @@
-# Given
+### Scope
 
-* I am designing a system to find points very close to the boundary of the Mandelbrot Set.
-* I have an existing dataset for the boundary regions close to the edge.
-  * This is a flat list of "regions" (2D square areas) on the complex plane. The edge of the Mandelbrot Set passes through each region.
-* I want to use the cloud offerings on Microsoft Azure
-  * The goal is to minimize cost of hosting the cloud backend.
-* I want the code written in C# using .NET
+This document defines the requirements for a distributed system that finds and stores points near the boundary of the Mandelbrot Set. All requirements are expressed in a consistent format using “shall” statements.
 
-# Design
+### Goals and Constraints
 
-## Cloud Backend
+- The system shall target Microsoft Azure services with an emphasis on minimizing cloud hosting cost.
+- The system shall be implemented in `C#` on `.NET`.
+- The system shall ingest and serve data related to Mandelbrot boundary exploration at scale (thousands to millions of points).
 
-### Boundary File
+### Definitions
 
-* There will be a file stored that contains the boundary regions. It is a single binary file that is 164MB uncompressed and 37MB zipped.
-* This file should be able to be downloaded from the cloud by workers or other clients.
-* The system does not need to support uploading a new boundary file. If this file needs to be updated, it will be done manually.
+- `Boundary file`: A single binary file describing square regions in the complex plane that the Mandelbrot set boundary passes through.
+- `Region`: A 2D square area on the complex plane contained in the boundary file.
+- `Point`: A complex coordinate near the boundary with an associated `escape time` produced by iteration.
+- `Escape time`: A 32-bit signed integer representing the number of iterations until escape.
+- `Batch`: A unit of work performed by a worker containing many candidate points evaluated and some interesting points uploaded, alongside batch metadata.
 
-### Boundary Points
+### Functional Requirements
 
-* I want to store points near the boundary of the Mandelbrot Set.
-	* Each point consists of:
-		* A complex point (two doubles)
-		* An escape time (32-bit integer)
-* Assume there will be thousands, perhaps up to millions, of points stored.
-* The system needs to support uploading batches of new points
-  * Each batch will include metadata (see the next section)
-* The system needs to support downloading points.
-  * There should be a way to download all the points.
-  * There should also be a way to provide a minimum escape time. Only points with an escape time greater than the minimum should be downloaded.
-  * In addition to the complex value, the escape time should also be downloaded.
+#### Cloud Backend
 
-### Batch Metadata
+##### Boundary File
+- The system shall store a single `boundary file` (approximately `164 MB` uncompressed, `37 MB` zipped).
+- The system shall make the boundary file downloadable by workers and other clients.
+- The system shall not support uploading new boundary files via the system; boundary file updates shall be performed manually out-of-band.
 
-* When a batch of points is uploaded, there will also be some metadata about the batch.
-* The metadata will include:
-	* A string describing the machine that the batch was run on
-      * This is only for human consumption; it will not need to be parsed in any way.
-	* How long the batch took to run
-	* The number of points that were checked
-    * The number of points that were found
-* There does not need to be a relationship stored between a batch of points and the metadata.
-* The metadata should still be retained along with a timestamp of when it was uploaded.
-* There should be an endpoint to retrieve all the uploaded batch metadata.
+##### Boundary Points Storage and Access
+- The system shall store points near the Mandelbrot boundary, where each stored point shall consist of:
+	- A complex value represented by two `double` values `(real, imaginary)`.
+	- An `escape time` represented by a 32-bit signed integer.
+- The system shall accept uploads of points in batches.
+- The system shall support downloading points with the following capabilities:
+	- The system shall provide a way to download all points.
+	- The system shall provide a filter to return only points whose `escape time` is greater than a provided minimum.
+	- The system shall include both the complex value and the `escape time` in download results.
+- The system shall support storage at scales from thousands up to millions of points.
 
-## Workers
+##### Batch Metadata
+- The system shall accept batch metadata uploads whenever a batch of points is uploaded.
+- The system shall store the following metadata for each batch:
+	- A free-form string describing the machine that ran the batch (for human consumption only; no parsing required).
+	- The total wall-clock duration of the batch run.
+	- The number of points checked.
+	- The number of points found (i.e., interesting points uploaded).
+	- A server-side timestamp indicating when the metadata was uploaded.
+- The system shall not store an explicit relationship between any specific uploaded points and their associated batch metadata.
+- The system shall provide an endpoint to retrieve all uploaded batch metadata records.
 
-### General Requirements
+#### Workers
 
-* The worker program will be a console application that downloads the boundary file to the machine, does computationally heavy work, and uploads the results to the cloud backend.
-* Workers will be run on many different machines in parallel.
-* A worker will do work in batches:
-    * For each batch:
-        * Pick N random regions
-          * The exact size will have to be determined after the code is written and benchmarked. Assume it will be in the thousands (probably somewhere between 4000 and 16000)
-        * Pick a random complex number inside of each selected region
-        * Iterate the points to see if the point is inside of the Mandelbrot Set.
-            * Use 10 million as the maximum iteration limit
-            * Only points that are NOT inside of the Mandelbrot Set are interesting. However, they should take at least 100,000 iterations before they escape.
-        * Collect the interesting points and report them to a central repository
-            * For each point, report the complex value (two doubles) as well as how long it took to escape (a signed 32bit integer)
-        * In addition to uploading the points, include metadata about the batch.
-* The worker program needs to support an optional number of batches to run. It should end operations after working through all of the batches.
-* The console program may also br run without a bound, in which case a user with access to the machine will manually cancel it.
-* A worker needs to be able to be canceled at any time without losing any found points
-  * When canceled, the worker should report a batch like normal. The only difference is that the number of points checked will not be the full batch size.
-* There is no need to coordinate which workers work on which regions.
-* Assume that the random number generator is good enough to spread out the work.
-  * It is not a big deal if multiple workers pick the same region. The likelihood of this happening is low.
-  * Assume it will be virtually impossible for two workers to find the exact same point.
+##### General Behavior
+- The system shall provide a console-based worker application that:
+	- Downloads the boundary file to local storage.
+	- Performs computationally intensive exploration work.
+	- Uploads interesting points and batch metadata to the cloud backend.
+- The system shall support running many worker instances in parallel on different machines without coordination.
 
+##### Batch Processing
+- The worker shall perform work in batches. For each batch, the worker shall:
+	- Select `N` random `regions` from the boundary file.
+		- The worker shall allow `N` to be configured and tuned post-implementation, with an expected range on the order of thousands (approximately `4,000`–`16,000`).
+	- For each selected region, select a random complex point uniformly from within the region.
+	- Iterate each point to determine membership in the Mandelbrot Set using a maximum iteration limit of `10,000,000`.
+	- Identify as “interesting” only those points that are not in the set and whose `escape time` is at least `100,000` iterations.
+	- Collect each interesting point’s complex value `(two doubles)` and `escape time` `(signed 32-bit integer)`.
+	- Upload the collected interesting points to the cloud backend.
+	- Upload batch metadata as specified above.
+
+##### Execution Control and Cancellation
+- The worker shall support an optional configuration to run a specified number of batches and then terminate.
+- The worker shall support running indefinitely until manually canceled by a user with access to the machine.
+- The worker shall be safely cancelable at any time without losing any already-found interesting points.
+	- Upon cancellation, the worker shall complete the current batch upload as usual; however, the `points checked` value may be less than the configured batch size.
+
+##### Concurrency and Coordination
+- The system shall not require coordination among workers regarding which regions they select.
+- The system shall rely on a sufficiently random selection process to distribute work across regions.
+- The system shall accept that multiple workers may occasionally select the same region.
+- The system shall assume the probability of two workers discovering the exact same point is negligible.
+
+### Interfaces (High-Level)
+
+- The system shall expose endpoints or equivalents for:
+	- Downloading the `boundary file`.
+	- Uploading a batch of points (bulk insert) and its associated batch metadata.
+	- Downloading points with optional `minEscapeTime` filtering.
+	- Retrieving all batch metadata records.
+
+### Data Model (Logical)
+
+- `Point`
+	- `real: double`
+	- `imag: double`
+	- `escapeTime: int32`
+
+- `BatchMetadata`
+	- `machineDescription: string` (free-form)
+	- `duration: timespan` (or total milliseconds as `int64`)
+	- `pointsChecked: int32`
+	- `pointsFound: int32`
+	- `uploadedAtUtc: datetime`
+
+### Non-Functional Requirements
+
+- The system shall emphasize low operational cost on Azure (e.g., by favoring object storage and simple compute where possible).
+- The system shall be operable at scales up to millions of stored points.
+- The system shall ensure durability of uploaded points and metadata, resilient to worker cancellations or failures.
+
+### Assumptions
+
+- The provided boundary file correctly enumerates regions that include the Mandelbrot boundary.
+- Random number generation is sufficient to distribute sampling across regions.
+- Manual boundary file updates, if required, will be handled outside the system’s interfaces.
+
+### Out of Scope
+
+- Interactive or real-time coordination among workers for region selection.
+- Deduplication of points across workers beyond implicit statistical rarity of duplicates.
+- Parsing or validation of the free-form `machineDescription` beyond storage and retrieval.

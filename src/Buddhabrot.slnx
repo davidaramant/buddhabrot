@@ -8,6 +8,9 @@
     <File Path="..\TODO.md" />
     <File Path="Directory.Packages.props" />
   </Folder>
+  <Folder Name="/Solution Items/Docs/">
+    <File Path="..\docs\design.md" />
+  </Folder>
   <Project Path="BoundaryExplorer.Tests\BoundaryExplorer.Tests.csproj">
     <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
     <Configuration Solution="Release|x64" Project="Release|Any CPU" />

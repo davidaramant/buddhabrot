@@ -33,18 +33,18 @@ This document defines the requirements for a distributed system that finds and s
 - The system shall transmit points in a binary format for uploads and downloads to prevent precision loss.
 - The system shall store points server-side in Azure Blob Storage.
 	- Points shall be partitioned into 10 escape-time buckets and stored in separate containers or prefixes per bucket.
-	- Buckets shall cover escape times from `100,000` to `10,000,000`, using logarithmic (approximately exponential) ranges to reflect that higher-escape-time points are increasingly rare.
-	- The 10 buckets shall use approximately log-uniform boundaries (values rounded):
-		- Bucket 0: [100,000, 158,489)
-		- Bucket 1: [158,489, 251,189)
-		- Bucket 2: [251,189, 398,107)
-		- Bucket 3: [398,107, 630,957)
-		- Bucket 4: [630,957, 1,000,000)
-		- Bucket 5: [1,000,000, 1,584,893)
-		- Bucket 6: [1,584,893, 2,511,886)
-		- Bucket 7: [2,511,886, 3,981,071)
-		- Bucket 8: [3,981,071, 6,309,573)
-		- Bucket 9: [6,309,573, 10,000,000]
+	- Buckets shall cover escape times from `100,000` to `10,000,000`, using manually chosen, aesthetically pleasing boundaries with finer granularity at lower escape times and coarser granularity at higher escape times.
+	- The 10 buckets shall use the following boundaries (lower bounds divisible by 1,000):
+		- Bucket 0: [100,000, 150,000)
+		- Bucket 1: [150,000, 200,000)
+		- Bucket 2: [200,000, 300,000)
+		- Bucket 3: [300,000, 400,000)
+		- Bucket 4: [400,000, 600,000)
+		- Bucket 5: [600,000, 1,000,000)
+		- Bucket 6: [1,000,000, 1,500,000)
+		- Bucket 7: [1,500,000, 2,500,000)
+		- Bucket 8: [2,500,000, 5,000,000)
+		- Bucket 9: [5,000,000, 10,000,000]
 - The system shall support downloading points with the following capabilities:
 	- The system shall provide a way to download all points.
 	- The system shall provide a way to download only the points in a single escape-time bucket.

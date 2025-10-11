@@ -9,7 +9,7 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/Solution Items/Docs/">
-    <File Path="..\docs\design.md" />
+    <File Path="..\docs\requirements.md" />
   </Folder>
   <Project Path="BoundaryExplorer.Tests\BoundaryExplorer.Tests.csproj">
     <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />

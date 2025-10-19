@@ -25,6 +25,7 @@ This document defines the requirements for a distributed system that finds and s
 - The system shall store a single `boundary file` (approximately `164 MB` uncompressed, `37 MB` zipped).
 - The system shall make the boundary file downloadable by workers and other clients.
 - The system shall not support uploading new boundary files via the system; boundary file updates shall be performed manually out-of-band.
+- The boundary file download shall support gzip compression via standard `Accept-Encoding/Content-Encoding` negotiation.
 
 ##### Boundary Points Storage and Access
 - The system shall store points near the Mandelbrot boundary, where each stored point shall consist of:
@@ -54,6 +55,11 @@ This document defines the requirements for a distributed system that finds and s
 - The system shall provide a way to retrieve the count of stored points in each escape-time bucket.
 - There shall be no requirement on the order in which points are stored or retrieved.
 - The system shall support storage at scales from thousands up to millions of points.
+- The system shall support gzip compression for all uploads and downloads of binary payloads (points and boundary file).
+- For uploads, clients may send compressed payloads with `Content-Encoding: gzip`; the backend shall accept both compressed and uncompressed uploads.
+- For downloads, clients may advertise support using `Accept-Encoding: gzip`; when appropriate, the backend shall return compressed responses with `Content-Encoding: gzip` and include `Vary: Accept-Encoding`.
+- Compression negotiation shall use standard HTTP/Blob Storage content-encoding semantics; no custom headers are required.
+- The system shall preserve the binary format of point data irrespective of compression; compression is applied only as a transport encoding.
 
 ##### Batch Metadata
 - The system shall accept batch metadata uploads whenever a batch of points is uploaded.
@@ -108,6 +114,10 @@ This document defines the requirements for a distributed system that finds and s
 	- Retrieving the total count of stored points.
 	- Retrieving counts of stored points per escape-time bucket.
 	- Retrieving all batch metadata records.
+- All endpoints shall be versioned and include an explicit major version identifier (e.g., `/v1/...`) in the endpoint path or equivalent API surface.
+- The initial released API version shall be `v1`.
+- Backward-incompatible (breaking) changes shall only be introduced in a new major version (e.g., `v2`), coexisting with prior versions for a deprecation period.
+- Documentation for each endpoint shall identify its version and any compatibility guarantees.
 
 ### Data Model (Logical)
 

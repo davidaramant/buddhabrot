@@ -5,6 +5,7 @@ This document defines the requirements for a distributed system that finds and s
 ### Goals and Constraints
 
 - The system shall target Microsoft Azure services with an emphasis on minimizing cloud hosting cost.
+- The system shall use Azure Managed Identity (Entra ID) as the authentication mechanism for any Azure/cloud resources in deployed environments.
 - The system shall be implemented in `C#` on `.NET`.
 - The system shall ingest and serve data related to Mandelbrot boundary exploration at scale (thousands to millions of points).
 

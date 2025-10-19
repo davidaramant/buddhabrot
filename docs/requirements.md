@@ -21,11 +21,30 @@ This document defines the requirements for a distributed system that finds and s
 
 #### Cloud Backend
 
+#### Access Control and Networking
+- All endpoints and data surfaces shall be private; no anonymous or publicly readable access shall be permitted.
+- The boundary file download shall not be publicly accessible; clients shall authenticate to download it.
+- Azure-hosted components shall authenticate to Azure resources using Azure Managed Identity.
+- Non-Azure workers and tools shall authenticate to Azure Blob Storage using Shared Access Signatures (SAS).
+- The system shall prefer User Delegation SAS issued via the backend using its Managed Identity, rather than Account SAS, where supported.
+- SAS tokens for non-Azure workers shall be time-limited and scope-restricted to the minimum necessary containers/blobs and permissions.
+- The system shall not require publicly routable endpoints for normal operation; any control plane used to issue SAS tokens shall also be private and require operator authentication.
+
+##### SAS Permissions
+- Boundary file download SAS: `Read` on the specific blob (and optional `List` on the parent path if directory listing is required).
+- Points upload SAS: only the minimal write permissions (`Write`/`Create`, or `Add` for Append Blobs) scoped to the target container/prefix; optional `Read` if verification is required.
+- Points download SAS: `Read` scoped to the required containers/prefixes (all points or a single escape-time bucket).
+- Batch metadata retrieval: `Read` on metadata objects if accessed via Blob Storage; if accessed via a backend endpoint, access shall be private and require authentication.
+
+#### Operational Policies
+- The system shall not enforce per-identity or per-endpoint rate limits or request quotas.
+
 ##### Boundary File
 - The system shall store a single `boundary file` (approximately `164 MB` uncompressed, `37 MB` zipped).
 - The system shall make the boundary file downloadable by workers and other clients.
 - The system shall not support uploading new boundary files via the system; boundary file updates shall be performed manually out-of-band.
 - The boundary file download shall support gzip compression via standard `Accept-Encoding/Content-Encoding` negotiation.
+- SAS tokens granted for boundary file download shall include only `Read` permission on the specific blob (and optional `List` on its parent path if directory listing is required).
 
 ##### Boundary Points Storage and Access
 - The system shall store points near the Mandelbrot boundary, where each stored point shall consist of:
@@ -60,6 +79,8 @@ This document defines the requirements for a distributed system that finds and s
 - For downloads, clients may advertise support using `Accept-Encoding: gzip`; when appropriate, the backend shall return compressed responses with `Content-Encoding: gzip` and include `Vary: Accept-Encoding`.
 - Compression negotiation shall use standard HTTP/Blob Storage content-encoding semantics; no custom headers are required.
 - The system shall preserve the binary format of point data irrespective of compression; compression is applied only as a transport encoding.
+- SAS tokens granted for point uploads shall include only the minimal write permissions required for the designated container/prefix (e.g., `Write`/`Create`, or `Add` for Append Blobs) and optional `Read` if the client must verify writes.
+- SAS tokens granted for point downloads shall include only `Read` permission scoped to the containers/prefixes required by the request (e.g., all points or a single escape-time bucket).
 
 ##### Batch Metadata
 - The system shall accept batch metadata uploads whenever a batch of points is uploaded.
@@ -71,6 +92,7 @@ This document defines the requirements for a distributed system that finds and s
 	- A server-side timestamp indicating when the metadata was uploaded.
 - The system shall not store an explicit relationship between any specific uploaded points and their associated batch metadata.
 - The system shall provide an endpoint to retrieve all uploaded batch metadata records.
+- SAS tokens used to retrieve batch metadata via storage shall include only `Read` permission on the metadata objects, if accessed directly via Blob Storage; if retrieved via a backend endpoint, access shall still be private and require authentication.
 
 #### Workers
 
@@ -138,6 +160,7 @@ This document defines the requirements for a distributed system that finds and s
 - The system shall emphasize low operational cost on Azure (e.g., by favoring object storage and simple compute where possible).
 - The system shall be operable at scales up to millions of stored points.
 - The system shall ensure durability of uploaded points and metadata, resilient to worker cancellations or failures.
+- The system shall not enforce per-identity or per-endpoint rate limits or request quotas.
 
 ### Assumptions
 

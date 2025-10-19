@@ -99,6 +99,12 @@ This document defines the requirements for a distributed system that finds and s
 - The system shall define deterministic tie-breaking when multiple segments share the same `createdAtUtc` (e.g., by lexicographic blob name); the `watermark` shall include both timestamp and last-included name to prevent duplication or gaps on retry.
 - The system shall document that results may include duplicates across successive incremental calls if clients use an older watermark (idempotent re-consumption).
 - The system may store points in per-upload segment files; this does not constitute an explicit, queryable mapping between individual points and batch metadata.
+- The system shall maintain strongly consistent counters for the total number of stored points and for the number of stored points in each escape-time bucket.
+- Reads of these counters shall be read-after-write consistent for any successfully completed upload operation (i.e., once an upload call returns success, a subsequent counter read reflects that upload’s points).
+- Counter updates shall be atomic with the commit of new segment files and shall increment by the exact number of points contained in each committed segment.
+- Counter updates shall be idempotent with respect to retries: replays of the same logical segment (e.g., same `segmentId` derived from the blob name) shall not double-increment counters.
+- In the event an upload fails and its segment is not committed, no counter increments shall be applied.
+- All counters shall reflect raw stored rows, including exact duplicates, consistent with existing duplicate-allowance requirements.
 
 ##### Batch Metadata
 - The system shall accept batch metadata uploads whenever a batch of points is uploaded.
@@ -111,6 +117,9 @@ This document defines the requirements for a distributed system that finds and s
 - The system shall not store an explicit relationship between any specific uploaded points and their associated batch metadata.
 - The system shall provide an endpoint to retrieve all uploaded batch metadata records.
 - SAS tokens used to retrieve batch metadata via storage shall include only `Read` permission on the metadata objects, if accessed directly via Blob Storage; if retrieved via a backend endpoint, access shall still be private and require authentication.
+- The system shall maintain a strongly consistent counter for the total number of batches uploaded.
+- A “batch uploaded” shall be counted exactly once upon successful acceptance of the batch’s metadata (and, if applicable, its associated point segments) by the backend.
+- The batch counter shall be idempotent with respect to client retries (e.g., identified by a unique `batchId`) to prevent double-counting.
 
 #### Workers
 
@@ -159,6 +168,9 @@ This document defines the requirements for a distributed system that finds and s
 - Backward-incompatible (breaking) changes shall only be introduced in a new major version (e.g., `v2`), coexisting with prior versions for a deprecation period.
 - Documentation for each endpoint shall identify its version and any compatibility guarantees.
 - Retrieving new points uploaded since a specified server-side timestamp (optionally scoped to a single escape-time bucket), at segment granularity, returning a `watermark` for incremental continuation.
+- Retrieving the total count of stored points (strongly consistent).
+- Retrieving counts of stored points per escape-time bucket (strongly consistent).
+- Retrieving the total number of batches uploaded (strongly consistent).
 
 ### Data Model (Logical)
 

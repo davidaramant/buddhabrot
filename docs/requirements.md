@@ -49,6 +49,8 @@ This document defines the requirements for a distributed system that finds and s
 	- The system shall provide a way to download all points.
 	- The system shall provide a way to download only the points in a single escape-time bucket.
 	- The system shall include both the complex value and the `escape time` in download results.
+- The system shall provide a way to retrieve the total count of stored points.
+- The system shall provide a way to retrieve the count of stored points in each escape-time bucket.
 - There shall be no requirement on the order in which points are stored or retrieved.
 - The system shall support storage at scales from thousands up to millions of points.
 
@@ -102,6 +104,8 @@ This document defines the requirements for a distributed system that finds and s
 	- Downloading the `boundary file`.
 	- Uploading a batch of points (bulk insert) and its associated batch metadata.
 	- Downloading all points or only the points in a single escape-time bucket.
+	- Retrieving the total count of stored points.
+	- Retrieving counts of stored points per escape-time bucket.
 	- Retrieving all batch metadata records.
 
 ### Data Model (Logical)

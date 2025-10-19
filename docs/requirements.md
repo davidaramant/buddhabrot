@@ -66,6 +66,13 @@ This document defines the requirements for a distributed system that finds and s
 		- Bucket 7: [1,500,000, 2,500,000)
 		- Bucket 8: [2,500,000, 5,000,000)
 		- Bucket 9: [5,000,000, 10,000,000]
+  - To minimize write contention and enable many simultaneous uploads, the system shall store uploaded points as immutable segment files (blobs) under each escape-time bucket rather than appending to a single shared object.
+  - Each upload operation may create one or more new segment files in the target bucket; uploads shall not require read-modify-write of existing point files.
+  - Segment files shall be written as `Block Blob` objects (or functionally equivalent) using staged blocks and a single commit to avoid server-side append contention.
+  - Segment files shall target a maximum uncompressed size (e.g., 64–256 MiB; the exact initial target shall be 128 MiB unless changed during implementation) to balance efficient downloads with parallelism and list performance.
+  - Segment file names shall encode the bucket, UTC date/time partitioning, and a unique identifier to ensure lexicographic time ordering and easy filtering. A non-normative example path pattern is:
+      - `points/bucket-<id>/yyyy/mm/dd/hh/mm/<yyyyMMddTHHmmssfffZ>__<batchId>__<segmentSeq>.bin`.
+  - The system shall rely on the server-side creation or last-modified timestamp for each segment file (`createdAtUtc`), and the timestamp embedded in the name, to support time-based retrieval.
 - The system shall support downloading points with the following capabilities:
 	- The system shall provide a way to download all points.
 	- The system shall provide a way to download only the points in a single escape-time bucket.
@@ -81,6 +88,17 @@ This document defines the requirements for a distributed system that finds and s
 - The system shall preserve the binary format of point data irrespective of compression; compression is applied only as a transport encoding.
 - SAS tokens granted for point uploads shall include only the minimal write permissions required for the designated container/prefix (e.g., `Write`/`Create`, or `Add` for Append Blobs) and optional `Read` if the client must verify writes.
 - SAS tokens granted for point downloads shall include only `Read` permission scoped to the containers/prefixes required by the request (e.g., all points or a single escape-time bucket).
+- The system shall allow exact-duplicate points in storage; the backend shall not attempt deduplication nor verify uniqueness during upload.
+- All point counts (total and per escape-time bucket) shall reflect raw stored rows, including exact duplicates.
+- The system shall provide a way to retrieve only newly uploaded points since a specified server-side timestamp, at a coarse granularity of whole segment files (i.e., entire segments are included or excluded; no partial-segment filtering).
+- The time filter shall use the server-side `createdAtUtc` (or `last-modified`) of segment files and/or their lexicographically ordered timestamped names; client clocks shall not determine inclusion.
+- The retrieval operation shall support optional filtering by a single escape-time bucket.
+- The retrieval operation shall return:
+	- Zero or more segment files containing points with `createdAtUtc >= startTimestampUtc`.
+	- A `watermark` value indicating the highest included `createdAtUtc` (and tie-breaker name) that clients can persist and use as the next `startTimestampUtc` to achieve incremental consumption.
+- The system shall define deterministic tie-breaking when multiple segments share the same `createdAtUtc` (e.g., by lexicographic blob name); the `watermark` shall include both timestamp and last-included name to prevent duplication or gaps on retry.
+- The system shall document that results may include duplicates across successive incremental calls if clients use an older watermark (idempotent re-consumption).
+- The system may store points in per-upload segment files; this does not constitute an explicit, queryable mapping between individual points and batch metadata.
 
 ##### Batch Metadata
 - The system shall accept batch metadata uploads whenever a batch of points is uploaded.
@@ -140,6 +158,7 @@ This document defines the requirements for a distributed system that finds and s
 - The initial released API version shall be `v1`.
 - Backward-incompatible (breaking) changes shall only be introduced in a new major version (e.g., `v2`), coexisting with prior versions for a deprecation period.
 - Documentation for each endpoint shall identify its version and any compatibility guarantees.
+- Retrieving new points uploaded since a specified server-side timestamp (optionally scoped to a single escape-time bucket), at segment granularity, returning a `watermark` for incremental continuation.
 
 ### Data Model (Logical)
 

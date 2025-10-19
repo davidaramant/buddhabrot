@@ -73,6 +73,9 @@ This document defines the requirements for a distributed system that finds and s
   - Segment file names shall encode the bucket, UTC date/time partitioning, and a unique identifier to ensure lexicographic time ordering and easy filtering. A non-normative example path pattern is:
       - `points/bucket-<id>/yyyy/mm/dd/hh/mm/<yyyyMMddTHHmmssfffZ>__<batchId>__<segmentSeq>.bin`.
   - The system shall rely on the server-side creation or last-modified timestamp for each segment file (`createdAtUtc`), and the timestamp embedded in the name, to support time-based retrieval.
+  - Batch uploads shall be idempotent with server-side de-duplication on retry. Clients shall provide a unique `batchId` per batch and stable per-segment identifiers (e.g., blob names embedding `batchId` and `segmentSeq`); replays of the same `(batchId, segmentId/segmentSeq)` shall not create additional segment files and shall be treated as success/no-op by the backend.
+  - The backend shall enforce at-most-once commit per unique segment identifier; if an identically named/identified segment already exists and is fully committed, the upload retry shall not alter stored data nor re-increment any counters.
+  - The idempotency guarantee shall apply irrespective of client-side network retries or timeouts and shall not require clients to perform existence checks prior to retrying.
 - The system shall support downloading points with the following capabilities:
 	- The system shall provide a way to download all points.
 	- The system shall provide a way to download only the points in a single escape-time bucket.
@@ -120,6 +123,7 @@ This document defines the requirements for a distributed system that finds and s
 - The system shall maintain a strongly consistent counter for the total number of batches uploaded.
 - A “batch uploaded” shall be counted exactly once upon successful acceptance of the batch’s metadata (and, if applicable, its associated point segments) by the backend.
 - The batch counter shall be idempotent with respect to client retries (e.g., identified by a unique `batchId`) to prevent double-counting.
+- The upload of batch metadata shall be idempotent using `batchId`; retries for the same `batchId` shall not create additional metadata records and shall not increment the batch counter.
 
 #### Workers
 
@@ -135,6 +139,7 @@ This document defines the requirements for a distributed system that finds and s
 - The worker shall perform work in batches. For each batch, the worker shall:
 	- Select `N` random `regions` from the boundary file.
 		- The worker shall allow `N` to be configured and tuned post-implementation, with an expected range on the order of thousands (approximately `4,000`–`16,000`).
+        - This value will be referred to as the batch size.
 	- For each selected region, select a random complex point uniformly from within the region.
 	- Iterate each point to determine membership in the Mandelbrot Set using a maximum iteration limit of `10,000,000`.
 	- Identify as “interesting” only those points that are not in the set and whose `escape time` is at least `100,000` iterations.
@@ -180,6 +185,7 @@ This document defines the requirements for a distributed system that finds and s
 	- `escapeTime: int32`
 
 - `BatchMetadata`
+	- `batchId: uuid` (client-supplied unique identifier for idempotency)
 	- `machineDescription: string` (free-form)
 	- `duration: timespan` (or total milliseconds as `int64`)
 	- `pointsChecked: int32`

@@ -13,13 +13,13 @@ public interface IBoundaryPalette
 	SKColor this[LookupRegionType type] { get; }
 
 	public static IReadOnlyCollection<IBoundaryPalette> AllPalettes { get; } =
-		[
-			PastelPalette.Instance,
-			BluePalette.Instance,
-			HsvRainbowPalette.Instance,
-			LChuvRainbowPalette.Instance,
-			BlackAndWhitePalette.Instance,
-		];
+	[
+		PastelPalette.Instance,
+		BluePalette.Instance,
+		HsvRainbowPalette.Instance,
+		LChuvRainbowPalette.Instance,
+		BlackAndWhitePalette.Instance,
+	];
 }
 
 public abstract class BasePalette
@@ -67,18 +67,16 @@ public sealed class PastelPalette : ComputedPalette, IBoundaryPalette
 	public static IBoundaryPalette Instance { get; } = new PastelPalette();
 
 	private PastelPalette()
-		: base(
-			[
-				SKColors.White, // Empty
-				new(0xFF011627), // EmptyToBorder
-				new(0xFFe71d36), // EmptyToFilament
-				SKColors.Black, // BorderToEmpty
-				SKColors.Purple, // BorderToFilament
-				SKColors.Gray, // FilamentToEmpty
-				SKColors.Aqua, // FilamentToBorder
-				SKColors.Red, // MixedDif
-			]
-		) { }
+		: base([
+			SKColors.White, // Empty
+			new(0xFF011627), // EmptyToBorder
+			new(0xFFe71d36), // EmptyToFilament
+			SKColors.Black, // BorderToEmpty
+			SKColors.Purple, // BorderToFilament
+			SKColors.Gray, // FilamentToEmpty
+			SKColors.Aqua, // FilamentToBorder
+			SKColors.Red, // MixedDif
+		]) { }
 
 	public SKColor Background { get; } = new(0xFFcaf1eb);
 	public SKColor InsideCircle { get; } = new(0xFFf1fcf8);
@@ -90,18 +88,16 @@ public sealed class BluePalette : ComputedPalette, IBoundaryPalette
 	public static IBoundaryPalette Instance { get; } = new BluePalette();
 
 	private BluePalette()
-		: base(
-			[
-				SKColors.White, // Empty
-				new(0xFF212135), // EmptyToBorder
-				new(0xFF02c9e0), // EmptyToFilament
-				SKColors.DarkRed, // BorderToEmpty
-				SKColors.Purple, // BorderToFilament
-				SKColors.Red, // FilamentToEmpty
-				SKColors.MediumPurple, // FilamentToBorder
-				SKColors.Green, // MixedDif
-			]
-		) { }
+		: base([
+			SKColors.White, // Empty
+			new(0xFF212135), // EmptyToBorder
+			new(0xFF02c9e0), // EmptyToFilament
+			SKColors.DarkRed, // BorderToEmpty
+			SKColors.Purple, // BorderToFilament
+			SKColors.Red, // FilamentToEmpty
+			SKColors.MediumPurple, // FilamentToBorder
+			SKColors.Green, // MixedDif
+		]) { }
 
 	public SKColor Background { get; } = new(0xFFFFFFFF);
 	public SKColor InsideCircle { get; } = new(0xFFf7fbfb);
@@ -112,18 +108,16 @@ public sealed class HsvRainbowPalette : ComputedPalette, IBoundaryPalette
 	public static IBoundaryPalette Instance { get; } = new HsvRainbowPalette();
 
 	private HsvRainbowPalette()
-		: base(
-			[
-				SKColors.White, // Empty
-				SKColor.FromHsv(0f / 7f * 360f, 100, 100), // EmptyToBorder
-				SKColor.FromHsv(1f / 7f * 360f, 100, 100), // EmptyToFilament
-				SKColor.FromHsv(2f / 7f * 360f, 100, 100), // BorderToEmpty
-				SKColor.FromHsv(3f / 7f * 360f, 100, 100), // BorderToFilament
-				SKColor.FromHsv(4f / 7f * 360f, 100, 100), // FilamentToEmpty
-				SKColor.FromHsv(5f / 7f * 360f, 100, 100), // FilamentToBorder
-				SKColor.FromHsv(6f / 7f * 360f, 100, 100), // MixedDif
-			]
-		) { }
+		: base([
+			SKColors.White, // Empty
+			SKColor.FromHsv(0f / 7f * 360f, 100, 100), // EmptyToBorder
+			SKColor.FromHsv(1f / 7f * 360f, 100, 100), // EmptyToFilament
+			SKColor.FromHsv(2f / 7f * 360f, 100, 100), // BorderToEmpty
+			SKColor.FromHsv(3f / 7f * 360f, 100, 100), // BorderToFilament
+			SKColor.FromHsv(4f / 7f * 360f, 100, 100), // FilamentToEmpty
+			SKColor.FromHsv(5f / 7f * 360f, 100, 100), // FilamentToBorder
+			SKColor.FromHsv(6f / 7f * 360f, 100, 100), // MixedDif
+		]) { }
 
 	public SKColor Background { get; } = new(0xFFFFFFFF);
 	public SKColor InsideCircle { get; } = new(0xFFf7fbfb);

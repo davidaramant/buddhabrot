@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
 	x:Class="BoundaryExplorer.Views.DiffTab"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -16,7 +16,6 @@
 		HorizontalAlignment="Center"
 		ColumnDefinitions="*,*"
 		RowDefinitions="*,Auto,100">
-
 		<Border
 			Grid.Row="0"
 			Grid.Column="0"

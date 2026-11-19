@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
 	x:Class="BoundaryExplorer.Views.VisualizeTab"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -62,11 +62,12 @@
 				Margin="4"
 				HorizontalAlignment="Right"
 				Content="Region Render Style:" />
-			<ComboBox Grid.Row="0"
-			          Grid.Column="6"
-			          Margin="4"
-			          SelectedItem="{Binding #MandelbrotRenderer.RegionRenderStyle}"
-			          ItemsSource="{Binding #MandelbrotRenderer.RegionRenderStyles}"/>
+			<ComboBox
+				Grid.Row="0"
+				Grid.Column="6"
+				Margin="4"
+				ItemsSource="{Binding #MandelbrotRenderer.RegionRenderStyles}"
+				SelectedItem="{Binding #MandelbrotRenderer.RegionRenderStyle}" />
 
 			<ProgressBar
 				Grid.Row="0"

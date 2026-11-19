@@ -46,26 +46,19 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
 		int inSet = 0;
 		int close = 0;
 
-		Parallel.For(
-			0,
-			16,
-			i =>
-			{
-				var (iterations, distance) = ScalarKernel.FindExteriorDistance(
-					centers[i],
-					_boundaryParams.MaxIterations
-				);
+		Parallel.For(0, 16, i =>
+		{
+			var (iterations, distance) = ScalarKernel.FindExteriorDistance(centers[i], _boundaryParams.MaxIterations);
 
-				if (iterations.IsInfinite)
-				{
-					Interlocked.Increment(ref inSet);
-				}
-				else if (distance <= (RegionWidth / 8))
-				{
-					Interlocked.Increment(ref close);
-				}
+			if (iterations.IsInfinite)
+			{
+				Interlocked.Increment(ref inSet);
 			}
-		);
+			else if (distance <= (RegionWidth / 8))
+			{
+				Interlocked.Increment(ref close);
+			}
+		});
 
 		ArrayPool<Complex>.Shared.Return(centers);
 
@@ -134,14 +127,10 @@ public sealed class Interior16RegionClassifier : IRegionClassifier
 			}
 		}
 
-		Parallel.For(
-			0,
-			RegionBatchId.CornerArea,
-			i =>
-			{
-				inSet[i] = ScalarKernel.FindEscapeTime(corners[i], _boundaryParams.MaxIterations).IsInfinite;
-			}
-		);
+		Parallel.For(0, RegionBatchId.CornerArea, i =>
+		{
+			inSet[i] = ScalarKernel.FindEscapeTime(corners[i], _boundaryParams.MaxIterations).IsInfinite;
+		});
 
 		var batch = BoolVector16.Empty;
 

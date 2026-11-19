@@ -144,26 +144,22 @@ public sealed class CornerFirstFourInternalRegionClassifier : IRegionClassifier
 		int numInSet = 0;
 		int numClose = 0;
 
-		Parallel.For(
-			0,
-			4,
-			i =>
-			{
-				var (iterations, distance) = ScalarKernel.FindExteriorDistance(
-					ToComplex(region.X + 0.25 + (i % 2) * 0.5, region.Y + 0.25 + ((i >> 1) % 2) * 0.5),
-					_boundaryParams.MaxIterations
-				);
+		Parallel.For(0, 4, i =>
+		{
+			var (iterations, distance) = ScalarKernel.FindExteriorDistance(
+				ToComplex(region.X + 0.25 + (i % 2) * 0.5, region.Y + 0.25 + ((i >> 1) % 2) * 0.5),
+				_boundaryParams.MaxIterations
+			);
 
-				if (iterations.IsInfinite)
-				{
-					Interlocked.Increment(ref numInSet);
-				}
-				else if (distance <= (RegionWidth / 4))
-				{
-					Interlocked.Increment(ref numClose);
-				}
+			if (iterations.IsInfinite)
+			{
+				Interlocked.Increment(ref numInSet);
 			}
-		);
+			else if (distance <= (RegionWidth / 4))
+			{
+				Interlocked.Increment(ref numClose);
+			}
+		});
 
 		return (numInSet, numClose) switch
 		{

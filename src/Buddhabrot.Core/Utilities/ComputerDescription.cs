@@ -1,6 +1,6 @@
 using System.Text;
 using Hardware.Info;
-using Humanizer.Bytes;
+using Humanizer;
 
 namespace Buddhabrot.Core.Utilities;
 

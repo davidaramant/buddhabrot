@@ -106,7 +106,7 @@ public sealed class MandelbrotRenderer : Control
 	}
 
 	public IReadOnlyCollection<RegionRenderStyle> RegionRenderStyles { get; } =
-		[RegionRenderStyle.Empty, RegionRenderStyle.ExactSet, RegionRenderStyle.CloseToSet];
+	[RegionRenderStyle.Empty, RegionRenderStyle.ExactSet, RegionRenderStyle.CloseToSet];
 
 	public static readonly StyledProperty<int> MaximumIterationsProperty = AvaloniaProperty.Register<
 		MandelbrotRenderer,

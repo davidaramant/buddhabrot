@@ -99,36 +99,28 @@ public class FilamentVisualizations : BaseVisualization
 
 	private static void RenderEscapeTimeSet(ComplexViewport viewPort, int max, RasterImage image)
 	{
-		Parallel.For(
-			0,
-			viewPort.Resolution.Height,
-			row =>
+		Parallel.For(0, viewPort.Resolution.Height, row =>
+		{
+			for (int col = 0; col < viewPort.Resolution.Width; col++)
 			{
-				for (int col = 0; col < viewPort.Resolution.Width; col++)
-				{
-					var inSet = ScalarKernel.FindEscapeTime(viewPort.GetComplex(col, row), max).IsInfinite;
+				var inSet = ScalarKernel.FindEscapeTime(viewPort.GetComplex(col, row), max).IsInfinite;
 
-					image.SetPixel(new SKPointI(col, row), inSet ? SKColors.DarkBlue : SKColors.White);
-				}
+				image.SetPixel(new SKPointI(col, row), inSet ? SKColors.DarkBlue : SKColors.White);
 			}
-		);
+		});
 	}
 
 	private static void RenderFilaments(ComplexViewport viewPort, int max, RasterImage image)
 	{
-		Parallel.For(
-			0,
-			viewPort.Resolution.Height,
-			row =>
+		Parallel.For(0, viewPort.Resolution.Height, row =>
+		{
+			for (int col = 0; col < viewPort.Resolution.Width; col++)
 			{
-				for (int col = 0; col < viewPort.Resolution.Width; col++)
-				{
-					var (_, distance) = ScalarKernel.FindExteriorDistance(viewPort.GetComplex(col, row), max);
+				var (_, distance) = ScalarKernel.FindExteriorDistance(viewPort.GetComplex(col, row), max);
 
-					image.SetPixel(new SKPointI(col, row), PickColorFromDistance(viewPort, distance));
-				}
+				image.SetPixel(new SKPointI(col, row), PickColorFromDistance(viewPort, distance));
 			}
-		);
+		});
 	}
 
 	private static SKColor PickColorFromDistance(ComplexViewport viewPort, double distance) =>

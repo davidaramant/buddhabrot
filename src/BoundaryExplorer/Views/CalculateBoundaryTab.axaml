@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
 	x:Class="BoundaryExplorer.Views.CalculateBoundaryTab"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -47,11 +47,8 @@
 			<Button Command="{Binding CancelFindingBoundary}" Content="Cancel" />
 
 			<ProgressBar IsIndeterminate="{Binding IsFindingBoundary}" />
-
 		</StackPanel>
-		<Label Grid.Row="1">
-			Log:
-		</Label>
+		<Label Grid.Row="1">Log:</Label>
 		<TextBox
 			Grid.Row="2"
 			Margin="4"

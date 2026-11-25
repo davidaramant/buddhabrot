@@ -337,7 +337,7 @@ public sealed class MandelbrotRenderer : Control
 			{
 				using var lease = leaseFeature.Lease();
 				var canvas = lease.SkCanvas;
-				canvas.DrawBitmap(bitmap, bounds);
+				canvas.DrawBitmap(bitmap, bounds, SKSamplingOptions.Default);
 			}
 		}
 	}

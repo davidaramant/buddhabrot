@@ -1,6 +1,6 @@
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
-using Buddhabrot.ManualVisualizations;
+using Buddhabrot.TestUtilities;
 using Humanizer;
 using ProtoBuf;
 using Spectre.Console;

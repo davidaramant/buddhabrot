@@ -1,6 +1,6 @@
 using Buddhabrot.Core.Boundary;
 
-namespace Buddhabrot.Core.Tests.Boundary;
+namespace Buddhabrot.TestUtilities;
 
 public sealed class HashSetListVisitedRegions : IVisitedRegions
 {

@@ -1,7 +1,7 @@
 using Buddhabrot.Core;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Calculations;
-using Buddhabrot.ManualVisualizations;
+using Buddhabrot.TestUtilities;
 using Humanizer;
 using SkiaSharp;
 

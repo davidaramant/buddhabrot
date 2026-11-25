@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net11.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AssemblyName>Buddhabrot.TestUtilities</AssemblyName>
+		<RootNamespace>Buddhabrot.TestUtilities</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Buddhabrot.Core\Buddhabrot.Core.csproj" />
+	</ItemGroup>
+</Project>

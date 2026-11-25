@@ -1,4 +1,5 @@
 using Buddhabrot.Core.Images;
+using Buddhabrot.TestUtilities;
 using Humanizer;
 
 namespace Buddhabrot.ManualVisualizations;

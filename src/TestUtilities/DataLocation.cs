@@ -1,4 +1,4 @@
-namespace Buddhabrot.ManualVisualizations;
+namespace Buddhabrot.TestUtilities;
 
 public static class DataLocation
 {

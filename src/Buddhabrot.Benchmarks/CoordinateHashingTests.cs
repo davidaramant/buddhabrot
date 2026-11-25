@@ -1,4 +1,4 @@
-using Buddhabrot.ManualVisualizations;
+using Buddhabrot.TestUtilities;
 using Humanizer;
 using Tedd;
 

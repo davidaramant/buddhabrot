@@ -3,8 +3,8 @@ using System.Text.Json;
 using Buddhabrot.Core.Boundary;
 using Buddhabrot.Core.Boundary.Classifiers;
 using Buddhabrot.Core.Images;
-using Buddhabrot.Core.Tests.Boundary;
 using Buddhabrot.Core.Utilities;
+using Buddhabrot.TestUtilities;
 using CliWrap;
 using SkiaSharp;
 

@@ -5,11 +5,11 @@ namespace Buddhabrot.Core.Tests.Boundary.Quadtrees;
 
 public class VisitNodeTests
 {
-	[Theory]
-	[InlineData(VisitedRegionType.Unknown)]
-	[InlineData(VisitedRegionType.Border)]
-	[InlineData(VisitedRegionType.Filament)]
-	[InlineData(VisitedRegionType.Rejected)]
+	[Test]
+	[Arguments(VisitedRegionType.Unknown)]
+	[Arguments(VisitedRegionType.Border)]
+	[Arguments(VisitedRegionType.Filament)]
+	[Arguments(VisitedRegionType.Rejected)]
 	public void ShouldConstructLeafCorrectly(VisitedRegionType type)
 	{
 		var node = VisitNode.MakeLeaf(type);
@@ -18,7 +18,7 @@ public class VisitNodeTests
 		node.RegionType.ShouldBe(type);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldConstructLeafQuadCorrectly()
 	{
 		var node = VisitNode.MakeLeafQuad(
@@ -36,7 +36,7 @@ public class VisitNodeTests
 		node.NE.ShouldBe(VisitedRegionType.Unknown);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldConstructBranchCorrectly()
 	{
 		var node = VisitNode.MakeBranch(123_456);
@@ -46,7 +46,7 @@ public class VisitNodeTests
 		node.ChildIndex.ShouldBe(123_456);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldChangeNodeTypeWhenSettingChildRegion()
 	{
 		var node = VisitNode.Unknown;
@@ -58,7 +58,7 @@ public class VisitNodeTests
 		node.NodeType.ShouldBe(VisitNodeType.LeafQuad);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldUpdateChildren()
 	{
 		var node = VisitNode.Unknown;
@@ -92,7 +92,7 @@ public class VisitNodeTests
 		node.NE.ShouldBe(VisitedRegionType.Rejected);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldUpdateChildrenWithQuadrant()
 	{
 		VisitNode
@@ -137,11 +137,11 @@ public class VisitNodeTests
 			);
 	}
 
-	[Theory]
-	[InlineData(Quadrant.SW)]
-	[InlineData(Quadrant.SE)]
-	[InlineData(Quadrant.NW)]
-	[InlineData(Quadrant.NE)]
+	[Test]
+	[Arguments(Quadrant.SW)]
+	[Arguments(Quadrant.SE)]
+	[Arguments(Quadrant.NW)]
+	[Arguments(Quadrant.NE)]
 	public void ShouldGetQuadrant(Quadrant quadrant)
 	{
 		VisitNode

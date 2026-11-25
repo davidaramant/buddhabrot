@@ -9,8 +9,8 @@ namespace Buddhabrot.ManualVisualizations;
 [Explicit]
 public class BoundaryRegionRendererTests : BaseVisualization
 {
-	[OneTimeSetUp]
-	public void CreateDirectory() => SetUpOutputPath(nameof(BoundaryRegionRendererTests));
+	[Before(Class)]
+	public static void CreateDirectory() => SetUpOutputPath(nameof(BoundaryRegionRendererTests));
 
 	[Test]
 	public async Task RenderRegionAreas()

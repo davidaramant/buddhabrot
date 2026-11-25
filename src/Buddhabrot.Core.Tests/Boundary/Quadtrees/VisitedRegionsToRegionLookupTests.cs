@@ -5,15 +5,15 @@ namespace Buddhabrot.Core.Tests.Boundary.Quadtrees;
 
 public class VisitedRegionsToRegionLookupTests
 {
-	[Theory]
-	[InlineData(
+	[Test]
+	[Arguments(
 		LookupRegionType.EmptyToBorder,
 		LookupRegionType.Empty,
 		LookupRegionType.Empty,
 		LookupRegionType.Empty,
 		LookupRegionType.EmptyToBorder
 	)]
-	[InlineData(
+	[Arguments(
 		LookupRegionType.EmptyToBorder,
 		LookupRegionType.EmptyToFilament,
 		LookupRegionType.EmptyToFilament,
@@ -31,7 +31,7 @@ public class VisitedRegionsToRegionLookupTests
 		QuadtreeCompressor.CondenseRegionType(ll, lr, ul, ur).ShouldBe(expected);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldCondenseIdenticalLeaves()
 	{
 		var transformer = new QuadtreeCompressor(new VisitedRegions());

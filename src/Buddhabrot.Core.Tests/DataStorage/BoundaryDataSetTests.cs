@@ -5,7 +5,7 @@ namespace Buddhabrot.Core.Tests.DataStorage;
 
 public class BoundaryDataSetTests
 {
-	[Fact]
+	[Test]
 	public void ShouldHandleWeirdIterationCount()
 	{
 		var iterations = 1_000_001;
@@ -14,7 +14,7 @@ public class BoundaryDataSetTests
 		roundTripped.Parameters.MaxIterations.ShouldBe(iterations);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldDeserializeNormalBoundaryParameters()
 	{
 		var bds = BoundaryDataSet.FromDescription("v8_i1M");
@@ -23,7 +23,7 @@ public class BoundaryDataSetTests
 		bds.Parameters.MaxIterations.ShouldBe(1_000_000);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldDeserializeDiff()
 	{
 		var bds = BoundaryDataSet.FromDescription("Diff - v9_i1M - v8_i100k");
@@ -32,7 +32,7 @@ public class BoundaryDataSetTests
 		bds.Parameters.MaxIterations.ShouldBe(1_000_000);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldCompareDataSetsCorrectly()
 	{
 		static BoundaryParameters MakeParams(int verticalPower, int maxIterations) =>

@@ -8,8 +8,8 @@ namespace Buddhabrot.ManualVisualizations;
 [Explicit]
 public class ColorVariations : BaseVisualization
 {
-	[OneTimeSetUp]
-	public void CreateOutputPath() => SetUpOutputPath(nameof(ColorVariations));
+	[Before(Class)]
+	public static void CreateOutputPath() => SetUpOutputPath(nameof(ColorVariations));
 
 	[Test]
 	public void CreateColorVariations()

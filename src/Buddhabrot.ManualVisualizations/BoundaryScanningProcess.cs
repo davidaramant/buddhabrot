@@ -13,8 +13,8 @@ namespace Buddhabrot.ManualVisualizations;
 [Explicit]
 public class BoundaryScanningProcess : BaseVisualization
 {
-	[OneTimeSetUp]
-	public void CreateOutputPath() => SetUpOutputPath(nameof(BoundaryScanningProcess));
+	[Before(Class)]
+	public static void CreateOutputPath() => SetUpOutputPath(nameof(BoundaryScanningProcess));
 
 	public string SessionFilePath => Path.Combine(OutputPath.FullName, "session.json");
 

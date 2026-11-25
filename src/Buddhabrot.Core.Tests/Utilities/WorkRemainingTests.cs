@@ -4,7 +4,7 @@ namespace Buddhabrot.Core.Tests.Utilities;
 
 public sealed class WorkRemainingTests
 {
-	[Fact]
+	[Test]
 	public void ShouldReturnFromSequenceIfNoAdditionalItems()
 	{
 		const int size = 5;
@@ -14,7 +14,7 @@ public sealed class WorkRemainingTests
 		}
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldReturnAsMuchDataAsAvailable()
 	{
 		const int size = 5;
@@ -24,7 +24,7 @@ public sealed class WorkRemainingTests
 		}
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldReturnFromBufferBeforeSequence()
 	{
 		using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))
@@ -38,7 +38,7 @@ public sealed class WorkRemainingTests
 		}
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldTakeLessThanTotal()
 	{
 		using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))
@@ -52,7 +52,7 @@ public sealed class WorkRemainingTests
 		}
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldNotReturnDuplicatedWork()
 	{
 		using (var work = new WorkRemaining<int>(Enumerable.Repeat(5, 5)))

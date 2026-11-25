@@ -6,7 +6,8 @@ namespace Buddhabrot.Core.Tests.Boundary.Visualization;
 
 public class BoundaryVisualizerTests
 {
-	[Fact(Skip = "The comparison stopped working. This is a grotesque hack anyway")]
+	[Test]
+	[Skip("The comparison stopped working. This is a grotesque hack anyway")]
 	public void ShouldProduceSameOutput()
 	{
 		var lookup = RegionLookupUtil.Power3Lookup;

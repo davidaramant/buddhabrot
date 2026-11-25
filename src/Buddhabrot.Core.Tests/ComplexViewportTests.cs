@@ -5,7 +5,7 @@ namespace Buddhabrot.Core.Tests;
 
 public sealed class ComplexViewportTests
 {
-	[Fact]
+	[Test]
 	public void ShouldFigureOutMiddleOfSquareArea()
 	{
 		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
@@ -15,7 +15,7 @@ public sealed class ComplexViewportTests
 		middle.ShouldBe(new SKPointI(50, 50));
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldUseTopLeftAsPositionOrigin()
 	{
 		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
@@ -25,7 +25,7 @@ public sealed class ComplexViewportTests
 		topLeft.ShouldBe(new SKPointI(0, 0));
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldRoundTripPositions()
 	{
 		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
@@ -36,7 +36,7 @@ public sealed class ComplexViewportTests
 		roundTripped.ShouldBe(c);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldRoundTripComplexNumbers()
 	{
 		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
@@ -47,7 +47,7 @@ public sealed class ComplexViewportTests
 		roundTripped.ShouldBe(point);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldDetermineHeight()
 	{
 		var viewPort = ComplexViewport.FromLogicalArea(new ComplexArea(new Interval(-1, 1), new Interval(-1, 1)), 101);
@@ -55,7 +55,7 @@ public sealed class ComplexViewportTests
 		viewPort.Resolution.Height.ShouldBe(101);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldDetermineImaginaryMagnitude()
 	{
 		var viewPort = ComplexViewport.FromResolution(new SKSizeI(100, 100), new Complex(0, 0), realMagnitude: 2);
@@ -118,8 +118,8 @@ public sealed class ComplexViewportTests
 		];
 	}
 
-	[Theory]
-	[MemberData(nameof(GetOverlapData))]
+	[Test]
+	[MethodDataSource(nameof(GetOverlapData))]
 	public void ShouldConstructFromResolution(ResolutionTestCase testCase)
 	{
 		var viewPort = ComplexViewport.FromResolution(testCase.Resolution, testCase.OriginOffset, testCase.PixelSize);

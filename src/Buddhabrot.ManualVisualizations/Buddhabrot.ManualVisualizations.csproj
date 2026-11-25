@@ -8,18 +8,12 @@
 	<ItemGroup>
 		<PackageReference Include="CliWrap" />
 		<PackageReference Include="Humanizer.Core" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" />
-		<PackageReference Include="NUnit" />
-		<PackageReference Include="NUnit3TestAdapter" />
-		<PackageReference Include="NUnit.Analyzers">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
 		<PackageReference Include="coverlet.collector">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Spectre.Console" />
+		<PackageReference Include="TUnit" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Buddhabrot.Core.Tests\Buddhabrot.Core.Tests.csproj" />

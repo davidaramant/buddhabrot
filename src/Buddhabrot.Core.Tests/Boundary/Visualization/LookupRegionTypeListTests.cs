@@ -5,7 +5,7 @@ namespace Buddhabrot.Core.Tests.Boundary.Visualization;
 
 public class LookupRegionTypeListTests
 {
-	[Fact]
+	[Test]
 	public void ShouldReturnCorrectTypesForMultipleRuns()
 	{
 		var list = new LookupRegionTypeList();
@@ -18,7 +18,7 @@ public class LookupRegionTypeListTests
 		}
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldReturnCorrectTypesForMultipleTypes()
 	{
 		var list = new LookupRegionTypeList();

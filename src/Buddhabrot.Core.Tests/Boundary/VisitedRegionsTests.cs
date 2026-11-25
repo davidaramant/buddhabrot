@@ -4,13 +4,13 @@ namespace Buddhabrot.Core.Tests.Boundary;
 
 public class VisitedRegionsTests
 {
-	[Theory]
-	[InlineData(0, 0)]
-	[InlineData(0, 1)]
-	[InlineData(1, 0)]
-	[InlineData(1, 1)]
-	[InlineData(2, 0)]
-	[InlineData(0, 2)]
+	[Test]
+	[Arguments(0, 0)]
+	[Arguments(0, 1)]
+	[Arguments(1, 0)]
+	[Arguments(1, 1)]
+	[Arguments(2, 0)]
+	[Arguments(0, 2)]
 	public void HasVisitedShouldReturnFalseForEmptyTree(int x, int y)
 	{
 		var tree = new VisitedRegions();
@@ -18,7 +18,7 @@ public class VisitedRegionsTests
 		tree.HasVisited(new RegionId(x, y)).ShouldBeFalse();
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldMarkRegionAsVisited()
 	{
 		var tree = new VisitedRegions();
@@ -31,9 +31,9 @@ public class VisitedRegionsTests
 		tree.HasVisited(new RegionId(1, 1)).ShouldBeFalse();
 	}
 
-	[Theory]
-	[InlineData(4, 4)]
-	[InlineData(8, 5)]
+	[Test]
+	[Arguments(4, 4)]
+	[Arguments(8, 5)]
 	public void ShouldExpandTree(int x, int expectedHeight)
 	{
 		var tree = new VisitedRegions();
@@ -47,7 +47,7 @@ public class VisitedRegionsTests
 		tree.HasVisited(new RegionId(x, 0)).ShouldBeTrue();
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldDetermineIfRegionHasAlreadyBeenVisited()
 	{
 		var tree = new VisitedRegions();
@@ -58,7 +58,7 @@ public class VisitedRegionsTests
 		tree.Visit(new RegionId(9, 0), VisitedRegionType.Border).ShouldBeFalse();
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldReturnBoundaryRegions()
 	{
 		var tree = new VisitedRegions();

@@ -6,8 +6,8 @@ namespace Buddhabrot.ManualVisualizations;
 [Explicit]
 public class RegionLookupVisualizations : BaseVisualization
 {
-	[OneTimeSetUp]
-	public void SetOutputPath() => SetUpOutputPath(nameof(RegionLookupVisualizations));
+	[Before(Class)]
+	public static void SetOutputPath() => SetUpOutputPath(nameof(RegionLookupVisualizations));
 
 	[Test]
 	public void ShouldConstructPower2QuadtreeCorrectly()
@@ -28,14 +28,14 @@ public class RegionLookupVisualizations : BaseVisualization
 	}
 
 	[Test]
-	[TestCase(0, 0)]
-	[TestCase(0, 1)]
-	[TestCase(1, 1)]
-	[TestCase(1, 0)]
-	[TestCase(2, 0)]
-	[TestCase(2, 1)]
-	[TestCase(3, 1)]
-	[TestCase(3, 0)]
+	[Arguments(0, 0)]
+	[Arguments(0, 1)]
+	[Arguments(1, 1)]
+	[Arguments(1, 0)]
+	[Arguments(2, 0)]
+	[Arguments(2, 1)]
+	[Arguments(3, 1)]
+	[Arguments(3, 0)]
 	public void ShouldRenderSimpleQuadtreeWithBorder(int x, int y)
 	{
 		var lookup = RegionLookupUtil.Make((x, y));

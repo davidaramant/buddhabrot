@@ -7,11 +7,15 @@ namespace Buddhabrot.ManualVisualizations;
 [Explicit]
 public class QuadtreeRendererTests : BaseVisualization
 {
-	[OneTimeSetUp]
-	public void CreateDirectory() => SetUpOutputPath(nameof(QuadtreeRendererTests));
+	[Before(Class)]
+	public static void CreateDirectory() => SetUpOutputPath(nameof(QuadtreeRendererTests));
 
 	[Test]
-	public void ShouldRenderSingleCellAtDifferentDepths([Range(1, 4)] int levels)
+	[Arguments(1)]
+	[Arguments(2)]
+	[Arguments(3)]
+	[Arguments(4)]
+	public void ShouldRenderSingleCellAtDifferentDepths(int levels)
 	{
 		var width = QuadtreeRenderer.GetRequiredWidth(levels);
 		using var image = new RasterImage(width, width);
@@ -26,7 +30,11 @@ public class QuadtreeRendererTests : BaseVisualization
 	}
 
 	[Test]
-	public void ShouldRenderAllCellsAtDifferentDepths([Range(1, 4)] int levels)
+	[Arguments(1)]
+	[Arguments(2)]
+	[Arguments(3)]
+	[Arguments(4)]
+	public void ShouldRenderAllCellsAtDifferentDepths(int levels)
 	{
 		var width = QuadtreeRenderer.GetRequiredWidth(levels);
 		using var image = new RasterImage(width, width);

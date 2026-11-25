@@ -7,7 +7,7 @@ namespace Buddhabrot.Core.Tests.Boundary;
 
 public class RegionLookupTests
 {
-	[Fact]
+	[Test]
 	public void ShouldReturnEveryAreaPlusMirrorsIfSearchAreaIsEqualToBounds()
 	{
 		var lookup = RegionLookupUtil.Make((0, 0), (4, 1));
@@ -22,7 +22,7 @@ public class RegionLookupTests
 		visibleAreas.Count.ShouldBe(4);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldReturnIntersectionsWithSearchArea()
 	{
 		var lookup = new RegionLookup(

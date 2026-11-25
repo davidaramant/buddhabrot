@@ -13,8 +13,8 @@ public class RegionNodeTests
 		}
 	}
 
-	[Theory]
-	[MemberData(nameof(AllRegionTypes))]
+	[Test]
+	[MethodDataSource(nameof(AllRegionTypes))]
 	public void ShouldConstructLeafCorrectly(LookupRegionType type)
 	{
 		var node = RegionNode.MakeLeaf(type);
@@ -23,8 +23,8 @@ public class RegionNodeTests
 		node.RegionType.ShouldBe(type);
 	}
 
-	[Theory]
-	[MemberData(nameof(AllRegionTypes))]
+	[Test]
+	[MethodDataSource(nameof(AllRegionTypes))]
 	public void ShouldConstructBranchCorrectly(LookupRegionType type)
 	{
 		var node = RegionNode.MakeBranch(type, 123_456);

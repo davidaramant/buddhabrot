@@ -4,7 +4,7 @@ namespace Buddhabrot.Core.Tests.Boundary;
 
 public class RegionsToCheckTests
 {
-	[Fact]
+	[Test]
 	public void ShouldAllowAddingMoreItemsWhileIteratingOver()
 	{
 		RegionsToCheck regions = [new RegionId(0, 0)];

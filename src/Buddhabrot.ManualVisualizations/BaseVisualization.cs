@@ -5,9 +5,10 @@ namespace Buddhabrot.ManualVisualizations;
 
 public abstract class BaseVisualization
 {
-	protected DirectoryInfo OutputPath { get; private set; } = new(".");
+	protected static DirectoryInfo OutputPath { get; private set; } = new(".");
 
-	protected void SetUpOutputPath(string name) => OutputPath = CreateDirectory(name.Humanize(LetterCasing.Title));
+	protected static void SetUpOutputPath(string name) =>
+		OutputPath = CreateDirectory(name.Humanize(LetterCasing.Title));
 
 	protected void SaveImage(RasterImage image, string name) =>
 		image.Save(Path.Combine(OutputPath.FullName, name + ".png"));

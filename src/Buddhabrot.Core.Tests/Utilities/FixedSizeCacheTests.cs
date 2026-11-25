@@ -6,13 +6,13 @@ public class FixedSizeCacheTests
 {
 	private readonly FixedSizeCache<int, int> _cache = new(4, defaultKey: -1);
 
-	[Fact]
+	[Test]
 	public void ShouldHandleEntriesNotInCache()
 	{
 		_cache.TryGetValue(0, out _).ShouldBeFalse();
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldLookUpAddedEntry()
 	{
 		_cache.Add(1, 2);

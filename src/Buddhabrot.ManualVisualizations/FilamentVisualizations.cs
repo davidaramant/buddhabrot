@@ -13,8 +13,8 @@ public class FilamentVisualizations : BaseVisualization
 		width: 1000
 	);
 
-	[OneTimeSetUp]
-	public void CreateOutputPath() => SetUpOutputPath(nameof(FilamentVisualizations));
+	[Before(Class)]
+	public static void CreateOutputPath() => SetUpOutputPath(nameof(FilamentVisualizations));
 
 	[Test]
 	public void ShouldCalculateFilaments()
@@ -36,7 +36,9 @@ public class FilamentVisualizations : BaseVisualization
 	}
 
 	[Test]
-	public void ShouldBeAbleToBoundaryTraceWithFilaments([Values] bool checkDiagonals)
+	[Arguments(true)]
+	[Arguments(false)]
+	public void ShouldBeAbleToBoundaryTraceWithFilaments(bool checkDiagonals)
 	{
 		var max = 10_000;
 

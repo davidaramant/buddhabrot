@@ -5,7 +5,7 @@ namespace Buddhabrot.Core.Tests.Boundary;
 
 public class QuadtreeViewportTests
 {
-	[Fact]
+	[Test]
 	public void ShouldGetExpectedQuadrants()
 	{
 		var v = new QuadtreeViewport(SKRectI.Create(new SKPointI(0, 0), new SKSizeI(20, 20)), 1);
@@ -30,15 +30,15 @@ public class QuadtreeViewportTests
 		];
 	}
 
-	[Theory]
-	[MemberData(nameof(IntersectionData))]
+	[Test]
+	[MethodDataSource(nameof(IntersectionData))]
 	public void ShouldIntersectWithRectangle(SKRectI rect, SKRectI expected)
 	{
 		var v = new QuadtreeViewport(SKRectI.Create(new SKPointI(-2, -2), new SKSizeI(20, 20)), 2);
 		v.IntersectWith(rect).ShouldBe(expected);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldCalculateCenteredSquareInArea()
 	{
 		QuadtreeViewport
@@ -82,8 +82,8 @@ public class QuadtreeViewportTests
 		];
 	}
 
-	[Theory]
-	[MemberData(nameof(ZoomOutData))]
+	[Test]
+	[MethodDataSource(nameof(ZoomOutData))]
 	public void ShouldZoomOutCorrectly(ZoomOutTestCase testCase) =>
 		testCase.Viewport.ZoomOut().ShouldBe(testCase.ExpectedResult);
 }

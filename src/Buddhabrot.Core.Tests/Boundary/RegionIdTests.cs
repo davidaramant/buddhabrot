@@ -4,7 +4,7 @@ namespace Buddhabrot.Core.Tests.Boundary;
 
 public class RegionIdTests
 {
-	[Fact]
+	[Test]
 	public void ShouldHaveCorrectXAndY()
 	{
 		var id = RegionId.FromEncodedPosition((3 << 16) + 2);
@@ -12,7 +12,7 @@ public class RegionIdTests
 		id.Y.ShouldBe(3);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldCreateEquivalentIdFromXAndY()
 	{
 		var id1 = RegionId.FromEncodedPosition((3 << 16) + 2);

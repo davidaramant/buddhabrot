@@ -8,8 +8,8 @@ namespace Buddhabrot.ManualVisualizations;
 [Explicit]
 public class BenchmarkingVisualizations : BaseVisualization
 {
-	[OneTimeSetUp]
-	public void CreateOutputPath() => SetUpOutputPath(nameof(BenchmarkingVisualizations));
+	[Before(Class)]
+	public static void CreateOutputPath() => SetUpOutputPath(nameof(BenchmarkingVisualizations));
 
 	[Test]
 	public void RenderRegion()

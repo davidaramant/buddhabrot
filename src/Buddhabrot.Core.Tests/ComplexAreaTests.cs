@@ -34,15 +34,15 @@ public class ComplexAreaTests
 		];
 	}
 
-	[Theory]
-	[MemberData(nameof(GetOverlapData))]
+	[Test]
+	[MethodDataSource(nameof(GetOverlapData))]
 	public void ShouldDetermineIfAreasOverlap(ComplexArea area1, ComplexArea area2, bool shouldIntersect)
 	{
 		area1.OverlapsWith(area2).ShouldBe(shouldIntersect);
 		area2.OverlapsWith(area1).ShouldBe(shouldIntersect);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldDetermineQuadrants()
 	{
 		var area = new ComplexArea(new Interval(-1, 1), new Interval(-1, 1));
@@ -103,8 +103,8 @@ public class ComplexAreaTests
 		];
 	}
 
-	[Theory]
-	[MemberData(nameof(GetIntersectionData))]
+	[Test]
+	[MethodDataSource(nameof(GetIntersectionData))]
 	public void ShouldCalculateIntersection(IntersectionData data)
 	{
 		data.Area1.Intersect(data.Area2).ShouldBe(data.Expected);

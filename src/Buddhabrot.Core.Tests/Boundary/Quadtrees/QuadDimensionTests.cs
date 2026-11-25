@@ -5,42 +5,42 @@ namespace Buddhabrot.Core.Tests.Boundary.Quadtrees;
 
 public class QuadDimensionTests
 {
-	[Theory]
-	[InlineData(1, 1)]
-	[InlineData(2, 2)]
-	[InlineData(3, 4)]
-	[InlineData(4, 8)]
+	[Test]
+	[Arguments(1, 1)]
+	[Arguments(2, 2)]
+	[Arguments(3, 4)]
+	[Arguments(4, 8)]
 	public void ShouldReturnCorrectSideLengthFromHeight(int height, int expectedSideLength)
 	{
 		var qd = new QuadDimensions(0, 0, height);
 		qd.SideLength.ShouldBe(expectedSideLength);
 	}
 
-	[Theory]
-	[InlineData(0, 0, true)]
-	[InlineData(1, 0, true)]
-	[InlineData(0, 1, true)]
-	[InlineData(1, 1, true)]
-	[InlineData(2, 0, false)]
-	[InlineData(0, 2, false)]
+	[Test]
+	[Arguments(0, 0, true)]
+	[Arguments(1, 0, true)]
+	[Arguments(0, 1, true)]
+	[Arguments(1, 1, true)]
+	[Arguments(2, 0, false)]
+	[Arguments(0, 2, false)]
 	public void ShouldDetermineIfRegionIsContainedByDimensions(int x, int y, bool shouldBeContained)
 	{
 		var qd = new QuadDimensions(0, 0, Height: 2);
 		qd.Contains(new RegionId(x, y)).ShouldBe(shouldBeContained);
 	}
 
-	[Theory]
-	[InlineData(0, 0, Quadrant.SW)]
-	[InlineData(1, 0, Quadrant.SE)]
-	[InlineData(0, 1, Quadrant.NW)]
-	[InlineData(1, 1, Quadrant.NE)]
+	[Test]
+	[Arguments(0, 0, Quadrant.SW)]
+	[Arguments(1, 0, Quadrant.SE)]
+	[Arguments(0, 1, Quadrant.NW)]
+	[Arguments(1, 1, Quadrant.NE)]
 	public void ShouldDetermineQuadrant(int x, int y, Quadrant expected)
 	{
 		var d = new QuadDimensions(0, 0, 2);
 		d.DetermineQuadrant(x, y).ShouldBe(expected);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldDescendHeight()
 	{
 		var height = 4;

@@ -4,9 +4,9 @@ namespace Buddhabrot.Core.Tests.Boundary;
 
 public class BoundaryParametersTests
 {
-	[Theory]
-	[InlineData(1_000)]
-	[InlineData(1_000_000)]
+	[Test]
+	[Arguments(1_000)]
+	[Arguments(1_000_000)]
 	public void ShouldRoundtrip(int iterations)
 	{
 		var bp = new BoundaryParameters(new AreaDivisions(10), iterations);
@@ -14,7 +14,7 @@ public class BoundaryParametersTests
 		roundTripped.MaxIterations.ShouldBe(iterations);
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldDeserializeFromOldFormat()
 	{
 		var bp = BoundaryParameters.FromDescription("v8_i1,000,000");
@@ -22,9 +22,9 @@ public class BoundaryParametersTests
 		bp.MaxIterations.ShouldBe(1_000_000);
 	}
 
-	[Theory]
-	[InlineData("")]
-	[InlineData("Some string")]
+	[Test]
+	[Arguments("")]
+	[Arguments("Some string")]
 	public void ShouldRoundTripMetadata(string metadata)
 	{
 		var bp = new BoundaryParameters(new AreaDivisions(1), 10, metadata);

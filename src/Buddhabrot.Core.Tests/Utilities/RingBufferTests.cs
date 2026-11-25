@@ -4,7 +4,7 @@ namespace Buddhabrot.Core.Tests.Utilities;
 
 public class RingBufferTests
 {
-	[Fact]
+	[Test]
 	public void ShouldAddUpToCapacity()
 	{
 		const int capacity = 5;
@@ -17,7 +17,7 @@ public class RingBufferTests
 		}
 	}
 
-	[Fact]
+	[Test]
 	public void ShouldReplaceLastValue()
 	{
 		var ring = new RingBuffer<int>(3) { 1 };

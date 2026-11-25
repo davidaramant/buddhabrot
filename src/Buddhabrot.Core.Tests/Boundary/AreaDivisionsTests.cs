@@ -6,9 +6,9 @@ namespace Buddhabrot.Core.Tests.Boundary;
 
 public class AreaDivisionsTests
 {
-	[Theory]
-	[InlineData(3, 9)]
-	[InlineData(10, 1024 + 128)]
+	[Test]
+	[Arguments(3, 9)]
+	[Arguments(10, 1024 + 128)]
 	public void ShouldComputeRightStart(int verticalPower, int expectedX)
 	{
 		var divisions = new AreaDivisions(verticalPower);

@@ -11,10 +11,6 @@
 	<Folder Name="/Solution Items/Docs/">
 		<File Path="..\docs\requirements.md" />
 	</Folder>
-	<Project Path="BoundaryExplorer.Tests\BoundaryExplorer.Tests.csproj">
-		<Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
-		<Configuration Solution="Release|x64" Project="Release|Any CPU" />
-	</Project>
 	<Project Path="BoundaryExplorer\BoundaryExplorer.csproj">
 		<Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
 		<Configuration Solution="Release|x64" Project="Release|Any CPU" />

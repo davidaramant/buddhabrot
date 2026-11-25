@@ -6,7 +6,7 @@ namespace Buddhabrot.Core.Tests.Boundary.Visualization;
 
 public class RenderInstructionsTests
 {
-	[Fact]
+	[Test]
 	public void ShouldIncludeEntireAreaIfInvalidatingEverything()
 	{
 		var inst = RenderInstructions.Reset(new SKSizeI(100, 100));
@@ -63,8 +63,8 @@ public class RenderInstructionsTests
 		];
 	}
 
-	[Theory]
-	[MemberData(nameof(ResizeTestCases))]
+	[Test]
+	[MethodDataSource(nameof(ResizeTestCases))]
 	public void ShouldComputeInstructionsForResizing(ResizeTestCase testCase)
 	{
 		var inst = RenderInstructions.Reset(testCase.OldSize).Resize(testCase.NewSize);
@@ -178,8 +178,8 @@ public class RenderInstructionsTests
 		];
 	}
 
-	[Theory]
-	[MemberData(nameof(MoveTestCases))]
+	[Test]
+	[MethodDataSource(nameof(MoveTestCases))]
 	public void ShouldComputeInstructionsForMoving(MoveTestCase testCase)
 	{
 		var inst = RenderInstructions.Reset(testCase.Size).Move(testCase.Offset);

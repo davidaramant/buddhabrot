@@ -4,7 +4,7 @@ namespace Buddhabrot.Core.Tests.Utilities;
 
 public class BoolVector16Tests
 {
-	[Fact]
+	[Test]
 	public void ShouldGetIfBitSet()
 	{
 		var v = BoolVector16.Empty.WithBit(0).WithBit(2);

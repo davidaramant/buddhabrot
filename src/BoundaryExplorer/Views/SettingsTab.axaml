@@ -9,12 +9,9 @@
 	d:DesignWidth="800"
 	x:CompileBindings="True"
 	x:DataType="vm:SettingsViewModel"
-	mc:Ignorable="d">
-	<StackPanel
-		MaxWidth="1000"
-		Margin="16"
-		Orientation="Vertical"
-		Spacing="8">
+	mc:Ignorable="d"
+>
+	<StackPanel MaxWidth="1000" Margin="16" Orientation="Vertical" Spacing="8">
 		<TextBox IsReadOnly="True" Text="{Binding DataSetPath, Mode=OneWay}" />
 		<Button Command="{Binding UpdateFilePathCommand}" Content="Change File Path..." />
 		<Button Command="{Binding OpenFilePathCommand}" Content="Open File Path..." />
@@ -26,6 +23,7 @@
 			VerticalContentAlignment="Stretch"
 			IsReadOnly="True"
 			Text="{Binding SystemLogOutput, Mode=OneWay}"
-			TextWrapping="Wrap" />
+			TextWrapping="Wrap"
+		/>
 	</StackPanel>
 </UserControl>

@@ -13,7 +13,8 @@
 	x:DataType="vm:MainWindowViewModel"
 	Icon="/Assets/avalonia-logo.ico"
 	WindowState="Maximized"
-	mc:Ignorable="d">
+	mc:Ignorable="d"
+>
 	<Design.DataContext>
 		<vm:MainWindowViewModel />
 	</Design.DataContext>

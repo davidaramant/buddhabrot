@@ -21,8 +21,11 @@ jobs:
       with:
         dotnet-version: 11.0.x
     - name: Restore dependencies
-      run: dotnet restore src/Buddhabrot.slnx
+      working-directory: ./src
+      run: dotnet restore Buddhabrot.slnx
     - name: Build
-      run: dotnet build --no-restore -c Release src/Buddhabrot.slnx
+      working-directory: ./src
+      run: dotnet build --no-restore -c Release Buddhabrot.slnx
     - name: Test
-      run: dotnet test --no-build --verbosity normal -c Release src/Buddhabrot.slnx
+      working-directory: ./src
+      run: dotnet test --no-build --verbosity normal -c Release Buddhabrot.slnx
